@@ -1,0 +1,10 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.codex-home/
+data/
+**/data/
+.pdf-cache/
+apps/android/.gradle/
+apps/android/**/build/
+*.apk
