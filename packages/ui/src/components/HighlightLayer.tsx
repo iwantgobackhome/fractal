@@ -17,6 +17,9 @@ interface HighlightBoxProps {
 
 /** One saved highlight, painted as a ratio-positioned colored rectangle per rect. */
 function HighlightBox({ highlight, onOpen }: HighlightBoxProps): JSX.Element {
+  // A text selection that starts on a highlight ends with a click on it; only a press
+  // that did not move opens the highlight's note.
+  const pressedAt = useRef<{ x: number; y: number } | null>(null);
   return (
     <>
       {highlight.rects.map((rect, index) => (
@@ -32,8 +35,15 @@ function HighlightBox({ highlight, onOpen }: HighlightBoxProps): JSX.Element {
             backgroundColor: COLOR_VALUES[highlight.color],
           }}
           aria-label={`하이라이트: ${highlight.text.slice(0, 40)}`}
+          onPointerDown={(event) => {
+            pressedAt.current = { x: event.clientX, y: event.clientY };
+          }}
           onClick={(event) => {
             event.stopPropagation();
+            const start = pressedAt.current;
+            pressedAt.current = null;
+            const keyboard = event.detail === 0;
+            if (!keyboard && start !== null && Math.hypot(event.clientX - start.x, event.clientY - start.y) > 3) return;
             onOpen(highlight);
           }}
         >
