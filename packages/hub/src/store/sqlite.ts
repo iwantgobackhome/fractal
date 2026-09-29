@@ -7,6 +7,7 @@ import { annotationSchema, libraryPatchSchema } from '@fractal/shared';
 import { PaperStore, appError, busy, invalidInput, notFound, type ConversationRecord, type DeleteReport } from './index';
 import { readRecord } from './atomic';
 import { assertSafeKey, validateBlock, validateConversationRecord, validateHighlight, validateJob, validatePaper, validateTranslation } from './validate';
+import { bibtexKeyBase, legacyBibtexKey, uniqueBibtexKey, yearFromArxivId } from '../library/citation';
 
 type Row = Record<string, unknown>;
 const value = <T>(row: Row | undefined, field = 'data'): T | null => row ? JSON.parse(String(row[field])) as T : null;
@@ -42,6 +43,53 @@ export class SqlitePaperStore extends PaperStore {
       INSERT OR IGNORE INTO migrations VALUES(1, datetime('now'));
       CREATE TABLE IF NOT EXISTS tags(name TEXT PRIMARY KEY);
       INSERT OR IGNORE INTO migrations VALUES(2, datetime('now'));`);
+
+    const citationMigration = this.db.prepare('SELECT 1 FROM migrations WHERE version = 3').get();
+    if (!citationMigration) this.backfillCitations();
+  }
+
+  /** Repair old keys based on the date added before enforcing uniqueness. */
+  private backfillCitations(): void {
+    const rows = this.db.prepare('SELECT paper_key, data FROM bibliography').all() as Row[];
+    const records = rows.map((row) => JSON.parse(String(row.data)) as LibraryRecord);
+    records.sort((a, b) => a.addedAt.localeCompare(b.addedAt) || a.paperKey.localeCompare(b.paperKey));
+
+    const used = new Set<string>();
+    const chosen = new Map<string, LibraryRecord>();
+    const edited = records.filter((record) => record.bibtexKey !== legacyBibtexKey(record));
+    const generated = records.filter((record) => record.bibtexKey === legacyBibtexKey(record));
+    const editedKeys = new Set(edited.map((record) => record.paperKey));
+
+    for (const record of [...edited, ...generated]) {
+      const year = record.year ?? yearFromArxivId(record.arxivId);
+      const base = editedKeys.has(record.paperKey) ? record.bibtexKey : bibtexKeyBase({ ...record, year });
+      const bibtexKey = uniqueBibtexKey(base, used);
+      used.add(bibtexKey);
+      chosen.set(record.paperKey, { ...record, year, bibtexKey });
+    }
+
+    this.db.exec('BEGIN');
+    try {
+      const update = this.db.prepare('UPDATE bibliography SET data = ? WHERE paper_key = ?');
+      for (const record of records) {
+        const next = chosen.get(record.paperKey)!;
+        if (next.year === record.year && next.bibtexKey === record.bibtexKey) continue;
+        update.run(JSON.stringify(next), record.paperKey);
+        this.change('paper', record.paperKey);
+      }
+      this.db.exec("CREATE UNIQUE INDEX bibliography_citekey ON bibliography(json_extract(data, '$.bibtexKey'))");
+      this.db.prepare("INSERT INTO migrations VALUES(3, datetime('now'))").run();
+      this.db.exec('COMMIT');
+    } catch (error) {
+      this.db.exec('ROLLBACK');
+      throw error;
+    }
+  }
+
+  private nextBibtexKey(base: string, paperKey: string): string {
+    const rows = this.db.prepare("SELECT json_extract(data, '$.bibtexKey') AS citekey FROM bibliography WHERE paper_key <> ?").all(paperKey) as Row[];
+    const used = new Set(rows.map((row) => String(row.citekey)));
+    return uniqueBibtexKey(base, used);
   }
   private change(kind: string, key: string): void { this.db.prepare('INSERT INTO changes(kind,item_key) VALUES(?,?)').run(kind, key); }
   private importLegacy(root: string): void {
@@ -162,15 +210,84 @@ export class SqlitePaperStore extends PaperStore {
     if(pdfHash){const remaining=this.db.prepare('SELECT count(*) n FROM papers WHERE pdf_hash=?').get(pdfHash) as Row;if(Number(remaining.n)===0)rmSync(join(this.root,'pdfs',`${pdfHash}.pdf`),{force:true});}
     return report;
   }
-  private updateBibliography(p:Paper):void {
-    const old=this.getLibrary(p.paperKey), now=new Date().toISOString();
-    const authors=p.authors.map(name=>{const parts=name.trim().split(/\s+/);return {given:parts.slice(0,-1).join(' '),family:parts.at(-1)??name};});
-    const record:LibraryRecord=old?{...old,title:p.title??old.title,authors:authors.length?authors:old.authors,arxivId:p.arxivId??old.arxivId,url:p.sourceUrl,updatedAt:now}:{id:randomUUID(),paperKey:p.paperKey,title:p.title,authors,year:null,venue:null,doi:null,arxivId:p.arxivId,url:p.sourceUrl,abstract:null,tags:[],collections:[],addedAt:p.createdAt,updatedAt:now,status:'unread',bibtexKey:(authors[0]?.family??'paper').replace(/\W/g,'').toLowerCase()+(p.createdAt.slice(0,4))};
-    this.db.prepare('INSERT INTO bibliography VALUES(?,?,?,?,?) ON CONFLICT(paper_key) DO UPDATE SET doi=excluded.doi,arxiv_id=excluded.arxiv_id,pdf_hash=excluded.pdf_hash,data=excluded.data').run(p.paperKey,record.doi?.toLowerCase()??null,record.arxivId,p.pdfSha256,JSON.stringify(record)); this.reindex(p.paperKey);
+  private updateBibliography(p: Paper): void {
+    const old = this.getLibrary(p.paperKey);
+    const now = new Date().toISOString();
+    const authors = p.authors.map((name) => {
+      const parts = name.trim().split(/\s+/);
+      return { given: parts.slice(0, -1).join(' '), family: parts.at(-1) ?? name };
+    });
+    const year = yearFromArxivId(p.arxivId);
+
+    const record: LibraryRecord = old
+      ? {
+          ...old,
+          title: p.title ?? old.title,
+          authors: authors.length ? authors : old.authors,
+          arxivId: p.arxivId ?? old.arxivId,
+          year: old.year ?? year,
+          url: p.sourceUrl,
+          updatedAt: now,
+        }
+      : {
+          id: randomUUID(),
+          paperKey: p.paperKey,
+          title: p.title,
+          authors,
+          year,
+          venue: null,
+          doi: null,
+          arxivId: p.arxivId,
+          url: p.sourceUrl,
+          abstract: null,
+          tags: [],
+          collections: [],
+          addedAt: p.createdAt,
+          updatedAt: now,
+          status: 'unread',
+          bibtexKey: this.nextBibtexKey(bibtexKeyBase({ authors, year }), p.paperKey),
+        };
+
+    this.db.prepare('INSERT INTO bibliography VALUES(?,?,?,?,?) ON CONFLICT(paper_key) DO UPDATE SET doi=excluded.doi,arxiv_id=excluded.arxiv_id,pdf_hash=excluded.pdf_hash,data=excluded.data').run(
+      p.paperKey,
+      record.doi?.toLowerCase() ?? null,
+      record.arxivId,
+      p.pdfSha256,
+      JSON.stringify(record),
+    );
+    this.reindex(p.paperKey);
   }
   getLibrary(key:string):LibraryRecord|null { return value<LibraryRecord>(this.db.prepare('SELECT data FROM bibliography WHERE paper_key=?').get(key) as Row|undefined); }
   listLibrary():LibraryRecord[] { return (this.db.prepare('SELECT data FROM bibliography ORDER BY paper_key').all() as Row[]).map(r=>JSON.parse(String(r.data)) as LibraryRecord); }
-  patchLibrary(key:string,patch:LibraryPatch):LibraryRecord { const old=this.getLibrary(key);if(!old)throw notFound('논문을 찾을 수 없습니다.'); const parsed=libraryPatchSchema.safeParse(patch);if(!parsed.success)throw invalidInput('서지 정보 형식이 올바르지 않습니다.');const p=parsed.data, next={...old,...Object.fromEntries(Object.entries(p).filter(([,v])=>v!==undefined)),updatedAt:new Date().toISOString()} as LibraryRecord;this.db.prepare('UPDATE bibliography SET doi=?,arxiv_id=?,data=? WHERE paper_key=?').run(next.doi?.toLowerCase()??null,next.arxivId??null,JSON.stringify(next),key);this.reindex(key);this.change('paper',key);return next; }
+  patchLibrary(key: string, patch: LibraryPatch): LibraryRecord {
+    const old = this.getLibrary(key);
+    if (!old) throw notFound('논문을 찾을 수 없습니다.');
+
+    const parsed = libraryPatchSchema.safeParse(patch);
+    if (!parsed.success) throw invalidInput('서지 정보 형식이 올바르지 않습니다.');
+
+    const values = Object.fromEntries(Object.entries(parsed.data).filter(([, value]) => value !== undefined));
+    const next = { ...old, ...values, updatedAt: new Date().toISOString() } as LibraryRecord;
+
+    if (parsed.data.bibtexKey !== undefined) {
+      if (this.nextBibtexKey(next.bibtexKey, key) !== next.bibtexKey) {
+        throw invalidInput('이미 사용 중인 인용 키입니다.');
+      }
+    } else if (old.year === null && next.year !== null && old.bibtexKey === bibtexKeyBase(old)) {
+      // DOI metadata can arrive immediately after the paper row is first saved.
+      next.bibtexKey = this.nextBibtexKey(bibtexKeyBase(next), key);
+    }
+
+    this.db.prepare('UPDATE bibliography SET doi=?,arxiv_id=?,data=? WHERE paper_key=?').run(
+      next.doi?.toLowerCase() ?? null,
+      next.arxivId ?? null,
+      JSON.stringify(next),
+      key,
+    );
+    this.reindex(key);
+    this.change('paper', key);
+    return next;
+  }
   findDuplicate(doi:string|null,arxiv:string|null,sha:string|null):string|null { const row=this.db.prepare('SELECT paper_key FROM bibliography WHERE (? IS NOT NULL AND doi=?) OR (? IS NOT NULL AND arxiv_id=?) OR (? IS NOT NULL AND pdf_hash=?) LIMIT 1').get(doi,doi,arxiv,arxiv,sha,sha) as Row|undefined;return row?String(row.paper_key):null; }
   private reindex(key:string):void { this.db.prepare('DELETE FROM paper_fts WHERE paper_key=?').run(key);const r=this.getLibrary(key);if(!r)return;const blocks=this.listBlocks(key);const insert=this.db.prepare('INSERT INTO paper_fts VALUES(?,?,?,?,?,?,?)');insert.run(key,null,null,r.title??'',r.abstract??'',r.authors.map(a=>`${a.given} ${a.family}`).join(' '),'');for(const b of blocks) insert.run(key,b.blockId,b.regions[0]?.page??null,'','','',b.sourceText); }
   pull(since:number):{cursor:string;papers:LibraryRecord[];annotations:Annotation[]} { const changes=this.db.prepare('SELECT kind,item_key FROM changes WHERE seq>? ORDER BY seq').all(since) as Row[];const keys=new Set(changes.filter(r=>r.kind==='paper').map(r=>String(r.item_key))),ids=new Set(changes.filter(r=>r.kind==='annotation').map(r=>String(r.item_key)));return {cursor:String((this.db.prepare('SELECT COALESCE(MAX(seq),0) n FROM changes').get() as Row).n),papers:[...keys].map(k=>this.getLibrary(k)).filter((r):r is LibraryRecord=>r!==null),annotations:[...ids].map(id=>this.getAnnotation(id)).filter((a):a is Annotation=>a!==null)}; }

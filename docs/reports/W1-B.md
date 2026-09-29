@@ -71,3 +71,32 @@ Started `npm run hub` on port 7339 with an isolated `FRACTAL_DATA`. `GET /` retu
 - Annotation upserts and legacy highlight updates now use savepoints, so the annotation row, highlight mirror, and change-log row commit together.
 - `POST /api/papers/open` continues to block until acquisition and extraction finish for v1; the UI shows its busy state meanwhile.
 - Re-ran `npm ci`, `npm run build`, `npm test` (1 shared, 11 hub, 2 UI tests), and `npm run typecheck`; all exited 0. A fresh `npm run hub` smoke on port 7340 returned 200 for `/` and `/api/papers`, 400 for a bad DOI, 201 for local PDF upload, and 200 for arXiv `1706.03762`. `sync/pull?since=0` returned both papers (cursor `3`). The server was stopped and port 7340 had no listener.
+
+## Follow-up fixes
+
+- Bibliography year now comes from the arXiv ID when arXiv API metadata has no retained published date. Modern IDs use `20YY`; old-style category IDs use the 1991–2007 century boundary. Crossref `published` year is used for DOI papers, with `issued` and online/print dates as fallbacks.
+- Generated BibTeX keys use publication year, gain `a`, `b`, and later suffixes on collisions, and remain stable after metadata refreshes or user edits. DOI papers whose year arrives immediately after their initial record replace the temporary `undated` key. Migration 3 backfills old rows, preserves edited keys, resolves collisions, and adds a unique citation-key index.
+- Crossref 404 now returns non-retryable 404 `NOT_FOUND` with a Korean message asking the reader to check the DOI. Transport errors, 429, and 5xx remain retryable 502 `NETWORK`.
+- Mocked tests cover Crossref 404/503, `issued` year fallback, arXiv year derivation, key collisions, edited-key stability, DOI year enrichment, and migration backfill.
+
+```text
+> npm ci
+added 374 packages, and audited 378 packages in 15s
+exit code 0
+
+> npm run build
+@fractal/shared: tsc -p tsconfig.json
+@fractal/ui: vite build, 74 modules transformed, built in 5.72s
+@fractal/hub: typecheck and build-hub.mjs
+exit code 0
+
+> npm test
+@fractal/shared: 1 passed
+@fractal/hub: 34 passed
+@fractal/ui: 11 passed
+exit code 0
+
+> npm run typecheck
+@fractal/shared, @fractal/hub, @fractal/ui: tsc --noEmit
+exit code 0
+```

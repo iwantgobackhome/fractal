@@ -4,7 +4,7 @@ import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { extractPdf, inferTitle } from '../pdf/index';
 import type { SqlitePaperStore } from '../store/sqlite';
 import type { PaperAcquirer } from '../api/index';
-import { appError, invalidInput } from '../store/errors';
+import { appError, invalidInput, notFound } from '../store/errors';
 import { tooLarge } from '../api/routes/types';
 
 const sha = (bytes: Uint8Array) => createHash('sha256').update(bytes).digest('hex');
@@ -14,18 +14,38 @@ export async function resolveDoi(doi:string, fetcher:typeof fetch=fetch, email=p
   catch {throw invalidInput('DOI 형식이 올바르지 않습니다.');}
   if (!/^10\.\d{4,9}\/\S+$/.test(doi)) throw invalidInput('DOI 형식이 올바르지 않습니다.');
   const headers:HeadersInit=email?{'User-Agent':`Fractal/0.1 (mailto:${email})`}:{};
+  let cross: Response;
+  try {
+    cross = await fetcher(`https://api.crossref.org/works/${encodeURIComponent(doi)}`, { headers });
+  } catch {
+    throw appError('NETWORK', 'Crossref에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.', true);
+  }
+
+  if (cross.status === 404) {
+    throw notFound('이 DOI를 찾지 못했습니다. DOI를 다시 확인해 주세요.');
+  }
+  if (cross.status === 429 || cross.status >= 500) {
+    throw appError('NETWORK', 'Crossref에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.', true);
+  }
+  if (!cross.ok) {
+    throw invalidInput('DOI를 확인할 수 없습니다. DOI를 다시 확인해 주세요.');
+  }
+
   let work:Record<string,unknown>;
   try {
-    const cross=await fetcher(`https://api.crossref.org/works/${encodeURIComponent(doi)}`,{headers});
-    if(!cross.ok)throw new Error(`Crossref HTTP ${cross.status}`);
-    work=(await cross.json() as {message:Record<string,unknown>}).message;
-    if(!work||typeof work!=='object')throw new Error('Crossref response missing message');
-  } catch {throw appError('NETWORK','Crossref에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.',true);}
+    work = (await cross.json() as { message: Record<string, unknown> }).message;
+    if (!work || typeof work !== 'object') throw new Error('Crossref response missing message');
+  } catch {
+    throw appError('NETWORK', 'Crossref에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.', true);
+  }
   const names=Array.isArray(work.author)?work.author as Array<{given?:string;family?:string}>:[];
-  const dates=(work.published as { 'date-parts'?:number[][] }|undefined)?.['date-parts'];
+  const dateFields = ['published', 'issued', 'published-online', 'published-print'] as const;
+  const year = dateFields
+    .map((field) => (work[field] as { 'date-parts'?: number[][] } | undefined)?.['date-parts']?.[0]?.[0])
+    .find((candidate) => typeof candidate === 'number' && Number.isInteger(candidate) && candidate > 0) ?? null;
   let pdfUrl:null|string=null;
   if(email){try {const unpay=await fetcher(`https://api.unpaywall.org/v2/${encodeURIComponent(doi)}?email=${encodeURIComponent(email)}`,{headers});if(!unpay.ok)throw new Error(`Unpaywall HTTP ${unpay.status}`);const data=await unpay.json() as {best_oa_location?:{url_for_pdf?:string}};pdfUrl=data.best_oa_location?.url_for_pdf??null;}catch{throw appError('NETWORK','Unpaywall에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.',true);}}
-  return {title:Array.isArray(work.title)?String(work.title[0]??''):null,authors:names.map(n=>[n.given,n.family].filter(Boolean).join(' ')),year:dates?.[0]?.[0]??null,venue:Array.isArray(work['container-title'])?String(work['container-title'][0]??''):null,doi,arxivId:null,abstract:typeof work.abstract==='string'?work.abstract:null,pdfUrl,url:typeof work.URL==='string'?work.URL:null};
+  return {title:Array.isArray(work.title)?String(work.title[0]??''):null,authors:names.map(n=>[n.given,n.family].filter(Boolean).join(' ')),year,venue:Array.isArray(work['container-title'])?String(work['container-title'][0]??''):null,doi,arxivId:null,abstract:typeof work.abstract==='string'?work.abstract:null,pdfUrl,url:typeof work.URL==='string'?work.URL:null};
 }
 /** Inspect PDF info and the largest first-page text runs before extraction. */
 export async function metadataFromPdf(bytes:Buffer):Promise<Pick<ResolvedMetadata,'title'|'doi'|'arxivId'>> {
