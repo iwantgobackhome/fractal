@@ -42,7 +42,12 @@ export class SqlitePaperStore extends PaperStore {
       CREATE VIRTUAL TABLE IF NOT EXISTS paper_fts USING fts5(paper_key UNINDEXED, block_id UNINDEXED, page UNINDEXED, title, abstract, authors, text);
       INSERT OR IGNORE INTO migrations VALUES(1, datetime('now'));
       CREATE TABLE IF NOT EXISTS tags(name TEXT PRIMARY KEY);
-      INSERT OR IGNORE INTO migrations VALUES(2, datetime('now'));`);
+      INSERT OR IGNORE INTO migrations VALUES(2, datetime('now'));
+      CREATE TABLE IF NOT EXISTS feed_meta(key TEXT PRIMARY KEY, data TEXT NOT NULL);
+      CREATE TABLE IF NOT EXISTS feed_items(week TEXT NOT NULL, id TEXT NOT NULL, data TEXT NOT NULL, PRIMARY KEY(week,id));
+      CREATE TABLE IF NOT EXISTS feed_fetch(url TEXT PRIMARY KEY, etag TEXT, modified TEXT, body TEXT NOT NULL, fetched_at TEXT NOT NULL);
+      CREATE TABLE IF NOT EXISTS feed_digests(week TEXT PRIMARY KEY, data TEXT NOT NULL);
+      INSERT OR IGNORE INTO migrations VALUES(4, datetime('now'));`);
 
     const citationMigration = this.db.prepare('SELECT 1 FROM migrations WHERE version = 3').get();
     if (!citationMigration) this.backfillCitations();

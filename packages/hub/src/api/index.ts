@@ -25,6 +25,8 @@ import { SqlitePaperStore } from '../store/sqlite';
 import { handleLibrary } from './routes/library';
 import { handleAnnotations } from './routes/annotations';
 import { handleSync } from './routes/sync';
+import { handleFeed } from './routes/feed';
+import type { FeedService } from '../feed/index';
 
 export { TOKEN_HEADER, assertLocalRequest, isLoopbackHost, isLoopbackOrigin } from './guard';
 export { HttpError, statusFor, toHttp } from './errors';
@@ -86,6 +88,7 @@ export interface ApiServerOptions {
   devices?: DeviceStore;
   pairing?: PairingSessions;
   network?: NetworkManager;
+  feed?: FeedService;
 }
 
 export interface ApiServer {
@@ -401,6 +404,10 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
   const json = (data: unknown, status = 200): Result => ({ kind: 'json', status, data });
 
   async function route_(method: string, segments: string[], request: IncomingMessage, ctx: RouteContext): Promise<Result> {
+    if (options.feed) {
+      const feed = await handleFeed(method, segments, request, { feed: options.feed, url: ctx.url });
+      if (feed !== undefined) return feed;
+    }
     const hub = await handleHub(method, segments, request, ctx);
     if (hub !== undefined) return hub;
     const pairing = await handlePairing(method, segments, request, ctx);

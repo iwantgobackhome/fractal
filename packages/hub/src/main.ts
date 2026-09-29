@@ -27,6 +27,7 @@ import { extractPdf, inferTitle } from './pdf/index';
 import { JsonDeviceStore } from './pairing/store';
 import { PairingSessions } from './pairing/session';
 import { NetworkManager } from './net/manager';
+import { FeedService } from './feed/index';
 import { hostname } from 'node:os';
 
 /**
@@ -210,6 +211,9 @@ export async function startService(options: ServiceOptions = {}): Promise<Servic
     return network.statusSyncUrls(port);
   });
 
+  const acquirer = realAcquirer(join(dataDirectory, '.pdf-cache'));
+  const feed = new FeedService(store, acquirer, aiRegistry);
+
   const server = createApiServer({
     store,
     jobs,
@@ -221,7 +225,8 @@ export async function startService(options: ServiceOptions = {}): Promise<Servic
     paperChat: aiAdapter,
     aiRegistry,
     librarySearch: new FtsLibrarySearch(store),
-    acquirer: realAcquirer(join(dataDirectory, '.pdf-cache')),
+    acquirer,
+    feed,
     log,
     devices,
     pairing,
@@ -234,6 +239,7 @@ export async function startService(options: ServiceOptions = {}): Promise<Servic
   const address = await server.listen(options.port ?? 0, LOOPBACK);
   if (options.bindAddresses !== undefined) network.configureExplicit(options.bindAddresses);
   await network.apply();
+  feed.start();
   return {
     server,
     store,
@@ -244,6 +250,7 @@ export async function startService(options: ServiceOptions = {}): Promise<Servic
     pairing,
     network,
     async stop() {
+      await feed.stop();
       await server.close();
       // Process shutdown only: the app's stored login is kept for the next start.
       await session.disconnect();

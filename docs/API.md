@@ -118,3 +118,20 @@ The same loopback origin and startup token apply to mutations below. `POST /api/
 Annotation conflicts compare `updatedAt` and then `deviceId`; each accepted write increments `rev`. Deletions are tombstones and appear in sync pulls. The cursor is an append-only integer sequence encoded as decimal text. DOI lookup uses Crossref and Unpaywall; set `FRACTAL_CONTACT_EMAIL` to enable the Unpaywall request and identify the client politely.
 
 Malformed input and request schemas return 400 `INVALID_INPUT` with a short Korean message; unsupported upload media returns 415, oversized bodies return 413 `TOO_LARGE`, and failed Crossref or Unpaywall requests return retryable 502 `NETWORK`. Opening a paper waits for acquisition and extraction; the reader shows a busy state until the response arrives.
+
+## Discovery feed
+
+The discovery feed uses the same `{data}` envelope and local mutation guard. `week` is an ISO week such as `2026-W40`; omitted weeks select the current UTC week. A refresh stores a snapshot in SQLite. One failed source leaves the other sections available, and `sourceStatus` reports each source and feed outcome (`ok`, `cached`, `error`, or `disabled`).
+
+| Method and path | Request JSON | `data` response |
+| --- | --- | --- |
+| `GET /api/feed?week=YYYY-Www` | — | `{week, generatedAt, sections, sourceStatus, digest?}` |
+| `GET /api/feed/interests` | — | `{interests, suggestions: [{category, count}]}`; suggestions come from saved arXiv papers' metadata |
+| `PUT /api/feed/interests` | `{categories: string[], topics: string[], authors: string[]}` | Saved interests |
+| `GET /api/feed/settings` | — | Current feed settings |
+| `PUT /api/feed/settings` | `{sources: {arxiv, huggingFace, news, recommendations}, customRssFeeds: string[], digestEnabled: boolean, refreshIntervalHours: number}` | Saved settings; custom feeds require HTTPS, interval is 1–168 hours |
+| `POST /api/feed/refresh` | `{}` | Refreshed feed snapshot |
+| `GET /api/feed/digest?week=YYYY-Www` | — | `{week, generatedAt, text}` or `null`; opt-in only |
+| `POST /api/feed/items/:id/save` | `{}` | `{paperKey}` (201), after the existing URL/DOI/arXiv ingest succeeds |
+
+`sections` contains `top: Item[]`, `byField: {field, items}[]`, `rankings: Item[]`, `news: Item[]`, and `recommended: Item[]`. Each item has `id`, `kind`, `title`, `authors`, trimmed `abstract`, `source`, `url`, nullable `arxivId` and `doi`, `categories`, `publishedAt`, numeric `score`, Korean `reason`, `inLibrary`, and numeric `popularity`. `rankings` lists Hugging Face daily papers by upvotes; `recommended` omits items already saved in the library. Digest generation is off by default and uses the AI provider registry's `digest` selection only when enabled. Schemas are in `packages/shared/src/contracts/feed.ts`.
