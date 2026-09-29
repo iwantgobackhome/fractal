@@ -1,40 +1,18 @@
+import type { AiFeature, AiSettings, ModelSelection, NetworkStatus, PairedDevice, PairingPayload, ProviderModel, ProviderStatus as HubProviderStatus, UsageRecord } from '@fractal/shared';
 import { TOKEN_HEADER } from '../lib/api';
 
 /*
- * Client for the hub endpoints added in W1 (AI providers, network and pairing,
- * library import and export). Those endpoints are built in parallel by other
- * tasks, so every call resolves to `null` when the hub does not have the route
- * yet (404/405), and screens show an "unavailable" state instead of failing.
- * The view types below mirror the task specs; they are replaced by the shared
- * zod contracts at integration.
+ * Client for the hub's library, AI, network and pairing endpoints. Responses
+ * are reshaped into the small view models the screens use. A route the hub
+ * does not serve (404/405/501) resolves to `null`, and the screen shows an
+ * "unavailable" state instead of failing.
  */
 
-export interface ProviderModel {
-  id: string;
-  label?: string;
-  efforts?: string[];
-}
+export type { AiFeature, AiSettings, PairedDevice, ProviderModel };
+export type AiChoice = ModelSelection;
 
-export interface ProviderStatus {
-  id: 'codex' | 'claude';
-  installed: boolean;
-  loggedIn: boolean;
-  version?: string | null;
-  account?: string | null;
+export interface ProviderStatus extends HubProviderStatus {
   models: ProviderModel[];
-}
-
-export type AiFeature = 'chat' | 'translate' | 'explain' | 'digest';
-
-export interface AiChoice {
-  provider: 'codex' | 'claude';
-  model: string;
-  effort?: string | null;
-}
-
-export interface AiSettings {
-  default: AiChoice;
-  overrides: Partial<Record<AiFeature, AiChoice>>;
 }
 
 export interface ProvidersResult {
@@ -51,40 +29,60 @@ export interface UsageRow {
   outputTokens: number;
 }
 
+export interface UsageLimit {
+  provider: string;
+  label: string;
+  usedPercent: number | null;
+  resetsAt: string | null;
+}
+
 export interface UsageResult {
   rows: UsageRow[];
-  limits?: { provider: string; label: string; usedPercent: number | null; resetsAt: string | null }[];
+  limits: UsageLimit[];
 }
 
-export interface NetworkAddress {
-  kind: 'loopback' | 'lan' | 'tailscale';
-  address: string;
-  enabled: boolean;
-}
-
-export interface NetworkResult {
-  port: number;
-  addresses: NetworkAddress[];
-}
+export type NetworkResult = NetworkStatus;
 
 export interface PairingSession {
   session: string;
   code: string;
   expiresAt: string;
-  payload: unknown;
-}
-
-export interface PairedDevice {
-  id: string;
-  name: string;
-  platform: string;
-  createdAt: string;
-  lastSeen: string | null;
 }
 
 export type ExportFormat = 'bibtex' | 'csl-json';
 
-export class HubUnavailable extends Error {}
+function windowLabel(minutes: unknown): string {
+  if (typeof minutes !== 'number') return '한도';
+  if (minutes >= 7 * 24 * 60) return '주간 한도';
+  if (minutes >= 24 * 60) return `${Math.round(minutes / (24 * 60))}일 한도`;
+  return `${Math.round(minutes / 60)}시간 한도`;
+}
+
+/** Codex reports `{ primary, secondary }` quota windows; other providers report nothing yet. */
+export function readLimits(limits: Record<string, unknown> | undefined): UsageLimit[] {
+  const rows: UsageLimit[] = [];
+  for (const [provider, value] of Object.entries(limits ?? {})) {
+    if (value === null || typeof value !== 'object') continue;
+    for (const window of Object.values(value as Record<string, unknown>)) {
+      if (window === null || typeof window !== 'object') continue;
+      const w = window as { usedPercent?: unknown; windowDurationMins?: unknown; resetsAt?: unknown };
+      rows.push({
+        provider,
+        label: windowLabel(w.windowDurationMins),
+        usedPercent: typeof w.usedPercent === 'number' ? w.usedPercent : null,
+        resetsAt: typeof w.resetsAt === 'number' ? new Date(w.resetsAt * 1000).toISOString() : null,
+      });
+    }
+  }
+  return rows;
+}
+
+export function readUsage(raw: { totals: UsageRecord[]; limits?: Record<string, unknown> }): UsageResult {
+  return {
+    rows: raw.totals.map((t) => ({ day: t.day, provider: t.provider, model: t.model, requests: t.requests, inputTokens: t.inputTokens ?? 0, outputTokens: t.outputTokens ?? 0 })),
+    limits: readLimits(raw.limits),
+  };
+}
 
 export class HubApi {
   constructor(
@@ -115,16 +113,24 @@ export class HubApi {
     return (payload as { data: T }).data;
   }
 
-  providers(): Promise<ProvidersResult | null> {
-    return this.call('/api/ai/providers');
+  private static providers(raw: { providers: { status: HubProviderStatus; models: ProviderModel[] }[]; settings: AiSettings }): ProvidersResult {
+    return { providers: raw.providers.map((p) => ({ ...p.status, models: p.models })), settings: raw.settings };
   }
 
-  saveAiSettings(settings: AiSettings): Promise<ProvidersResult | null> {
-    return this.call('/api/ai/settings', { method: 'PUT', body: settings });
+  async providers(): Promise<ProvidersResult | null> {
+    const raw = await this.call<Parameters<typeof HubApi.providers>[0]>('/api/ai/providers');
+    return raw === null ? null : HubApi.providers(raw);
   }
 
-  usage(): Promise<UsageResult | null> {
-    return this.call('/api/ai/usage');
+  /** The hub answers with the saved settings; the provider list is fetched again. */
+  async saveAiSettings(settings: AiSettings): Promise<ProvidersResult | null> {
+    await this.call('/api/ai/settings', { method: 'PUT', body: settings });
+    return this.providers();
+  }
+
+  async usage(): Promise<UsageResult | null> {
+    const raw = await this.call<{ totals: UsageRecord[]; limits?: Record<string, unknown> }>('/api/ai/usage');
+    return raw === null ? null : readUsage(raw);
   }
 
   network(): Promise<NetworkResult | null> {
@@ -135,8 +141,9 @@ export class HubApi {
     return this.call('/api/hub/network', { method: 'PUT', body: enabled });
   }
 
-  startPairing(): Promise<PairingSession | null> {
-    return this.call('/api/pairing/start', { method: 'POST', body: {} });
+  async startPairing(): Promise<PairingSession | null> {
+    const raw = await this.call<{ session: string; expiresAt: string; payload: PairingPayload }>('/api/pairing/start', { method: 'POST', body: {} });
+    return raw === null ? null : { session: raw.session, expiresAt: raw.expiresAt, code: raw.payload.code };
   }
 
   pairingQrUrl(session: string): string {
@@ -159,7 +166,7 @@ export class HubApi {
   /** The export endpoint returns a file, so this hands back its URL for a download link. */
   exportUrl(format: ExportFormat, paperKeys?: string[]): string {
     const params = new URLSearchParams({ format });
-    if (paperKeys !== undefined && paperKeys.length > 0) params.set('papers', paperKeys.join(','));
+    for (const key of paperKeys ?? []) params.append('key', key);
     return `/api/library/export?${params.toString()}`;
   }
 }

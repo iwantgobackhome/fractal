@@ -794,11 +794,16 @@ kbd {
   border: 1px solid var(--c-rule);
 }
 
-.pairing__code {
+.pairing__lead {
   margin: 0 0 var(--sp-2);
+  font-size: var(--fs-lead);
+  font-weight: 600;
+}
+
+.pairing__code {
   font-family: var(--font-mono);
-  font-size: 28px;
-  letter-spacing: 0.12em;
+  font-size: var(--fs-small);
+  letter-spacing: 0.04em;
 }
 
 .device-list {

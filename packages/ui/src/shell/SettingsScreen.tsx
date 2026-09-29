@@ -45,7 +45,7 @@ function Unavailable({ what }: { what: string }): JSX.Element {
 function providerState(p: ProviderStatus): string {
   if (!p.installed) return '설치되지 않음';
   if (!p.loggedIn) return '로그인 필요';
-  return [p.account, p.version !== null && p.version !== undefined ? `v${p.version}` : null].filter(Boolean).join(' · ') || '연결됨';
+  return p.version !== null ? `연결됨 · ${p.version.replace(/\s*\(.*\)$/, '').replace(/^codex-cli\s+/, '')}` : '연결됨';
 }
 
 function choiceKey(c: AiChoice): string {
@@ -65,7 +65,8 @@ function ModelSelect({
   allowInherit: boolean;
   label: string;
 }): JSX.Element {
-  const usable = providers.filter((p) => p.installed && p.loggedIn);
+  // Signed-out providers stay listed (marked), so a saved choice never silently shows as another model.
+  const installed = providers.filter((p) => p.installed);
   return (
     <select
       aria-label={label}
@@ -73,12 +74,12 @@ function ModelSelect({
       onChange={(event) => {
         if (event.target.value === '') return onChange(undefined);
         const [provider, ...model] = event.target.value.split(':');
-        onChange({ provider: provider as AiChoice['provider'], model: model.join(':'), effort: value?.effort ?? null });
+        onChange({ provider: provider as AiChoice['provider'], model: model.join(':'), effort: value?.effort });
       }}
     >
       {allowInherit ? <option value="">기본값 따름</option> : null}
-      {usable.map((p) => (
-        <optgroup key={p.id} label={PROVIDER_NAME[p.id]}>
+      {installed.map((p) => (
+        <optgroup key={p.id} label={p.loggedIn ? PROVIDER_NAME[p.id] : `${PROVIDER_NAME[p.id]} (로그인 필요)`}>
           {p.models.map((m) => (
             <option key={m.id} value={`${p.id}:${m.id}`}>
               {m.label ?? m.id}
@@ -146,8 +147,9 @@ function AiSection({ hub, onManageCodexLogin }: { hub: HubApi; onManageCodexLogi
           <select
             aria-label="추론 강도"
             value={data.settings.default.effort ?? ''}
-            onChange={(event) => void save({ ...data.settings, default: { ...data.settings.default, effort: event.target.value || null } })}
+            onChange={(event) => void save({ ...data.settings, default: { ...data.settings.default, effort: (event.target.value || undefined) as AiChoice['effort'] } })}
           >
+            <option value="">추론 강도 기본</option>
             {efforts.map((e) => (
               <option key={e} value={e}>
                 {e}
@@ -267,7 +269,7 @@ function DevicesSection({ hub }: { hub: HubApi }): JSX.Element {
   if (network === undefined) return <p className="settings__quiet">불러오는 중…</p>;
   if (network === null) return <Unavailable what="기기 연결" />;
 
-  const enabled = (kind: 'lan' | 'tailscale') => network.addresses.some((a) => a.kind === kind && a.enabled);
+  const enabled = (kind: 'lan' | 'tailscale') => network.settings[kind];
   const toggle = async (kind: 'lan' | 'tailscale') => {
     setError(null);
     try {
@@ -280,7 +282,7 @@ function DevicesSection({ hub }: { hub: HubApi }): JSX.Element {
   const addressOf = (kind: 'lan' | 'tailscale') =>
     network.addresses
       .filter((a) => a.kind === kind)
-      .map((a) => `${a.address}:${network.port}`)
+      .map((a) => a.url.replace(/^https?:\/\//, ''))
       .join(', ');
 
   const secondsLeft = pairing === null ? 0 : Math.max(0, Math.round((new Date(pairing.expiresAt).getTime() - now) / 1000));
@@ -308,11 +310,9 @@ function DevicesSection({ hub }: { hub: HubApi }): JSX.Element {
           <div className="pairing__card">
             <img className="pairing__qr" src={hub.pairingQrUrl(pairing.session)} alt="기기 연결용 QR 코드" width={168} height={168} />
             <div>
-              <p className="pairing__code" aria-label="연결 코드">
-                {pairing.code}
-              </p>
+              <p className="pairing__lead">태블릿의 Fractal 앱에서 QR을 찍으세요.</p>
               <p className="settings__quiet">
-                태블릿의 Fractal 앱에서 QR을 찍으세요. {Math.floor(secondsLeft / 60)}:{String(secondsLeft % 60).padStart(2, '0')} 후 만료
+                {Math.floor(secondsLeft / 60)}:{String(secondsLeft % 60).padStart(2, '0')} 후 만료 · 코드 <code className="pairing__code">{pairing.code.match(/.{1,4}/g)?.join(' ')}</code>
               </p>
               <button type="button" className="text-link" onClick={() => setPairing(null)}>
                 닫기
