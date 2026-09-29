@@ -5,6 +5,8 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { Block, Paper } from '@fractal/shared';
 import { PaperStore } from './store/index';
+import { SqlitePaperStore } from './store/sqlite';
+import { configureLibrarySearch } from './library/search';
 import { JobManager } from './jobs/state';
 import { AccountAuthenticator, CodexTranslator, createOfficialRpcFactory } from './codex/index';
 import { startOfficialRpc } from './codex/runtime';
@@ -12,7 +14,7 @@ import { CodexProvider } from './ai/codex';
 import { ClaudeProvider } from './ai/claude';
 import { ProviderRegistry } from './ai/registry';
 import { JsonSettingsStore } from './ai/settings';
-import { InMemoryLibrarySearch } from './ai/library-search';
+import { FtsLibrarySearch } from './ai/library-search';
 import { RegistryLegacyAdapter } from './ai/legacy-adapter';
 import { JsonUsageStore } from './ai/usage';
 import { TranslationPipeline, type PipelineLogEvent } from './translation/index';
@@ -33,10 +35,10 @@ import { hostname } from 'node:os';
  */
 export function defaultDataDirectory(): string {
   const base =
-    process.env.PAPERREAD_DATA ??
+    process.env.FRACTAL_DATA ??
     (process.platform === 'win32'
-      ? join(process.env.LOCALAPPDATA ?? join(homedir(), 'AppData', 'Local'), 'PaperRead')
-      : join(process.env.XDG_DATA_HOME ?? join(homedir(), '.local', 'share'), 'paperread'));
+      ? join(process.env.LOCALAPPDATA ?? join(homedir(), 'AppData', 'Local'), 'Fractal')
+      : join(process.env.XDG_DATA_HOME ?? join(homedir(), '.local', 'share'), 'fractal'));
   return resolve(base);
 }
 
@@ -180,8 +182,10 @@ export function servedAssets(assetDirectory: string) {
 
 export async function startService(options: ServiceOptions = {}): Promise<Service> {
   const dataDirectory = options.dataDirectory ?? defaultDataDirectory();
-  const store = new PaperStore(dataDirectory);
+  const legacyDirectory = process.env.PAPERREAD_DATA ?? (process.platform === 'win32' ? join(process.env.LOCALAPPDATA ?? join(homedir(), 'AppData', 'Local'), 'PaperRead') : join(process.env.XDG_DATA_HOME ?? join(homedir(), '.local', 'share'), 'paperread'));
+  const store = new SqlitePaperStore(dataDirectory, legacyDirectory);
   store.ensureRoot();
+  configureLibrarySearch(store);
   backfillTitles(store);
   const jobs = new JobManager(store);
   // One official process serves both the translator's reads and the account session. The
@@ -216,7 +220,7 @@ export async function startService(options: ServiceOptions = {}): Promise<Servic
     // threads; the translation pipeline never receives this path.
     paperChat: aiAdapter,
     aiRegistry,
-    librarySearch: new InMemoryLibrarySearch(store),
+    librarySearch: new FtsLibrarySearch(store),
     acquirer: realAcquirer(join(dataDirectory, '.pdf-cache')),
     log,
     devices,
@@ -244,6 +248,7 @@ export async function startService(options: ServiceOptions = {}): Promise<Servic
       // Process shutdown only: the app's stored login is kept for the next start.
       await session.disconnect();
       await translator.disconnect();
+      store.db.close();
     },
   };
 }

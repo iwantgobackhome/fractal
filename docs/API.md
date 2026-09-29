@@ -29,7 +29,7 @@ Android v1 uses plain HTTP with a bearer token over LAN or Tailscale. Tailscale 
 | `POST /api/connection/login/:id/cancel` | `{}` | `LoginAttemptResult` |
 | `POST /api/connection/logout` | `{}` | `LogoutResult` (`connection`) |
 | `GET /api/papers` | — | `PaperListResult` (`papers: Paper[]`) |
-| `POST /api/papers/open` | `{ "input": string }` | `{ "paper": Paper }`; download/extraction continue in background |
+| `POST /api/papers/open` | `{ "input": string }` | `{ "paper": Paper }` after acquisition and extraction |
 | `GET /api/papers/:key` | — | `Snapshot` (`paper`, `blocks`, `translations`, `job`) |
 | `DELETE /api/papers/:key` | — | `{ "deleted": true }` |
 | `GET /api/papers/:key/pdf` | — | Raw `application/pdf` bytes when available |
@@ -82,3 +82,39 @@ These routes use the same loopback, Origin, and token guard as the rest of the A
 | `POST /api/papers/:key/glossary` | `{ selection? }` | SSE `done.terms` with `{ term, page, definition }[]`; cached by paper content and selection |
 
 `selection` is `{ provider: "codex"|"claude", model: string, effort?: "low"|"medium"|"high"|"xhigh" }`. It overrides the saved feature selection for one request. Normalized boxes use `x`, `y`, `width`, `height` in `[0,1]` and must fit on the page. The provider adapters currently use extracted page text for explanation; `croppedPngBase64` is accepted but not sent to the CLI. Claude model aliases are `opus`, `sonnet`, and `haiku`; full `claude-*` model IDs are also accepted. The legacy `/api/papers/:key/chat` and translation endpoints select their provider through the same registry using their `modelId`.
+`Paper` includes source identity, title, authors, extraction status, page count, and coverage. `Region` stores page-relative rectangle coordinates. `Job` includes state, progress, pause reason, and usage. IDs in paths are percent encoded by the client. Questions may return before their background work finishes; poll the chat read route.
+
+## Library, ingest, export, and sync
+
+The same loopback origin and startup token apply to mutations below. `POST /api/papers/upload` additionally accepts `application/pdf` or `multipart/form-data` with one PDF part (maximum 100 MB); the token and Origin headers are still required. Library records contain structured authors, year, venue, DOI, arXiv ID, URL, abstract, tags, collections, timestamps, reading status, and BibTeX key. PDF files are content addressed under the Fractal data directory.
+
+| Method and path | Request | Response `data` or body |
+| --- | --- | --- |
+| `GET /api/library` | — | `LibraryRecord[]` |
+| `GET /api/library/:key` | — | `LibraryRecord` or `null` |
+| `PATCH /api/library/:key` | `LibraryPatch` JSON | Updated `LibraryRecord` |
+| `DELETE /api/library/:key` | — | Local deletion report |
+| `GET /api/library/search?q=&limit=20` | — | `SearchHit[]` with paper key, page, block ID, snippet, BM25 score |
+| `GET /api/library/tags` | — | Tag names |
+| `POST /api/library/tags` | `{ "name": string }` | Created tag |
+| `PATCH /api/library/tags/:name` | `{ "name": string }` | Renamed tag and paper references |
+| `DELETE /api/library/tags/:name` | — | Removes tag and paper references |
+| `GET /api/library/collections` | — | `{id,name}[]` |
+| `POST /api/library/collections` | `{ "id": string, "name": string }` | Created collection |
+| `PATCH /api/library/collections/:id` | `{ "name": string }` | Updated collection |
+| `DELETE /api/library/collections/:id` | — | Removes collection and paper references |
+| `POST /api/papers/upload` | Raw PDF or multipart PDF | `{paper}` (201) |
+| `POST /api/papers/open` | `{ "input": arXiv ID, DOI, or URL }` | `{paper}` after acquisition and extraction |
+| `GET /api/library/export?format=bibtex\|csl-json&key=:key` | Repeat `key` for selection; omit for all | BibTeX or CSL-JSON bytes |
+| `GET /api/papers/:key/export/:format` | `format` is `bibtex`, `csl-json`, or `markdown` | Export bytes; Markdown includes highlights, memos, and completed AI answers |
+| `GET /api/papers/:key/annotations` | — | Synced highlight, memo, and ink records |
+| `POST /api/papers/:key/annotations` | `Annotation` JSON | `{id, applied, rev}` |
+| `GET /api/papers/:key/annotations/:id` | — | `Annotation` or `null` |
+| `DELETE /api/papers/:key/annotations/:id` | — | Tombstone result |
+| `GET /api/sync/pull?since=0` | Decimal change cursor | `{cursor,papers,annotations}` changed since cursor |
+| `POST /api/sync/push` | `{annotations: Annotation[]}` up to 1,000 | `{results:[{id,applied,rev}],cursor}` |
+| `GET /api/papers/:key/pdf` | Optional `Range` or `If-None-Match` | PDF bytes, `ETag`, `Accept-Ranges`; 206 partial or 304 cached response |
+
+Annotation conflicts compare `updatedAt` and then `deviceId`; each accepted write increments `rev`. Deletions are tombstones and appear in sync pulls. The cursor is an append-only integer sequence encoded as decimal text. DOI lookup uses Crossref and Unpaywall; set `FRACTAL_CONTACT_EMAIL` to enable the Unpaywall request and identify the client politely.
+
+Malformed input and request schemas return 400 `INVALID_INPUT` with a short Korean message; unsupported upload media returns 415, oversized bodies return 413 `TOO_LARGE`, and failed Crossref or Unpaywall requests return retryable 502 `NETWORK`. Opening a paper waits for acquisition and extraction; the reader shows a busy state until the response arrives.

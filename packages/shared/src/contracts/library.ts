@@ -9,5 +9,23 @@ export interface PaperListResult { papers: Paper[] }
 export interface Snapshot { paper:Paper; blocks:Block[]; translations:Translation[]; job:Job|null }
 
 export const regionSchema = z.object({ page: z.number().int().positive(), x: z.number().finite(), y: z.number().finite(), width: z.number().finite(), height: z.number().finite() });
-// TODO(library): define persisted library request schemas when the library API is expanded.
-export const libraryPlaceholderSchema = z.object({});
+/** Editable bibliography record. The legacy Paper remains the reader snapshot wire shape. */
+export const authorSchema = z.object({ given: z.string().default(''), family: z.string().min(1), orcid: z.string().optional() });
+export const readingStatusSchema = z.enum(['unread', 'reading', 'read']);
+export const libraryRecordSchema = z.object({
+  id: z.string().min(1), paperKey: z.string().min(1), title: z.string().nullable(),
+  authors: z.array(authorSchema), year: z.number().int().min(0).nullable(), venue: z.string().nullable(),
+  doi: z.string().nullable(), arxivId: z.string().nullable(), url: z.string().nullable(),
+  abstract: z.string().nullable(), tags: z.array(z.string()), collections: z.array(z.string()),
+  addedAt: z.string().datetime(), updatedAt: z.string().datetime(), status: readingStatusSchema,
+  bibtexKey: z.string().min(1),
+});
+export type LibraryRecord = z.infer<typeof libraryRecordSchema>;
+export const libraryPatchSchema = libraryRecordSchema.pick({ title: true, authors: true, year: true, venue: true, doi: true, arxivId: true, url: true, abstract: true, tags: true, collections: true, status: true, bibtexKey: true }).partial();
+export type LibraryPatch = z.infer<typeof libraryPatchSchema>;
+export const collectionSchema = z.object({ id: z.string().min(1), name: z.string().min(1) });
+export type Collection = z.infer<typeof collectionSchema>;
+export const tagSchema = z.object({ name: z.string().min(1).max(100) });
+export type Tag = z.infer<typeof tagSchema>;
+export const searchHitSchema = z.object({ paperKey: z.string(), page: z.number().int().nullable(), blockId: z.string().nullable(), snippet: z.string(), score: z.number() });
+export type SearchHit = z.infer<typeof searchHitSchema>;

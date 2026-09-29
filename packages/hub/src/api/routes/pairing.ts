@@ -3,13 +3,13 @@ import QRCode from 'qrcode';
 import { pairingClaimRequestSchema } from '@fractal/shared';
 import { HttpError } from '../errors';
 import { clearRemoteFailures, recordRemoteFailure } from '../guard';
-import { body, json, type Result, type RouteContext } from './types';
+import { json, readJson, type Result, type RouteContext } from './types';
 
 const error = (status: number, message: string) => new HttpError(status, { code: status === 400 ? 'INVALID_INPUT' : 'AUTH_REQUIRED', message, retryable: false });
 export async function handlePairing(method: string, segments: string[], request: IncomingMessage, ctx: RouteContext): Promise<Result | undefined> {
   if (segments[0] !== 'api' || segments[1] !== 'pairing' || ctx.pairing === undefined || ctx.devices === undefined) return undefined;
   if (segments.length === 3 && segments[2] === 'claim' && method === 'POST') {
-    const parsed = pairingClaimRequestSchema.safeParse(await body(request));
+    const parsed = pairingClaimRequestSchema.safeParse(await readJson(request));
     if (!parsed.success) throw error(400, 'Invalid pairing claim');
     const claimed = ctx.pairing.claim(parsed.data);
     if (claimed === null) {

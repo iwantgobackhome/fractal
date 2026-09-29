@@ -21,6 +21,10 @@ import type { RouteContext, Result } from './routes/types';
 import { handleAi } from './routes/ai';
 import type { ProviderRegistry } from '../ai/registry';
 import type { LibrarySearch } from '../ai/library-search';
+import { SqlitePaperStore } from '../store/sqlite';
+import { handleLibrary } from './routes/library';
+import { handleAnnotations } from './routes/annotations';
+import { handleSync } from './routes/sync';
 
 export { TOKEN_HEADER, assertLocalRequest, isLoopbackHost, isLoopbackOrigin } from './guard';
 export { HttpError, statusFor, toHttp } from './errors';
@@ -353,8 +357,12 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
       const ping = method === 'GET' && url.pathname === '/api/hub/ping';
       const claim = method === 'POST' && url.pathname === '/api/pairing/claim';
       const mutating = method !== 'GET' && method !== 'HEAD';
+      // The upload route accepts PDF and multipart bytes. Reuse the same host,
+      // origin and token gate while exempting only its media-type check.
+      const upload = method === 'POST' && segments[0] === 'api' && segments[1] === 'papers' && segments[2] === 'upload';
+      const gated = upload ? (Object.assign(Object.create(request), { headers: { ...request.headers, 'content-type': 'application/json' } }) as IncomingMessage) : request;
       if (!ping) {
-        if (local) assertLocalRequest(request, token, mutating && !claim);
+        if (local) assertLocalRequest(gated, token, mutating && !claim);
         else if (options.devices !== undefined) assertRemoteRequest(request, options.devices, claim);
         else throw new HttpError(401, { code: 'AUTH_REQUIRED', message: 'A paired device token is required', retryable: false });
       }
@@ -375,6 +383,7 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
         }
         response.writeHead(result.status, {
           ...headers,
+          ...result.headers,
           'content-type': result.contentType,
           'content-length': String(result.body.length),
           'content-disposition': 'inline',
@@ -399,6 +408,11 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
     if (options.aiRegistry && options.librarySearch) {
       const ai = await handleAi(method, segments, request, { store, registry: options.aiRegistry, librarySearch: options.librarySearch });
       if (ai) return ai;
+    }
+    if (store instanceof SqlitePaperStore) {
+      const libraryCtx = { store, acquirer };
+      const domain = (await handleLibrary(method, segments, request, libraryCtx)) ?? (await handleAnnotations(method, segments, request, libraryCtx)) ?? (await handleSync(method, segments, request, libraryCtx));
+      if (domain !== undefined) return domain;
     }
     // The client entry document, with the request credential embedded.
     if (options.clientHtml !== undefined && method === 'GET' && (segments.length === 0 || (segments.length === 1 && segments[0] === 'index.html'))) {
