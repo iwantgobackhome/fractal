@@ -1695,6 +1695,7 @@ export function App(): JSX.Element {
 
               <section className={`pane ${activePane === 'translation' ? '' : 'hidden'}`} style={{ flex: '1 1 0' }} aria-label="번역">
                 <KoreanPages
+                  pageColors={pageColors}
                   doc={doc}
                   pageCount={pageCount}
                   currentPage={currentPage}

@@ -13,6 +13,7 @@ import {
   type KoreanFlowItem,
 } from '../lib/korean-page';
 import { intrinsicSize, type PDFDocumentProxy } from '../lib/pdf';
+import type { PageColors } from './PdfPane';
 import { visiblePageWindow } from '../lib/geometry';
 import { scrollShiftForResize, scrollTopForDescendant } from '../lib/sync';
 
@@ -24,7 +25,7 @@ import { scrollShiftForResize, scrollTopForDescendant } from '../lib/sync';
  * page would be drawn — and measured and reported — at its old size, and every pane position
  * worked out for the new zoom in that commit (App keeps the reader's place across a zoom change)
  * would be off by the difference. */
-function useSourcePageImage(doc: PDFDocumentProxy, page: number, zoom: number, dpr: number): { url: string; size: Size } | null {
+function useSourcePageImage(doc: PDFDocumentProxy, page: number, zoom: number, dpr: number, pageColors?: PageColors): { url: string; size: Size } | null {
   const [state, setState] = useState<{ url: string; size: Size; doc: PDFDocumentProxy; page: number; zoom: number; dpr: number } | null>(null);
 
   useEffect(() => {
@@ -42,7 +43,7 @@ function useSourcePageImage(doc: PDFDocumentProxy, page: number, zoom: number, d
       canvas.height = Math.max(1, Math.floor(rendered.height * dpr));
       const context = canvas.getContext('2d');
       if (context === null) return;
-      const render = proxy.render({ canvas, canvasContext: context, viewport: proxy.getViewport({ scale: zoom * dpr }) });
+      const render = proxy.render({ canvas, canvasContext: context, viewport: proxy.getViewport({ scale: zoom * dpr }), ...(pageColors === undefined ? {} : { pageColors }) });
       task = render;
       try {
         await render.promise;
@@ -57,14 +58,14 @@ function useSourcePageImage(doc: PDFDocumentProxy, page: number, zoom: number, d
       cancelled = true;
       task?.cancel();
     };
-  }, [doc, page, zoom, dpr]);
+  }, [doc, page, zoom, dpr, pageColors?.background, pageColors?.foreground]);
 
   return state !== null && state.doc === doc && state.page === page && state.zoom === zoom && state.dpr === dpr ? state : null;
 }
 
 const FONT_STACK: Record<Block['fontFamily'], string> = {
-  serif: "'Noto Serif KR', 'Batang', serif",
-  sans: "'Pretendard', 'Malgun Gothic', sans-serif",
+  serif: 'var(--font-serif)',
+  sans: 'var(--font-ui)',
 };
 
 /** How a paragraph was chosen: a click on its text, which may be the first of a double-click
@@ -156,6 +157,7 @@ interface KoreanPageViewProps {
   placeholder: Size;
   onHeight(page: number, heightPx: number): void;
   onSelectBlock(block: Block, via: SelectVia): void;
+  pageColors?: PageColors;
 }
 
 /**
@@ -167,8 +169,8 @@ interface KoreanPageViewProps {
  * original, and cropped figures add their own height — so this component measures its own
  * rendered height after layout and reports it upward for the next stage's page-boundary math.
  */
-function KoreanPageView({ doc, page, zoom, dpr, blocks, translations, placeholder, onHeight, onSelectBlock }: KoreanPageViewProps): JSX.Element {
-  const image = useSourcePageImage(doc, page, zoom, dpr);
+function KoreanPageView({ doc, page, zoom, dpr, blocks, translations, placeholder, onHeight, onSelectBlock, pageColors }: KoreanPageViewProps): JSX.Element {
+  const image = useSourcePageImage(doc, page, zoom, dpr, pageColors);
   const layout = useMemo(() => buildKoreanLayout(blocks, translations, page), [blocks, translations, page]);
   const segments = useMemo(() => groupKoreanSegments(layout.items, layout.columnCount), [layout]);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -262,6 +264,8 @@ export interface KoreanPaneProps {
   pageHeights: Map<number, number>;
   /** Native PDF dimensions shared by placeholder and boundary calculations. */
   pageIntrinsicSize(page: number): Size;
+  /** Dark and sepia page colours, so cropped figures and equations match the page. */
+  pageColors?: PageColors;
   /** The measured rendered height of a live page, in pixels — the next stage uses this to
    * compute the Korean pane's own page boundaries. */
   onPageHeight(page: number, heightPx: number): void;
@@ -281,7 +285,7 @@ export interface KoreanPaneProps {
  * though a Korean page's true height is not known until it is actually drawn.
  */
 export function KoreanPages(props: KoreanPaneProps): JSX.Element {
-  const { doc, pageCount, currentPage, zoom, blocks, translations, pageHeights, pageIntrinsicSize, onPageHeight, bodyRef, onScroll, onAdjustScroll, onSelectBlock } = props;
+  const { doc, pageCount, currentPage, zoom, blocks, translations, pageHeights, pageIntrinsicSize, onPageHeight, bodyRef, onScroll, onAdjustScroll, onSelectBlock, pageColors } = props;
   const dpr = useMemo(() => Math.min(2, typeof window === 'undefined' ? 1 : window.devicePixelRatio || 1), []);
   const live = useMemo(() => new Set(visiblePageWindow(currentPage, pageCount, 1)), [currentPage, pageCount]);
   const [, setHeightVersion] = useState(0);
@@ -337,6 +341,7 @@ export function KoreanPages(props: KoreanPaneProps): JSX.Element {
             placeholder={placeholderSize(page)}
             onHeight={reportHeight}
             onSelectBlock={onSelectBlock}
+            pageColors={pageColors}
           />
         ) : (
           <div key={page} className="kr-page kr-placeholder" data-page={page} style={placeholderSize(page)}>
