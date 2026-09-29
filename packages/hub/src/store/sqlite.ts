@@ -16,6 +16,7 @@ const hash = (bytes: Uint8Array) => createHash('sha256').update(bytes).digest('h
 /** Production store. JSON import is read-only; all subsequent records live in SQLite. */
 export class SqlitePaperStore extends PaperStore {
   readonly db: DatabaseSync;
+  onBlocksSaved?: (paperKey: string) => void;
   constructor(root: string, legacyRoot?: string) {
     super(root);
     mkdirSync(root, { recursive: true });
@@ -51,6 +52,26 @@ export class SqlitePaperStore extends PaperStore {
 
     const citationMigration = this.db.prepare('SELECT 1 FROM migrations WHERE version = 3').get();
     if (!citationMigration) this.backfillCitations();
+    if (!this.db.prepare('SELECT 1 FROM migrations WHERE version = 5').get()) this.migrateStructure();
+  }
+
+  /** Paper structure tables (figures, equations, references, citation markers). */
+  private migrateStructure(): void {
+    this.db.exec('SAVEPOINT structure_migration');
+    try {
+      this.db.exec(`CREATE TABLE IF NOT EXISTS structure_state(paper_key TEXT PRIMARY KEY, version TEXT NOT NULL, status TEXT NOT NULL);
+        CREATE TABLE IF NOT EXISTS structure_items(paper_key TEXT NOT NULL, id TEXT NOT NULL, data TEXT NOT NULL, PRIMARY KEY(paper_key,id));
+        CREATE TABLE IF NOT EXISTS structure_references(paper_key TEXT NOT NULL, n TEXT NOT NULL, data TEXT NOT NULL, PRIMARY KEY(paper_key,n));
+        CREATE TABLE IF NOT EXISTS structure_markers(paper_key TEXT NOT NULL, id TEXT NOT NULL, data TEXT NOT NULL, PRIMARY KEY(paper_key,id));
+        CREATE TABLE IF NOT EXISTS reference_enrichment(cache_key TEXT PRIMARY KEY, data TEXT NOT NULL, fetched_at TEXT NOT NULL);
+        CREATE TABLE IF NOT EXISTS arxiv_source_cache(source_key TEXT PRIMARY KEY, data TEXT NOT NULL, fetched_at TEXT NOT NULL);`);
+      this.db.prepare("INSERT INTO migrations VALUES(5, datetime('now'))").run();
+      this.db.exec('RELEASE structure_migration');
+    } catch (error) {
+      this.db.exec('ROLLBACK TO structure_migration');
+      this.db.exec('RELEASE structure_migration');
+      throw error;
+    }
   }
 
   /** Repair old keys based on the date added before enforcing uniqueness. */
@@ -155,6 +176,7 @@ export class SqlitePaperStore extends PaperStore {
       const insert=this.db.prepare('INSERT INTO blocks VALUES(?,?,?)'); for (const b of checked) insert.run(key,b.blockId,JSON.stringify(b));
       this.reindex(key); this.db.exec('RELEASE blocks');
     } catch(e) { this.db.exec('ROLLBACK TO blocks'); this.db.exec('RELEASE blocks'); throw e; }
+    this.onBlocksSaved?.(key);
     return checked;
   }
   override listBlocks(key: string): Block[] { assertSafeKey(key); return (this.db.prepare('SELECT data FROM blocks WHERE paper_key=?').all(key) as Row[]).map(r=>JSON.parse(String(r.data)) as Block).sort((a,b)=>a.order-b.order); }
@@ -211,7 +233,7 @@ export class SqlitePaperStore extends PaperStore {
   override deletePaper(key:string):DeleteReport {
     const pdfHash=this.getPaper(key)?.pdfSha256??null;
     const report:DeleteReport={paperKey:key,scope:'local',remoteDeleted:false,removedPaper:!!this.getPaper(key),removedPdf:!!this.getPdf(key),removedBlocks:this.listBlocks(key).length,removedTranslations:this.listTranslations(key).length,removedJob:!!this.getJobForPaper(key),removedHighlights:this.listHighlights(key).length,removedChatMessages:this.getConversation(key)?.messages.length??0};
-    this.db.exec('BEGIN');try { for(const table of ['papers','blocks','translations','jobs','highlights','conversations','bibliography','annotations','restart_receipts']) this.db.prepare(`DELETE FROM ${table} WHERE paper_key=?`).run(key);this.db.prepare('DELETE FROM paper_fts WHERE paper_key=?').run(key);this.change('paper',key);this.db.exec('COMMIT'); }catch(e){this.db.exec('ROLLBACK');throw e;}
+    this.db.exec('BEGIN');try { for(const table of ['papers','blocks','translations','jobs','highlights','conversations','bibliography','annotations','restart_receipts','structure_state','structure_items','structure_references','structure_markers']) this.db.prepare(`DELETE FROM ${table} WHERE paper_key=?`).run(key);this.db.prepare('DELETE FROM paper_fts WHERE paper_key=?').run(key);this.change('paper',key);this.db.exec('COMMIT'); }catch(e){this.db.exec('ROLLBACK');throw e;}
     if(pdfHash){const remaining=this.db.prepare('SELECT count(*) n FROM papers WHERE pdf_hash=?').get(pdfHash) as Row;if(Number(remaining.n)===0)rmSync(join(this.root,'pdfs',`${pdfHash}.pdf`),{force:true});}
     return report;
   }

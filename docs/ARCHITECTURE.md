@@ -29,16 +29,22 @@ Android v1 uses HTTP with a bearer token. Tailscale provides WireGuard encryptio
 
 ## Planned connections
 
-A native Android client will use pairing to receive connection details and a bearer credential, then sync library data and annotations over LAN or Tailscale. The `sync`, `ink`, `feed`, and `structure` contracts remain typed placeholders for their future owners.
+A native Android client will use pairing to receive connection details and a bearer credential, then sync library data and annotations over LAN or Tailscale. The `ink` and `feed` contracts remain typed placeholders for their future owners.
 
 The original PaperRead file storage path and HTTP credential names remain in use so existing local data and browser behavior remain compatible.
 
 ## AI provider routing
 
 The hub's `ai/` layer wraps the isolated Codex app-server question path and a headless Claude CLI process behind one streaming provider interface. `ProviderRegistry` resolves saved defaults and per-feature overrides, records UTC daily usage in `ai-usage.json`, and exposes best-effort provider limits. `settings.json` holds the small provider settings record. Both files live in the hub data directory, separate from paper records. `RegistryLegacyAdapter` keeps existing chat and translation endpoints on the same selection path: Codex calls delegate directly to their original methods, while Claude uses the same Korean translation prompts and validators from `translation/prompt.ts`. The AI route module performs input validation and streams SSE frames; a `LibrarySearch` interface currently has an in-memory implementation over extracted blocks, ready to be replaced by the storage team's FTS search.
-The desktop shell will host this personal hub. A native Android client will later use pairing to receive connection details and a bearer credential, then use the live sync API over LAN or Tailscale. The `pairing`, `feed`, and `structure` contracts are reserved for their owners.
+The desktop shell will host this personal hub. A native Android client will later use pairing to receive connection details and a bearer credential, then use the live sync API over LAN or Tailscale. The `feed` contract is reserved for its future owner.
 
 The HTTP credential name remains compatible with the browser. PaperRead data is imported once into the new Fractal directory without altering its source files.
+
+## Paper structure
+
+`structure/` turns PDF.js extraction blocks into caption-paired figure and table boxes, display-equation boxes, bibliography entries, and in-text numeric citation markers. `StructureDetector` is the implementation boundary; `PdfJsStructureDetector` currently supplies it. A later Docling adapter can implement the same `detect(bytes, paperKey, blocks?)` method, invoke the configured Python environment from a bounded child process, and convert Docling coordinates into top-left normalized boxes. The Node hub has no Python dependency today.
+
+The SQLite migration adds versioned structure state, items, references, markers, and two enrichment caches. Saving extracted blocks schedules detection without holding up ingest. Reads can also schedule it, and refresh forces a new pass. arXiv source enrichment downloads at most 20 MB, reads only `.tex` members from a tar/gzip archive in memory, and caches fragments per revision. Reference details are fetched only when requested, first from Semantic Scholar and then OpenAlex, with a shared request interval and cached results. No archive member is written or executed.
 
 ## Library storage and sync
 

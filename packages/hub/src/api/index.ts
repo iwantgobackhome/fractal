@@ -27,6 +27,8 @@ import { handleAnnotations } from './routes/annotations';
 import { handleSync } from './routes/sync';
 import { handleFeed } from './routes/feed';
 import type { FeedService } from '../feed/index';
+import { handleStructure } from './routes/structure';
+import { StructureService } from '../structure/service';
 
 export { TOKEN_HEADER, assertLocalRequest, isLoopbackHost, isLoopbackOrigin } from './guard';
 export { HttpError, statusFor, toHttp } from './errors';
@@ -317,6 +319,7 @@ export function injectToken(html: string, token: string): string {
  */
 export function createApiServer(options: ApiServerOptions): ApiServer {
   const { store, jobs, translator, session, pipeline, acquirer } = options;
+  const structure = store instanceof SqlitePaperStore ? new StructureService(store) : undefined;
   const log = options.log ?? (() => {});
   const token = options.token ?? randomBytes(32).toString('hex');
   const recovered: string[] = [];
@@ -418,6 +421,8 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
     }
     if (store instanceof SqlitePaperStore) {
       const libraryCtx = { store, acquirer };
+      const structureResult = structure ? await handleStructure(method, segments, request, { ...libraryCtx, structure }) : undefined;
+      if (structureResult !== undefined) return structureResult;
       const domain = (await handleLibrary(method, segments, request, libraryCtx)) ?? (await handleAnnotations(method, segments, request, libraryCtx)) ?? (await handleSync(method, segments, request, libraryCtx));
       if (domain !== undefined) return domain;
     }

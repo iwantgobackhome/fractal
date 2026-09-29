@@ -135,3 +135,15 @@ The discovery feed uses the same `{data}` envelope and local mutation guard. `we
 | `POST /api/feed/items/:id/save` | `{}` | `{paperKey}` (201), after the existing URL/DOI/arXiv ingest succeeds |
 
 `sections` contains `top: Item[]`, `byField: {field, items}[]`, `rankings: Item[]`, `news: Item[]`, and `recommended: Item[]`. Each item has `id`, `kind`, `title`, `authors`, trimmed `abstract`, `source`, `url`, nullable `arxivId` and `doi`, `categories`, `publishedAt`, numeric `score`, Korean `reason`, `inLibrary`, and numeric `popularity`. `rankings` lists Hugging Face daily papers by upvotes; `recommended` omits items already saved in the library. Digest generation is off by default and uses the AI provider registry's `digest` selection only when enabled. Schemas are in `packages/shared/src/contracts/feed.ts`.
+## Paper structure and references
+
+The hub extracts page-relative figure, table, and display-equation boxes after PDF text extraction. A structure read starts extraction if the saved version is missing or stale. While it runs, the response is HTTP 202 with `status: "running"`; completed and failed reads are HTTP 200. Refresh returns HTTP 202. IDs are stable for one extraction version. Boxes use top-left coordinates in `[0,1]`.
+
+| Method and path | Response `data` |
+| --- | --- |
+| `GET /api/papers/:key/structure` | `{version,status,items,references,markers}` |
+| `POST /api/papers/:key/structure/refresh` | Same shape; starts background re-extraction |
+| `GET /api/papers/:key/references/:n` | `{entry,enrichment}`; enrichment is fetched lazily and may be `null` |
+| `POST /api/papers/:key/references/:n/add` | `{paper}` (201) via existing DOI, arXiv, or public PDF ingestion |
+
+An item is `{id,kind,page,bbox,label,caption,confidence,latex?,sourceLabel?}`. `kind` is `figure`, `table`, or `equation`; `bbox` has `{x,y,width,height}`. `latex` and `sourceLabel` appear when arXiv source matching succeeds. A reference is `{n,raw,title?,authors?,year?,doi?,arxivId?}`. A marker is `{id,page,bbox,text,references}` where `references` lists linked reference numbers, including expanded numeric ranges. Enrichment has `{title,abstract,year,venue,externalIds,citationCount,openAccessPdf,provider}`. The provider is `semantic-scholar` or `openalex`; nullable fields represent unavailable metadata. Unknown paper keys and reference numbers return 404. Invalid reference numbers and references without an ingestible identifier return Korean `INVALID_INPUT` errors.
