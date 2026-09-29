@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
@@ -44,9 +45,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import app.fractal.design.LocalFractalColors
 
 private val palette = listOf("#1C1B19", "#233F65", "#A2362A", "#2F6B45", "#75519C", "#966A37", "#F5DC6B", "#A8CBEF")
@@ -71,6 +74,7 @@ fun InkToolbar(state: InkPageState, tool: InkToolState, modifier: Modifier = Mod
     val colors = LocalFractalColors.current
     var popover by remember { mutableStateOf<InkTool?>(null) }
     var colorDialog by remember { mutableStateOf(false) }
+    var collapsed by remember { mutableStateOf(false) }
     val body: @Composable (Boolean) -> Unit = { vertical ->
         @Composable fun ToolButton(item: InkTool) {
             Box {
@@ -113,36 +117,51 @@ fun InkToolbar(state: InkPageState, tool: InkToolState, modifier: Modifier = Mod
         }
         if (vertical) {
             Column(Modifier.fillMaxSize().background(colors.paper).border(0.5.dp,colors.rule).verticalScroll(rememberScrollState()).padding(vertical = 8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                if (collapsed) {
+                    ToolButton(tool.active)
+                } else {
                 InkTool.entries.forEach { ToolButton(it) }
                 Spacer(Modifier.height(8.dp))
-                palette.forEach { Swatch(it) }
-                tool.recentColors.filterNot { it in palette }.forEach { Swatch(it) }
-                TextButton(onClick = { colorDialog = true }, modifier = Modifier.size(48.dp)) { Text("+", color = colors.ink) }
-                TextButton(onClick = { state.undo() }, modifier = Modifier.size(48.dp)) { Text("↶", color = colors.ink) }
-                TextButton(onClick = { state.redo() }, modifier = Modifier.size(48.dp)) { Text("↷", color = colors.ink) }
+                (listOf(tool.color) + tool.recentColors.filterNot { it == tool.color }.take(4)).forEach { Swatch(it) }
+                TextButton(onClick = { colorDialog = true }, modifier = Modifier.size(48.dp)) { Text("+", color = colors.ink, fontSize = 24.sp) }
+                TextButton(onClick = { state.undo() }, modifier = Modifier.size(48.dp)) { Text("↶", color = colors.ink, fontSize = 24.sp) }
+                TextButton(onClick = { state.redo() }, modifier = Modifier.size(48.dp)) { Text("↷", color = colors.ink, fontSize = 24.sp) }
                 if (state.selectedIds.isNotEmpty()) {
                     TextButton(onClick = { state.duplicateSelection() }) { Text("Copy", color=colors.ink) }
                     TextButton(onClick = { state.deleteSelection() }) { Text("Delete", color=colors.ink) }
                     TextButton(onClick = { state.selection().bounds()?.let { onAsk(state.selection(),it) } }) { Text("Ask", color=colors.accent) }
                 }
+                }
             }
         } else {
             Row(Modifier.fillMaxWidth().background(colors.paper).border(.5.dp,colors.rule).horizontalScroll(rememberScrollState()), verticalAlignment = Alignment.CenterVertically) {
                 InkTool.entries.forEach { ToolButton(it) }
-                palette.forEach { Swatch(it) }
-                TextButton(onClick = { colorDialog = true }, modifier = Modifier.size(48.dp)) { Text("+", color=colors.ink) }
-                TextButton(onClick = { state.undo() }, modifier = Modifier.size(48.dp)) { Text("↶", color=colors.ink) }
-                TextButton(onClick = { state.redo() }, modifier = Modifier.size(48.dp)) { Text("↷", color=colors.ink) }
+                (listOf(tool.color) + tool.recentColors.filterNot { it == tool.color }.take(4)).forEach { Swatch(it) }
+                TextButton(onClick = { colorDialog = true }, modifier = Modifier.size(48.dp)) { Text("+", color=colors.ink, fontSize = 24.sp) }
+                TextButton(onClick = { state.undo() }, modifier = Modifier.size(48.dp)) { Text("↶", color=colors.ink, fontSize = 24.sp) }
+                TextButton(onClick = { state.redo() }, modifier = Modifier.size(48.dp)) { Text("↷", color=colors.ink, fontSize = 24.sp) }
             }
         }
     }
     val vertical = LocalConfiguration.current.screenWidthDp >= 600
-    Box(modifier) { body(vertical) }
+    val dragModifier = if (vertical) Modifier.pointerInput(Unit) {
+        detectDragGestures { change, dragAmount ->
+            if (dragAmount.x < -12f) collapsed = true
+            if (dragAmount.x > 12f) collapsed = false
+            change.consume()
+        }
+    } else Modifier
+    Box(modifier.then(dragModifier)) { body(vertical) }
     if (colorDialog) {
         var value by remember { mutableStateOf(tool.color) }
         fun channel(shift: Int): Float = runCatching { ((AndroidColor.parseColor(value) shr shift) and 255) / 255f }.getOrDefault(0f)
         AlertDialog(onDismissRequest = { colorDialog = false }, title = { Text("Custom colour") },
             text = { Column {
+                Row(Modifier.horizontalScroll(rememberScrollState())) {
+                    palette.forEach { preset ->
+                        Box(Modifier.size(40.dp).clickable { value = preset }.padding(4.dp).background(colorOf(preset), CircleShape))
+                    }
+                }
                 Box(Modifier.fillMaxWidth().height(28.dp).background(colorOf(value)))
                 OutlinedTextField(value, { value = it }, label = { Text("Hex colour") }, singleLine = true)
                 listOf("Red" to 16,"Green" to 8,"Blue" to 0).forEach { (name,shift) ->

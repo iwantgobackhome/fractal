@@ -4,6 +4,9 @@ dist/
 .codex-home/
 data/
 **/data/
+!apps/android/data/
+!apps/android/data/src/main/java/app/fractal/data/
+!apps/android/data/src/test/java/app/fractal/data/
 .pdf-cache/
 apps/android/.gradle/
 apps/android/**/build/
