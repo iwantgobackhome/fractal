@@ -8,3 +8,4 @@ data/
 apps/android/.gradle/
 apps/android/**/build/
 *.apk
+apps/android/local.properties

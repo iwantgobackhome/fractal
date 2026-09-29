@@ -1,0 +1,31 @@
+[versions]
+agp = "8.9.1"
+kotlin = "2.1.0"
+composeBom = "2025.04.01"
+ink = "1.0.0"
+serialization = "1.8.0"
+datastore = "1.1.7"
+
+[libraries]
+compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
+compose-ui = { module = "androidx.compose.ui:ui" }
+compose-foundation = { module = "androidx.compose.foundation:foundation" }
+compose-material3 = { module = "androidx.compose.material3:material3" }
+compose-activity = { module = "androidx.activity:activity-compose", version = "1.10.1" }
+ink-authoring = { module = "androidx.ink:ink-authoring", version.ref = "ink" }
+ink-rendering = { module = "androidx.ink:ink-rendering", version.ref = "ink" }
+ink-strokes = { module = "androidx.ink:ink-strokes", version.ref = "ink" }
+ink-geometry = { module = "androidx.ink:ink-geometry", version.ref = "ink" }
+ink-brush = { module = "androidx.ink:ink-brush", version.ref = "ink" }
+ink-storage = { module = "androidx.ink:ink-storage", version.ref = "ink" }
+motionprediction = { module = "androidx.input:input-motionprediction", version = "1.0.0" }
+serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
+datastore = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+testng = { module = "org.testng:testng", version = "7.10.2" }
+
+[plugins]
+android-library = { id = "com.android.library", version.ref = "agp" }
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
