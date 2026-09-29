@@ -9,6 +9,16 @@ import { HighlightLayer } from './HighlightLayer';
 import type { PendingSelection } from '../reader/SelectionMenu';
 import type { InkStroke } from '@fractal/shared';
 import { InkLayer } from '../reader/InkLayer';
+import type { CitationMarker, StructureItem } from '@fractal/shared';
+import { StructureLayer } from '../reader/StructureLayer';
+
+/** Recognised figures, tables, equations and citation numbers, with what choosing them does. */
+export interface StructureProps {
+  items: StructureItem[];
+  markers: CitationMarker[];
+  onExplain(item: StructureItem, anchor: DOMRect): void;
+  onCitation(marker: CitationMarker, anchor: DOMRect): void;
+}
 import type { InkPoint } from '../reader/ink';
 
 /** Handwriting shown over the pages, and what a desktop pen does. */
@@ -179,6 +189,7 @@ interface PageViewProps {
   pending: PendingSelection | null;
   pageColors?: PageColors;
   ink?: InkProps;
+  structure?: StructureProps;
 }
 
 /**
@@ -190,7 +201,7 @@ interface PageViewProps {
  * click — one that did not drag — is hit-tested against the page's readable
  * blocks directly, and a drag becomes a highlight of the lines it swept.
  */
-function PageView({ doc, page, zoom, dpr, size, blocks, highlights, onSize, registerPage, onSelectBlock, onSelectText, onOpenHighlight, pending, pageColors, ink }: PageViewProps): JSX.Element {
+function PageView({ doc, page, zoom, dpr, size, blocks, highlights, onSize, registerPage, onSelectBlock, onSelectText, onOpenHighlight, pending, pageColors, ink, structure }: PageViewProps): JSX.Element {
   const pageHighlights = useMemo(() => highlights.filter((h) => h.page === page), [highlights, page]);
   // Where the drag began, in viewport pixels; null while no button is down on this page.
   const dragStart = useRef<Point | null>(null);
@@ -259,6 +270,14 @@ function PageView({ doc, page, zoom, dpr, size, blocks, highlights, onSize, regi
   return (
     <PageCanvas doc={doc} page={page} zoom={zoom} dpr={dpr} size={size} onSize={onSize} registerPage={registerPage} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} pageColors={pageColors}>
       <TextLayerOverlay doc={doc} page={page} zoom={zoom} />
+      {structure !== undefined ? (
+        <StructureLayer
+          items={structure.items.filter((i) => i.page === page)}
+          markers={structure.markers.filter((m) => m.page === page)}
+          onExplain={structure.onExplain}
+          onCitation={structure.onCitation}
+        />
+      ) : null}
       <HighlightLayer highlights={pageHighlights} onOpen={onOpenHighlight} />
       {ink !== undefined ? (
         <InkLayer page={page} strokes={ink.strokes.filter((s) => s.page === page && !s.deleted)} color={ink.color} onCreate={ink.onCreate} onErase={ink.onErase} />
@@ -292,6 +311,7 @@ export interface PdfPaneProps {
   pending: PendingSelection | null;
   pageColors?: PageColors;
   ink?: InkProps;
+  structure?: StructureProps;
 }
 
 /**
@@ -301,7 +321,7 @@ export interface PdfPaneProps {
  * every page offset stay correct without rendering the whole document.
  */
 export function PdfPages(props: PdfPaneProps): JSX.Element {
-  const { doc, pageCount, currentPage, zoom, blocks, highlights, pageIntrinsicSize, onSize, registerPage, bodyRef, onScroll, onSelectBlock, onSelectText, onOpenHighlight, pending, pageColors, ink } = props;
+  const { doc, pageCount, currentPage, zoom, blocks, highlights, pageIntrinsicSize, onSize, registerPage, bodyRef, onScroll, onSelectBlock, onSelectText, onOpenHighlight, pending, pageColors, ink, structure } = props;
   const dpr = useMemo(() => Math.min(2, typeof window === 'undefined' ? 1 : window.devicePixelRatio || 1), []);
   const live = useMemo(() => new Set(visiblePageWindow(currentPage, pageCount, 1)), [currentPage, pageCount]);
 
@@ -334,6 +354,7 @@ export function PdfPages(props: PdfPaneProps): JSX.Element {
             pending={pending}
             pageColors={pageColors}
             ink={ink}
+            structure={structure}
           />
         ) : (
           <div

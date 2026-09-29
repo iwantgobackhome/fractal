@@ -1,5 +1,5 @@
 import { Suspense, lazy, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type JSX, type RefObject } from 'react';
-import type { AppError, Block, Connection, InkStroke, Highlight, LoginAttempt, Paper, Region, RestartTranslationRequest, Snapshot } from '@fractal/shared';
+import type { AppError, Block, Connection, InkStroke, PaperStructure, Highlight, LoginAttempt, Paper, Region, RestartTranslationRequest, Snapshot } from '@fractal/shared';
 import { AccountPanel } from './components/AccountPanel';
 import { ChatBoundary } from './components/ChatBoundary';
 import type { ChatQuote } from './components/ChatPanel';
@@ -8,7 +8,8 @@ import { KoreanPages, type SelectVia } from './components/KoreanPane';
 import { DeleteDialog } from './components/LibraryPanel';
 import { PdfPages } from './components/PdfPane';
 import { ReplacementDialog, type ReplacementRequest } from './components/ReaderToolbar';
-import type { InkProps, PageColors } from './components/PdfPane';
+import type { InkProps, PageColors, StructureProps } from './components/PdfPane';
+import { CitationCard, ExplainCard, type CitationState, type ExplainState } from './reader/Cards';
 import { DESKTOP_PEN_WIDTH } from './reader/InkLayer';
 import { NotesPanel } from './reader/NotesPanel';
 import { ReaderBar, type ViewMode } from './reader/ReaderBar';
@@ -240,6 +241,11 @@ export function App(): JSX.Element {
   const [viewMode, setViewMode] = useState<ViewMode>('source');
   const viewChosen = useRef(false);
   const [pendingSelection, setPendingSelection] = useState<PendingSelection | null>(null);
+  // What the hub recognised on this paper, and the card open over it.
+  const [structure, setStructure] = useState<PaperStructure | null>(null);
+  const [explain, setExplain] = useState<ExplainState | null>(null);
+  const [citation, setCitation] = useState<CitationState | null>(null);
+  const explainAbort = useRef<AbortController | null>(null);
   // Handwriting on this paper (from the tablet, or a desktop pen).
   const [inkStrokes, setInkStrokes] = useState<InkStroke[]>([]);
   // The side panel holds the reader's notes and the questions; one of them is in front.
@@ -1089,6 +1095,71 @@ export function App(): JSX.Element {
     };
   }, [paperKey]);
 
+  // Recognition runs in the background after a paper is extracted; poll until it settles.
+  useEffect(() => {
+    setStructure(null);
+    setExplain(null);
+    setCitation(null);
+    if (paperKey === null) return;
+    let cancelled = false;
+    let timer: number | undefined;
+    const load = () => {
+      hub
+        .structure(paperKey)
+        .then((result) => {
+          if (cancelled || result === null) return;
+          setStructure(result);
+          if (result.status === 'running' || result.status === 'pending') timer = window.setTimeout(load, 3_000);
+        })
+        .catch(() => undefined);
+    };
+    load();
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [paperKey]);
+
+  const structureProps = useMemo<StructureProps | undefined>(() => {
+    if (paperKey === null || structure === null) return undefined;
+    return {
+      items: structure.items,
+      markers: structure.markers,
+      onExplain: (item, anchor) => {
+        explainAbort.current?.abort();
+        const controller = new AbortController();
+        explainAbort.current = controller;
+        setCitation(null);
+        setExplain({ item, anchor, text: '', latex: null, done: false, error: null });
+        void (async () => {
+          try {
+            const surrounding = (snapshotRef.current?.blocks ?? [])
+              .filter((b) => b.regions.some((r) => r.page === item.page))
+              .map((b) => b.sourceText)
+              .join('\n')
+              .slice(0, 6000);
+            for await (const event of hub.explain(paperKey, { kind: item.kind, page: item.page, bbox: item.bbox, surroundingText: [item.caption, surrounding].filter(Boolean).join('\n\n') }, controller.signal)) {
+              if (event.type === 'delta') setExplain((s) => (s === null || s.item.id !== item.id ? s : { ...s, text: s.text + event.text }));
+              else if (event.type === 'done') setExplain((s) => (s === null || s.item.id !== item.id ? s : { ...s, done: true, latex: event.latex ?? s.latex }));
+              else setExplain((s) => (s === null || s.item.id !== item.id ? s : { ...s, done: true, error: event.error.message }));
+            }
+            setExplain((s) => (s === null || s.item.id !== item.id ? s : { ...s, done: true }));
+          } catch (cause) {
+            if (controller.signal.aborted) return;
+            setExplain((s) => (s === null ? s : { ...s, done: true, error: cause instanceof Error ? cause.message : '설명을 받지 못했습니다.' }));
+          }
+        })();
+      },
+      onCitation: (marker, anchor) => {
+        setExplain(null);
+        setCitation({ anchor, entries: null, error: null, added: new Set() });
+        Promise.all(marker.references.slice(0, 4).map((n) => hub.reference(paperKey, n)))
+          .then((results) => setCitation((s) => (s === null ? s : { ...s, entries: results.filter((r) => r !== null) })))
+          .catch((cause: unknown) => setCitation((s) => (s === null ? s : { ...s, error: cause instanceof Error ? cause.message : '참고문헌을 찾지 못했습니다.' })));
+      },
+    };
+  }, [paperKey, structure]);
+
   const ink = useMemo<InkProps | undefined>(() => {
     if (paperKey === null) return undefined;
     return {
@@ -1585,6 +1656,7 @@ export function App(): JSX.Element {
                   pending={pendingSelection}
                   pageColors={pageColors}
                   ink={ink}
+                  structure={structureProps}
                   onOpenHighlight={openHighlight}
                 />
                 {openHighlightRecord !== null ? (
@@ -1721,6 +1793,32 @@ export function App(): JSX.Element {
             const { text } = pendingSelection;
             setPendingSelection(null);
             askAboutSource(text);
+          }}
+        />
+      ) : null}
+
+      {explain !== null ? (
+        <ExplainCard
+          state={explain}
+          onClose={() => {
+            explainAbort.current?.abort();
+            setExplain(null);
+          }}
+        />
+      ) : null}
+      {citation !== null && paperKey !== null ? (
+        <CitationCard
+          state={citation}
+          onClose={() => setCitation(null)}
+          onOpenUrl={(url) => window.open(url, '_blank', 'noopener')}
+          onAdd={(n) => {
+            hub
+              .addReference(paperKey, n)
+              .then(() => {
+                setCitation((s) => (s === null ? s : { ...s, added: new Set(s.added).add(n) }));
+                void loadLibrary();
+              })
+              .catch((cause: unknown) => setNotice(cause instanceof Error ? cause.message : '보관함에 담지 못했습니다.'));
           }}
         />
       ) : null}

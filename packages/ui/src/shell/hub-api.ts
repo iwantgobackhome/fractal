@@ -1,4 +1,4 @@
-import type { AiFeature, AiSettings, Annotation, FeedInterests, FeedResponse, ModelSelection, NetworkStatus, PairedDevice, PairingPayload, ProviderModel, ProviderStatus as HubProviderStatus, UsageRecord } from '@fractal/shared';
+import type { AiFeature, AiSettings, AiSseEvent, Annotation, FeedInterests, FeedResponse, PaperStructure, ReferenceEnrichment, ReferenceEntry, StructureBox, ModelSelection, NetworkStatus, PairedDevice, PairingPayload, ProviderModel, ProviderStatus as HubProviderStatus, UsageRecord } from '@fractal/shared';
 import { TOKEN_HEADER } from '../lib/api';
 
 /*
@@ -82,6 +82,37 @@ export function readUsage(raw: { totals: UsageRecord[]; limits?: Record<string, 
     rows: raw.totals.map((t) => ({ day: t.day, provider: t.provider, model: t.model, requests: t.requests, inputTokens: t.inputTokens ?? 0, outputTokens: t.outputTokens ?? 0 })),
     limits: readLimits(raw.limits),
   };
+}
+
+/** Parse a text/event-stream body into events; `data:` lines hold one JSON event each. */
+export async function* readSse(body: ReadableStream<Uint8Array>): AsyncGenerator<AiSseEvent> {
+  const reader = body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  for (;;) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    let split = buffer.indexOf('\n\n');
+    while (split >= 0) {
+      const frame = buffer.slice(0, split);
+      buffer = buffer.slice(split + 2);
+      const data = frame
+        .split('\n')
+        .filter((line) => line.startsWith('data:'))
+        .map((line) => line.slice(5).trimStart())
+        .join('\n');
+      if (data !== '') yield JSON.parse(data) as AiSseEvent;
+      split = buffer.indexOf('\n\n');
+    }
+  }
+}
+
+export interface ExplainRequest {
+  kind: 'equation' | 'figure' | 'table' | 'text';
+  page: number;
+  bbox: StructureBox;
+  surroundingText?: string;
 }
 
 export class HubApi {
@@ -184,6 +215,31 @@ export class HubApi {
 
   saveFeedItem(id: string): Promise<{ paperKey: string } | null> {
     return this.call(`/api/feed/items/${encodeURIComponent(id)}/save`, { method: 'POST', body: {} });
+  }
+
+  structure(paperKey: string): Promise<PaperStructure | null> {
+    return this.call(`/api/papers/${encodeURIComponent(paperKey)}/structure`);
+  }
+
+  reference(paperKey: string, n: string): Promise<{ entry: ReferenceEntry; enrichment: ReferenceEnrichment | null } | null> {
+    return this.call(`/api/papers/${encodeURIComponent(paperKey)}/references/${encodeURIComponent(n)}`);
+  }
+
+  addReference(paperKey: string, n: string): Promise<{ paper: { paperKey: string } } | null> {
+    return this.call(`/api/papers/${encodeURIComponent(paperKey)}/references/${encodeURIComponent(n)}/add`, { method: 'POST', body: {} });
+  }
+
+  /** Stream an explanation of a figure, table, equation or passage. */
+  async *explain(paperKey: string, request: ExplainRequest, signal?: AbortSignal): AsyncGenerator<AiSseEvent> {
+    const headers: Record<string, string> = { accept: 'text/event-stream', 'content-type': 'application/json' };
+    if (this.token !== null) headers[TOKEN_HEADER] = this.token;
+    const response = await this.fetchImpl(`/api/papers/${encodeURIComponent(paperKey)}/explain`, { method: 'POST', headers, body: JSON.stringify(request), credentials: 'same-origin', signal });
+    if (!response.ok || response.body === null) {
+      const payload: unknown = await response.json().catch(() => null);
+      const message = payload !== null && typeof payload === 'object' && 'error' in payload ? (payload as { error: { message?: string } }).error.message : undefined;
+      throw new Error(message ?? '설명을 요청하지 못했습니다.');
+    }
+    yield* readSse(response.body);
   }
 
   /** Upload a local PDF; the hub extracts metadata and merges duplicates. */
