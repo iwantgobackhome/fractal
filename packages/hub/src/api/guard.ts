@@ -1,9 +1,38 @@
 import type { IncomingMessage } from 'node:http';
 import { timingSafeEqual } from 'node:crypto';
 import { forbidden, unsupportedMedia } from './errors';
+import { HttpError } from './errors';
+import type { DeviceStore } from '../pairing/store';
 
 /** Header carrying the credential minted when the service started. */
 export const TOKEN_HEADER = 'x-paperread-token';
+
+export function isLoopbackPeer(value: string | undefined): boolean {
+  return value === '127.0.0.1' || value === '::1' || value === '::ffff:127.0.0.1';
+}
+
+const failures = new Map<string, { count: number; until: number }>();
+export function recordRemoteFailure(request: IncomingMessage, now = Date.now()): void {
+  const ip = request.socket.remoteAddress ?? 'unknown';
+  const previous = failures.get(ip);
+  failures.set(ip, { count: (previous?.until ?? 0) > now ? previous!.count + 1 : 1, until: now + 60_000 });
+}
+export function clearRemoteFailures(request: IncomingMessage): void { failures.delete(request.socket.remoteAddress ?? 'unknown'); }
+export function assertRemoteRequest(request: IncomingMessage, devices: DeviceStore, allowClaim = false, now = Date.now()): void {
+  const ip = request.socket.remoteAddress ?? 'unknown';
+  const previous = failures.get(ip);
+  if (previous !== undefined && previous.until > now && previous.count >= 10)
+    throw new HttpError(429, { code: 'QUOTA', message: 'Too many failed authentication attempts', retryable: true });
+  if (allowClaim) return;
+  const header = request.headers.authorization;
+  const match = typeof header === 'string' ? /^Bearer ([0-9a-f]{64})$/i.exec(header) : null;
+  if (match !== null && devices.authenticate(match[1]!) !== null) {
+    clearRemoteFailures(request);
+    return;
+  }
+  recordRemoteFailure(request, now);
+  throw new HttpError(401, { code: 'AUTH_REQUIRED', message: 'A paired device token is required', retryable: false });
+}
 
 /** Only the loopback host is a legitimate origin for this personal, local app. */
 const LOOPBACK_HOSTS = new Set(['127.0.0.1', 'localhost', '[::1]', '::1']);
@@ -69,6 +98,7 @@ const STALE_CREDENTIAL = '요청 자격이 맞지 않아 거절했습니다. 이
  * rejected before the body is ever read.
  */
 export function assertLocalRequest(request: IncomingMessage, token: string, mutating: boolean): void {
+  if (!isLoopbackPeer(request.socket.remoteAddress)) throw forbidden('Local requests must originate on loopback.');
   if (!isLoopbackHost(request.headers.host)) {
     throw forbidden('로컬 요청이 아닙니다. 이 서비스는 이 PC에서만 사용할 수 있습니다.');
   }

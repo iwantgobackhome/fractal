@@ -4,18 +4,36 @@
   "private": true,
   "type": "module",
   "workspaces": ["packages/*"],
+  "main": "apps/desktop/main.cjs",
   "engines": { "node": ">=22.12" },
   "scripts": {
-    "build": "npm run build -w @fractal/shared && npm run build -w @fractal/ui && npm run typecheck -w @fractal/hub",
+    "build": "npm run build -w @fractal/shared && npm run build -w @fractal/ui && npm run build -w @fractal/hub",
     "test": "npm run test -w @fractal/shared && npm run test -w @fractal/hub && npm run test -w @fractal/ui",
     "typecheck": "npm run typecheck -w @fractal/shared && npm run typecheck -w @fractal/hub && npm run typecheck -w @fractal/ui",
     "hub": "tsx packages/hub/src/main.ts",
-    "dev": "node scripts/dev.mjs"
+    "dev": "node scripts/dev.mjs",
+    "desktop:build": "npm run build && node scripts/build-desktop.mjs",
+    "desktop": "npm run desktop:build && electron .",
+    "desktop:dist": "npm run desktop:build && electron-builder --win nsis"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "tsx": "^4.20.0",
     "typescript": "^5.9.0",
-    "vitest": "^3.2.0"
+    "vitest": "^3.2.0",
+    "esbuild": "^0.25.0",
+    "electron": "44.4.5",
+    "electron-builder": "26.15.3",
+    "@types/qrcode": "^1.5.5"
+  }
+  ,"build": {
+    "appId": "app.fractal.desktop",
+    "productName": "Fractal",
+    "directories": { "output": "dist/installer" },
+    "files": ["apps/desktop/main.cjs", "apps/desktop/dist/**", "packages/ui/dist/**", "package.json"],
+    "asar": true,
+    "win": { "target": "nsis" },
+    "nsis": { "oneClick": false, "perMachine": false },
+    "mac": { "target": "dmg", "category": "public.app-category.productivity" }
   }
 }

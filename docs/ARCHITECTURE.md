@@ -1,13 +1,13 @@
 # Architecture
 
-Fractal is an npm workspaces monorepo. The current app is a loopback-only Node hub and a React browser UI. The desktop and Android app directories are reserved for later tasks.
+Fractal is an npm workspaces monorepo. The Node hub and React browser UI run inside the Electron desktop shell or as a headless service. Android is reserved for a later task.
 
 | Path | Responsibility |
 | --- | --- |
 | `packages/shared` | TypeScript contracts and Zod schema entry point; domain files under `src/contracts` and future design tokens under `tokens` |
 | `packages/hub` | Node HTTP service, paper acquisition, PDF extraction, file storage, translation jobs, Codex CLI session, and chat |
 | `packages/ui` | React reader, PDF display, annotations, translation and chat UI; Vite builds `dist` |
-| `apps/desktop` | Future personal desktop shell for the hub and UI |
+| `apps/desktop` | Electron window and tray, embedding the hub in-process |
 | `apps/android` | Future Kotlin client |
 
 ## Current data flow
@@ -19,8 +19,16 @@ Fractal is an npm workspaces monorepo. The current app is a loopback-only Node h
 
 `npm run dev` starts the hub and Vite together. Vite proxies `/api` to the hub and receives the hub's startup token for its dev page.
 
+## Desktop, pairing, and transport
+
+`startHub()` embeds the hub in Electron and returns its URL and a close method. The desktop process owns the hub lifetime; minimizing or closing the window hides it in the tray. `--headless` starts the same hub without a window. The local UI retains its startup token and loopback origin guard.
+
+The network manager stores interface settings in `network-settings.json`, discovers private LAN and Tailscale IPv4 addresses, and adds or removes HTTP listeners without restarting jobs or storage. Loopback always remains available. The pairing manager mints a one-time five-minute code and QR payload; `JsonDeviceStore` persists device metadata and SHA-256 hashes of 32-byte bearer tokens in `paired-devices.json`. This narrow store interface can be replaced with SQLite during integration. Remote requests are authenticated before routing, including static files, with the ping and claim exceptions described in the API document.
+
+Android v1 uses HTTP with a bearer token. Tailscale provides WireGuard encryption; ordinary LAN HTTP exposes the token and content to observers on that network. `tailscale serve` can provide an optional HTTPS proxy. TLS is not implemented in the hub.
+
 ## Planned connections
 
-The desktop shell will host this personal hub. A native Android client will later use pairing to receive connection details and a bearer credential, then sync library data and annotations over LAN or Tailscale. The `pairing`, `sync`, `ink`, `feed`, and `structure` contracts are typed placeholders for their future owners; they are not live APIs yet.
+A native Android client will use pairing to receive connection details and a bearer credential, then sync library data and annotations over LAN or Tailscale. The `sync`, `ink`, `feed`, and `structure` contracts remain typed placeholders for their future owners.
 
 The original PaperRead file storage path and HTTP credential names remain in use so existing local data and browser behavior remain compatible.

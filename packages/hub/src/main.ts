@@ -15,6 +15,10 @@ import { normalizeArxiv } from './arxiv/index';
 import { extractPublication, identifyPublication, loadPublication } from './publication/index';
 import type { PublicNetworkOptions } from './publication/network';
 import { extractPdf, inferTitle } from './pdf/index';
+import { JsonDeviceStore } from './pairing/store';
+import { PairingSessions } from './pairing/session';
+import { NetworkManager } from './net/manager';
+import { hostname } from 'node:os';
 
 /**
  * App-owned data folder. Deliberately outside the source tree and outside the
@@ -108,6 +112,7 @@ export interface ServiceOptions {
   /** Absolute path to the client entry document, when one should be served. */
   indexHtml?: string;
   log?: (event: ApiLogEvent | PipelineLogEvent) => void;
+  bindAddresses?: string[];
 }
 
 export interface Service {
@@ -117,6 +122,8 @@ export interface Service {
   url: string;
   token: string;
   dataDirectory: string;
+  pairing: PairingSessions;
+  network: NetworkManager;
   stop(): Promise<void>;
 }
 
@@ -181,6 +188,14 @@ export async function startService(options: ServiceOptions = {}): Promise<Servic
   // also recorded, with the path only — never any provider text.
   translator.onLateBreach = (path) => log({ event: 'codex', action: 'late-breach', path, code: 'UNSAFE_RUNTIME' });
   const pipeline = new TranslationPipeline({ store, jobs, translator, log });
+  const devices = new JsonDeviceStore(dataDirectory);
+  let apiServer: ApiServer | undefined;
+  const network = new NetworkManager(dataDirectory, () => apiServer?.address()?.port ?? options.port ?? 0, (addresses) => apiServer!.bind(addresses));
+  const pairing = new PairingSessions(devices, hostname(), () => {
+    const port = apiServer?.address()?.port ?? options.port ?? 0;
+    // The QR advertises only enabled remote listeners.
+    return network.statusSyncUrls(port);
+  });
 
   const server = createApiServer({
     store,
@@ -193,11 +208,17 @@ export async function startService(options: ServiceOptions = {}): Promise<Servic
     paperChat: translator,
     acquirer: realAcquirer(join(dataDirectory, '.pdf-cache')),
     log,
+    devices,
+    pairing,
+    network,
     clientHtml: options.indexHtml === undefined ? undefined : () => readFileSync(options.indexHtml!, 'utf8'),
     clientAssets: options.indexHtml === undefined ? undefined : servedAssets(join(dirname(resolve(options.indexHtml)), 'assets')),
   });
+  apiServer = server;
 
   const address = await server.listen(options.port ?? 0, LOOPBACK);
+  if (options.bindAddresses !== undefined) network.configureExplicit(options.bindAddresses);
+  await network.apply();
   return {
     server,
     store,
@@ -205,6 +226,8 @@ export async function startService(options: ServiceOptions = {}): Promise<Servic
     url: `http://${LOOPBACK}:${address.port}`,
     token: server.token,
     dataDirectory,
+    pairing,
+    network,
     async stop() {
       await server.close();
       // Process shutdown only: the app's stored login is kept for the next start.
@@ -212,6 +235,12 @@ export async function startService(options: ServiceOptions = {}): Promise<Servic
       await translator.disconnect();
     },
   };
+}
+
+/** Stable embedding API used by Electron and other local hosts. */
+export async function startHub(options: ServiceOptions = {}): Promise<{ url: string; close(): Promise<void>; service: Service }> {
+  const service = await startService(options);
+  return { url: service.url, close: () => service.stop(), service };
 }
 
 /** True when this module is the process entry point (not an import from a test). */

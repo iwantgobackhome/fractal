@@ -11,7 +11,13 @@ import { isExcludedModel } from '../codex/index';
 import { EXTRACTION_VERSION } from '../pdf/index';
 import { ChatService, LOGGED_OUT_ERROR, RESTARTED_ERROR, type ChatLogEvent } from '../chat/index';
 import { HttpError, toHttp } from './errors';
-import { TOKEN_HEADER, assertCredentialHeader, assertLocalRequest } from './guard';
+import { TOKEN_HEADER, assertCredentialHeader, assertLocalRequest, assertRemoteRequest, isLoopbackHost, isLoopbackPeer } from './guard';
+import type { DeviceStore } from '../pairing/store';
+import type { PairingSessions } from '../pairing/session';
+import type { NetworkManager } from '../net/manager';
+import { handleHub } from './routes/hub';
+import { handlePairing } from './routes/pairing';
+import type { RouteContext, Result } from './routes/types';
 
 export { TOKEN_HEADER, assertLocalRequest, isLoopbackHost, isLoopbackOrigin } from './guard';
 export { HttpError, statusFor, toHttp } from './errors';
@@ -68,12 +74,16 @@ export interface ApiServerOptions {
   /** Serves built client assets under /assets/*. Returns null when the name is
    * unknown; the implementation owns path containment. */
   clientAssets?: (segments: string[]) => Promise<{ body: Buffer; contentType: string } | null>;
+  devices?: DeviceStore;
+  pairing?: PairingSessions;
+  network?: NetworkManager;
 }
 
 export interface ApiServer {
   readonly token: string;
   readonly recovered: string[];
   listen(port: number, host?: string): Promise<AddressInfo>;
+  bind(addresses: string[]): Promise<void>;
   close(): Promise<void>;
   address(): AddressInfo | null;
   /** The HTML snippet that hands the credential to the local client page. */
@@ -307,6 +317,7 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
   const server = createServer((request, response) => {
     void handle(request, response);
   });
+  const listeners = new Map<string, Server>();
 
   function send(response: ServerResponse, status: number, payload: unknown): void {
     const body = Buffer.from(safeJson(payload), 'utf8');
@@ -330,10 +341,20 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
       const segments = url.pathname.split('/').filter((s) => s.length > 0);
       route = `${method} /${segments.map((s) => (ROUTE_WORDS.has(s) ? s : ':id')).join('/')}`;
 
+      // A local reverse proxy such as tailscale serve retains its public Host;
+      // treat it as a device request, never as the privileged local UI.
+      const hasBearer = typeof request.headers.authorization === 'string' && request.headers.authorization.startsWith('Bearer ');
+      const local = isLoopbackPeer(request.socket.remoteAddress) && isLoopbackHost(request.headers.host) && !hasBearer;
+      const ping = method === 'GET' && url.pathname === '/api/hub/ping';
+      const claim = method === 'POST' && url.pathname === '/api/pairing/claim';
       const mutating = method !== 'GET' && method !== 'HEAD';
-      assertLocalRequest(request, token, mutating);
+      if (!ping) {
+        if (local) assertLocalRequest(request, token, mutating && !claim);
+        else if (options.devices !== undefined) assertRemoteRequest(request, options.devices, claim);
+        else throw new HttpError(401, { code: 'AUTH_REQUIRED', message: 'A paired device token is required', retryable: false });
+      }
 
-      const result = await route_(method, segments, request);
+      const result = await route_(method, segments, request, { devices: options.devices, pairing: options.pairing, network: options.network, local, url });
       if (result.kind === 'json') {
         send(response, result.status, { data: result.data });
       } else {
@@ -358,16 +379,16 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
     }
   }
 
-  type Result =
-    | { kind: 'json'; status: number; data: unknown }
-    | { kind: 'bytes'; status: number; body: Buffer; contentType: string };
-
   const json = (data: unknown, status = 200): Result => ({ kind: 'json', status, data });
 
-  async function route_(method: string, segments: string[], request: IncomingMessage): Promise<Result> {
+  async function route_(method: string, segments: string[], request: IncomingMessage, ctx: RouteContext): Promise<Result> {
+    const hub = await handleHub(method, segments, request, ctx);
+    if (hub !== undefined) return hub;
+    const pairing = await handlePairing(method, segments, request, ctx);
+    if (pairing !== undefined) return pairing;
     // The client entry document, with the request credential embedded.
     if (options.clientHtml !== undefined && method === 'GET' && (segments.length === 0 || (segments.length === 1 && segments[0] === 'index.html'))) {
-      const html = injectToken(options.clientHtml(), token);
+      const html = ctx.local ? injectToken(options.clientHtml(), token) : options.clientHtml();
       return { kind: 'bytes', status: 200, body: Buffer.from(html, 'utf8'), contentType: 'text/html; charset=utf-8' };
     }
     if (segments[0] !== 'api') {
@@ -902,12 +923,36 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
       });
       return server.address() as AddressInfo;
     },
+    async bind(addresses: string[]): Promise<void> {
+      const port = (server.address() as AddressInfo).port;
+      for (const host of addresses) {
+        if (host === LOOPBACK || listeners.has(host)) continue;
+        const listener = createServer((request, response) => { void handle(request, response); });
+        await new Promise<void>((resolve, reject) => {
+          listener.once('error', reject);
+          listener.listen(port, host, () => { listener.removeListener('error', reject); resolve(); });
+        });
+        listeners.set(host, listener);
+      }
+      for (const [host, listener] of listeners) {
+        if (addresses.includes(host)) continue;
+        listener.closeAllConnections();
+        await new Promise<void>((resolve) => listener.close(() => resolve()));
+        listeners.delete(host);
+      }
+    },
     async close(): Promise<void> {
       pipeline.abortAll();
       // An answer cut off by shutdown is stored as interrupted, never left without an answer;
       // an answer whose earlier write failed gets one more try before it would be lost.
       chat.stopAll(RESTARTED_ERROR);
       chat.flushUnsaved();
+      for (const listener of listeners.values()) {
+        listener.closeAllConnections();
+        await new Promise<void>((resolve) => listener.close(() => resolve()));
+      }
+      listeners.clear();
+      server.closeAllConnections();
       await new Promise<void>((resolve) => server.close(() => resolve()));
     },
     address(): AddressInfo | null {
