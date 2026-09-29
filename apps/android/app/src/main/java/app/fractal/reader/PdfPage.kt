@@ -54,6 +54,7 @@ fun PdfPage(
     onFingerGesture: (Float, Float) -> Unit,
     onSelection: (PdfTextSelection) -> Unit,
     onDoubleTap: () -> Unit,
+    onWritingStateChanged: (Boolean) -> Unit,
     onInkChanged: (List<InkStroke>, List<InkStroke>) -> Unit,
 ) {
     val colors = LocalFractalColors.current
@@ -75,9 +76,16 @@ fun PdfPage(
                 Image(rendered.asImageBitmap(), null, Modifier.matchParentSize(),
                     colorFilter = if (colors.paper.red < .3f) {
                         ColorFilter.colorMatrix(ColorMatrix(floatArrayOf(
-                            -.7f, 0f, 0f, 0f, 1f,
-                            0f, -.7f, 0f, 0f, 1f,
-                            0f, 0f, -.7f, 0f, 1f,
+                            -.8f, 0f, 0f, 0f, 255f,
+                            0f, -.8f, 0f, 0f, 255f,
+                            0f, 0f, -.8f, 0f, 255f,
+                            0f, 0f, 0f, 1f, 0f,
+                        )))
+                    } else if (colors.paper.blue < .9f) {
+                        ColorFilter.colorMatrix(ColorMatrix(floatArrayOf(
+                            .80f, 0f, 0f, 0f, 40f,
+                            0f, .78f, 0f, 0f, 37f,
+                            0f, 0f, .72f, 0f, 28f,
                             0f, 0f, 0f, 1f, 0f,
                         )))
                     } else null)
@@ -118,6 +126,7 @@ fun PdfPage(
                     onSelection(selected)
                 },
                 onFingerDoubleTap = onDoubleTap,
+                onWritingStateChanged = onWritingStateChanged,
             )
         }
     }

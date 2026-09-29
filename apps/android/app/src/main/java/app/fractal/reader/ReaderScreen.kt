@@ -2,6 +2,7 @@ package app.fractal.reader
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -31,8 +35,13 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
@@ -58,12 +67,16 @@ import app.fractal.ink.rememberInkToolState
 import app.fractal.pdf.PdfPages
 import app.fractal.pdf.PdfTextSelection
 import app.fractal.sync.SyncScheduler
+import app.fractal.sync.HubClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import java.time.Instant
 import java.util.UUID
@@ -79,6 +92,7 @@ fun ReaderScreen(app: ReaderApplication, paper: LibraryEntity, onBack: () -> Uni
     val compact = widthClass < 600
     val expanded = widthClass >= 840
     val list = rememberLazyListState()
+    val translatedList = rememberLazyListState()
     val tool = rememberInkToolState()
     val states = remember(paper.paperKey) { mutableStateMapOf<Int, InkPageState>() }
     val annotations by app.database.annotations().observePaper(paper.paperKey).collectAsState(emptyList())
@@ -86,9 +100,49 @@ fun ReaderScreen(app: ReaderApplication, paper: LibraryEntity, onBack: () -> Uni
     var status by remember(paper.paperKey) { mutableStateOf("") }
     var zoom by remember { mutableStateOf(1f) }
     var panel by remember { mutableStateOf(expanded) }
+    var panelTab by remember { mutableStateOf("notes") }
+    var barVisible by remember { mutableStateOf(true) }
+    var writing by remember { mutableStateOf(false) }
+    var viewMenu by remember { mutableStateOf(false) }
+    var moreMenu by remember { mutableStateOf(false) }
+    var viewMode by remember { mutableStateOf("original") }
+    var translatedBlocks by remember(paper.paperKey) { mutableStateOf<List<TranslatedBlock>>(emptyList()) }
     var selected by remember { mutableStateOf<Pair<Int, PdfTextSelection>?>(null) }
     var memo by remember { mutableStateOf("") }
-    val activePage = (list.firstVisibleItemIndex + 1).coerceAtMost(pages?.pageCount ?: 1)
+    val activePage = if (viewMode == "translation" && translatedBlocks.isNotEmpty()) {
+        translatedBlocks.getOrNull(translatedList.firstVisibleItemIndex)?.page ?: 1
+    } else (list.firstVisibleItemIndex + 1).coerceAtMost(pages?.pageCount ?: 1)
+    LaunchedEffect(paper.paperKey) {
+        translatedBlocks = runCatching {
+            val snapshot = app.client.data("/api/papers/${HubClient.keyPath(paper.paperKey)}").jsonObject
+            val translations = snapshot["translations"]?.jsonArray.orEmpty().mapNotNull { item ->
+                val value = item.jsonObject
+                val id = value["blockId"]?.jsonPrimitive?.content ?: return@mapNotNull null
+                val text = value["text"]?.jsonPrimitive?.content?.takeUnless { it == "null" }
+                if (value["status"]?.jsonPrimitive?.content == "completed" && !text.isNullOrBlank()) id to text else null
+            }.toMap()
+            if (translations.isEmpty()) emptyList() else snapshot["blocks"]?.jsonArray.orEmpty().mapNotNull { item ->
+                val block = item.jsonObject
+                val text = translations[block["blockId"]?.jsonPrimitive?.content]
+                    ?: block["sourceText"]?.jsonPrimitive?.content
+                if (text.isNullOrBlank()) null else TranslatedBlock(
+                    page = (block["pageOrdinal"]?.jsonPrimitive?.content?.toIntOrNull() ?: 1).coerceAtLeast(1),
+                    kind = block["kind"]?.jsonPrimitive?.content.orEmpty(), text = text,
+                )
+            }
+        }.getOrDefault(emptyList())
+    }
+    LaunchedEffect(list, translatedList, viewMode) {
+        var previous = 0
+        snapshotFlow {
+            val visibleList = if (viewMode == "translation") translatedList else list
+            visibleList.firstVisibleItemIndex * 100000 + visibleList.firstVisibleItemScrollOffset
+        }.collectLatest { position ->
+            if (position > previous + 6) barVisible = false
+            if (position < previous - 6) barVisible = true
+            previous = position
+        }
+    }
     LaunchedEffect(paper.paperKey) {
         status = "PDF 불러오는 중"
         runCatching {
@@ -120,26 +174,61 @@ fun ReaderScreen(app: ReaderApplication, paper: LibraryEntity, onBack: () -> Uni
         }
     }
     Column(Modifier.fillMaxSize().background(colors.paper)) {
-        Header(paper.title ?: paper.paperKey, "질문", { panel = !panel }, onBack)
+        if (barVisible) {
+            Row(Modifier.fillMaxWidth().height(48.dp).padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                TextButton(onClick = onBack) { Text("‹", fontSize = 24.sp, color = colors.ink) }
+                Text(paper.title ?: paper.paperKey, Modifier.weight(1f), fontFamily = FontFamily.Serif,
+                    maxLines = 1, overflow = TextOverflow.Ellipsis, color = colors.ink)
+                Text("$activePage / ${pages?.pageCount ?: 0}", color = colors.inkSoft, fontSize = 12.sp)
+                Box {
+                    TextButton(onClick = { viewMenu = true }) { Text("보기", fontSize = 12.sp, color = colors.ink) }
+                    DropdownMenu(viewMenu, onDismissRequest = { viewMenu = false }) {
+                        DropdownMenuItem(text = { Text("원문") }, onClick = { viewMode = "original"; viewMenu = false })
+                        if (translatedBlocks.isNotEmpty()) {
+                            DropdownMenuItem(text = { Text("번역") }, onClick = { viewMode = "translation"; viewMenu = false })
+                        }
+                    }
+                }
+                TextButton(onClick = { panelTab = "notes"; panel = true }) { Text("노트", fontSize = 12.sp, color = colors.ink) }
+                TextButton(onClick = { panelTab = "questions"; panel = true }) { Text("질문", fontSize = 12.sp, color = colors.ink) }
+                Box {
+                    TextButton(onClick = { moreMenu = true }) { Text("⋯", fontSize = 20.sp, color = colors.ink) }
+                    DropdownMenu(moreMenu, onDismissRequest = { moreMenu = false }) {
+                        DropdownMenuItem(text = { Text("폭 맞춤") }, onClick = { zoom = 1f; moreMenu = false })
+                        DropdownMenuItem(text = { Text(if (panel) "패널 닫기" else "패널 열기") },
+                            onClick = { panel = !panel; moreMenu = false })
+                    }
+                }
+            }
+            HorizontalDivider(color = colors.rule, thickness = .5.dp)
+        } else {
+            Box(Modifier.fillMaxWidth().height(if (writing) 48.dp else 12.dp)
+                .background(colors.sunken).clickable { barVisible = true })
+        }
         Row(Modifier.fillMaxSize()) {
-            if (!compact) {
+            if (!compact && viewMode == "original") {
                 val state = states.getOrPut(activePage) { InkPageState() }
                 InkToolbar(state, tool, Modifier.width(48.dp).fillMaxHeight())
             }
             Box(Modifier.weight(1f)) {
             Column(Modifier.fillMaxSize()) {
-                if (compact) {
+                if (compact && viewMode == "original") {
                     val state = states.getOrPut(activePage) { InkPageState() }
                     InkToolbar(state, tool)
                 }
-                Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
-                    Text("$activePage / ${pages?.pageCount ?: 0}", Modifier.weight(1f), color = colors.inkSoft)
-                    TextButton(onClick = { zoom = (zoom / 1.25f).coerceIn(.5f, 4f) }) { Text("−") }
-                    Text("${(zoom * 100).roundToInt()}%", Modifier.padding(top = 12.dp), color = colors.inkSoft)
-                    TextButton(onClick = { zoom = (zoom * 1.25f).coerceIn(.5f, 4f) }) { Text("+") }
-                }
                 val source = pages
-                if (source == null) {
+                if (viewMode == "translation" && translatedBlocks.isNotEmpty()) {
+                    LazyColumn(state = translatedList, modifier = Modifier.fillMaxSize().background(colors.paper)) {
+                        items(translatedBlocks) { block ->
+                            Column(Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 10.dp)) {
+                                Text("p.${block.page}", color = colors.inkSoft, fontSize = 11.sp)
+                                Text(block.text, fontFamily = FontFamily.Serif,
+                                    fontWeight = if (block.kind == "heading") FontWeight.Bold else FontWeight.Normal,
+                                    fontSize = if (block.kind == "heading") 19.sp else 16.sp, color = colors.ink)
+                            }
+                        }
+                    }
+                } else if (source == null) {
                     Text(status, Modifier.padding(24.dp), color = colors.inkSoft)
                 } else {
                     LazyColumn(state = list, modifier = Modifier.fillMaxSize().background(colors.sunken)) {
@@ -150,6 +239,10 @@ fun ReaderScreen(app: ReaderApplication, paper: LibraryEntity, onBack: () -> Uni
                                 onFingerGesture = { dy, factor ->
                                     zoom = (zoom * factor).coerceIn(.5f, 4f)
                                     scope.launch { list.scrollBy(-dy) }
+                                },
+                                onWritingStateChanged = { active ->
+                                    writing = active
+                                    if (active) barVisible = false
                                 },
                                 onSelection = { selection -> selected = (index + 1) to selection },
                                 onDoubleTap = {
@@ -180,13 +273,15 @@ fun ReaderScreen(app: ReaderApplication, paper: LibraryEntity, onBack: () -> Uni
                 }
             }
             if (panel && !compact && !expanded) {
-                SidePanel(app, paper.paperKey, annotations, onJump = { page ->
+                SidePanel(app, paper.paperKey, annotations, pages, panelTab, { panelTab = it }, onJump = { page ->
+                    viewMode = "original"
                     scope.launch { list.animateScrollToItem((page - 1).coerceAtLeast(0)) }
                 }, Modifier.align(androidx.compose.ui.Alignment.CenterEnd).width(360.dp).fillMaxHeight())
             }
             }
             if (panel && expanded) {
-                SidePanel(app, paper.paperKey, annotations, onJump = { page ->
+                SidePanel(app, paper.paperKey, annotations, pages, panelTab, { panelTab = it }, onJump = { page ->
+                    viewMode = "original"
                     scope.launch { list.animateScrollToItem((page - 1).coerceAtLeast(0)) }
                 }, Modifier.width(400.dp).fillMaxHeight())
             }
@@ -194,8 +289,9 @@ fun ReaderScreen(app: ReaderApplication, paper: LibraryEntity, onBack: () -> Uni
     }
     if (panel && compact) {
         ModalBottomSheet(onDismissRequest = { panel = false }) {
-            SidePanel(app, paper.paperKey, annotations, onJump = { page ->
+            SidePanel(app, paper.paperKey, annotations, pages, panelTab, { panelTab = it }, onJump = { page ->
                 panel = false
+                viewMode = "original"
                 scope.launch { list.animateScrollToItem((page - 1).coerceAtLeast(0)) }
             }, Modifier.fillMaxWidth().height(540.dp))
         }
@@ -224,6 +320,7 @@ fun ReaderScreen(app: ReaderApplication, paper: LibraryEntity, onBack: () -> Uni
                         TextButton(onClick = {
                             selected = null
                             panel = true
+                            panelTab = "questions"
                         }) { Text("질문") }
                         TextButton(onClick = {
                             clipboard.setPrimaryClip(android.content.ClipData.newPlainText("PDF", selection.text))
@@ -242,6 +339,8 @@ fun ReaderScreen(app: ReaderApplication, paper: LibraryEntity, onBack: () -> Uni
         )
     }
 }
+
+private data class TranslatedBlock(val page: Int, val kind: String, val text: String)
 
 private suspend fun saveMemo(
     app: ReaderApplication,

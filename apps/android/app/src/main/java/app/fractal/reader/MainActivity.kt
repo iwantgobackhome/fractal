@@ -23,10 +23,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Switch
@@ -35,6 +38,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -52,6 +56,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import app.fractal.data.LibraryEntity
+import app.fractal.data.LibraryRecord
+import app.fractal.data.WireJson
 import app.fractal.design.FractalTheme
 import app.fractal.design.LocalFractalColors
 import app.fractal.design.PaperTheme
@@ -63,6 +69,7 @@ import app.fractal.ink.rememberInkToolState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.decodeFromString
 
 class MainActivity : ComponentActivity() {
     private val cameraPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -197,14 +204,27 @@ private fun ReaderApp(
                         }
                         }
                     }
-                    if (expanded) {
-                        Column(Modifier.width(400.dp).fillMaxHeight().border(BorderStroke(.5.dp, colors.rule)).padding(24.dp)) {
+                    if (expanded && activePaper != null) {
+                        Column(Modifier.width(400.dp).fillMaxHeight().border(BorderStroke(.5.dp, colors.rule))
+                            .verticalScroll(rememberScrollState()).padding(24.dp)) {
                             val paper = activePaper
                             if (paper != null) {
+                                val record = remember(paper.json) {
+                                    runCatching { WireJson.format.decodeFromString<LibraryRecord>(paper.json) }.getOrNull()
+                                }
                                 Text(paper.title.orEmpty(), fontFamily = FontFamily.Serif, fontSize = 25.sp)
                                 Spacer(Modifier.height(16.dp))
-                                Text(paper.authors, color = colors.inkSoft)
+                                Text(record?.authors?.joinToString(", ") { "${it.given} ${it.family}".trim() }
+                                    ?: paper.authors, color = colors.inkSoft)
                                 Text(listOfNotNull(paper.venue, paper.year?.toString()).joinToString(" · "), color = colors.inkSoft)
+                                record?.abstract?.takeIf { it.isNotBlank() }?.let {
+                                    Spacer(Modifier.height(20.dp))
+                                    Text(it, color = colors.ink)
+                                }
+                                record?.tags?.takeIf { it.isNotEmpty() }?.let {
+                                    Spacer(Modifier.height(16.dp))
+                                    Text(it.joinToString(" · "), color = colors.inkSoft)
+                                }
                                 Spacer(Modifier.height(24.dp))
                                 Button(onClick = { screen = "reader" }) { Text("읽기") }
                             }
@@ -267,11 +287,16 @@ private fun LibraryRow(paper: LibraryEntity, cached: Boolean, onLongClick: () ->
         .padding(horizontal = 20.dp, vertical = 15.dp)) {
         Text(paper.title ?: paper.paperKey, fontFamily = FontFamily.Serif, fontSize = 17.sp,
             maxLines = 2, overflow = TextOverflow.Ellipsis, color = colors.ink)
-        Text(paper.authors, maxLines = 1, overflow = TextOverflow.Ellipsis, color = colors.inkSoft)
+        Text(shortAuthors(paper.authors), maxLines = 1, overflow = TextOverflow.Ellipsis, color = colors.inkSoft)
         Text(listOfNotNull(paper.venue, paper.year?.toString(), paper.addedAt.take(10), if (cached) "↓" else null).joinToString(" · "),
             color = colors.inkSoft, fontSize = 12.sp)
         HorizontalDivider(Modifier.padding(top = 14.dp), color = colors.rule, thickness = .5.dp)
     }
+}
+
+private fun shortAuthors(authors: String): String {
+    val names = authors.split(",").map(String::trim).filter(String::isNotEmpty)
+    return names.take(2).joinToString(", ") + if (names.size > 2) " 외 ${names.size - 2}명" else ""
 }
 
 @Composable
@@ -281,7 +306,7 @@ private fun SettingsScreen(app: ReaderApplication, theme: String, setTheme: (Str
     var wifiOnly by remember { mutableStateOf(app.settings.getBoolean("wifiOnly", false)) }
     var autoDownload by remember { mutableStateOf(app.settings.getBoolean("autoDownload", false)) }
     var cacheGb by remember { mutableStateOf(app.settings.getLong("cacheLimit", 2L * 1024 * 1024 * 1024) / (1024 * 1024 * 1024)) }
-    Column {
+    CompositionLocalProvider(LocalContentColor provides colors.ink) { Column {
         Header("설정", "완료", onBack, onBack)
         Text("허브", Modifier.padding(16.dp), color = colors.inkSoft)
         Text(app.credentials.load()?.let { "${it.name} · ${it.url}" } ?: "연결되지 않음", Modifier.padding(horizontal = 16.dp))
@@ -342,5 +367,5 @@ private fun SettingsScreen(app: ReaderApplication, theme: String, setTheme: (Str
         }
         HorizontalDivider(color = colors.rule)
         Text("Fractal · 0.1", Modifier.padding(16.dp), color = colors.inkSoft)
-    }
+    } }
 }

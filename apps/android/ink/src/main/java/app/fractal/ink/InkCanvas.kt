@@ -65,6 +65,7 @@ fun InkCanvas(
     onFingerGesture: (panX: Float, panY: Float, zoom: Float) -> Unit = { _, _, _ -> },
     onFingerLongPress: (x: Float, y: Float) -> Unit = { _, _ -> },
     onFingerDoubleTap: () -> Unit = {},
+    onWritingStateChanged: (Boolean) -> Unit = {},
     paperKey: String = "demo",
     page: Int = 1,
     deviceId: String = "android",
@@ -75,13 +76,14 @@ fun InkCanvas(
     }
     key(state, paperKey, page, deviceId) {
         AndroidView(
-            factory = { context -> InkSurface(context, state, tool, onSelectionAsk, onFingerGesture, onFingerLongPress, onFingerDoubleTap, paperKey, page, deviceId) },
+            factory = { context -> InkSurface(context, state, tool, onSelectionAsk, onFingerGesture, onFingerLongPress, onFingerDoubleTap, onWritingStateChanged, paperKey, page, deviceId) },
             update = { surface ->
                 surface.tool = tool
                 surface.onAsk = onSelectionAsk
                 surface.onFingerGesture = onFingerGesture
                 surface.onFingerLongPress = onFingerLongPress
                 surface.onFingerDoubleTap = onFingerDoubleTap
+                surface.onWritingStateChanged = onWritingStateChanged
                 surface.pageSize = pageSize
                 surface.sync(state.strokes, state.selectedIds)
             },
@@ -98,6 +100,7 @@ private class InkSurface(
     var onFingerGesture: (Float, Float, Float) -> Unit,
     var onFingerLongPress: (Float, Float) -> Unit,
     var onFingerDoubleTap: () -> Unit,
+    var onWritingStateChanged: (Boolean) -> Unit,
     private val paperKey: String,
     private val page: Int,
     private val deviceId: String,
@@ -172,6 +175,7 @@ private class InkSurface(
         lastMotion = android.os.SystemClock.uptimeMillis()
     }
     private fun cancel(event: MotionEvent) {
+        if (pointerId >= 0) onWritingStateChanged(false)
         removeCallbacks(hold)
         removeCallbacks(fingerHold)
         wetId?.let { wet.cancelStroke(it, event) }
@@ -236,6 +240,7 @@ private class InkSurface(
             view.requestUnbufferedDispatch(event)
             predictor.record(event)
             pointerId = event.getPointerId(index)
+            onWritingStateChanged(true)
             gestureTool = if (button.update(true, event.buttonState and MotionEvent.BUTTON_STYLUS_PRIMARY != 0, type == MotionEvent.TOOL_TYPE_ERASER)) InkTool.Eraser else tool.active
             gestureEraser = if (gestureTool == InkTool.Eraser && tool.active != InkTool.Eraser) tool.buttonEraserMode else tool.eraserMode
             path.clear(); tilts.clear(); collect(event, index)
@@ -276,6 +281,7 @@ private class InkSurface(
                 removeCallbacks(hold)
                 wetId?.let { wet.finishStroke(event, pointerId, it) }
                 wetId = null; pointerId = -1
+                onWritingStateChanged(false)
                 finishGesture()
                 dry.transient = emptyList()
                 return true
