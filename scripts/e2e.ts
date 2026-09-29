@@ -102,6 +102,7 @@ async function main(): Promise<void> {
     log: () => {},
   });
   let browser: Awaited<ReturnType<typeof chromium.launch>> | undefined;
+  let page: Awaited<ReturnType<Awaited<ReturnType<typeof chromium.launch>>['newPage']>> | undefined;
   try {
     const address = await server.listen(0);
     const url = `http://127.0.0.1:${address.port}`;
@@ -114,7 +115,7 @@ async function main(): Promise<void> {
     const { data: { paper } } = await response.json() as { data: { paper: { paperKey: string } } };
 
     browser = await chromium.launch({ channel: 'msedge', headless: true });
-    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+    page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
     page.on('pageerror', (error) => console.error('Browser error:', error));
     page.setDefaultTimeout(15_000);
     await page.route('**/*', (route) => new URL(route.request().url()).origin === url ? route.continue() : route.abort());
@@ -179,6 +180,12 @@ async function main(): Promise<void> {
     await page.locator('.theme-swatch[data-swatch="dark"] .theme-swatch__page').click();
     assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark');
     console.log('PASS settings providers and dark theme');
+  } catch (error) {
+    // Keep what the browser showed when a step failed.
+    const shot = join(tmpdir(), 'fractal-e2e-failure.png');
+    await page?.screenshot({ path: shot }).catch(() => undefined);
+    console.error(`Screenshot of the failing step: ${shot}`);
+    throw error;
   } finally {
     await browser?.close();
     await server.close();

@@ -1,4 +1,4 @@
-import { useState, type JSX } from 'react';
+import { useRef, useState, type JSX } from 'react';
 import type { Highlight } from '@fractal/shared';
 
 const COLOR_VALUES: Record<Highlight['color'], string> = {
@@ -57,6 +57,8 @@ export interface HighlightPopoverProps {
 export function HighlightPopover({ highlight, onSave, onDelete, onClose, onAsk }: HighlightPopoverProps): JSX.Element {
   const [note, setNote] = useState(highlight.note ?? '');
   const [color, setColor] = useState<Highlight['color']>(highlight.color);
+  // Saved from the field itself: a click that lands before the typed text re-renders still saves it.
+  const noteRef = useRef<HTMLTextAreaElement | null>(null);
   // An unsaved note keeps the editor open; otherwise asking moves the reader on to the question.
   const edited = note !== (highlight.note ?? '') || color !== highlight.color;
 
@@ -74,6 +76,7 @@ export function HighlightPopover({ highlight, onSave, onDelete, onClose, onAsk }
     >
       <p className="highlight-excerpt">{highlight.text.slice(0, 200)}</p>
       <textarea
+        ref={noteRef}
         aria-label="메모"
         placeholder="메모"
         value={note}
@@ -111,7 +114,10 @@ export function HighlightPopover({ highlight, onSave, onDelete, onClose, onAsk }
           <button type="button" onClick={onDelete}>
             삭제
           </button>
-          <button type="button" className="is-primary" onClick={() => onSave(note.trim().length === 0 ? '' : note, color)}>
+          <button type="button" className="is-primary" onClick={() => {
+              const text = noteRef.current?.value ?? note;
+              onSave(text.trim().length === 0 ? '' : text, color);
+            }}>
             저장
           </button>
         </div>
