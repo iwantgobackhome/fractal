@@ -1,4 +1,4 @@
-import type { AiFeature, AiSettings, Annotation, ModelSelection, NetworkStatus, PairedDevice, PairingPayload, ProviderModel, ProviderStatus as HubProviderStatus, UsageRecord } from '@fractal/shared';
+import type { AiFeature, AiSettings, Annotation, FeedInterests, FeedResponse, ModelSelection, NetworkStatus, PairedDevice, PairingPayload, ProviderModel, ProviderStatus as HubProviderStatus, UsageRecord } from '@fractal/shared';
 import { TOKEN_HEADER } from '../lib/api';
 
 /*
@@ -164,6 +164,26 @@ export class HubApi {
 
   saveAnnotation(annotation: Annotation): Promise<{ id: string; applied: boolean; rev: number } | null> {
     return this.call(`/api/papers/${encodeURIComponent(annotation.paperKey)}/annotations`, { method: 'POST', body: annotation });
+  }
+
+  feed(week?: string): Promise<FeedResponse | null> {
+    return this.call(week === undefined ? '/api/feed' : `/api/feed?week=${encodeURIComponent(week)}`);
+  }
+
+  refreshFeed(): Promise<FeedResponse | null> {
+    return this.call('/api/feed/refresh', { method: 'POST', body: {} });
+  }
+
+  interests(): Promise<{ interests: FeedInterests; suggestions: { category: string; count: number }[] } | null> {
+    return this.call('/api/feed/interests');
+  }
+
+  saveInterests(interests: FeedInterests): Promise<unknown> {
+    return this.call('/api/feed/interests', { method: 'PUT', body: interests });
+  }
+
+  saveFeedItem(id: string): Promise<{ paperKey: string } | null> {
+    return this.call(`/api/feed/items/${encodeURIComponent(id)}/save`, { method: 'POST', body: {} });
   }
 
   /** Upload a local PDF; the hub extracts metadata and merges duplicates. */

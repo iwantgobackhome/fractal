@@ -1489,7 +1489,7 @@ export function App(): JSX.Element {
 
       {paperKey === null ? (
         view === 'home' ? (
-          <HomeScreen papers={papers} onOpen={(key) => void openStored(key)} onShowLibrary={() => navigate('library')} />
+          <HomeScreen hub={hub} papers={papers} onOpen={(key) => void openStored(key)} onOpenExternal={(value) => void openValue(value)} onShowLibrary={() => navigate('library')} />
         ) : view === 'library' ? (
           <LibraryScreen
             papers={papers}
