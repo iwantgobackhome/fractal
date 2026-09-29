@@ -1,14 +1,14 @@
 # Architecture
 
-Fractal is an npm workspaces monorepo. The Node hub and React browser UI run inside the Electron desktop shell or as a headless service. Android is reserved for a later task.
+Fractal is an npm workspaces monorepo. The Node hub and React browser UI run inside the Electron desktop shell or as a headless service. The Kotlin Android app pairs with the hub for reading and sync.
 
 | Path | Responsibility |
 | --- | --- |
-| `packages/shared` | TypeScript contracts and Zod schema entry point; domain files under `src/contracts` and future design tokens under `tokens` |
+| `packages/shared` | TypeScript contracts, Zod schemas, and shared design tokens |
 | `packages/hub` | Node HTTP service, paper acquisition, PDF extraction, SQLite library storage, sync, translation jobs, Codex CLI session, and chat |
 | `packages/ui` | React reader, PDF display, annotations, translation and chat UI; Vite builds `dist` |
 | `apps/desktop` | Electron window and tray, embedding the hub in-process |
-| `apps/android` | Future Kotlin client |
+| `apps/android` | Kotlin reader, PDF cache, ink, pairing, and sync |
 
 ## Current data flow
 
@@ -27,16 +27,13 @@ The network manager stores interface settings in `network-settings.json`, discov
 
 Android v1 uses HTTP with a bearer token. Tailscale provides WireGuard encryption; ordinary LAN HTTP exposes the token and content to observers on that network. `tailscale serve` can provide an optional HTTPS proxy. TLS is not implemented in the hub.
 
-## Planned connections
+## Android connection
 
-A native Android client will use pairing to receive connection details and a bearer credential, then sync library data and annotations over LAN or Tailscale. The `ink` and `feed` contracts remain typed placeholders for their future owners.
-
-The original PaperRead file storage path and HTTP credential names remain in use so existing local data and browser behavior remain compatible.
+The Android client claims a pairing code, stores its bearer credential with Android Keystore protection, caches PDFs, and syncs library and annotations over LAN or Tailscale. Ink strokes preserve optional brush, shape, and tilt data through the hub's annotation and sync routes. The HTTP credential header name remains compatible with PaperRead; PaperRead files are imported into the Fractal data directory on first startup.
 
 ## AI provider routing
 
-The hub's `ai/` layer wraps the isolated Codex app-server question path and a headless Claude CLI process behind one streaming provider interface. `ProviderRegistry` resolves saved defaults and per-feature overrides, records UTC daily usage in `ai-usage.json`, and exposes best-effort provider limits. `settings.json` holds the small provider settings record. Both files live in the hub data directory, separate from paper records. `RegistryLegacyAdapter` keeps existing chat and translation endpoints on the same selection path: Codex calls delegate directly to their original methods, while Claude uses the same Korean translation prompts and validators from `translation/prompt.ts`. The AI route module performs input validation and streams SSE frames; a `LibrarySearch` interface currently has an in-memory implementation over extracted blocks, ready to be replaced by the storage team's FTS search.
-The desktop shell will host this personal hub. A native Android client will later use pairing to receive connection details and a bearer credential, then use the live sync API over LAN or Tailscale. The `feed` contract is reserved for its future owner.
+The hub's `ai/` layer wraps the isolated Codex app-server question path and a headless Claude CLI process behind one streaming provider interface. `ProviderRegistry` resolves saved defaults and per-feature overrides, records UTC daily usage in `ai-usage.json`, and exposes best-effort provider limits. `settings.json` holds the small provider settings record. Both files live in the hub data directory, separate from paper records. `RegistryLegacyAdapter` keeps existing chat and translation endpoints on the same selection path: Codex calls delegate directly to their original methods, while Claude uses the same Korean translation prompts and validators from `translation/prompt.ts`. The AI route module performs input validation and streams SSE frames; production library questions use SQLite FTS search over stored papers and blocks.
 
 The HTTP credential name remains compatible with the browser. PaperRead data is imported once into the new Fractal directory without altering its source files.
 

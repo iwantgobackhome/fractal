@@ -36,11 +36,19 @@ export async function handleLibrary(method:string,segments:string[],request:Inco
     if(s.length===3&&method==='DELETE')return json(ctx.store.deletePaper(s[2]!));
   }
   if(s[1]==='papers'&&s[2]==='upload'&&method==='POST'){const type=String(request.headers['content-type']??'');const media=type.split(';')[0]?.trim().toLowerCase();if(media!=='application/pdf'&&media!=='multipart/form-data')throw unsupportedMedia('PDF 파일만 올릴 수 있습니다.');const max=media==='multipart/form-data'?101*1024*1024:100*1024*1024;const raw=await body(request,max,'100MB보다 큰 PDF는 올릴 수 없습니다.');const pdf=pdfBytes(raw,type);return json({paper:await ingestPdf(ctx.store,pdf,undefined,ctx.fetcher)},201);}
-  if(s[1]==='papers'&&s[2]==='open'&&method==='POST'){const input=String((await jsonBody(request)).input??'');if(!input.trim())throw invalidInput('논문 주소 또는 DOI를 입력해 주세요.');return json({paper:await ingestUrl(ctx.store,input,ctx.acquirer,ctx.fetcher)});}
+  if (s[1] === 'papers' && s[2] === 'open' && method === 'POST') {
+    const input = String((await jsonBody(request)).input ?? '');
+    if (!input.trim()) throw invalidInput('논문 주소 또는 DOI를 입력해 주세요.');
+    const stored = /^[A-Za-z0-9._-]{1,200}$/.test(input) ? ctx.store.getPaper(input) : null;
+    return json({ paper: stored ?? await ingestUrl(ctx.store, input, ctx.acquirer, ctx.fetcher) });
+  }
   if(s[1]==='papers'&&s.length===4&&s[3]==='pdf'&&method==='GET'){
     const bytes=ctx.store.getPdf(s[2]!);if(!bytes)return undefined;const sha=createHash('sha256').update(bytes).digest('hex');const etag=`"${sha}"`;
     if(request.headers['if-none-match']===etag)return {kind:'bytes',status:304,body:Buffer.alloc(0),contentType:'application/pdf',headers:{etag,'accept-ranges':'bytes'}};
-    const range=request.headers.range;let from=0,to=bytes.length-1,status=200;
+    const range=request.headers['if-range'] === undefined || request.headers['if-range'] === etag
+      ? request.headers.range
+      : undefined;
+    let from=0,to=bytes.length-1,status=200;
     if(typeof range==='string'){const m=/^bytes=(\d*)-(\d*)$/.exec(range);if(!m)return {kind:'bytes',status:416,body:Buffer.alloc(0),contentType:'application/pdf',headers:{etag,'content-range':`bytes */${bytes.length}`}};if(m[1])from=Number(m[1]);if(m[2])to=Number(m[2]);if(!m[1]&&m[2]){from=Math.max(0,bytes.length-Number(m[2]));to=bytes.length-1;}if(from>to||to>=bytes.length)return {kind:'bytes',status:416,body:Buffer.alloc(0),contentType:'application/pdf',headers:{etag,'content-range':`bytes */${bytes.length}`}};status=206;}
     return {kind:'bytes',status,body:bytes.subarray(from,to+1),contentType:'application/pdf',headers:{etag,'accept-ranges':'bytes',...(status===206?{'content-range':`bytes ${from}-${to}/${bytes.length}`}:{})}};
   }

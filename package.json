@@ -19,17 +19,19 @@
     "desktop:build": "npm run build && node scripts/build-desktop.mjs",
     "desktop": "npm run desktop:build && electron .",
     "desktop:dist": "npm run desktop:build && electron-builder --win nsis",
+    "e2e": "tsx scripts/e2e.ts",
     "tokens": "node scripts/gen-tokens.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
-    "tsx": "^4.20.0",
-    "typescript": "^5.9.0",
-    "vitest": "^3.2.0",
-    "esbuild": "^0.25.0",
+    "@types/qrcode": "^1.5.5",
     "electron": "44.4.5",
     "electron-builder": "26.15.3",
-    "@types/qrcode": "^1.5.5"
+    "esbuild": "^0.25.0",
+    "playwright-core": "^1.63.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.0"
   },
   "build": {
     "appId": "app.fractal.desktop",

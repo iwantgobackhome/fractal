@@ -14,6 +14,7 @@ import { searchLibrary } from './search';
 import { resolveDoi, metadataFromPdf, ingestPdf, ingestUrl } from '../ingest/index';
 import { bibtex, cslJson, markdown } from '../export/index';
 import { handleLibrary } from '../api/routes/library';
+import { handleAnnotations } from '../api/routes/annotations';
 import { handleSync } from '../api/routes/sync';
 import { toHttp } from '../api/errors';
 
@@ -73,7 +74,34 @@ describe('SQLite library',()=>{
   it('extracts PDF title and DOI and deduplicates identical upload',async()=>{const bytes=pdf();expect(await metadataFromPdf(bytes)).toMatchObject({title:'An Interesting PDF',doi:'10.1234/example'});const store=new SqlitePaperStore(root());const first=await ingestPdf(store,bytes,'upload://first',metadataFetch);const second=await ingestPdf(store,bytes,'upload://second',metadataFetch);expect(second.paperKey).toBe(first.paperKey);expect(store.listPapers()).toHaveLength(1);expect(store.getPdf(first.paperKey)).toEqual(bytes);store.db.close();});
   it('deduplicates URL and upload by PDF hash',async()=>{const bytes=pdf('A Different PDF'),store=new SqlitePaperStore(root());const uploaded=await ingestPdf(store,bytes,'upload://first',metadataFetch);const candidate=paper(`pdf-${hash('remote')}-${hash('other')}`);candidate.pdfSha256=hash(bytes.toString('binary'));const acquirer={resolve:async()=>candidate,acquire:async()=>({paper:candidate,blocks:[],pdf:bytes}),reextract:async()=>({paper:candidate,blocks:[]})};const opened=await ingestUrl(store,'https://example.org/paper.pdf',acquirer,metadataFetch);expect(opened.paperKey).toBe(uploaded.paperKey);expect(store.listPapers()).toHaveLength(1);store.db.close();});
   it('exports bibliography and annotations and applies sync LWW and tombstones',()=>{const store=new SqlitePaperStore(root()),p=paper();store.savePaper(p);store.patchLibrary(p.paperKey,{doi:'10.1234/example',year:2024,bibtexKey:'lovelace2024'});const record=store.getLibrary(p.paperKey)!;expect(bibtex([record])).toContain('@article{lovelace2024,');expect(cslJson([record])).toMatchObject([{DOI:'10.1234/example'}]);const id=randomUUID();const annotation:Annotation={kind:'memo',id,paperKey:p.paperKey,page:1,text:'My note',rect:null,quote:'a quote',updatedAt:'2026-01-01T00:00:00.000Z',deleted:false,rev:0,deviceId:'a'};expect(store.upsertAnnotation(annotation).applied).toBe(true);expect(store.upsertAnnotation({...annotation,updatedAt:'2025-01-01T00:00:00.000Z'}).applied).toBe(false);expect(store.upsertAnnotation({...annotation,updatedAt:'2026-01-02T00:00:00.000Z',deleted:true}).applied).toBe(true);expect(store.upsertAnnotation(annotation).applied).toBe(false);expect(store.pull(0).annotations).toMatchObject([{id,deleted:true}]);expect(markdown(record,[annotation],[],['AI summary'])).toContain('## Memo · p. 1');expect(markdown(record,[annotation],[],['AI summary'])).toContain('## AI notes');store.db.close();});
-  it('serves route-level sync and ranged PDF responses',async()=>{const store=new SqlitePaperStore(root()),p=paper(),bytes=pdf('Range Check');store.savePaper(p,bytes);const ctx={store,acquirer:{resolve:async()=>p,acquire:async()=>({paper:p,blocks:[],pdf:bytes}),reextract:async()=>({paper:p,blocks:[]})}};const pull=await handleSync('GET',['api','sync','pull'],request(undefined,{},'/api/sync/pull?since=0'),ctx);expect(pull).toMatchObject({kind:'json',data:{papers:[{paperKey:p.paperKey}]}});const id=randomUUID();const memo:Annotation={kind:'memo',id,paperKey:p.paperKey,page:1,text:'Route note',rect:null,quote:null,updatedAt:'2026-01-01T00:00:00.000Z',deleted:false,rev:0,deviceId:'mobile'};const pushed=await handleSync('POST',['api','sync','push'],request({annotations:[memo]}),ctx);expect(pushed).toMatchObject({kind:'json',data:{results:[{id,applied:true}]}});const ranged=await handleLibrary('GET',['api','papers',p.paperKey,'pdf'],request(undefined,{range:'bytes=0-9'}),ctx);expect(ranged).toMatchObject({kind:'bytes',status:206,headers:{'content-range':`bytes 0-9/${bytes.length}`}});if(ranged?.kind==='bytes')expect(ranged.body).toEqual(bytes.subarray(0,10));expect(await handleLibrary('GET',['api','papers',p.paperKey,'pdf'],request(undefined,{range:'bytes=999999-'}),ctx)).toMatchObject({kind:'bytes',status:416});store.db.close();});
+  it('serves route-level sync and ranged PDF responses',async()=>{const store=new SqlitePaperStore(root()),p=paper(),bytes=pdf('Range Check');store.savePaper(p,bytes);const ctx={store,acquirer:{resolve:async()=>p,acquire:async()=>({paper:p,blocks:[],pdf:bytes}),reextract:async()=>({paper:p,blocks:[]})}};const pull=await handleSync('GET',['api','sync','pull'],request(undefined,{},'/api/sync/pull?since=0'),ctx);expect(pull).toMatchObject({kind:'json',data:{papers:[{paperKey:p.paperKey}]}});const id=randomUUID();const memo:Annotation={kind:'memo',id,paperKey:p.paperKey,page:1,text:'Route note',rect:null,quote:null,updatedAt:'2026-01-01T00:00:00.000Z',deleted:false,rev:0,deviceId:'mobile'};const pushed=await handleSync('POST',['api','sync','push'],request({annotations:[memo]}),ctx);expect(pushed).toMatchObject({kind:'json',data:{results:[{id,applied:true}]}});const ranged=await handleLibrary('GET',['api','papers',p.paperKey,'pdf'],request(undefined,{range:'bytes=0-9'}),ctx);expect(ranged).toMatchObject({kind:'bytes',status:206,headers:{'content-range':`bytes 0-9/${bytes.length}`}});if(ranged?.kind==='bytes')expect(ranged.body).toEqual(bytes.subarray(0,10));expect(await handleLibrary('GET',['api','papers',p.paperKey,'pdf'],request(undefined,{range:'bytes=999999-'}),ctx)).toMatchObject({kind:'bytes',status:416});
+    const etag = ranged?.kind === 'bytes' ? ranged.headers?.etag : undefined;
+    expect(etag).toBeTruthy();
+    const matching = await handleLibrary('GET', ['api', 'papers', p.paperKey, 'pdf'], request(undefined, { range: 'bytes=0-9', 'if-range': etag! }), ctx);
+    expect(matching).toMatchObject({ kind: 'bytes', status: 206 });
+    const stale = await handleLibrary('GET', ['api', 'papers', p.paperKey, 'pdf'], request(undefined, { range: 'bytes=0-9', 'if-range': '"old-pdf"' }), ctx);
+    expect(stale).toMatchObject({ kind: 'bytes', status: 200 });
+    if (stale?.kind === 'bytes') expect(stale.body).toEqual(bytes);
+    store.db.close();});
+  it('preserves Android brush, shape, and tilt through annotations and sync pull', async () => {
+    const store = new SqlitePaperStore(root());
+    const savedPaper = paper();
+    store.savePaper(savedPaper);
+    const ctx = { store, acquirer: { resolve: async () => savedPaper, acquire: async () => ({ paper: savedPaper, blocks: [], pdf: Buffer.alloc(0) }), reextract: async () => ({ paper: savedPaper, blocks: [] }) } };
+    const stroke = {
+      kind: 'ink', id: randomUUID(), paperKey: savedPaper.paperKey,
+      page: 1, tool: 'pen', brush: 'shape', shape: { type: 'rectangle', snapped: true },
+      color: '#123456', width: 0.004, points: [[0.1, 0.2, 0.5, 0], [0.3, 0.4, 0.7, 10]], tilt: [0.2, 0.4],
+      updatedAt: '2026-01-01T00:00:00.000Z', deleted: false, rev: 0, deviceId: 'android',
+    };
+    const path = ['api', 'papers', savedPaper.paperKey, 'annotations'];
+    expect(await handleAnnotations('POST', path, request(stroke), ctx)).toMatchObject({ kind: 'json', status: 201 });
+    const annotations = await handleAnnotations('GET', path, request(), ctx);
+    expect(annotations).toMatchObject({ kind: 'json', data: [{ brush: 'shape', shape: stroke.shape, tilt: stroke.tilt }] });
+    const pull = await handleSync('GET', ['api', 'sync', 'pull'], request(undefined, {}, '/api/sync/pull?since=0'), ctx);
+    expect(pull).toMatchObject({ kind: 'json', data: { annotations: [{ brush: 'shape', shape: stroke.shape, tilt: stroke.tilt }] } });
+    store.db.close();
+  });
   it('maps rejected route inputs to Korean 4xx and upstream failures to 502',async()=>{
     const store=new SqlitePaperStore(root()),p=paper();store.savePaper(p);
     const acquirer={resolve:async()=>p,acquire:async()=>({paper:p,blocks:[],pdf:Buffer.alloc(0)}),reextract:async()=>({paper:p,blocks:[]})};

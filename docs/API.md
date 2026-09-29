@@ -114,9 +114,9 @@ The same loopback origin and startup token apply to mutations below. `POST /api/
 | `DELETE /api/papers/:key/annotations/:id` | — | Tombstone result |
 | `GET /api/sync/pull?since=0` | Decimal change cursor | `{cursor,papers,annotations}` changed since cursor |
 | `POST /api/sync/push` | `{annotations: Annotation[]}` up to 1,000 | `{results:[{id,applied,rev}],cursor}` |
-| `GET /api/papers/:key/pdf` | Optional `Range` or `If-None-Match` | PDF bytes, `ETag`, `Accept-Ranges`; 206 partial or 304 cached response |
+| `GET /api/papers/:key/pdf` | Optional `Range`, `If-Range` ETag, or `If-None-Match` | PDF bytes, `ETag`, `Accept-Ranges`; 206 partial, 304 cached, or 200 full body when `If-Range` does not match |
 
-Annotation conflicts compare `updatedAt` and then `deviceId`; each accepted write increments `rev`. Deletions are tombstones and appear in sync pulls. The cursor is an append-only integer sequence encoded as decimal text. DOI lookup uses Crossref and Unpaywall; set `FRACTAL_CONTACT_EMAIL` to enable the Unpaywall request and identify the client politely.
+Annotation conflicts compare `updatedAt` and then `deviceId`; each accepted write increments `rev`. Deletions are tombstones and appear in sync pulls. Ink annotations accept optional `brush` (`ballpoint`, `fountain`, `pencil`, `highlighter`, or `shape`), `shape` (`type` and `snapped`), and `tilt` values aligned with `points`; these fields are returned by annotation reads and sync pulls. The cursor is an append-only integer sequence encoded as decimal text. DOI lookup uses Crossref and Unpaywall; set `FRACTAL_CONTACT_EMAIL` to enable the Unpaywall request and identify the client politely.
 
 Malformed input and request schemas return 400 `INVALID_INPUT` with a short Korean message; unsupported upload media returns 415, oversized bodies return 413 `TOO_LARGE`, and failed Crossref or Unpaywall requests return retryable 502 `NETWORK`. Opening a paper waits for acquisition and extraction; the reader shows a busy state until the response arrives.
 
