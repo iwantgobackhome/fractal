@@ -5,7 +5,7 @@ import { ChatBoundary } from './components/ChatBoundary';
 import type { ChatQuote } from './components/ChatPanel';
 import { HighlightPopover } from './components/HighlightLayer';
 import { KoreanPages, type SelectVia } from './components/KoreanPane';
-import { DeleteDialog, LibraryPanel } from './components/LibraryPanel';
+import { DeleteDialog } from './components/LibraryPanel';
 import { PdfPages } from './components/PdfPane';
 import { ReaderToolbar, type ReplacementRequest } from './components/ReaderToolbar';
 import { SelectionQuote } from './components/SelectionQuote';
@@ -13,7 +13,17 @@ import { ApiClient, extractError, readToken } from './lib/api';
 import { blockPage, type Size } from './lib/geometry';
 import { koreanPageFallbackHeight, koreanPageHeight } from './lib/korean-page';
 import { intrinsicSize, loadPdf, type PDFDocumentProxy } from './lib/pdf';
-import { connectionShortLabel, connectionTone, paperStatusLabel, pickDefaultModel, translationBlockedReason } from './lib/status';
+import { connectionShortLabel, paperStatusLabel, pickDefaultModel, translationBlockedReason } from './lib/status';
+import type { InputIntent } from './shell/classify';
+import { CommandPalette, type Command } from './shell/CommandPalette';
+import { HomeScreen } from './shell/HomeScreen';
+import { HubApi } from './shell/hub-api';
+import { LibraryScreen } from './shell/LibraryScreen';
+import { Masthead, type ShellView } from './shell/Masthead';
+import { OmniInput } from './shell/OmniInput';
+import { paperTitle } from './shell/paper-format';
+import { SettingsScreen } from './shell/SettingsScreen';
+import { THEME_CHOICES, nextTheme, useTheme } from './shell/theme';
 import {
   beginProgrammaticScroll,
   createLinkState,
@@ -51,6 +61,13 @@ const CHAT_SHEET_QUERY = '(max-width: 999px)';
 const ChatPanel = lazy(() => import('./components/ChatPanel'));
 
 const client = new ApiClient(readToken(document));
+const hub = new HubApi(readToken(document));
+
+/** Shell screens live in the URL hash (#/library, #/settings) so back/forward and links work. */
+function viewFromHash(): ShellView {
+  const name = window.location.hash.replace(/^#\/?/, '');
+  return name === 'library' || name === 'settings' ? name : 'home';
+}
 
 function prefersReducedMotion(): boolean {
   return typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -124,7 +141,15 @@ function leaderLabel(leader: Pane | null): string {
 }
 
 export function App(): JSX.Element {
-  const [input, setInput] = useState('');
+  // Shell: which screen, the library search, the palette, the theme, a dragged-in PDF.
+  const [view, setView] = useState<ShellView>(viewFromHash);
+  const [libraryQuery, setLibraryQuery] = useState('');
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const [theme, setTheme] = useTheme();
+  const [dragging, setDragging] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
+  const omniRef = useRef<HTMLInputElement | null>(null);
+  const fileRef = useRef<HTMLInputElement | null>(null);
   const [paperKey, setPaperKey] = useState<string | null>(null);
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [papers, setPapers] = useState<Paper[]>([]);
@@ -361,16 +386,13 @@ export function App(): JSX.Element {
     window.clearTimeout(koreanJump.current);
   }, []);
 
-  const openPaper = useCallback(async () => {
-    const value = input.trim();
-    if (value.length === 0) return;
+  const openValue = useCallback(async (value: string) => {
     setBusy(true);
     setError(null);
     try {
       // Opening a paper only downloads it; nothing is sent to the translator.
       const { paper: opened } = await client.openPaper(value);
       enterPaper(opened.paperKey);
-      setInput('');
       await refresh(opened.paperKey);
       void loadLibrary();
     } catch (cause) {
@@ -378,7 +400,67 @@ export function App(): JSX.Element {
     } finally {
       setBusy(false);
     }
-  }, [input, enterPaper, refresh, loadLibrary, fail]);
+  }, [enterPaper, refresh, loadLibrary, fail]);
+
+  /** Leave the reader if it is open, then show one of the shell screens. */
+  const navigate = useCallback(
+    (next: ShellView) => {
+      if (paperKeyRef.current !== null) leaveReader();
+      setView(next);
+      const hash = next === 'home' ? '' : `#/${next}`;
+      if (window.location.hash !== hash) window.history.pushState(null, '', hash === '' ? window.location.pathname : hash);
+    },
+    [leaveReader],
+  );
+
+  useEffect(() => {
+    const onPop = () => {
+      if (paperKeyRef.current !== null) leaveReader();
+      setView(viewFromHash());
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, [leaveReader]);
+
+  /** The single input: identifiers open a paper, anything else searches the library. */
+  const submitIntent = useCallback(
+    (intent: InputIntent) => {
+      if (intent.kind === 'empty') return;
+      if (intent.kind === 'search') {
+        setLibraryQuery(intent.value);
+        navigate('library');
+        return;
+      }
+      void openValue(intent.value);
+    },
+    [navigate, openValue],
+  );
+
+  const uploadFile = useCallback(
+    async (file: File) => {
+      if (file.type !== 'application/pdf' && !/.pdf$/i.test(file.name)) {
+        setNotice('PDF 파일만 가져올 수 있습니다.');
+        return;
+      }
+      setBusy(true);
+      setError(null);
+      try {
+        const result = await hub.uploadPdf(file);
+        if (result === null) {
+          setNotice('이 허브 버전은 아직 PDF 올리기를 지원하지 않습니다.');
+          return;
+        }
+        enterPaper(result.paper.paperKey);
+        await refresh(result.paper.paperKey);
+        void loadLibrary();
+      } catch (cause) {
+        setNotice(cause instanceof Error ? cause.message : 'PDF를 가져오지 못했습니다.');
+      } finally {
+        setBusy(false);
+      }
+    },
+    [enterPaper, refresh, loadLibrary],
+  );
 
   /** A stored paper opens through the service: from disk when its extraction is current, or
    * re-extracted from the saved PDF when the format moved on — never re-downloaded. */
@@ -1092,61 +1174,115 @@ export function App(): JSX.Element {
 
   // ------------------------------------------------------------------ view
 
-  const tone = connectionTone(connection);
+  // Ctrl/⌘+K opens the palette from anywhere, including inside inputs.
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && !event.altKey && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        setPaletteOpen((open) => !open);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  // A PDF dragged onto the window is imported; the outline shows only while files hover.
+  useEffect(() => {
+    let depth = 0;
+    const hasFiles = (event: DragEvent) => event.dataTransfer !== null && Array.from(event.dataTransfer.types).includes('Files');
+    const enter = (event: DragEvent) => {
+      if (!hasFiles(event)) return;
+      depth += 1;
+      setDragging(true);
+    };
+    const leave = (event: DragEvent) => {
+      if (!hasFiles(event)) return;
+      depth = Math.max(0, depth - 1);
+      if (depth === 0) setDragging(false);
+    };
+    const over = (event: DragEvent) => {
+      if (hasFiles(event)) event.preventDefault();
+    };
+    const drop = (event: DragEvent) => {
+      if (!hasFiles(event)) return;
+      event.preventDefault();
+      depth = 0;
+      setDragging(false);
+      const file = event.dataTransfer?.files[0];
+      if (file !== undefined) void uploadFile(file);
+    };
+    window.addEventListener('dragenter', enter);
+    window.addEventListener('dragleave', leave);
+    window.addEventListener('dragover', over);
+    window.addEventListener('drop', drop);
+    return () => {
+      window.removeEventListener('dragenter', enter);
+      window.removeEventListener('dragleave', leave);
+      window.removeEventListener('dragover', over);
+      window.removeEventListener('drop', drop);
+    };
+  }, [uploadFile]);
+
+  useEffect(() => {
+    if (notice === null) return;
+    const timer = window.setTimeout(() => setNotice(null), 5_000);
+    return () => window.clearTimeout(timer);
+  }, [notice]);
+
+  const commands = useMemo<Command[]>(() => {
+    const list: Command[] = [
+      { id: 'go-home', group: '이동', label: '홈', keywords: 'home', run: () => navigate('home') },
+      { id: 'go-library', group: '이동', label: '보관함', keywords: 'library', run: () => navigate('library') },
+      { id: 'go-settings', group: '이동', label: '설정', keywords: 'settings preferences', run: () => navigate('settings') },
+      { id: 'open-input', group: '논문', label: '주소나 번호로 논문 열기', keywords: 'arxiv doi url open', hint: '입력창', run: () => omniRef.current?.focus() },
+      { id: 'upload-pdf', group: '논문', label: 'PDF 올리기', keywords: 'upload file', run: () => fileRef.current?.click() },
+      { id: 'theme-next', group: '보기', label: '테마 바꾸기', keywords: 'theme dark sepia', hint: THEME_CHOICES.find((t) => t.value === nextTheme(theme))?.label, run: () => setTheme(nextTheme(theme)) },
+      ...THEME_CHOICES.map((t) => ({ id: `theme-${t.value}`, group: '보기', label: `테마: ${t.label}`, keywords: `theme ${t.value}`, run: () => setTheme(t.value) })),
+      { id: 'codex-account', group: 'AI', label: 'Codex 로그인 관리', keywords: 'account login codex', run: () => openAccountFrom(null, false) },
+    ];
+    if (paperKey !== null) {
+      list.splice(3, 0, { id: 'toggle-chat', group: '읽기', label: chatOpen ? '질문 패널 닫기' : '질문 패널 열기', keywords: 'chat ask question', run: toggleChat });
+    }
+    for (const p of papers) {
+      list.push({ id: `paper-${p.paperKey}`, group: '보관함', label: paperTitle(p), keywords: `${p.authors.join(' ')} ${p.arxivId ?? ''}`, run: () => void openStored(p.paperKey) });
+    }
+    return list;
+  }, [navigate, theme, setTheme, paperKey, chatOpen, toggleChat, papers, openStored, openAccountFrom]);
   const deleteTarget = deleteConfirmation === null ? undefined : papers.find((p) => p.paperKey === deleteConfirmation) ?? (paper?.paperKey === deleteConfirmation ? paper : undefined);
 
   return (
     <div className="app">
-      <header className="topbar">
-        <div className="brand">
-          <span className="brand__mark" aria-hidden="true">
-            Pr
-          </span>
-          <span className="brand__name">PaperRead</span>
-        </div>
-        <form
-          className="open-form"
-          onSubmit={(event) => {
-            event.preventDefault();
-            void openPaper();
-          }}
-        >
-          <label htmlFor="arxiv-input" className="sr-only">
-            논문 PDF/arXiv 주소 또는 arXiv 번호
-          </label>
-          <input
-            id="arxiv-input"
-            type="text"
-            value={input}
-            placeholder="논문 PDF 주소 또는 arXiv 번호"
-            autoComplete="off"
-            spellCheck={false}
-            onChange={(event) => setInput(event.target.value)}
-          />
-          <button type="submit" className="primary" disabled={busy || !client.canMutate || input.trim().length === 0}>
-            논문 열기
-          </button>
-        </form>
-        <div className="topbar__right">
-          {paperKey !== null ? (
-            <button type="button" onClick={leaveReader}>
-              보관함
-            </button>
-          ) : null}
+      <Masthead
+        view={paperKey !== null ? 'reader' : view}
+        onNavigate={navigate}
+        onOpenPalette={() => setPaletteOpen(true)}
+        input={<OmniInput ref={omniRef} busy={busy} disabled={!client.canMutate} onSubmit={submitIntent} onFile={(file) => void uploadFile(file)} />}
+        account={
           <button
             ref={accountButtonRef}
             type="button"
-            className="account-button"
+            className="masthead__account"
+            data-state={connection?.status === 'subscription' ? 'on' : 'off'}
             aria-haspopup="dialog"
             aria-expanded={accountOpen}
             disabled={connection === null}
             onClick={() => (accountOpen ? setAccountOpen(false) : openAccountFrom(null, false))}
           >
-            <span className={`status-dot status-dot--${tone}`} aria-hidden="true" />
-            <span>{connectionShortLabel(connection)}</span>
+            {connectionShortLabel(connection)}
           </button>
-        </div>
-      </header>
+        }
+      />
+      <input
+        ref={fileRef}
+        type="file"
+        accept="application/pdf,.pdf"
+        hidden
+        onChange={(event) => {
+          const file = event.target.files?.[0];
+          if (file !== undefined) void uploadFile(file);
+          event.target.value = '';
+        }}
+      />
 
       {accountOpen && connection !== null ? (
         <div className="popover-layer">
@@ -1188,53 +1324,20 @@ export function App(): JSX.Element {
       ) : null}
 
       {paperKey === null ? (
-        <main className="home">
-          <div className="home__grid">
-            <section className="home__hero" aria-labelledby="home-title">
-              <p className="eyebrow">원문 옆에서 읽는 한국어 논문</p>
-              <h1 id="home-title">논문을 열고, 의심되는 문장은 원문에서 바로 확인하세요.</h1>
-              <p className="home__lead">왼쪽에는 원본 PDF, 오른쪽에는 같은 쪽의 한국어 지면이 나란히 놓입니다. 문단을 누르면 반대쪽의 같은 쪽으로 이동합니다.</p>
-              <ol className="steps">
-                <li>
-                  <strong>논문 열기</strong>
-                  위 입력란에 공개 PDF 주소, 논문 페이지 주소 또는 arXiv 번호를 넣습니다. 번역을 시작하기 전에는 논문 내용을 Codex로 보내지 않습니다.
-                </li>
-                <li>
-                  <strong>Codex 로그인</strong>
-                  오른쪽 위 계정 메뉴에서 본인 ChatGPT 구독으로 로그인합니다. PaperRead 전용 로그인이라 다른 곳의 Codex에는 영향이 없습니다.
-                </li>
-                <li>
-                  <strong>번역 시작</strong>
-                  쪽 단위로 번역되어 오른쪽 지면에 흘러 들어옵니다. 저장된 번역은 로그인 없이도 다시 읽을 수 있습니다.
-                </li>
-              </ol>
-              <div className="home__connection" role="status">
-                <span className={`status-dot status-dot--${tone}`} aria-hidden="true" />
-                <p>
-                  {connection === null
-                    ? 'Codex 연결 상태를 확인하는 중입니다.'
-                    : connection.status === 'subscription'
-                      ? 'Codex 구독에 연결되어 있습니다. 논문을 열면 바로 번역을 시작할 수 있습니다.'
-                      : (translationBlockedReason(connection, { status: 'ready' } as Paper) ?? '')}
-                </p>
-                {connection !== null && connection.status !== 'subscription' ? (
-                  <button type="button" className="primary" onClick={() => openAccountFrom(null, false)}>
-                    계정 메뉴 열기
-                  </button>
-                ) : null}
-              </div>
-            </section>
-            <LibraryPanel
-              papers={papers}
-              selectedPaperKey={null}
-              deleteConfirmation={deleteConfirmation}
-              onOpen={(key) => void openStored(key)}
-              onRequestDelete={setDeleteConfirmation}
-              onCancelDelete={() => setDeleteConfirmation(null)}
-              onConfirmDelete={(key) => void confirmDelete(key)}
-            />
-          </div>
-        </main>
+        view === 'home' ? (
+          <HomeScreen papers={papers} onOpen={(key) => void openStored(key)} onShowLibrary={() => navigate('library')} />
+        ) : view === 'library' ? (
+          <LibraryScreen
+            papers={papers}
+            query={libraryQuery}
+            onQueryChange={setLibraryQuery}
+            onOpen={(key) => void openStored(key)}
+            onRequestDelete={setDeleteConfirmation}
+            hub={hub}
+          />
+        ) : (
+          <SettingsScreen hub={hub} theme={theme} onThemeChange={setTheme} onManageCodexLogin={() => openAccountFrom(null, false)} />
+        )
       ) : (
         <main className="reader-shell">
           <ReaderToolbar
@@ -1429,11 +1532,29 @@ export function App(): JSX.Element {
             </aside>
           </div>
 
-          {deleteConfirmation !== null ? (
-            <DeleteDialog paper={deleteTarget} paperKey={deleteConfirmation} onCancel={() => setDeleteConfirmation(null)} onConfirm={() => void confirmDelete(deleteConfirmation)} />
-          ) : null}
         </main>
       )}
+
+      {deleteConfirmation !== null ? (
+        <DeleteDialog paper={deleteTarget} paperKey={deleteConfirmation} onCancel={() => setDeleteConfirmation(null)} onConfirm={() => void confirmDelete(deleteConfirmation)} />
+      ) : null}
+
+      <CommandPalette open={paletteOpen} commands={commands} onClose={() => setPaletteOpen(false)} />
+
+      {dragging ? (
+        <div className="drop-target" aria-hidden="true">
+          <p>놓으면 보관함에 추가합니다</p>
+        </div>
+      ) : null}
+
+      {notice !== null ? (
+        <div className="toast" role="status">
+          <span>{notice}</span>
+          <button type="button" onClick={() => setNotice(null)} aria-label="알림 닫기">
+            닫기
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }

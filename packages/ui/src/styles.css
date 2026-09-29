@@ -1,13 +1,13 @@
 :root {
-  --bg: #f6f6f4;
-  --panel: #ffffff;
-  --ink: #1c1c1a;
-  --muted: #6b6b66;
-  --line: #d9d9d3;
-  --accent: #2f6f4e;
+  /* Legacy reader names, mapped onto the design tokens (design/tokens.css). */
+  --bg: var(--c-paper);
+  --panel: var(--c-surface);
+  --ink: var(--c-ink);
+  --muted: var(--c-muted);
+  --line: var(--c-rule);
+  --accent: var(--c-accent);
   --warn: #8a5a00;
-  --error: #9b2c2c;
-  color-scheme: light;
+  --error: var(--c-danger);
 }
 
 * { box-sizing: border-box; }
@@ -17,7 +17,7 @@ html, body, #root { height: 100%; margin: 0; }
 body {
   background: var(--bg);
   color: var(--ink);
-  font-family: 'Pretendard', 'Malgun Gothic', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-family: var(--font-ui);
   font-size: 15px;
   line-height: 1.6;
 }
@@ -47,7 +47,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 button.primary {
   background: var(--accent);
   border-color: var(--accent);
-  color: #fff;
+  color: var(--c-accent-ink);
 }
 
 .app {
@@ -59,12 +59,12 @@ button.primary {
 /* ------------------------------------------------------------------ header */
 
 :root {
-  --accent-soft: #e7f0eb;
-  --accent-ink: #225c3d;
+  --accent-soft: var(--c-accent-wash);
+  --accent-ink: var(--c-accent);
   /* The height of a pane head (a row of 13px tools) and of the question panel's header. */
   --reader-head-height: 42px;
-  --radius: 10px;
-  --shadow: 0 6px 20px rgba(28, 28, 26, 0.08);
+  --radius: var(--r-md);
+  --shadow: 0 1px 0 var(--c-rule), 0 8px 24px rgba(0, 0, 0, 0.06);
 }
 
 .sr-only {
@@ -103,7 +103,7 @@ button.primary {
   height: 28px;
   border-radius: 8px;
   background: var(--accent);
-  color: #fff;
+  color: var(--c-accent-ink);
   font-size: 12px;
   font-weight: 800;
 }
@@ -470,7 +470,7 @@ button.primary {
 .pdf-page {
   position: relative;
   margin: 0 auto 16px;
-  background: #fff;
+  background: var(--c-surface);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
 }
 
@@ -482,7 +482,7 @@ button.primary {
   justify-content: center;
   color: var(--muted);
   font-size: 13px;
-  background: repeating-linear-gradient(45deg, #fafafa, #fafafa 10px, #f2f2f0 10px, #f2f2f0 20px);
+  background: repeating-linear-gradient(45deg, var(--c-surface), var(--c-surface) 10px, var(--c-sunken) 10px, var(--c-sunken) 20px);
 }
 
 /* Ratio coordinates stay in page units until the browser draws the click target. */
@@ -524,7 +524,7 @@ button.primary {
   cursor: text;
 }
 .textLayer ::selection {
-  background: rgba(47, 111, 78, 0.35);
+  background: color-mix(in srgb, var(--c-accent) 30%, transparent);
 }
 
 /* ---------------------------------------------------------- highlight layer */
@@ -619,7 +619,7 @@ button.primary {
 .kr-page {
   position: relative;
   margin: 0 auto 16px;
-  background: #fff;
+  background: var(--c-surface);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
   overflow: hidden;
 }
@@ -630,7 +630,7 @@ button.primary {
   justify-content: center;
   color: var(--muted);
   font-size: 13px;
-  background: repeating-linear-gradient(45deg, #fafafa, #fafafa 10px, #f2f2f0 10px, #f2f2f0 20px);
+  background: repeating-linear-gradient(45deg, var(--c-surface), var(--c-surface) 10px, var(--c-sunken) 10px, var(--c-sunken) 20px);
   margin: 0 auto 16px;
 }
 
@@ -813,7 +813,7 @@ button.primary {
 }
 
 .account-panel__attempt--info {
-  background: #f3f6f4;
+  background: var(--c-sunken);
 }
 
 .account-panel__attempt a {
@@ -970,7 +970,7 @@ button.primary {
   min-width: 0;
   border: 1px solid var(--line);
   border-radius: 9px;
-  background: #fcfcfa;
+  background: var(--c-sunken);
 }
 
 .library-card.is-selected {
@@ -1089,7 +1089,7 @@ button.primary {
 .danger {
   border-color: var(--error);
   background: var(--error);
-  color: #fff;
+  color: var(--c-accent-ink);
 }
 
 @media (max-width: 960px) {
@@ -1186,10 +1186,10 @@ button.primary {
   --chat-ease: cubic-bezier(0.2, 0, 0, 1);
   /* The panel's inset from its edges: header, conversation and composer all line up on it. */
   --chat-inset: 16px;
-  --surface-sunken: #f2f2ef;
-  --ink-soft: #3a3a36;
-  --mono: ui-monospace, 'Cascadia Code', 'Cascadia Mono', Consolas, 'D2Coding', monospace;
-  --scrollbar-thin: #c9c9c3;
+  --surface-sunken: var(--c-sunken);
+  --ink-soft: var(--c-ink-soft);
+  --mono: var(--font-mono);
+  --scrollbar-thin: var(--c-rule-strong);
 }
 
 /* The reading panes and the docked panel share one row under the toolbar. */
@@ -1447,7 +1447,7 @@ button.primary {
 .chat__confirm-clear {
   border-color: var(--error);
   background: var(--error);
-  color: #fff;
+  color: var(--c-accent-ink);
 }
 
 .chat__confirm-clear:hover:not(:disabled) { border-color: var(--error); background: #862525; }
@@ -1527,7 +1527,7 @@ button.primary {
 .msg__quote {
   margin: 0;
   padding: 1px 0 1px 10px;
-  border-left: 2px solid rgba(47, 111, 78, 0.45);
+  border-left: 2px solid color-mix(in srgb, var(--c-accent) 45%, transparent);
   color: var(--accent-ink);
   font-size: 13px;
   line-height: 1.55;
@@ -1593,7 +1593,7 @@ button.primary {
   padding: 9px 10px 9px 12px;
   border: 1px solid var(--line);
   border-radius: 10px;
-  background: #fafaf8;
+  background: var(--c-sunken);
   color: var(--muted);
   font-size: 13px;
   line-height: 1.5;
@@ -1841,7 +1841,7 @@ button.primary {
 
 /* The composer's frame carries the focus ring for its textarea. */
 .chat__composer textarea:focus-visible { outline: none; }
-.chat__composer textarea::placeholder { color: #9a9a94; }
+.chat__composer textarea::placeholder { color: var(--c-faint); }
 .chat__composer textarea:disabled { cursor: not-allowed; }
 
 .chat__composer-bar {
@@ -1875,7 +1875,7 @@ button.primary {
   border-color: var(--accent);
   border-radius: 50%;
   background: var(--accent);
-  color: #fff;
+  color: var(--c-accent-ink);
   transition: background-color 0.15s, border-color 0.15s;
 }
 
@@ -1892,7 +1892,7 @@ button.primary {
   background: var(--ink);
 }
 
-.chat__send.is-stop:hover:not(:disabled) { border-color: #000; background: #000; }
+.chat__send.is-stop:hover:not(:disabled) { border-color: var(--c-ink); background: var(--c-ink); }
 
 .chat__hint,
 .chat__blocked {
@@ -2009,7 +2009,7 @@ button.primary {
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #fafaf8;
+  background: var(--c-sunken);
 }
 
 .md-code__bar {
@@ -2081,7 +2081,7 @@ button.primary {
 }
 
 .md-table th {
-  background: #f6f6f3;
+  background: var(--c-sunken);
   font-weight: 700;
   white-space: nowrap;
   vertical-align: bottom;
@@ -2160,7 +2160,7 @@ button.primary {
   border-radius: 999px;
   background: var(--ink);
   box-shadow: 0 6px 18px rgba(28, 28, 26, 0.24);
-  color: #fff;
+  color: var(--c-accent-ink);
   font-size: 12.5px;
   font-weight: 600;
   white-space: nowrap;
@@ -2169,7 +2169,7 @@ button.primary {
 }
 
 .quote-button.is-below { transform: translate(-50%, 0); }
-.quote-button:hover:not(:disabled) { border: 0; background: #000; }
+.quote-button:hover:not(:disabled) { border: 0; background: var(--c-ink); }
 
 @keyframes quote-pop {
   from { opacity: 0; }

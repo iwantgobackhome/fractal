@@ -3,8 +3,27 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=22.12" },
-  "scripts": { "build": "vite build", "dev": "vite --host 127.0.0.1", "typecheck": "tsc --noEmit -p tsconfig.json", "test": "vitest run" },
-  "dependencies": { "@fractal/shared": "0.1.0", "katex": "^0.18.7", "pdfjs-dist": "^6.3.289", "react": "^19.0.0", "react-dom": "^19.0.0" },
-  "devDependencies": { "@types/react": "^19.0.0", "@types/react-dom": "^19.0.0", "vite": "^7.0.0" }
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite --host 127.0.0.1",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@fontsource-variable/source-serif-4": "^5.3.0",
+    "@fractal/shared": "0.1.0",
+    "katex": "^0.18.7",
+    "pdfjs-dist": "^6.3.289",
+    "pretendard": "^1.3.9",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "vite": "^7.0.0"
+  }
 }
