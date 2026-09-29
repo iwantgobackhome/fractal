@@ -324,7 +324,7 @@ export class CodexPaperChat implements PaperChat {
     try {
       if(input.signal?.aborted)throw canceled();
       progress.requested=true;
-      const response=object(await rpc.request('turn/start',{threadId,input:[{type:'text',text}]}));
+      const response=object(await rpc.request('turn/start',{threadId,input:[{type:'text',text}],...(input.effort?{effort:input.effort}:{})}));
       progress.started=true;
       const id=object(response?.turn)?.id;
       if(typeof id==='string'&&id)turnId=id;

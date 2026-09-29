@@ -32,3 +32,7 @@ Android v1 uses HTTP with a bearer token. Tailscale provides WireGuard encryptio
 A native Android client will use pairing to receive connection details and a bearer credential, then sync library data and annotations over LAN or Tailscale. The `sync`, `ink`, `feed`, and `structure` contracts remain typed placeholders for their future owners.
 
 The original PaperRead file storage path and HTTP credential names remain in use so existing local data and browser behavior remain compatible.
+
+## AI provider routing
+
+The hub's `ai/` layer wraps the isolated Codex app-server question path and a headless Claude CLI process behind one streaming provider interface. `ProviderRegistry` resolves saved defaults and per-feature overrides, records UTC daily usage in `ai-usage.json`, and exposes best-effort provider limits. `settings.json` holds the small provider settings record. Both files live in the hub data directory, separate from paper records. `RegistryLegacyAdapter` keeps existing chat and translation endpoints on the same selection path: Codex calls delegate directly to their original methods, while Claude uses the same Korean translation prompts and validators from `translation/prompt.ts`. The AI route module performs input validation and streams SSE frames; a `LibrarySearch` interface currently has an in-memory implementation over extracted blocks, ready to be replaced by the storage team's FTS search.

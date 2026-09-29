@@ -8,6 +8,13 @@ import { PaperStore } from './store/index';
 import { JobManager } from './jobs/state';
 import { AccountAuthenticator, CodexTranslator, createOfficialRpcFactory } from './codex/index';
 import { startOfficialRpc } from './codex/runtime';
+import { CodexProvider } from './ai/codex';
+import { ClaudeProvider } from './ai/claude';
+import { ProviderRegistry } from './ai/registry';
+import { JsonSettingsStore } from './ai/settings';
+import { InMemoryLibrarySearch } from './ai/library-search';
+import { RegistryLegacyAdapter } from './ai/legacy-adapter';
+import { JsonUsageStore } from './ai/usage';
 import { TranslationPipeline, type PipelineLogEvent } from './translation/index';
 import { LOOPBACK, createApiServer, type ApiLogEvent, type ApiServer, type PaperAcquirer } from './api/index';
 import { acquirePaper, resolveArxiv } from './arxiv/acquire';
@@ -182,12 +189,14 @@ export async function startService(options: ServiceOptions = {}): Promise<Servic
   // lives in the app-owned `.codex-home` under the data directory, never in ~/.codex.
   const official = createOfficialRpcFactory(() => startOfficialRpc({ dataDirectory }));
   const translator = new CodexTranslator(official);
+  const aiRegistry = new ProviderRegistry([new CodexProvider(translator), new ClaudeProvider()], new JsonSettingsStore(dataDirectory), undefined, new JsonUsageStore(dataDirectory));
+  const aiAdapter = new RegistryLegacyAdapter(aiRegistry, translator);
   const session = new AccountAuthenticator(official);
   const log = options.log ?? ((event) => process.stdout.write(`${JSON.stringify(event)}\n`));
   // Isolation evidence that outlived its turn still ends the process (CodexTranslator); here it is
   // also recorded, with the path only — never any provider text.
   translator.onLateBreach = (path) => log({ event: 'codex', action: 'late-breach', path, code: 'UNSAFE_RUNTIME' });
-  const pipeline = new TranslationPipeline({ store, jobs, translator, log });
+  const pipeline = new TranslationPipeline({ store, jobs, translator: aiAdapter, log });
   const devices = new JsonDeviceStore(dataDirectory);
   let apiServer: ApiServer | undefined;
   const network = new NetworkManager(dataDirectory, () => apiServer?.address()?.port ?? options.port ?? 0, (addresses) => apiServer!.bind(addresses));
@@ -200,12 +209,14 @@ export async function startService(options: ServiceOptions = {}): Promise<Servic
   const server = createApiServer({
     store,
     jobs,
-    translator,
+    translator: aiAdapter,
     session,
     pipeline,
     // The same official process answers the reader's paper questions, on its own tool-less
     // threads; the translation pipeline never receives this path.
-    paperChat: translator,
+    paperChat: aiAdapter,
+    aiRegistry,
+    librarySearch: new InMemoryLibrarySearch(store),
     acquirer: realAcquirer(join(dataDirectory, '.pdf-cache')),
     log,
     devices,

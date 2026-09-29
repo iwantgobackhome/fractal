@@ -70,6 +70,7 @@ export interface AskRequest {
 export interface ConversationResult { conversation:Conversation }
 /** One question to the model about one paper revision. */
 export interface PaperQuestionInput {
+  effort?: z.infer<typeof effortSchema>;
   /** Stable for one conversation; a follow-up with the same id continues the same official
    * thread while it is alive. */
   conversationId:string;
@@ -94,5 +95,39 @@ export interface PaperChat {
   forget(conversationId:string):Promise<void>;
 }
 
-// TODO(ai): validate provider-independent request payloads when provider contracts are defined.
-export const aiPlaceholderSchema = z.object({});
+export const providerIdSchema = z.enum(['codex', 'claude']);
+export const effortSchema = z.enum(['low', 'medium', 'high', 'xhigh']);
+export const featureSchema = z.enum(['chat', 'translate', 'explain', 'digest']);
+export const modelSelectionSchema = z.object({ provider: providerIdSchema, model: z.string().min(1).max(120), effort: effortSchema.optional() });
+export const aiSettingsSchema = z.object({ default: modelSelectionSchema, overrides: z.object({ chat: modelSelectionSchema.optional(), translate: modelSelectionSchema.optional(), explain: modelSelectionSchema.optional(), digest: modelSelectionSchema.optional() }) });
+export const aiSettingsPatchSchema = z.object({ default: modelSelectionSchema.optional(), overrides: aiSettingsSchema.shape.overrides.partial().optional() });
+export type ProviderId = z.infer<typeof providerIdSchema>;
+export type AiFeature = z.infer<typeof featureSchema>;
+export type ModelSelection = z.infer<typeof modelSelectionSchema>;
+export type AiSettings = z.infer<typeof aiSettingsSchema>;
+export interface ProviderStatus { id: ProviderId; installed: boolean; loggedIn: boolean; version: string | null; detail?: string }
+export interface ProviderModel { id: string; label: string; efforts?: z.infer<typeof effortSchema>[] }
+export interface ProviderInfo { status: ProviderStatus; models: ProviderModel[] }
+export interface UsageRecord { day: string; provider: ProviderId; model: string; requests: number; inputTokens: number | null; outputTokens: number | null; durationMs: number }
+export interface AiUsageResponse { totals: UsageRecord[]; limits: Partial<Record<ProviderId, Record<string, unknown> | null>> }
+export const providerStatusSchema = z.object({ id: providerIdSchema, installed: z.boolean(), loggedIn: z.boolean(), version: z.string().nullable(), detail: z.string().optional() });
+export const providerModelSchema = z.object({ id: z.string().min(1), label: z.string(), efforts: z.array(effortSchema).optional() });
+export const providerInfoSchema = z.object({ status: providerStatusSchema, models: z.array(providerModelSchema) });
+export const providersResponseSchema = z.object({ providers: z.array(providerInfoSchema), settings: aiSettingsSchema });
+export const usageRecordSchema = z.object({ day: z.iso.date(), provider: providerIdSchema, model: z.string(), requests: z.number().int().nonnegative(), inputTokens: z.number().int().nonnegative().nullable(), outputTokens: z.number().int().nonnegative().nullable(), durationMs: z.number().nonnegative() });
+export const aiUsageResponseSchema = z.object({ totals: z.array(usageRecordSchema), limits: z.object({ codex: z.record(z.string(), z.unknown()).nullable().optional(), claude: z.record(z.string(), z.unknown()).nullable().optional() }) });
+export const bboxSchema = z.object({ x: z.number().min(0).max(1), y: z.number().min(0).max(1), width: z.number().positive().max(1), height: z.number().positive().max(1) }).refine(v => v.x + v.width <= 1 && v.y + v.height <= 1, 'box must fit the page');
+export const askPaperSchema = z.object({ question: z.string().trim().min(1).max(4000), selectedText: z.string().max(20000).optional(), page: z.number().int().positive().optional(), rect: bboxSchema.optional(), selection: modelSelectionSchema.optional() }).refine(v => !v.rect || v.page !== undefined, 'rect requires page');
+export const explainSchema = z.object({ kind: z.enum(['equation', 'figure', 'table', 'text']), page: z.number().int().positive(), bbox: bboxSchema, croppedPngBase64: z.string().max(4_000_000).optional(), surroundingText: z.string().max(30000).optional(), selection: modelSelectionSchema.optional() });
+export const libraryAskSchema = z.object({ question: z.string().trim().min(1).max(4000), selection: modelSelectionSchema.optional() });
+export const glossarySchema = z.object({ selection: modelSelectionSchema.optional() });
+export interface GlossaryTerm { term: string; page: number; definition: string }
+export interface AiAnswer { text: string; provider: ProviderId; model: string; inputTokens: number | null; outputTokens: number | null; durationMs: number }
+export type AiSseEvent = { type: 'delta'; text: string } | { type: 'done'; answer: AiAnswer; latex?: string; terms?: GlossaryTerm[] } | { type: 'error'; error: AppError };
+export const glossaryTermSchema = z.object({ term: z.string().min(1), page: z.number().int().positive(), definition: z.string() });
+export const aiAnswerSchema = z.object({ text: z.string(), provider: providerIdSchema, model: z.string(), inputTokens: z.number().int().nonnegative().nullable(), outputTokens: z.number().int().nonnegative().nullable(), durationMs: z.number().nonnegative() });
+export const aiSseEventSchema = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('delta'), text: z.string() }),
+  z.object({ type: z.literal('done'), answer: aiAnswerSchema, latex: z.string().optional(), terms: z.array(glossaryTermSchema).optional() }),
+  z.object({ type: z.literal('error'), error: z.object({ code: z.enum(['INVALID_INPUT','NOT_FOUND','NETWORK','TOO_LARGE','UNSUPPORTED_PDF','SOURCE_CHANGED','AUTH_REQUIRED','SUBSCRIPTION_REQUIRED','QUOTA','MODEL_UNAVAILABLE','BUSY','INVALID_TRANSLATION','STORAGE','UNSAFE_RUNTIME','INTERNAL']), message: z.string(), retryable: z.boolean() }) }),
+]);

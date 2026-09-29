@@ -18,6 +18,9 @@ import type { NetworkManager } from '../net/manager';
 import { handleHub } from './routes/hub';
 import { handlePairing } from './routes/pairing';
 import type { RouteContext, Result } from './routes/types';
+import { handleAi } from './routes/ai';
+import type { ProviderRegistry } from '../ai/registry';
+import type { LibrarySearch } from '../ai/library-search';
 
 export { TOKEN_HEADER, assertLocalRequest, isLoopbackHost, isLoopbackOrigin } from './guard';
 export { HttpError, statusFor, toHttp } from './errors';
@@ -62,6 +65,8 @@ export interface ApiServerOptions {
   /** The official program's question path for the reader's paper questions. Kept apart from
    * the translator and from the account session: it never gains account methods. */
   paperChat: PaperChat;
+  aiRegistry?: ProviderRegistry;
+  librarySearch?: LibrarySearch;
   log?: (event: ApiLogEvent) => void;
   /** Overridable for tests; production mints a fresh 256-bit credential. */
   token?: string;
@@ -357,6 +362,11 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
       const result = await route_(method, segments, request, { devices: options.devices, pairing: options.pairing, network: options.network, local, url });
       if (result.kind === 'json') {
         send(response, result.status, { data: result.data });
+      } else if (result.kind === 'sse') {
+        response.writeHead(200, { ...baseHeaders(), 'content-type': 'text/event-stream; charset=utf-8', 'connection': 'keep-alive' });
+        try { for await (const event of result.events) response.write(`event: ${event.type}\ndata: ${safeJson(event)}\n\n`); }
+        catch (cause) { const { error } = toHttp(cause); response.write(`event: error\ndata: ${safeJson({ type: 'error', error })}\n\n`); }
+        response.end();
       } else {
         const headers = { ...baseHeaders() };
         // The entry document must load its own script; the API CSP forbids everything.
@@ -386,6 +396,10 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
     if (hub !== undefined) return hub;
     const pairing = await handlePairing(method, segments, request, ctx);
     if (pairing !== undefined) return pairing;
+    if (options.aiRegistry && options.librarySearch) {
+      const ai = await handleAi(method, segments, request, { store, registry: options.aiRegistry, librarySearch: options.librarySearch });
+      if (ai) return ai;
+    }
     // The client entry document, with the request credential embedded.
     if (options.clientHtml !== undefined && method === 'GET' && (segments.length === 0 || (segments.length === 1 && segments[0] === 'index.html'))) {
       const html = ctx.local ? injectToken(options.clientHtml(), token) : options.clientHtml();

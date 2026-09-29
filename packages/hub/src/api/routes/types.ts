@@ -1,11 +1,21 @@
 import type { IncomingMessage } from 'node:http';
+import type { AiSseEvent } from '@fractal/shared';
 import type { DeviceStore } from '../../pairing/store';
 import type { PairingSessions } from '../../pairing/session';
 import type { NetworkManager } from '../../net/manager';
+import type { PaperStore } from '../../store/index';
+import type { ProviderRegistry } from '../../ai/registry';
+import type { LibrarySearch } from '../../ai/library-search';
 import { HttpError } from '../errors';
 
-export type Result = { kind: 'json'; status: number; data: unknown } | { kind: 'bytes'; status: number; body: Buffer; contentType: string };
+export type Result =
+  | { kind: 'json'; status: number; data: unknown }
+  | { kind: 'bytes'; status: number; body: Buffer; contentType: string }
+  | { kind: 'sse'; status: 200; events: AsyncIterable<AiSseEvent> };
+/** Per-request facts every route handler may use: who is asking and the parsed URL. */
 export interface RouteContext { devices?: DeviceStore; pairing?: PairingSessions; network?: NetworkManager; local: boolean; url: URL }
+/** Services the AI routes need. */
+export interface AiRouteContext { store: PaperStore; registry: ProviderRegistry; librarySearch: LibrarySearch }
 export function json(data: unknown, status = 200): Result { return { kind: 'json', status, data }; }
 export async function body(request: IncomingMessage): Promise<unknown> {
   const chunks: Buffer[] = [];

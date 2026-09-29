@@ -48,3 +48,37 @@ Android v1 uses plain HTTP with a bearer token over LAN or Tailscale. Tailscale 
 | `POST /api/jobs/:id/resume` | `{}` | `{ "job": Job }` |
 
 `Paper` includes source identity, title, authors, extraction status, page count, and coverage. `Region` stores page-relative rectangle coordinates. `Job` includes state, progress, pause reason, and usage. IDs in paths are percent encoded by the client. Opening a paper or asking a question may return before its background work finishes; poll the corresponding paper, job, or chat read route.
+
+## AI providers and reading assistance
+
+These routes use the same loopback, Origin, and token guard as the rest of the API. `GET` responses use `{ "data": ... }`. The four generated-answer routes return `text/event-stream`: each frame has `event: delta|done|error` and a JSON `data:` object matching `AiSseEvent`. `delta.text` is appended to the answer; `done.answer` includes text, provider, model, token counts when reported, and duration in milliseconds. Token counts remain `null` when unavailable.
+
+`GET /api/ai/providers` returns exactly this nesting (one entry per provider):
+
+```json
+{
+  "data": {
+    "providers": [
+      {
+        "status": { "id": "codex", "installed": true, "loggedIn": true, "version": "codex-cli 0.159.0", "detail": "subscription" },
+        "models": [{ "id": "gpt-6-sol", "label": "gpt-6-sol", "efforts": ["low", "medium", "high", "xhigh"] }]
+      }
+    ],
+    "settings": { "default": { "provider": "codex", "model": "gpt-6-sol" }, "overrides": {} }
+  }
+}
+```
+
+`status.version` may be `null`; `status.detail` and each model's `efforts` may be absent. The `providers` array also contains a `claude` entry with the same shape. `settings.overrides` may hold `chat`, `translate`, `explain`, and `digest` selections.
+
+| Method and path | Request JSON | Response |
+| --- | --- | --- |
+| `GET /api/ai/providers` | — | `{ providers: ProviderInfo[], settings: AiSettings }` |
+| `PUT /api/ai/settings` | `{ default?: { provider, model, effort? }, overrides?: { chat?, translate?, explain?, digest? } }` | `AiSettings` |
+| `GET /api/ai/usage` | — | `{ totals: UsageRecord[], limits: { codex?, claude? } }` grouped by UTC day, provider and model |
+| `POST /api/papers/:key/ask` | `{ question, selectedText?, page?, rect?, selection? }` | SSE answer with `[p.N]` page citations |
+| `POST /api/papers/:key/explain` | `{ kind: "equation"\|"figure"\|"table"\|"text", page, bbox, croppedPngBase64?, surroundingText?, selection? }` | SSE explanation; `done.latex` when an equation contains `$$...$$` or `\\(...\\)` |
+| `POST /api/library/ask` | `{ question, selection? }` | SSE answer using library hits with `[paper:KEY p.N]` citations |
+| `POST /api/papers/:key/glossary` | `{ selection? }` | SSE `done.terms` with `{ term, page, definition }[]`; cached by paper content and selection |
+
+`selection` is `{ provider: "codex"|"claude", model: string, effort?: "low"|"medium"|"high"|"xhigh" }`. It overrides the saved feature selection for one request. Normalized boxes use `x`, `y`, `width`, `height` in `[0,1]` and must fit on the page. The provider adapters currently use extracted page text for explanation; `croppedPngBase64` is accepted but not sent to the CLI. Claude model aliases are `opus`, `sonnet`, and `haiku`; full `claude-*` model IDs are also accepted. The legacy `/api/papers/:key/chat` and translation endpoints select their provider through the same registry using their `modelId`.

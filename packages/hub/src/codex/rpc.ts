@@ -68,7 +68,7 @@ export const TEXT_ONLY_ITEM_TYPES:ReadonlySet<string>=new Set(['userMessage','re
  * fails that question as too large instead (see chat.ts). */
 export const CONTEXT_COMPACTION_ITEM='contextCompaction';
 /** Turn payload keys that cannot re-introduce tools, writable paths, or approvals. */
-const TURN_KEYS:Record<string,ReadonlySet<string>>={'turn/start':new Set(['threadId','input','outputSchema']),'turn/interrupt':new Set(['threadId','turnId']),'thread/unsubscribe':new Set(['threadId'])};
+const TURN_KEYS:Record<string,ReadonlySet<string>>={'turn/start':new Set(['threadId','input','outputSchema','effort']),'turn/interrupt':new Set(['threadId','turnId']),'thread/unsubscribe':new Set(['threadId'])};
 function plainObject(value:unknown):value is Record<string,unknown> {
   return value!==null&&typeof value==='object'&&!Array.isArray(value);
 }
