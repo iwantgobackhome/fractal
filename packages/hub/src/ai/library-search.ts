@@ -1,7 +1,14 @@
 import type { SqlitePaperStore } from '../store/sqlite';
 import type { PaperStore } from '../store/index';
-export interface LibraryHit { paperKey: string; title: string; page: number; text: string }
-export interface LibrarySearch { searchLibrary(query: string, limit?: number): Promise<LibraryHit[]> }
+export interface LibraryHit {
+  paperKey: string;
+  title: string;
+  page: number;
+  text: string;
+}
+export interface LibrarySearch {
+  searchLibrary(query: string, limit?: number): Promise<LibraryHit[]>;
+}
 export class InMemoryLibrarySearch implements LibrarySearch {
   constructor(private readonly store: PaperStore) {}
   async searchLibrary(query: string, limit = 12): Promise<LibraryHit[]> {
@@ -16,11 +23,46 @@ export class InMemoryLibrarySearch implements LibrarySearch {
         if (score) scored.push({ hit: { paperKey: key, title, page: block.regions[0]?.page ?? 1, text }, score });
       }
     }
-    return scored.sort((a, b) => b.score - a.score).slice(0, limit).map(v => v.hit);
+    return scored
+      .sort((a, b) => b.score - a.score)
+      .slice(0, limit)
+      .map((v) => v.hit);
   }
 }
 
-const STOPWORDS = new Set(['the', 'and', 'for', 'with', 'that', 'this', 'what', 'which', 'how', 'are', 'was', 'were', 'from', 'into', 'does', 'did', 'use', 'used', 'using', 'about', 'paper', 'papers', '논문', '무엇', '어떤', '어떻게', '있는', '사용한', '사용', '내가', '저장한']);
+const STOPWORDS = new Set([
+  'the',
+  'and',
+  'for',
+  'with',
+  'that',
+  'this',
+  'what',
+  'which',
+  'how',
+  'are',
+  'was',
+  'were',
+  'from',
+  'into',
+  'does',
+  'did',
+  'use',
+  'used',
+  'using',
+  'about',
+  'paper',
+  'papers',
+  '논문',
+  '무엇',
+  '어떤',
+  '어떻게',
+  '있는',
+  '사용한',
+  '사용',
+  '내가',
+  '저장한',
+]);
 
 /** Question words for the full-text index: distinct, at least 2 characters, common words dropped. */
 export function questionTerms(question: string): string[] {
@@ -40,7 +82,9 @@ export class FtsLibrarySearch implements LibrarySearch {
     if (terms.length === 0) return [];
     const expression = terms.map((t) => `"${t.replace(/"/g, '""')}"`).join(' OR ');
     const rows = this.store.db
-      .prepare('SELECT paper_key, block_id, page, bm25(paper_fts) AS score FROM paper_fts WHERE paper_fts MATCH ? AND block_id IS NOT NULL ORDER BY score LIMIT ?')
+      .prepare(
+        'SELECT paper_key, block_id, page, bm25(paper_fts) AS score FROM paper_fts WHERE paper_fts MATCH ? AND block_id IS NOT NULL ORDER BY score LIMIT ?',
+      )
       .all(expression, limit) as { paper_key: string; block_id: string; page: number | null }[];
     const hits: LibraryHit[] = [];
     for (const row of rows) {

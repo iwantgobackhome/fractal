@@ -43,7 +43,12 @@ function useSourcePageImage(doc: PDFDocumentProxy, page: number, zoom: number, d
       canvas.height = Math.max(1, Math.floor(rendered.height * dpr));
       const context = canvas.getContext('2d');
       if (context === null) return;
-      const render = proxy.render({ canvas, canvasContext: context, viewport: proxy.getViewport({ scale: zoom * dpr }), ...(pageColors === undefined ? {} : { pageColors }) });
+      const render = proxy.render({
+        canvas,
+        canvasContext: context,
+        viewport: proxy.getViewport({ scale: zoom * dpr }),
+        ...(pageColors === undefined ? {} : { pageColors }),
+      });
       task = render;
       try {
         await render.promise;
@@ -140,7 +145,17 @@ function SourceCrop({ item, image }: SourceCropProps): JSX.Element {
   return <div className={`kr-source kr-${item.block.kind}`} style={style} data-block-id={item.block.blockId} aria-label={`${item.block.kind} 원문`} />;
 }
 
-function FlowItemView({ item, renderedPageHeight, image, onSelectBlock }: { item: KoreanFlowItem; renderedPageHeight: number; image: { url: string; size: Size } | null; onSelectBlock(block: Block, via: SelectVia): void }): JSX.Element | null {
+function FlowItemView({
+  item,
+  renderedPageHeight,
+  image,
+  onSelectBlock,
+}: {
+  item: KoreanFlowItem;
+  renderedPageHeight: number;
+  image: { url: string; size: Size } | null;
+  onSelectBlock(block: Block, via: SelectVia): void;
+}): JSX.Element | null {
   if (item.kind === 'text') return <TextFlow item={item} renderedPageHeight={renderedPageHeight} onSelectBlock={onSelectBlock} />;
   if (image === null) return null;
   return <SourceCrop item={item} image={image} />;
@@ -221,12 +236,7 @@ function KoreanPageView({ doc, page, zoom, dpr, blocks, translations, placeholde
   }
 
   return (
-    <div
-      className="kr-page"
-      data-page={page}
-      ref={containerRef}
-      style={{ width: image.size.width, padding: `${marginTop}px ${marginX}px ${marginBottom}px` }}
-    >
+    <div className="kr-page" data-page={page} ref={containerRef} style={{ width: image.size.width, padding: `${marginTop}px ${marginX}px ${marginBottom}px` }}>
       {segments.map((segment, index) =>
         segment.type === 'full' ? (
           <div className="kr-row kr-row-full" key={index}>
@@ -285,13 +295,31 @@ export interface KoreanPaneProps {
  * though a Korean page's true height is not known until it is actually drawn.
  */
 export function KoreanPages(props: KoreanPaneProps): JSX.Element {
-  const { doc, pageCount, currentPage, zoom, blocks, translations, pageHeights, pageIntrinsicSize, onPageHeight, bodyRef, onScroll, onAdjustScroll, onSelectBlock, pageColors } = props;
+  const {
+    doc,
+    pageCount,
+    currentPage,
+    zoom,
+    blocks,
+    translations,
+    pageHeights,
+    pageIntrinsicSize,
+    onPageHeight,
+    bodyRef,
+    onScroll,
+    onAdjustScroll,
+    onSelectBlock,
+    pageColors,
+  } = props;
   const dpr = useMemo(() => Math.min(2, typeof window === 'undefined' ? 1 : window.devicePixelRatio || 1), []);
   const live = useMemo(() => new Set(visiblePageWindow(currentPage, pageCount, 1)), [currentPage, pageCount]);
   const [, setHeightVersion] = useState(0);
   const fallbackHeight = useCallback((page: number) => koreanPageFallbackHeight(pageIntrinsicSize(page), zoom), [pageIntrinsicSize, zoom]);
   const placeholderSize = useCallback(
-    (page: number): Size => ({ width: pageRenderSize(pageIntrinsicSize(page), zoom).width, height: koreanPageHeight(pageHeights.get(page), fallbackHeight(page)) }),
+    (page: number): Size => ({
+      width: pageRenderSize(pageIntrinsicSize(page), zoom).width,
+      height: koreanPageHeight(pageHeights.get(page), fallbackHeight(page)),
+    }),
     [fallbackHeight, pageHeights, pageIntrinsicSize, zoom],
   );
   // Every drawn or re-laid-out page reports here, whether or not its height moved: the scroll

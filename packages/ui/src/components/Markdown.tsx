@@ -175,16 +175,14 @@ function renderBlock(block: MdBlock, key: string, tail: ReactNode): ReactNode {
         </div>
       );
       // The caret goes under the table, never inside its bordered box.
-      return tail === null ? (
-        table
-      ) : (
-        [
-          table,
-          <div key={`${key}.tail`} className="md-tail md-tail--block">
-            {tail}
-          </div>,
-        ]
-      );
+      return tail === null
+        ? table
+        : [
+            table,
+            <div key={`${key}.tail`} className="md-tail md-tail--block">
+              {tail}
+            </div>,
+          ];
     }
     case 'hr':
       return tail === null ? (

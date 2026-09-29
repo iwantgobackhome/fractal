@@ -17,7 +17,9 @@ export function recordRemoteFailure(request: IncomingMessage, now = Date.now()):
   const previous = failures.get(ip);
   failures.set(ip, { count: (previous?.until ?? 0) > now ? previous!.count + 1 : 1, until: now + 60_000 });
 }
-export function clearRemoteFailures(request: IncomingMessage): void { failures.delete(request.socket.remoteAddress ?? 'unknown'); }
+export function clearRemoteFailures(request: IncomingMessage): void {
+  failures.delete(request.socket.remoteAddress ?? 'unknown');
+}
 export function assertRemoteRequest(request: IncomingMessage, devices: DeviceStore, allowClaim = false, now = Date.now()): void {
   const ip = request.socket.remoteAddress ?? 'unknown';
   const previous = failures.get(ip);

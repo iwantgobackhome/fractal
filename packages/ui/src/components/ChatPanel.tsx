@@ -138,7 +138,15 @@ function Answer({ message, canRetry, retryDisabled, retrying, onRetry, onOpenAcc
       {ended && retrying ? <Preparing /> : null}
       {ended && !retrying ? (
         <div className={`msg__notice${message.status === 'failed' ? ' msg__notice--error' : ''}`}>
-          <p>{message.status === 'failed' ? (error === null ? '답변을 받지 못했습니다.' : chatErrorText(error)) : hasText ? '답변을 중간에 멈췄습니다.' : '답변을 멈췄습니다.'}</p>
+          <p>
+            {message.status === 'failed'
+              ? error === null
+                ? '답변을 받지 못했습니다.'
+                : chatErrorText(error)
+              : hasText
+                ? '답변을 중간에 멈췄습니다.'
+                : '답변을 멈췄습니다.'}
+          </p>
           {/* No empty action row: a notice without actions keeps its words the full width. */}
           {accountAction || canRetry ? (
             <div className="msg__notice-actions">
@@ -256,8 +264,11 @@ export function ChatView(props: ChatViewProps): JSX.Element {
     if (event.key !== 'Escape' || imeOwnsKey({ isComposing: event.nativeEvent.isComposing, keyCode: event.keyCode })) return;
     event.preventDefault();
     event.stopPropagation();
-    if (confirmingClear) props.onCancelClear();
-    else props.onClose();
+    if (confirmingClear) {
+      props.onCancelClear();
+    } else {
+      props.onClose();
+    }
   };
 
   return (
@@ -265,7 +276,14 @@ export function ChatView(props: ChatViewProps): JSX.Element {
       <header className="chat__header">
         <h2 className="chat__title">질문</h2>
         <div className="chat__tools">
-          <select className="chat__model" aria-label="답변 모델" title="답변 모델" value={modelId} disabled={modelIds.length === 0} onChange={(event) => props.onModelChange(event.target.value)}>
+          <select
+            className="chat__model"
+            aria-label="답변 모델"
+            title="답변 모델"
+            value={modelId}
+            disabled={modelIds.length === 0}
+            onChange={(event) => props.onModelChange(event.target.value)}
+          >
             {modelIds.length === 0 ? <option value="">사용 가능한 모델 없음</option> : null}
             {modelIds.map((id) => (
               <option key={id} value={id}>
@@ -355,8 +373,7 @@ export function ChatView(props: ChatViewProps): JSX.Element {
         </div>
         {!pinned ? (
           <button type="button" className="chat__jump" onClick={props.onJumpToBottom}>
-            <IconArrowDown />
-            맨 아래로
+            <IconArrowDown />맨 아래로
           </button>
         ) : null}
       </div>
@@ -490,7 +507,19 @@ function reducedMotion(): boolean {
  * 300 ms only while an answer is being written and the panel is open, and sends questions.
  * Mounted per paper (keyed by paperKey), so nothing of one paper's conversation outlives it.
  */
-export function ChatPanel({ client, paperKey, paper, connection, canMutate, preferredModelId, open, quote, onClose, onOpenAccount, onConnectionStale }: ChatPanelProps): JSX.Element {
+export function ChatPanel({
+  client,
+  paperKey,
+  paper,
+  connection,
+  canMutate,
+  preferredModelId,
+  open,
+  quote,
+  onClose,
+  onOpenAccount,
+  onConnectionStale,
+}: ChatPanelProps): JSX.Element {
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<AppError | null>(null);
@@ -624,8 +653,11 @@ export function ChatPanel({ client, paperKey, paper, connection, canMutate, pref
   }, [endJump]);
 
   useLayoutEffect(() => {
-    if (stick.current) toBottom();
-    else onListScroll();
+    if (stick.current) {
+      toBottom();
+    } else {
+      onListScroll();
+    }
   }, [conversation, sending, loading, toBottom, onListScroll]);
 
   // Text reflows as the panel slides open, fonts arrive and formulas are typeset.

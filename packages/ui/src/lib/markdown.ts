@@ -197,8 +197,11 @@ function tokenize(source: string): { s: string; atoms: Atom[] } {
       continue;
     }
     for (const segment of splitMath(part.text)) {
-      if (segment.type === 'math') put({ type: 'math', tex: segment.tex, display: segment.display }, segment.raw);
-      else plain(segment.text);
+      if (segment.type === 'math') {
+        put({ type: 'math', tex: segment.tex, display: segment.display }, segment.raw);
+      } else {
+        plain(segment.text);
+      }
     }
   }
   return { s, atoms };
@@ -259,8 +262,9 @@ function readLink(s: string, index: number): LinkMatch | null {
       at = atom.end - 1;
       continue;
     }
-    if (s[at] === '[') depth += 1;
-    else if (s[at] === ']') {
+    if (s[at] === '[') {
+      depth += 1;
+    } else if (s[at] === ']') {
       depth -= 1;
       if (depth === 0) {
         close = at;
@@ -274,8 +278,9 @@ function readLink(s: string, index: number): LinkMatch | null {
   for (; end < s.length; end += 1) {
     const char = s[end];
     if (char === '\n') return null;
-    if (char === '(') balance += 1;
-    else if (char === ')') {
+    if (char === '(') {
+      balance += 1;
+    } else if (char === ')') {
       if (balance === 0) break;
       balance -= 1;
     }
@@ -300,14 +305,20 @@ function pushText(out: MdInline[], text: string): void {
     if (index > 0) out.push({ type: 'break' });
     if (line.length === 0) return;
     const last = out[out.length - 1];
-    if (last !== undefined && last.type === 'text') out[out.length - 1] = { type: 'text', text: last.text + line };
-    else out.push({ type: 'text', text: line });
+    if (last !== undefined && last.type === 'text') {
+      out[out.length - 1] = { type: 'text', text: last.text + line };
+    } else {
+      out.push({ type: 'text', text: line });
+    }
   });
 }
 
 function pushNode(out: MdInline[], node: MdInline): void {
-  if (node.type === 'text') pushText(out, node.text);
-  else out.push(node);
+  if (node.type === 'text') {
+    pushText(out, node.text);
+  } else {
+    out.push(node);
+  }
 }
 
 function parseSpan(s: string, atoms: Atom[], depth: number): MdInline[] {
@@ -372,8 +383,11 @@ function parseSpan(s: string, atoms: Atom[], depth: number): MdInline[] {
         const children = parseSpan(link.label, atoms, depth + 1);
         const href = safeHref(linkTarget(rawText(link.target, atoms)));
         // An address that is not http(s) never becomes a link; its words stay as text.
-        if (href !== null) out.push({ type: 'link', href, children });
-        else for (const child of children) pushNode(out, child);
+        if (href !== null) {
+          out.push({ type: 'link', href, children });
+        } else {
+          for (const child of children) pushNode(out, child);
+        }
         index = link.end;
         continue;
       }
@@ -426,7 +440,13 @@ function listMarker(line: string): Marker | null {
   const gap = match[5].length;
   // Content of an empty item, or one set off by a wide gap, starts one space after the marker.
   const content = indent + markerWidth + (rest.length === 0 || gap > 4 ? 1 : gap);
-  return { indent, ordered: match[3] !== undefined, number: match[3] === undefined ? 1 : Number(match[3]), content, rest: gap > 4 ? line.slice(indent + markerWidth + 1) : rest };
+  return {
+    indent,
+    ordered: match[3] !== undefined,
+    number: match[3] === undefined ? 1 : Number(match[3]),
+    content,
+    rest: gap > 4 ? line.slice(indent + markerWidth + 1) : rest,
+  };
 }
 
 function stripColumns(line: string, columns: number): string {

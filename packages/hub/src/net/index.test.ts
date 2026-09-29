@@ -6,7 +6,14 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-const address = (ip: string, internal = false): NetworkInterfaceInfo => ({ address: ip, netmask: '255.255.255.0', family: 'IPv4', mac: '00:00:00:00:00:00', internal, cidr: `${ip}/24` });
+const address = (ip: string, internal = false): NetworkInterfaceInfo => ({
+  address: ip,
+  netmask: '255.255.255.0',
+  family: 'IPv4',
+  mac: '00:00:00:00:00:00',
+  internal,
+  cidr: `${ip}/24`,
+});
 describe('network detection', () => {
   it('separates LAN, Tailscale and loopback addresses', () => {
     const found = detectAddresses({ eth: [address('192.168.1.3'), address('127.0.0.1', true)], tailscale: [address('100.101.2.4')] });
@@ -21,7 +28,9 @@ describe('network detection', () => {
   it('persists settings and updates listeners without restarting', async () => {
     const directory = mkdtempSync(join(tmpdir(), 'fractal-network-'));
     const bound: string[][] = [];
-    const bind = async (addresses: string[]) => { bound.push(addresses); };
+    const bind = async (addresses: string[]) => {
+      bound.push(addresses);
+    };
     const detect = async () => ({ lan: ['192.168.1.3'], tailscale: ['100.101.2.4'] });
     try {
       const manager = new NetworkManager(directory, () => 7327, bind, detect);
@@ -31,6 +40,8 @@ describe('network detection', () => {
       expect((await new NetworkManager(directory, () => 7327, bind, detect).status()).settings.lan).toBe(true);
       manager.configureExplicit(['127.0.0.1', '100.101.2.4']);
       expect((await manager.status()).addresses.map((entry) => entry.address)).toEqual(['127.0.0.1', '100.101.2.4']);
-    } finally { rmSync(directory, { recursive: true, force: true }); }
+    } finally {
+      rmSync(directory, { recursive: true, force: true });
+    }
   });
 });

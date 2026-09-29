@@ -6,7 +6,9 @@ import { JsonDeviceStore } from './store';
 import { PairingSessions } from './session';
 
 const directories: string[] = [];
-afterEach(() => { for (const directory of directories.splice(0)) rmSync(directory, { recursive: true, force: true }); });
+afterEach(() => {
+  for (const directory of directories.splice(0)) rmSync(directory, { recursive: true, force: true });
+});
 function setup() {
   const directory = mkdtempSync(join(tmpdir(), 'fractal-pairing-'));
   directories.push(directory);
@@ -17,7 +19,12 @@ describe('pairing', () => {
   it('uses a five minute, one-time code and stores only a token hash', () => {
     const { directory, devices } = setup();
     let now = 1_000_000;
-    const sessions = new PairingSessions(devices, 'Hub', () => ['http://192.168.1.2:7327'], () => now);
+    const sessions = new PairingSessions(
+      devices,
+      'Hub',
+      () => ['http://192.168.1.2:7327'],
+      () => now,
+    );
     const started = sessions.start();
     expect(started.payload.urls).toEqual(['http://192.168.1.2:7327']);
     expect(sessions.payload(started.session)).toEqual(started.payload);

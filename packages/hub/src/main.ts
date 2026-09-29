@@ -51,7 +51,8 @@ export function defaultDataDirectory(): string {
  * Input is validated as an identifier or a public URL, never a command string.
  */
 export function realAcquirer(directory: string, publicationOptions: PublicNetworkOptions = {}): PaperAcquirer {
-  const isPublicationUrl = (input: string) => /^https?:\/\//i.test(input.trim()) && !/^https?:\/\/(?:arxiv\.org|export\.arxiv\.org)(?:[/:]|$)/i.test(input.trim());
+  const isPublicationUrl = (input: string) =>
+    /^https?:\/\//i.test(input.trim()) && !/^https?:\/\/(?:arxiv\.org|export\.arxiv\.org)(?:[/:]|$)/i.test(input.trim());
   return {
     identify(input: string): string | null {
       const publicationKey = identifyPublication(input.trim());
@@ -86,7 +87,12 @@ export function realAcquirer(directory: string, publicationOptions: PublicNetwor
           pageCount: coverage.totalPages,
           coverage,
           extractionVersion,
-          status: coverage.textPages === 0 ? 'unsupported' : coverage.unsupportedPages.length || blocks.some((block) => block.kind === 'unsupported') ? 'partial' : 'ready',
+          status:
+            coverage.textPages === 0
+              ? 'unsupported'
+              : coverage.unsupportedPages.length || blocks.some((block) => block.kind === 'unsupported')
+                ? 'partial'
+                : 'ready',
         },
       };
     },
@@ -183,7 +189,11 @@ export function servedAssets(assetDirectory: string) {
 
 export async function startService(options: ServiceOptions = {}): Promise<Service> {
   const dataDirectory = options.dataDirectory ?? defaultDataDirectory();
-  const legacyDirectory = process.env.PAPERREAD_DATA ?? (process.platform === 'win32' ? join(process.env.LOCALAPPDATA ?? join(homedir(), 'AppData', 'Local'), 'PaperRead') : join(process.env.XDG_DATA_HOME ?? join(homedir(), '.local', 'share'), 'paperread'));
+  const legacyDirectory =
+    process.env.PAPERREAD_DATA ??
+    (process.platform === 'win32'
+      ? join(process.env.LOCALAPPDATA ?? join(homedir(), 'AppData', 'Local'), 'PaperRead')
+      : join(process.env.XDG_DATA_HOME ?? join(homedir(), '.local', 'share'), 'paperread'));
   const store = new SqlitePaperStore(dataDirectory, legacyDirectory);
   store.ensureRoot();
   configureLibrarySearch(store);
@@ -194,7 +204,12 @@ export async function startService(options: ServiceOptions = {}): Promise<Servic
   // lives in the app-owned `.codex-home` under the data directory, never in ~/.codex.
   const official = createOfficialRpcFactory(() => startOfficialRpc({ dataDirectory }));
   const translator = new CodexTranslator(official);
-  const aiRegistry = new ProviderRegistry([new CodexProvider(translator), new ClaudeProvider()], new JsonSettingsStore(dataDirectory), undefined, new JsonUsageStore(dataDirectory));
+  const aiRegistry = new ProviderRegistry(
+    [new CodexProvider(translator), new ClaudeProvider()],
+    new JsonSettingsStore(dataDirectory),
+    undefined,
+    new JsonUsageStore(dataDirectory),
+  );
   const aiAdapter = new RegistryLegacyAdapter(aiRegistry, translator);
   const session = new AccountAuthenticator(official);
   const log = options.log ?? ((event) => process.stdout.write(`${JSON.stringify(event)}\n`));
@@ -204,7 +219,11 @@ export async function startService(options: ServiceOptions = {}): Promise<Servic
   const pipeline = new TranslationPipeline({ store, jobs, translator: aiAdapter, log });
   const devices = new JsonDeviceStore(dataDirectory);
   let apiServer: ApiServer | undefined;
-  const network = new NetworkManager(dataDirectory, () => apiServer?.address()?.port ?? options.port ?? 0, (addresses) => apiServer!.bind(addresses));
+  const network = new NetworkManager(
+    dataDirectory,
+    () => apiServer?.address()?.port ?? options.port ?? 0,
+    (addresses) => apiServer!.bind(addresses),
+  );
   const pairing = new PairingSessions(devices, hostname(), () => {
     const port = apiServer?.address()?.port ?? options.port ?? 0;
     // The QR advertises only enabled remote listeners.
@@ -279,7 +298,10 @@ function invokedDirectly(): boolean {
 
 if (invokedDirectly()) {
   const port = Number(process.env.PAPERREAD_PORT ?? 7327);
-  startService({ port: Number.isSafeInteger(port) && port >= 0 ? port : 7327, indexHtml: process.env.PAPERREAD_INDEX ?? resolve(dirname(fileURLToPath(import.meta.url)), '../../ui/dist/index.html') })
+  startService({
+    port: Number.isSafeInteger(port) && port >= 0 ? port : 7327,
+    indexHtml: process.env.PAPERREAD_INDEX ?? resolve(dirname(fileURLToPath(import.meta.url)), '../../ui/dist/index.html'),
+  })
     .then((service) => {
       process.stdout.write(`${JSON.stringify({ event: 'service.ready', url: service.url, dataDirectory: service.dataDirectory })}\n`);
       const stop = () => {

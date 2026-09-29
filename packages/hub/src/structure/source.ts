@@ -1,7 +1,14 @@
 import { gunzipSync } from 'node:zlib';
 import type { StructureItem } from '@fractal/shared';
 
-export interface SourceFragment { kind: StructureItem['kind']; label?: string; caption?: string; latex?: string; number?: string; numberedRows?: number }
+export interface SourceFragment {
+  kind: StructureItem['kind'];
+  label?: string;
+  caption?: string;
+  latex?: string;
+  number?: string;
+  numberedRows?: number;
+}
 const MAX_ARCHIVE = 20 * 1024 * 1024;
 const MAX_SOURCE = 80 * 1024 * 1024;
 
@@ -52,7 +59,12 @@ export function latexFiles(bytes: Uint8Array): string[] {
 }
 
 function cleanCaption(value: string): string {
-  return value.replace(/\\(?:textbf|emph|textit)\{([^{}]*)\}/g, '$1').replace(/\\[a-zA-Z]+(?:\[[^\]]*\])?/g, '').replace(/[{}~]/g, ' ').replace(/\s+/g, ' ').trim();
+  return value
+    .replace(/\\(?:textbf|emph|textit)\{([^{}]*)\}/g, '$1')
+    .replace(/\\[a-zA-Z]+(?:\[[^\]]*\])?/g, '')
+    .replace(/[{}~]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 export function parseLatexSources(files: readonly string[]): SourceFragment[] {
@@ -65,12 +77,20 @@ export function parseLatexSources(files: readonly string[]): SourceFragment[] {
       const label = /\\label\{([^}]+)\}/.exec(body)?.[1];
       const caption = /\\caption(?:\[[^\]]*\])?\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}/.exec(body)?.[1];
       const kind = environment.startsWith('figure') ? 'figure' : environment.startsWith('table') ? 'table' : 'equation';
-      const numberedRows = kind !== 'equation' || environment.endsWith('*')
-        ? 0
-        : environment === 'align'
-          ? body.split(/\\\\(?:\[[^\]]*\])?/g).filter((row) => row.trim() && !/\\(?:notag|nonumber)\b/.test(row)).length
-          : /\\(?:notag|nonumber)\b/.test(body) ? 0 : 1;
-      fragments.push({ kind, ...(label ? { label } : {}), ...(caption ? { caption: cleanCaption(caption) } : {}), ...(kind === 'equation' ? { latex: body.replace(/\\label\{[^}]+\}/g, '').trim(), numberedRows } : {}) });
+      const numberedRows =
+        kind !== 'equation' || environment.endsWith('*')
+          ? 0
+          : environment === 'align'
+            ? body.split(/\\\\(?:\[[^\]]*\])?/g).filter((row) => row.trim() && !/\\(?:notag|nonumber)\b/.test(row)).length
+            : /\\(?:notag|nonumber)\b/.test(body)
+              ? 0
+              : 1;
+      fragments.push({
+        kind,
+        ...(label ? { label } : {}),
+        ...(caption ? { caption: cleanCaption(caption) } : {}),
+        ...(kind === 'equation' ? { latex: body.replace(/\\label\{[^}]+\}/g, '').trim(), numberedRows } : {}),
+      });
     }
     for (const match of source.matchAll(/\$\$([\s\S]*?)\$\$|\\\[([\s\S]*?)\\\]/g)) {
       fragments.push({ kind: 'equation', latex: (match[1] ?? match[2]).trim() });
@@ -100,20 +120,30 @@ function captionSimilarity(a: string, b: string): number {
 }
 
 const greek: Record<string, string> = {
-  'θ': 'theta', 'α': 'alpha', 'β': 'beta', 'μ': 'mu', 'σ': 'sigma', 'ϵ': 'epsilon',
-  'ε': 'epsilon', 'π': 'pi', '∑': 'sum', '∏': 'prod', '√': 'sqrt',
+  θ: 'theta',
+  α: 'alpha',
+  β: 'beta',
+  μ: 'mu',
+  σ: 'sigma',
+  ϵ: 'epsilon',
+  ε: 'epsilon',
+  π: 'pi',
+  '∑': 'sum',
+  '∏': 'prod',
+  '√': 'sqrt',
 };
 
 /** Compare the visible symbol sequence while ignoring TeX presentation commands. */
 export function mathSimilarity(pdfText: string, latex: string): number {
-  const normalize = (value: string): string => value
-    .replace(/\\(?:left|right|bigl|bigr|Bigl|Bigr|quad|qquad)\b/g, '')
-    .replace(/\\(?:mathrm|mathbf|mathit|mathsf|text|operatorname)\s*\{/g, '{')
-    .replace(/\\(?:dfrac|tfrac|frac)\b/g, 'frac')
-    .replace(/\\([A-Za-z]+)/g, (_match, command: string) => command.replace(/^b(?=x|mu|epsilon)/, ''))
-    .replace(/[θαβμσϵεπ∑∏√]/g, (symbol) => greek[symbol] ?? symbol)
-    .toLowerCase()
-    .replace(/[^a-z0-9=+\-*/]/g, '');
+  const normalize = (value: string): string =>
+    value
+      .replace(/\\(?:left|right|bigl|bigr|Bigl|Bigr|quad|qquad)\b/g, '')
+      .replace(/\\(?:mathrm|mathbf|mathit|mathsf|text|operatorname)\s*\{/g, '{')
+      .replace(/\\(?:dfrac|tfrac|frac)\b/g, 'frac')
+      .replace(/\\([A-Za-z]+)/g, (_match, command: string) => command.replace(/^b(?=x|mu|epsilon)/, ''))
+      .replace(/[θαβμσϵεπ∑∏√]/g, (symbol) => greek[symbol] ?? symbol)
+      .toLowerCase()
+      .replace(/[^a-z0-9=+\-*/]/g, '');
   const left = normalize(pdfText);
   const right = normalize(latex);
   if (left.length < 3 || right.length < 3) return 0;
@@ -129,7 +159,7 @@ export function mathSimilarity(pdfText: string, latex: string): number {
   const b = grams(right);
   let overlap = 0;
   for (const [gram, count] of a) overlap += Math.min(count, b.get(gram) ?? 0);
-  return 2 * overlap / Math.max(1, left.length + right.length - 4);
+  return (2 * overlap) / Math.max(1, left.length + right.length - 4);
 }
 
 function equationMatches(items: readonly StructureItem[], fragments: readonly SourceFragment[]): Map<string, SourceFragment> {
@@ -179,14 +209,22 @@ export function matchLatex(items: StructureItem[], fragments: readonly SourceFra
     }
     if (!best || bestScore < 0.2) return item;
     used.add(best);
-    return { ...item, ...(best.caption && best.caption.length > item.caption.length ? { caption: best.caption } : {}), ...(best.latex ? { latex: best.latex } : {}), ...(best.label ? { sourceLabel: best.label } : {}) };
+    return {
+      ...item,
+      ...(best.caption && best.caption.length > item.caption.length ? { caption: best.caption } : {}),
+      ...(best.latex ? { latex: best.latex } : {}),
+      ...(best.label ? { sourceLabel: best.label } : {}),
+    };
   });
 }
 
 export async function fetchArxivSource(id: string, fetcher: typeof fetch = fetch): Promise<SourceFragment[]> {
   if (!/^(?:\d{4}\.\d{4,5}|[a-z][a-z0-9.-]*\/\d{7})(?:v\d+)?$/i.test(id)) return [];
   try {
-    const response = await fetcher(`https://arxiv.org/e-print/${id}`, { signal: AbortSignal.timeout(12_000), headers: { 'user-agent': 'Fractal/0.1 (paper structure extraction)' } });
+    const response = await fetcher(`https://arxiv.org/e-print/${id}`, {
+      signal: AbortSignal.timeout(12_000),
+      headers: { 'user-agent': 'Fractal/0.1 (paper structure extraction)' },
+    });
     const bytes = await limitedBytes(response);
     return bytes ? parseLatexSources(latexFiles(bytes)) : [];
   } catch {

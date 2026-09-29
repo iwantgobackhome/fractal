@@ -70,7 +70,15 @@ function referenceFromRaw(n: string, raw: string): ReferenceEntry {
   const abbreviated = /^((?:(?:[A-Z]\.|[A-Z][a-z]+)\s+)+[A-Z][a-z]+)\.\s+(.+)$/.exec(raw);
   const authors = abbreviated?.[1] ?? raw.split(/\.\s+(?=[A-Z])/)[0]?.trim();
   const title = abbreviated?.[2]?.split(/\.\s+/)[0]?.trim();
-  return { n, raw, ...(authors ? { authors } : {}), ...(title ? { title } : {}), ...(yearText ? { year: Number(yearText) } : {}), ...(doi ? { doi } : {}), ...(arxivId ? { arxivId } : {}) };
+  return {
+    n,
+    raw,
+    ...(authors ? { authors } : {}),
+    ...(title ? { title } : {}),
+    ...(yearText ? { year: Number(yearText) } : {}),
+    ...(doi ? { doi } : {}),
+    ...(arxivId ? { arxivId } : {}),
+  };
 }
 
 export function expandCitation(text: string): string[] {
@@ -156,8 +164,21 @@ export function itemsFromBlocks(blocks: readonly Block[]): StructureItem[] {
     const kind = /^(Table|표)$/i.test(match[1]) ? 'table' : 'figure';
     const height = Math.min(0.18, kind === 'figure' ? captionBox.y : 1 - captionBox.y - captionBox.height);
     if (height < 0.04) continue;
-    const bbox = { x: Math.max(0.03, captionBox.x - 0.04), y: kind === 'figure' ? captionBox.y - height : captionBox.y + captionBox.height, width: Math.min(0.94, captionBox.width + 0.08), height };
-    items.push({ id: hash(`${captionBlock.paperKey}:${kind}:${page}:${captionBlock.blockId}`), kind, page, bbox, label: `${kind === 'figure' ? 'Figure' : 'Table'} ${match[2]}`, caption: captionBlock.sourceText.trim(), confidence: 0.38 });
+    const bbox = {
+      x: Math.max(0.03, captionBox.x - 0.04),
+      y: kind === 'figure' ? captionBox.y - height : captionBox.y + captionBox.height,
+      width: Math.min(0.94, captionBox.width + 0.08),
+      height,
+    };
+    items.push({
+      id: hash(`${captionBlock.paperKey}:${kind}:${page}:${captionBlock.blockId}`),
+      kind,
+      page,
+      bbox,
+      label: `${kind === 'figure' ? 'Figure' : 'Table'} ${match[2]}`,
+      caption: captionBlock.sourceText.trim(),
+      confidence: 0.38,
+    });
   }
   const best = new Map<string, StructureItem>();
   for (const item of items) {
@@ -168,17 +189,26 @@ export function itemsFromBlocks(blocks: readonly Block[]): StructureItem[] {
   return [...best.values()];
 }
 
-interface TextPiece { text: string; box: StructureBox; page: number; baseline: number; font: string }
+interface TextPiece {
+  text: string;
+  box: StructureBox;
+  page: number;
+  baseline: number;
+  font: string;
+}
 
 /** Equation tags are often separate PDF text runs after fraction glyphs in reading order. */
 function attachRightMarginNumbers(items: StructureItem[], pieces: readonly TextPiece[]): void {
   const tags = pieces.filter((piece) => /^\(\d+\)$/.test(piece.text.trim()) && piece.box.x >= 0.78);
   for (const item of items) {
     if (item.kind !== 'equation' || item.label) continue;
-    const match = tags.find((piece) => piece.page === item.page
-      && piece.box.x >= item.bbox.x + item.bbox.width * 0.6
-      && piece.box.y <= item.bbox.y + item.bbox.height + 0.012
-      && piece.box.y + piece.box.height >= item.bbox.y - 0.012);
+    const match = tags.find(
+      (piece) =>
+        piece.page === item.page &&
+        piece.box.x >= item.bbox.x + item.bbox.width * 0.6 &&
+        piece.box.y <= item.bbox.y + item.bbox.height + 0.012 &&
+        piece.box.y + piece.box.height >= item.bbox.y - 0.012,
+    );
     if (!match) continue;
     item.label = match.text.trim();
     item.confidence = Math.max(item.confidence, 0.82);
@@ -201,7 +231,11 @@ function supplementalEquations(pieces: readonly TextPiece[], blocks: readonly Bl
     row.sort((a, b) => a.box.x - b.box.x);
     const page = row[0].page;
     if (page >= start && page < end) continue;
-    const text = row.map((piece) => piece.text).join(' ').replace(/\s+/g, ' ').trim();
+    const text = row
+      .map((piece) => piece.text)
+      .join(' ')
+      .replace(/\s+/g, ' ')
+      .trim();
     if (text.length < 3 || text.length > 160) continue;
     const x = Math.min(...row.map((piece) => piece.box.x));
     const y = Math.min(...row.map((piece) => piece.box.y));
@@ -217,7 +251,15 @@ function supplementalEquations(pieces: readonly TextPiece[], blocks: readonly Bl
     if (!numbered && !(mathFont && symbols >= 2) && symbols < 3) continue;
     if (existing.some((item) => item.kind === 'equation' && item.page === page && Math.abs(item.bbox.y - y) < 0.025)) continue;
     if (extras.some((item) => item.page === page && Math.abs(item.bbox.y - y) < 0.035)) continue;
-    extras.push({ id: hash(`${page}:${x}:${y}:${text}`), kind: 'equation', page, bbox: { x, y, width, height: bottom - y }, label: numbered ? `(${numbered[1]})` : '', caption: text, confidence: numbered ? 0.72 : mathFont ? 0.56 : 0.46 });
+    extras.push({
+      id: hash(`${page}:${x}:${y}:${text}`),
+      kind: 'equation',
+      page,
+      bbox: { x, y, width, height: bottom - y },
+      label: numbered ? `(${numbered[1]})` : '',
+      caption: text,
+      confidence: numbered ? 0.72 : mathFont ? 0.56 : 0.46,
+    });
   }
   return extras;
 }
@@ -245,13 +287,21 @@ function markersFromPieces(pieces: TextPiece[], references: readonly ReferenceEn
       const lastIndex = row.indexOf(touched[touched.length - 1]);
       const firstOffset = Math.max(0, start - offsets[firstIndex]);
       const lastOffset = Math.min(row[lastIndex].text.length, end - offsets[lastIndex]);
-      const x = touched[0].box.x + touched[0].box.width * firstOffset / touched[0].text.length;
+      const x = touched[0].box.x + (touched[0].box.width * firstOffset) / touched[0].text.length;
       const y = Math.min(...touched.map((piece) => piece.box.y));
-      const right = row[lastIndex].box.x + row[lastIndex].box.width * lastOffset / row[lastIndex].text.length;
+      const right = row[lastIndex].box.x + (row[lastIndex].box.width * lastOffset) / row[lastIndex].text.length;
       const bottom = Math.max(...touched.map((piece) => piece.box.y + piece.box.height));
-      const bibliography = referenceBlocks.some((block) => block.regions.some((region) => region.page === touched[0].page && y >= region.y - 0.003 && y <= region.y + region.height + 0.003));
+      const bibliography = referenceBlocks.some((block) =>
+        block.regions.some((region) => region.page === touched[0].page && y >= region.y - 0.003 && y <= region.y + region.height + 0.003),
+      );
       if (bibliography || right <= x) continue;
-      markers.push({ id: hash(`${touched[0].page}:${x}:${y}:${match[0]}`), page: touched[0].page, bbox: { x, y, width: right - x, height: bottom - y }, text: match[0], references: refs });
+      markers.push({
+        id: hash(`${touched[0].page}:${x}:${y}:${match[0]}`),
+        page: touched[0].page,
+        bbox: { x, y, width: right - x, height: bottom - y },
+        text: match[0],
+        references: refs,
+      });
     }
   }
   return markers;
@@ -275,7 +325,7 @@ export class PdfJsStructureDetector implements StructureDetector {
           try {
             const style = content.styles[item.fontName] ?? {};
             const region = textItemRegion(item, box, pageNumber, style);
-            const font = page.commonObjs.has(item.fontName) ? page.commonObjs.get(item.fontName) as { name?: string } : null;
+            const font = page.commonObjs.has(item.fontName) ? (page.commonObjs.get(item.fontName) as { name?: string }) : null;
             pieces.push({ text: item.str, box: region, page: pageNumber, baseline: region.y + region.height / 2, font: font?.name ?? item.fontName });
           } catch {
             continue;
@@ -288,7 +338,11 @@ export class PdfJsStructureDetector implements StructureDetector {
     const items = itemsFromBlocks(blocks);
     items.push(...supplementalEquations(pieces, blocks, items));
     attachRightMarginNumbers(items, pieces);
-    const markers = markersFromPieces(pieces, references, blocks.filter((block) => block.kind === 'reference'));
+    const markers = markersFromPieces(
+      pieces,
+      references,
+      blocks.filter((block) => block.kind === 'reference'),
+    );
     return { version: STRUCTURE_VERSION, status: 'ready', items, references, markers };
   }
 }

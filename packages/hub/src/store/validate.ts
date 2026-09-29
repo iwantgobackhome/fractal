@@ -100,7 +100,9 @@ export function validatePaper(paper: unknown): Paper {
     try {
       const source = new URL(p.sourceUrl);
       if (source.protocol !== 'https:' || !source.hostname || source.username || source.password || source.port) throw new Error();
-    } catch { throw invalidInput('publication sourceUrl must be a public HTTPS URL'); }
+    } catch {
+      throw invalidInput('publication sourceUrl must be a public HTTPS URL');
+    }
   }
   if (!PAPER_STATUSES.includes(p.status)) throw invalidInput(`paper.status is invalid: ${String(p.status)}`);
   if (p.pdfSha256 !== null && !isNonEmptyString(p.pdfSha256)) throw invalidInput('paper.pdfSha256 must be a string or null');
@@ -314,8 +316,21 @@ export const MAX_ANSWER_CHARS = 200_000;
 export const MAX_CHAT_MESSAGES = 400;
 
 const ERROR_CODES: ErrorCode[] = [
-  'INVALID_INPUT', 'NOT_FOUND', 'NETWORK', 'TOO_LARGE', 'UNSUPPORTED_PDF', 'SOURCE_CHANGED', 'AUTH_REQUIRED',
-  'SUBSCRIPTION_REQUIRED', 'QUOTA', 'MODEL_UNAVAILABLE', 'BUSY', 'INVALID_TRANSLATION', 'STORAGE', 'UNSAFE_RUNTIME', 'INTERNAL',
+  'INVALID_INPUT',
+  'NOT_FOUND',
+  'NETWORK',
+  'TOO_LARGE',
+  'UNSUPPORTED_PDF',
+  'SOURCE_CHANGED',
+  'AUTH_REQUIRED',
+  'SUBSCRIPTION_REQUIRED',
+  'QUOTA',
+  'MODEL_UNAVAILABLE',
+  'BUSY',
+  'INVALID_TRANSLATION',
+  'STORAGE',
+  'UNSAFE_RUNTIME',
+  'INTERNAL',
 ];
 /** Only settled messages reach the disk; 'answering' lives in the service's memory. */
 const STORED_CHAT_STATUSES = ['completed', 'failed', 'canceled'] as const;
@@ -365,7 +380,8 @@ export function validateChatMessage(message: unknown): ChatMessage {
   if (!isNonEmptyString(m.createdAt)) throw invalidInput(`${where}: createdAt must be an ISO 8601 string`);
 
   if (m.role === 'user') {
-    if (m.text.trim().length === 0 || m.text.length > MAX_QUESTION_CHARS) throw invalidInput(`${where}: a question must hold 1-${MAX_QUESTION_CHARS} characters`);
+    if (m.text.trim().length === 0 || m.text.length > MAX_QUESTION_CHARS)
+      throw invalidInput(`${where}: a question must hold 1-${MAX_QUESTION_CHARS} characters`);
     if (m.status !== 'completed') throw invalidInput(`${where}: a question is always completed`);
     if (m.modelId !== null || m.error !== null || m.usage !== null) throw invalidInput(`${where}: a question carries no model, error or usage`);
     return { messageId: m.messageId, role: 'user', text: m.text, status: 'completed', modelId: null, error: null, usage: null, createdAt: m.createdAt };

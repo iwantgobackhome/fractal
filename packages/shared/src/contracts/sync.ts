@@ -10,5 +10,8 @@ export const syncPullSchema = z.object({ cursor: z.string().regex(/^\d+$/), pape
 export type SyncPull = z.infer<typeof syncPullSchema>;
 export const syncPushSchema = z.object({ annotations: z.array(annotationSchema).max(1000) });
 export type SyncPush = z.infer<typeof syncPushSchema>;
-export const syncPushResultSchema = z.object({ results: z.array(z.object({ id: z.string().uuid(), applied: z.boolean(), rev: z.number().int().nonnegative() })), cursor: z.string() });
+export const syncPushResultSchema = z.object({
+  results: z.array(z.object({ id: z.string().uuid(), applied: z.boolean(), rev: z.number().int().nonnegative() })),
+  cursor: z.string(),
+});
 export type SyncPushResult = z.infer<typeof syncPushResultSchema>;

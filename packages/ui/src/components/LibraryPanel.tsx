@@ -88,50 +88,49 @@ export function DeleteDialog({ paper, paperKey, onCancel, onConfirm }: DeleteDia
     };
   }, []);
 
-  const onKeyDown = useCallback((event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      onCancel();
-      return;
-    }
-    if (event.key !== 'Tab') return;
-    const dialog = dialogRef.current;
-    if (dialog === null) return;
-    const elements = focusableElements(dialog);
-    if (elements.length === 0) {
-      event.preventDefault();
-      dialog.focus();
-      return;
-    }
-    const first = elements[0];
-    const last = elements[elements.length - 1];
-    if (event.shiftKey && (document.activeElement === first || document.activeElement === dialog)) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
-    }
-  }, [onCancel]);
+  const onKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        onCancel();
+        return;
+      }
+      if (event.key !== 'Tab') return;
+      const dialog = dialogRef.current;
+      if (dialog === null) return;
+      const elements = focusableElements(dialog);
+      if (elements.length === 0) {
+        event.preventDefault();
+        dialog.focus();
+        return;
+      }
+      const first = elements[0];
+      const last = elements[elements.length - 1];
+      if (event.shiftKey && (document.activeElement === first || document.activeElement === dialog)) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    },
+    [onCancel],
+  );
 
   return (
     <div className="dialog-scrim" role="presentation">
-      <div
-        ref={dialogRef}
-        className="delete-dialog"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        tabIndex={-1}
-        onKeyDown={onKeyDown}
-      >
+      <div ref={dialogRef} className="delete-dialog" role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1} onKeyDown={onKeyDown}>
         <p className="eyebrow">자료 관리</p>
         <h2 id={titleId}>이 자료를 삭제하시겠습니까?</h2>
         <p>{paper === undefined ? paperKey : paperTitle(paper)}</p>
         <p className="delete-dialog__warning">저장된 PDF, 번역, 하이라이트, 메모가 PaperRead에서 삭제됩니다.</p>
         <div className="delete-dialog__actions">
-          <button type="button" className="danger" onClick={onConfirm}>삭제 확인</button>
-          <button type="button" onClick={onCancel}>취소</button>
+          <button type="button" className="danger" onClick={onConfirm}>
+            삭제 확인
+          </button>
+          <button type="button" onClick={onCancel}>
+            취소
+          </button>
         </div>
       </div>
     </div>
@@ -171,12 +170,7 @@ export function LibraryPanel({
               const menuOpen = menuKey === paper.paperKey;
               return (
                 <li key={paper.paperKey} className={`library-card${isSelected ? ' is-selected' : ''}`}>
-                  <button
-                    type="button"
-                    className="library-card__open"
-                    onClick={() => onOpen(paper.paperKey)}
-                    aria-current={isSelected ? 'true' : undefined}
-                  >
+                  <button type="button" className="library-card__open" onClick={() => onOpen(paper.paperKey)} aria-current={isSelected ? 'true' : undefined}>
                     <span className="library-card__title">{title}</span>
                     <span className="library-card__meta">
                       {paper.sourceKind === 'publication' ? new URL(paper.sourceUrl).hostname : `${paper.arxivId}v${paper.version}`} · {paperStatus(paper)}
@@ -214,12 +208,7 @@ export function LibraryPanel({
         )}
       </section>
       {deleteConfirmation !== null ? (
-        <DeleteDialog
-          paper={confirmationPaper}
-          paperKey={deleteConfirmation}
-          onCancel={onCancelDelete}
-          onConfirm={() => onConfirmDelete(deleteConfirmation)}
-        />
+        <DeleteDialog paper={confirmationPaper} paperKey={deleteConfirmation} onCancel={onCancelDelete} onConfirm={() => onConfirmDelete(deleteConfirmation)} />
       ) : null}
     </>
   );

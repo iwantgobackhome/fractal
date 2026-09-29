@@ -1,12 +1,14 @@
 import { z } from 'zod';
 
 /** All boxes use top-left page coordinates, normalised to [0, 1]. */
-export const structureBoxSchema = z.object({
-  x: z.number().min(0).max(1),
-  y: z.number().min(0).max(1),
-  width: z.number().positive().max(1),
-  height: z.number().positive().max(1),
-}).refine((box) => box.x + box.width <= 1.000001 && box.y + box.height <= 1.000001);
+export const structureBoxSchema = z
+  .object({
+    x: z.number().min(0).max(1),
+    y: z.number().min(0).max(1),
+    width: z.number().positive().max(1),
+    height: z.number().positive().max(1),
+  })
+  .refine((box) => box.x + box.width <= 1.000001 && box.y + box.height <= 1.000001);
 export type StructureBox = z.infer<typeof structureBoxSchema>;
 
 export const structureItemSchema = z.object({

@@ -16,7 +16,11 @@ function stringOrNull(value: unknown): string | null {
 }
 
 function normalizedId(value: string, arxiv = false): string {
-  const clean = value.toLowerCase().replace(/^https?:\/\/(?:dx\.)?(?:doi\.org|arxiv\.org\/abs)\//, '').replace(/^arxiv:/, '').replace(/[.,;)]$/, '');
+  const clean = value
+    .toLowerCase()
+    .replace(/^https?:\/\/(?:dx\.)?(?:doi\.org|arxiv\.org\/abs)\//, '')
+    .replace(/^arxiv:/, '')
+    .replace(/[.,;)]$/, '');
   return arxiv ? clean.replace(/v\d+$/, '') : clean;
 }
 
@@ -30,7 +34,11 @@ function referenceTitle(reference: ReferenceEntry): string | null {
 }
 
 function titleTokens(value: string): Set<string> {
-  const normalized = value.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/([A-Za-z])-\s+([a-z])/g, '$1$2').toLowerCase();
+  const normalized = value
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/([A-Za-z])-\s+([a-z])/g, '$1$2')
+    .toLowerCase();
   return new Set(normalized.match(/[a-z0-9]+/g) ?? []);
 }
 
@@ -43,7 +51,20 @@ export function titleSimilarity(left: string, right: string): number {
 }
 
 function familyNames(value: string): Set<string> {
-  return new Set(value.split(/,|\band\b/gi).map((part) => part.trim().split(/\s+/).at(-1)?.replace(/[^\p{L}-]/gu, '').toLowerCase() ?? '').filter((name) => name.length > 1));
+  return new Set(
+    value
+      .split(/,|\band\b/gi)
+      .map(
+        (part) =>
+          part
+            .trim()
+            .split(/\s+/)
+            .at(-1)
+            ?.replace(/[^\p{L}-]/gu, '')
+            .toLowerCase() ?? '',
+      )
+      .filter((name) => name.length > 1),
+  );
 }
 
 export function validEnrichment(reference: ReferenceEntry, candidate: ReferenceEnrichment, authors: readonly string[]): boolean {
@@ -76,20 +97,38 @@ export async function enrichReference(reference: ReferenceEntry, fetcher: typeof
     await politePause();
     const response = await fetcher(semanticUrl, { headers, signal: AbortSignal.timeout(8000) });
     if (response.ok) {
-      const data = await response.json() as Record<string, unknown>;
-      const candidate = Array.isArray(data.data) ? data.data[0] as Record<string, unknown> | undefined : data;
+      const data = (await response.json()) as Record<string, unknown>;
+      const candidate = Array.isArray(data.data) ? (data.data[0] as Record<string, unknown> | undefined) : data;
       if (candidate && typeof candidate.title === 'string') {
-        const externalIds = candidate.externalIds && typeof candidate.externalIds === 'object' ? Object.fromEntries(Object.entries(candidate.externalIds).filter((entry): entry is [string, string] => typeof entry[1] === 'string')) : {};
+        const externalIds =
+          candidate.externalIds && typeof candidate.externalIds === 'object'
+            ? Object.fromEntries(Object.entries(candidate.externalIds).filter((entry): entry is [string, string] => typeof entry[1] === 'string'))
+            : {};
         const pdf = candidate.openAccessPdf as Record<string, unknown> | null;
-        const enriched: ReferenceEnrichment = { title: candidate.title, abstract: stringOrNull(candidate.abstract), year: typeof candidate.year === 'number' ? candidate.year : null, venue: stringOrNull(candidate.venue), externalIds, citationCount: typeof candidate.citationCount === 'number' ? candidate.citationCount : null, openAccessPdf: stringOrNull(pdf?.url), provider: 'semantic-scholar' };
-        const authors = Array.isArray(candidate.authors) ? candidate.authors.map((author) => stringOrNull((author as Record<string, unknown>).name)).filter((name): name is string => name !== null) : [];
+        const enriched: ReferenceEnrichment = {
+          title: candidate.title,
+          abstract: stringOrNull(candidate.abstract),
+          year: typeof candidate.year === 'number' ? candidate.year : null,
+          venue: stringOrNull(candidate.venue),
+          externalIds,
+          citationCount: typeof candidate.citationCount === 'number' ? candidate.citationCount : null,
+          openAccessPdf: stringOrNull(pdf?.url),
+          provider: 'semantic-scholar',
+        };
+        const authors = Array.isArray(candidate.authors)
+          ? candidate.authors.map((author) => stringOrNull((author as Record<string, unknown>).name)).filter((name): name is string => name !== null)
+          : [];
         if (validEnrichment(reference, enriched, authors)) return enriched;
       }
     }
   } catch {
     // OpenAlex is the fallback for missing records and temporary Semantic Scholar failures.
   }
-  const filter = reference.doi ? `doi:${encodeURIComponent(`https://doi.org/${reference.doi}`)}` : reference.arxivId ? `locations.landing_page_url:${encodeURIComponent(`https://arxiv.org/abs/${reference.arxivId}`)}` : null;
+  const filter = reference.doi
+    ? `doi:${encodeURIComponent(`https://doi.org/${reference.doi}`)}`
+    : reference.arxivId
+      ? `locations.landing_page_url:${encodeURIComponent(`https://arxiv.org/abs/${reference.arxivId}`)}`
+      : null;
   const openAlexUrls = [
     ...(filter ? [`https://api.openalex.org/works?filter=${filter}&per-page=5`] : []),
     `https://api.openalex.org/works?search=${encodeURIComponent(query)}&per-page=5`,
@@ -99,16 +138,27 @@ export async function enrichReference(reference: ReferenceEntry, fetcher: typeof
       await politePause();
       const response = await fetcher(url, { headers: { accept: 'application/json' }, signal: AbortSignal.timeout(8000) });
       if (!response.ok) continue;
-      const data = await response.json() as { results?: Array<Record<string, unknown>> };
+      const data = (await response.json()) as { results?: Array<Record<string, unknown>> };
       for (const work of data.results ?? []) {
         const primary = work.primary_location as Record<string, unknown> | undefined;
         const best = work.best_oa_location as Record<string, unknown> | undefined;
         const ids = work.ids as Record<string, unknown> | undefined;
         const source = primary?.source as Record<string, unknown> | undefined;
         const externalIds = Object.fromEntries(Object.entries(ids ?? {}).filter((entry): entry is [string, string] => typeof entry[1] === 'string'));
-        const enriched: ReferenceEnrichment = { title: stringOrNull(work.title), abstract: null, year: typeof work.publication_year === 'number' ? work.publication_year : null, venue: stringOrNull(source?.display_name), externalIds, citationCount: typeof work.cited_by_count === 'number' ? work.cited_by_count : null, openAccessPdf: stringOrNull(best?.pdf_url ?? primary?.pdf_url), provider: 'openalex' };
-        const authorships = Array.isArray(work.authorships) ? work.authorships as Array<Record<string, unknown>> : [];
-        const authors = authorships.map((authorship) => stringOrNull((authorship.author as Record<string, unknown> | undefined)?.display_name)).filter((name): name is string => name !== null);
+        const enriched: ReferenceEnrichment = {
+          title: stringOrNull(work.title),
+          abstract: null,
+          year: typeof work.publication_year === 'number' ? work.publication_year : null,
+          venue: stringOrNull(source?.display_name),
+          externalIds,
+          citationCount: typeof work.cited_by_count === 'number' ? work.cited_by_count : null,
+          openAccessPdf: stringOrNull(best?.pdf_url ?? primary?.pdf_url),
+          provider: 'openalex',
+        };
+        const authorships = Array.isArray(work.authorships) ? (work.authorships as Array<Record<string, unknown>>) : [];
+        const authors = authorships
+          .map((authorship) => stringOrNull((authorship.author as Record<string, unknown> | undefined)?.display_name))
+          .filter((name): name is string => name !== null);
         if (validEnrichment(reference, enriched, authors)) return enriched;
       }
     }

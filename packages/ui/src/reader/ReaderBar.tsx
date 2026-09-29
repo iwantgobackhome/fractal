@@ -81,9 +81,13 @@ export function ReaderBar(props: ReaderBarProps): JSX.Element {
   const modes: ViewMode[] = narrow ? ['source', 'translation'] : ['source', 'split', 'translation'];
 
   const runPrimary = () => {
-    if (action === 'start') props.onStart(props.selectedModelId);
-    else if (action === 'pause' && job !== null) props.onPause(job.jobId);
-    else if (action === 'resume' && job !== null) props.onResume(job.jobId);
+    if (action === 'start') {
+      props.onStart(props.selectedModelId);
+    } else if (action === 'pause' && job !== null) {
+      props.onPause(job.jobId);
+    } else if (action === 'resume' && job !== null) {
+      props.onResume(job.jobId);
+    }
   };
 
   return (
@@ -104,7 +108,13 @@ export function ReaderBar(props: ReaderBarProps): JSX.Element {
         <span className="reader-bar__readout" data-testid="page">
           {currentPage} / {pageCount || '–'}
         </span>
-        <button type="button" className="reader-bar__icon" onClick={() => props.onPage(currentPage + 1)} disabled={pageCount === 0 || currentPage >= pageCount} aria-label="다음 쪽">
+        <button
+          type="button"
+          className="reader-bar__icon"
+          onClick={() => props.onPage(currentPage + 1)}
+          disabled={pageCount === 0 || currentPage >= pageCount}
+          aria-label="다음 쪽"
+        >
           ›
         </button>
       </div>
@@ -123,7 +133,12 @@ export function ReaderBar(props: ReaderBarProps): JSX.Element {
 
       <div className="segmented reader-bar__views" role="group" aria-label="보기">
         {modes.map((mode) => (
-          <button key={mode} type="button" aria-pressed={viewMode === mode || (narrow && mode === 'source' && viewMode === 'split')} onClick={() => props.onViewMode(mode)}>
+          <button
+            key={mode}
+            type="button"
+            aria-pressed={viewMode === mode || (narrow && mode === 'source' && viewMode === 'split')}
+            onClick={() => props.onViewMode(mode)}
+          >
             {VIEW_LABEL[mode]}
           </button>
         ))}
@@ -136,7 +151,7 @@ export function ReaderBar(props: ReaderBarProps): JSX.Element {
             className={`reader-bar__action${action === 'start' ? ' is-primary' : ''}`}
             onClick={runPrimary}
             disabled={translateDisabled}
-            title={action === 'start' ? (props.canTranslate ? props.sendHint : props.disabledReason ?? undefined) : undefined}
+            title={action === 'start' ? (props.canTranslate ? props.sendHint : (props.disabledReason ?? undefined)) : undefined}
           >
             {primaryLabel(job)}
           </button>
@@ -155,7 +170,14 @@ export function ReaderBar(props: ReaderBarProps): JSX.Element {
           질문
         </button>
         <div className="reader-bar__menu" ref={menuRef}>
-          <button type="button" className="reader-bar__icon" aria-label="논문 메뉴" aria-haspopup="menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
+          <button
+            type="button"
+            className="reader-bar__icon"
+            aria-label="논문 메뉴"
+            aria-haspopup="menu"
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
             ⋯
           </button>
           {menuOpen ? (

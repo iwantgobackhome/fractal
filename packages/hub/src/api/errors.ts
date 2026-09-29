@@ -26,7 +26,10 @@ export function statusFor(code: ErrorCode): number {
 
 /** An HTTP status that must override the code's default (e.g. forgery → 403). */
 export class HttpError extends Error {
-  constructor(readonly status: number, readonly error: AppError) {
+  constructor(
+    readonly status: number,
+    readonly error: AppError,
+  ) {
     super(`${error.code}: ${error.message}`);
     this.name = 'HttpError';
   }

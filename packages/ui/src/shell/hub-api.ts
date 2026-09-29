@@ -1,4 +1,22 @@
-import type { AiFeature, AiSettings, AiSseEvent, Annotation, FeedInterests, FeedResponse, PaperStructure, ReferenceEnrichment, ReferenceEntry, StructureBox, ModelSelection, NetworkStatus, PairedDevice, PairingPayload, ProviderModel, ProviderStatus as HubProviderStatus, UsageRecord } from '@fractal/shared';
+import type {
+  AiFeature,
+  AiSettings,
+  AiSseEvent,
+  Annotation,
+  FeedInterests,
+  FeedResponse,
+  PaperStructure,
+  ReferenceEnrichment,
+  ReferenceEntry,
+  StructureBox,
+  ModelSelection,
+  NetworkStatus,
+  PairedDevice,
+  PairingPayload,
+  ProviderModel,
+  ProviderStatus as HubProviderStatus,
+  UsageRecord,
+} from '@fractal/shared';
 import { TOKEN_HEADER } from '../lib/api';
 
 /*
@@ -79,7 +97,14 @@ export function readLimits(limits: Record<string, unknown> | undefined): UsageLi
 
 export function readUsage(raw: { totals: UsageRecord[]; limits?: Record<string, unknown> }): UsageResult {
   return {
-    rows: raw.totals.map((t) => ({ day: t.day, provider: t.provider, model: t.model, requests: t.requests, inputTokens: t.inputTokens ?? 0, outputTokens: t.outputTokens ?? 0 })),
+    rows: raw.totals.map((t) => ({
+      day: t.day,
+      provider: t.provider,
+      model: t.model,
+      requests: t.requests,
+      inputTokens: t.inputTokens ?? 0,
+      outputTokens: t.outputTokens ?? 0,
+    })),
     limits: readLimits(raw.limits),
   };
 }
@@ -233,10 +258,17 @@ export class HubApi {
   async *explain(paperKey: string, request: ExplainRequest, signal?: AbortSignal): AsyncGenerator<AiSseEvent> {
     const headers: Record<string, string> = { accept: 'text/event-stream', 'content-type': 'application/json' };
     if (this.token !== null) headers[TOKEN_HEADER] = this.token;
-    const response = await this.fetchImpl(`/api/papers/${encodeURIComponent(paperKey)}/explain`, { method: 'POST', headers, body: JSON.stringify(request), credentials: 'same-origin', signal });
+    const response = await this.fetchImpl(`/api/papers/${encodeURIComponent(paperKey)}/explain`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(request),
+      credentials: 'same-origin',
+      signal,
+    });
     if (!response.ok || response.body === null) {
       const payload: unknown = await response.json().catch(() => null);
-      const message = payload !== null && typeof payload === 'object' && 'error' in payload ? (payload as { error: { message?: string } }).error.message : undefined;
+      const message =
+        payload !== null && typeof payload === 'object' && 'error' in payload ? (payload as { error: { message?: string } }).error.message : undefined;
       throw new Error(message ?? '설명을 요청하지 못했습니다.');
     }
     yield* readSse(response.body);

@@ -1,5 +1,17 @@
 import { Suspense, lazy, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type JSX, type RefObject } from 'react';
-import type { AppError, Block, Connection, InkStroke, PaperStructure, Highlight, LoginAttempt, Paper, Region, RestartTranslationRequest, Snapshot } from '@fractal/shared';
+import type {
+  AppError,
+  Block,
+  Connection,
+  InkStroke,
+  PaperStructure,
+  Highlight,
+  LoginAttempt,
+  Paper,
+  Region,
+  RestartTranslationRequest,
+  Snapshot,
+} from '@fractal/shared';
 import { AccountPanel } from './components/AccountPanel';
 import { ChatBoundary } from './components/ChatBoundary';
 import type { ChatQuote } from './components/ChatPanel';
@@ -118,7 +130,9 @@ function paneVisible(body: HTMLElement | null): boolean {
 /** Whether text is selected inside `node`. */
 function selectionWithin(node: HTMLElement | null): boolean {
   const selection = window.getSelection();
-  return node !== null && selection !== null && !selection.isCollapsed && selection.rangeCount > 0 && node.contains(selection.getRangeAt(0).commonAncestorContainer);
+  return (
+    node !== null && selection !== null && !selection.isCollapsed && selection.rangeCount > 0 && node.contains(selection.getRangeAt(0).commonAncestorContainer)
+  );
 }
 
 interface PendingRestart extends RestartTranslationRequest {
@@ -130,7 +144,12 @@ function readPendingRestart(): PendingRestart | null {
     const raw = window.sessionStorage.getItem(PENDING_RESTART_KEY);
     if (raw === null) return null;
     const value = JSON.parse(raw) as Partial<PendingRestart>;
-    if (typeof value.paperKey !== 'string' || typeof value.modelId !== 'string' || typeof value.requestId !== 'string' || typeof value.expectedJobId !== 'string') {
+    if (
+      typeof value.paperKey !== 'string' ||
+      typeof value.modelId !== 'string' ||
+      typeof value.requestId !== 'string' ||
+      typeof value.expectedJobId !== 'string'
+    ) {
       return null;
     }
     return { paperKey: value.paperKey, modelId: value.modelId, requestId: value.requestId, expectedJobId: value.expectedJobId };
@@ -141,8 +160,11 @@ function readPendingRestart(): PendingRestart | null {
 
 function writePendingRestart(value: PendingRestart | null): void {
   try {
-    if (value === null) window.sessionStorage.removeItem(PENDING_RESTART_KEY);
-    else window.sessionStorage.setItem(PENDING_RESTART_KEY, JSON.stringify(value));
+    if (value === null) {
+      window.sessionStorage.removeItem(PENDING_RESTART_KEY);
+    } else {
+      window.sessionStorage.setItem(PENDING_RESTART_KEY, JSON.stringify(value));
+    }
   } catch {
     /* storage may be unavailable; the request still goes out once */
   }
@@ -394,13 +416,13 @@ export function App(): JSX.Element {
     setIntrinsicVersion((version) => version + 1);
     if (doc === null) return;
     let cancelled = false;
-    void Promise.all(
-      Array.from({ length: doc.numPages }, async (_, index) => [index + 1, intrinsicSize(await doc.getPage(index + 1))] as const),
-    ).then((sizes) => {
-      if (cancelled) return;
-      for (const [page, size] of sizes) intrinsic.current.set(page, size);
-      setIntrinsicVersion((version) => version + 1);
-    });
+    void Promise.all(Array.from({ length: doc.numPages }, async (_, index) => [index + 1, intrinsicSize(await doc.getPage(index + 1))] as const)).then(
+      (sizes) => {
+        if (cancelled) return;
+        for (const [page, size] of sizes) intrinsic.current.set(page, size);
+        setIntrinsicVersion((version) => version + 1);
+      },
+    );
     return () => {
       cancelled = true;
     };
@@ -451,21 +473,24 @@ export function App(): JSX.Element {
     window.clearTimeout(koreanJump.current);
   }, []);
 
-  const openValue = useCallback(async (value: string) => {
-    setBusy(true);
-    setError(null);
-    try {
-      // Opening a paper only downloads it; nothing is sent to the translator.
-      const { paper: opened } = await client.openPaper(value);
-      enterPaper(opened.paperKey);
-      await refresh(opened.paperKey);
-      void loadLibrary();
-    } catch (cause) {
-      fail(cause);
-    } finally {
-      setBusy(false);
-    }
-  }, [enterPaper, refresh, loadLibrary, fail]);
+  const openValue = useCallback(
+    async (value: string) => {
+      setBusy(true);
+      setError(null);
+      try {
+        // Opening a paper only downloads it; nothing is sent to the translator.
+        const { paper: opened } = await client.openPaper(value);
+        enterPaper(opened.paperKey);
+        await refresh(opened.paperKey);
+        void loadLibrary();
+      } catch (cause) {
+        fail(cause);
+      } finally {
+        setBusy(false);
+      }
+    },
+    [enterPaper, refresh, loadLibrary, fail],
+  );
 
   /** Leave the reader if it is open, then show one of the shell screens. */
   const navigate = useCallback(
@@ -477,7 +502,6 @@ export function App(): JSX.Element {
     },
     [leaveReader],
   );
-
 
   /** The single input: identifiers open a paper, anything else searches the library. */
   const submitIntent = useCallback(
@@ -878,7 +902,10 @@ export function App(): JSX.Element {
       const korean = koreanNode.getBoundingClientRect();
       const sourcePageTop = source.top - sourceTop;
       const koreanPageTopPx = korean.top - koreanTop;
-      anchors.push({ source: sourcePageTop, translation: koreanPageTopPx }, { source: sourcePageTop + source.height, translation: koreanPageTopPx + korean.height });
+      anchors.push(
+        { source: sourcePageTop, translation: koreanPageTopPx },
+        { source: sourcePageTop + source.height, translation: koreanPageTopPx + korean.height },
+      );
       if (koreanNode.classList.contains('kr-source-only') || koreanNode.classList.contains('kr-placeholder')) continue;
       for (const element of koreanNode.querySelectorAll<HTMLElement>('[data-block-id]')) {
         const region = blocksById.get(element.dataset.blockId ?? '')?.regions.find((candidate) => candidate.page === page);
@@ -954,8 +981,11 @@ export function App(): JSX.Element {
   // ------------------------------------------------------------- registries
 
   const registerPage = useCallback((page: number, element: HTMLDivElement | null) => {
-    if (element === null) pageNodes.current.delete(page);
-    else pageNodes.current.set(page, element);
+    if (element === null) {
+      pageNodes.current.delete(page);
+    } else {
+      pageNodes.current.set(page, element);
+    }
   }, []);
 
   const recordSize = useCallback((page: number, size: Size) => {
@@ -1138,10 +1168,18 @@ export function App(): JSX.Element {
               .map((b) => b.sourceText)
               .join('\n')
               .slice(0, 6000);
-            for await (const event of hub.explain(paperKey, { kind: item.kind, page: item.page, bbox: item.bbox, surroundingText: [item.caption, surrounding].filter(Boolean).join('\n\n') }, controller.signal)) {
-              if (event.type === 'delta') setExplain((s) => (s === null || s.item.id !== item.id ? s : { ...s, text: s.text + event.text }));
-              else if (event.type === 'done') setExplain((s) => (s === null || s.item.id !== item.id ? s : { ...s, done: true, latex: event.latex ?? s.latex }));
-              else setExplain((s) => (s === null || s.item.id !== item.id ? s : { ...s, done: true, error: event.error.message }));
+            for await (const event of hub.explain(
+              paperKey,
+              { kind: item.kind, page: item.page, bbox: item.bbox, surroundingText: [item.caption, surrounding].filter(Boolean).join('\n\n') },
+              controller.signal,
+            )) {
+              if (event.type === 'delta') {
+                setExplain((s) => (s === null || s.item.id !== item.id ? s : { ...s, text: s.text + event.text }));
+              } else if (event.type === 'done') {
+                setExplain((s) => (s === null || s.item.id !== item.id ? s : { ...s, done: true, latex: event.latex ?? s.latex }));
+              } else {
+                setExplain((s) => (s === null || s.item.id !== item.id ? s : { ...s, done: true, error: event.error.message }));
+              }
             }
             setExplain((s) => (s === null || s.item.id !== item.id ? s : { ...s, done: true }));
           } catch (cause) {
@@ -1155,7 +1193,9 @@ export function App(): JSX.Element {
         setCitation({ anchor, entries: null, error: null, added: new Set() });
         Promise.all(marker.references.slice(0, 4).map((n) => hub.reference(paperKey, n)))
           .then((results) => setCitation((s) => (s === null ? s : { ...s, entries: results.filter((r) => r !== null) })))
-          .catch((cause: unknown) => setCitation((s) => (s === null ? s : { ...s, error: cause instanceof Error ? cause.message : '참고문헌을 찾지 못했습니다.' })));
+          .catch((cause: unknown) =>
+            setCitation((s) => (s === null ? s : { ...s, error: cause instanceof Error ? cause.message : '참고문헌을 찾지 못했습니다.' })),
+          );
       },
     };
   }, [paperKey, structure]);
@@ -1468,22 +1508,57 @@ export function App(): JSX.Element {
       { id: 'go-home', group: '이동', label: '홈', keywords: 'home', run: () => navigate('home') },
       { id: 'go-library', group: '이동', label: '보관함', keywords: 'library', run: () => navigate('library') },
       { id: 'go-settings', group: '이동', label: '설정', keywords: 'settings preferences', run: () => navigate('settings') },
-      { id: 'open-input', group: '논문', label: '주소나 번호로 논문 열기', keywords: 'arxiv doi url open', hint: '입력창', run: () => omniRef.current?.focus() },
+      {
+        id: 'open-input',
+        group: '논문',
+        label: '주소나 번호로 논문 열기',
+        keywords: 'arxiv doi url open',
+        hint: '입력창',
+        run: () => omniRef.current?.focus(),
+      },
       { id: 'upload-pdf', group: '논문', label: 'PDF 올리기', keywords: 'upload file', run: () => fileRef.current?.click() },
-      { id: 'theme-next', group: '보기', label: '테마 바꾸기', keywords: 'theme dark sepia', hint: THEME_CHOICES.find((t) => t.value === nextTheme(theme))?.label, run: () => setTheme(nextTheme(theme)) },
-      ...THEME_CHOICES.map((t) => ({ id: `theme-${t.value}`, group: '보기', label: `테마: ${t.label}`, keywords: `theme ${t.value}`, run: () => setTheme(t.value) })),
+      {
+        id: 'theme-next',
+        group: '보기',
+        label: '테마 바꾸기',
+        keywords: 'theme dark sepia',
+        hint: THEME_CHOICES.find((t) => t.value === nextTheme(theme))?.label,
+        run: () => setTheme(nextTheme(theme)),
+      },
+      ...THEME_CHOICES.map((t) => ({
+        id: `theme-${t.value}`,
+        group: '보기',
+        label: `테마: ${t.label}`,
+        keywords: `theme ${t.value}`,
+        run: () => setTheme(t.value),
+      })),
       { id: 'codex-account', group: 'AI', label: 'Codex 로그인 관리', keywords: 'account login codex', run: () => openAccountFrom(null, false) },
     ];
     if (paperKey !== null) {
-      list.splice(3, 0, { id: 'toggle-chat', group: '읽기', label: chatOpen ? '질문 패널 닫기' : '질문 패널 열기', keywords: 'chat ask question', run: toggleChat });
+      list.splice(3, 0, {
+        id: 'toggle-chat',
+        group: '읽기',
+        label: chatOpen ? '질문 패널 닫기' : '질문 패널 열기',
+        keywords: 'chat ask question',
+        run: toggleChat,
+      });
     }
     for (const p of papers) {
-      list.push({ id: `paper-${p.paperKey}`, group: '보관함', label: paperTitle(p), keywords: `${p.authors.join(' ')} ${p.arxivId ?? ''}`, run: () => void openStored(p.paperKey) });
+      list.push({
+        id: `paper-${p.paperKey}`,
+        group: '보관함',
+        label: paperTitle(p),
+        keywords: `${p.authors.join(' ')} ${p.arxivId ?? ''}`,
+        run: () => void openStored(p.paperKey),
+      });
     }
     return list;
   }, [navigate, theme, setTheme, paperKey, chatOpen, toggleChat, papers, openStored, openAccountFrom]);
   const activePane: Pane = viewMode === 'split' ? narrowPane : viewMode;
-  const deleteTarget = deleteConfirmation === null ? undefined : papers.find((p) => p.paperKey === deleteConfirmation) ?? (paper?.paperKey === deleteConfirmation ? paper : undefined);
+  const deleteTarget =
+    deleteConfirmation === null
+      ? undefined
+      : (papers.find((p) => p.paperKey === deleteConfirmation) ?? (paper?.paperKey === deleteConfirmation ? paper : undefined));
 
   return (
     <div className="app">
@@ -1560,7 +1635,13 @@ export function App(): JSX.Element {
 
       {paperKey === null ? (
         view === 'home' ? (
-          <HomeScreen hub={hub} papers={papers} onOpen={(key) => void openStored(key)} onOpenExternal={(value) => void openValue(value)} onShowLibrary={() => navigate('library')} />
+          <HomeScreen
+            hub={hub}
+            papers={papers}
+            onOpen={(key) => void openStored(key)}
+            onOpenExternal={(value) => void openValue(value)}
+            onShowLibrary={() => navigate('library')}
+          />
         ) : view === 'library' ? (
           <LibraryScreen
             papers={papers}
@@ -1766,12 +1847,16 @@ export function App(): JSX.Element {
               </div>
             </aside>
           </div>
-
         </main>
       )}
 
       {deleteConfirmation !== null ? (
-        <DeleteDialog paper={deleteTarget} paperKey={deleteConfirmation} onCancel={() => setDeleteConfirmation(null)} onConfirm={() => void confirmDelete(deleteConfirmation)} />
+        <DeleteDialog
+          paper={deleteTarget}
+          paperKey={deleteConfirmation}
+          onCancel={() => setDeleteConfirmation(null)}
+          onConfirm={() => void confirmDelete(deleteConfirmation)}
+        />
       ) : null}
 
       {pendingSelection !== null ? (

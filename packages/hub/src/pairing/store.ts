@@ -3,8 +3,13 @@ import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from '
 import { join } from 'node:path';
 import type { PairedDevice, PairingClaimResponse } from '@fractal/shared';
 
-interface StoredDevice extends PairedDevice { tokenHash: string }
-interface StoredState { hubId: string; devices: StoredDevice[] }
+interface StoredDevice extends PairedDevice {
+  tokenHash: string;
+}
+interface StoredState {
+  hubId: string;
+  devices: StoredDevice[];
+}
 
 export interface DeviceStore {
   readonly hubId: string;
@@ -14,7 +19,9 @@ export interface DeviceStore {
   revoke(id: string): boolean;
 }
 
-function hash(token: string): Buffer { return createHash('sha256').update(token).digest(); }
+function hash(token: string): Buffer {
+  return createHash('sha256').update(token).digest();
+}
 function publicDevice(device: StoredDevice): PairedDevice {
   const { id, name, platform, createdAt, lastSeen } = device;
   return { id, name, platform, createdAt, lastSeen };
@@ -26,17 +33,23 @@ export class JsonDeviceStore implements DeviceStore {
   constructor(directory: string) {
     mkdirSync(directory, { recursive: true });
     this.path = join(directory, 'paired-devices.json');
-    this.state = existsSync(this.path)
-      ? JSON.parse(readFileSync(this.path, 'utf8')) as StoredState
-      : { hubId: randomUUID(), devices: [] };
+    this.state = existsSync(this.path) ? (JSON.parse(readFileSync(this.path, 'utf8')) as StoredState) : { hubId: randomUUID(), devices: [] };
     if (!existsSync(this.path)) this.save();
   }
-  get hubId(): string { return this.state.hubId; }
-  list(): PairedDevice[] { return this.state.devices.map(publicDevice); }
+  get hubId(): string {
+    return this.state.hubId;
+  }
+  list(): PairedDevice[] {
+    return this.state.devices.map(publicDevice);
+  }
   claim(name: string, platform: string): PairingClaimResponse {
     const deviceToken = randomBytes(32).toString('hex');
     const device: StoredDevice = {
-      id: randomUUID(), name, platform, createdAt: new Date().toISOString(), lastSeen: null,
+      id: randomUUID(),
+      name,
+      platform,
+      createdAt: new Date().toISOString(),
+      lastSeen: null,
       tokenHash: hash(deviceToken).toString('hex'),
     };
     this.state.devices.push(device);

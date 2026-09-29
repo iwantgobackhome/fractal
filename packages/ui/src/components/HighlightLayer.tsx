@@ -114,10 +114,14 @@ export function HighlightPopover({ highlight, onSave, onDelete, onClose, onAsk }
           <button type="button" onClick={onDelete}>
             삭제
           </button>
-          <button type="button" className="is-primary" onClick={() => {
+          <button
+            type="button"
+            className="is-primary"
+            onClick={() => {
               const text = noteRef.current?.value ?? note;
               onSave(text.trim().length === 0 ? '' : text, color);
-            }}>
+            }}
+          >
             저장
           </button>
         </div>

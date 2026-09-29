@@ -1,14 +1,4 @@
-import type {
-  AppError,
-  Block,
-  Job,
-  Paper,
-  PauseReason,
-  Translation,
-  TranslationPageInput,
-  Translator,
-  Usage,
-} from '@fractal/shared';
+import type { AppError, Block, Job, Paper, PauseReason, Translation, TranslationPageInput, Translator, Usage } from '@fractal/shared';
 import { PaperStore, appError, notFound } from '../store/index';
 import { JobManager } from '../jobs/state';
 
@@ -82,8 +72,11 @@ function groupByPage(blocks: Block[]): Map<number, Block[]> {
   for (const block of blocks) {
     const page = pageNumberOf(block);
     const list = pages.get(page);
-    if (list) list.push(block);
-    else pages.set(page, [block]);
+    if (list) {
+      list.push(block);
+    } else {
+      pages.set(page, [block]);
+    }
   }
   return pages;
 }
@@ -494,11 +487,7 @@ export class TranslationPipeline {
    * Stop errors that must never fall through to page retries or another split fragment.
    * Kept shared with the page request path so their stopping policy cannot diverge.
    */
-  private stopForTerminalError(
-    jobId: string,
-    error: AppError,
-    tracker: RunTracker,
-  ): { kind: 'paused' | 'jobFailed' } | null {
+  private stopForTerminalError(jobId: string, error: AppError, tracker: RunTracker): { kind: 'paused' | 'jobFailed' } | null {
     const pauseReason = PAUSE_CODES[error.code];
     if (pauseReason !== undefined) {
       this.jobs.pauseJob(jobId, pauseReason);

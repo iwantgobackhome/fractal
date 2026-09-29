@@ -29,7 +29,12 @@ export function CopyButton({ text, label, className }: CopyButtonProps): JSX.Ele
 
   return (
     <>
-      <button type="button" className={`copy-button${state === 'copied' ? ' is-done' : ''}${className === undefined ? '' : ` ${className}`}`} aria-label={label} onClick={() => void copy()}>
+      <button
+        type="button"
+        className={`copy-button${state === 'copied' ? ' is-done' : ''}${className === undefined ? '' : ` ${className}`}`}
+        aria-label={label}
+        onClick={() => void copy()}
+      >
         {state === 'copied' ? <IconCheck /> : <IconCopy />}
         <span aria-hidden="true">{state === 'copied' ? '복사됨' : state === 'failed' ? '복사 실패' : '복사'}</span>
       </button>

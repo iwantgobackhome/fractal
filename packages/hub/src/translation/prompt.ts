@@ -1,16 +1,29 @@
 import type { TranslationInput, TranslationOutput, TranslationPageInput } from '@fractal/shared';
 
-function object(value: unknown): Record<string, unknown> | null { return value !== null && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : null; }
-function invalidTranslation(message: string): Error & { code: 'INVALID_TRANSLATION'; retryable: false } { return Object.assign(new Error(message), { code: 'INVALID_TRANSLATION' as const, retryable: false as const }); }
+function object(value: unknown): Record<string, unknown> | null {
+  return value !== null && typeof value === 'object' && !Array.isArray(value) ? (value as Record<string, unknown>) : null;
+}
+function invalidTranslation(message: string): Error & { code: 'INVALID_TRANSLATION'; retryable: false } {
+  return Object.assign(new Error(message), { code: 'INVALID_TRANSLATION' as const, retryable: false as const });
+}
 
 /** The shared output validator. Codex checks the turn envelope before calling this; Claude supplies its final text. */
 export function decodeTranslationText(text: string, blockId: string): TranslationOutput {
   const invalid = () => invalidTranslation('완료된 문단 번역 형식을 확인할 수 없습니다.');
   try {
     const output = object(JSON.parse(text));
-    if (!output || output.blockId !== blockId || typeof output.text !== 'string' || !output.text.trim() || Object.keys(output).some(key => !['blockId', 'text'].includes(key))) throw invalid();
+    if (
+      !output ||
+      output.blockId !== blockId ||
+      typeof output.text !== 'string' ||
+      !output.text.trim() ||
+      Object.keys(output).some((key) => !['blockId', 'text'].includes(key))
+    )
+      throw invalid();
     return { text: output.text, usage: { inputTokens: null, outputTokens: null, limits: null, observedAt: null } };
-  } catch { throw invalid(); }
+  } catch {
+    throw invalid();
+  }
 }
 
 /** Forces the final answer into exactly {blockId,text}: no commentary field to hide a summary in. */
@@ -50,24 +63,43 @@ export function decodeTranslationPageText(text: string, expectedNumbers: Readonl
   const invalid = () => invalidTranslation('완료된 쪽 번역 형식을 확인할 수 없습니다.');
   try {
     const output = object(JSON.parse(text));
-    if (!output || !Array.isArray(output.results) || Object.keys(output).some(key => key !== 'results')) throw invalid();
+    if (!output || !Array.isArray(output.results) || Object.keys(output).some((key) => key !== 'results')) throw invalid();
     const seen = new Set<number>();
     const results: { number: number; text: string }[] = [];
     for (const raw of output.results) {
       const item = object(raw);
-      if (!item || typeof item.number !== 'number' || !Number.isInteger(item.number) || typeof item.text !== 'string' || Object.keys(item).some(key => !['number', 'text'].includes(key))) continue;
+      if (
+        !item ||
+        typeof item.number !== 'number' ||
+        !Number.isInteger(item.number) ||
+        typeof item.text !== 'string' ||
+        Object.keys(item).some((key) => !['number', 'text'].includes(key))
+      )
+        continue;
       if (!expectedNumbers.has(item.number) || seen.has(item.number)) continue;
       seen.add(item.number);
       results.push({ number: item.number, text: item.text });
     }
     return results;
-  } catch { throw invalid(); }
+  } catch {
+    throw invalid();
+  }
 }
 
 /** Every result must carry its request-local number; nothing else is accepted. */
 export const TRANSLATION_PAGE_OUTPUT_SCHEMA = Object.freeze({
   type: 'object',
-  properties: { results: { type: 'array', items: { type: 'object', properties: { number: { type: 'integer' }, text: { type: 'string' } }, required: ['number', 'text'], additionalProperties: false } } },
+  properties: {
+    results: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: { number: { type: 'integer' }, text: { type: 'string' } },
+        required: ['number', 'text'],
+        additionalProperties: false,
+      },
+    },
+  },
   required: ['results'],
   additionalProperties: false,
 });
@@ -85,7 +117,7 @@ const PAGE_PROMPT_RULES = [
 /** Every paragraph is enclosed and numbered as data; the numbering is the only pairing key. */
 export function translationPagePrompt(input: TranslationPageInput): string {
   const context = input.context.trim();
-  const sources = input.paragraphs.map(p => [`[문단 ${p.number}]`, '<<<SOURCE', p.block.sourceText, 'SOURCE>>>'].join('\n')).join('\n\n');
+  const sources = input.paragraphs.map((p) => [`[문단 ${p.number}]`, '<<<SOURCE', p.block.sourceText, 'SOURCE>>>'].join('\n')).join('\n\n');
   return [
     '당신은 학술 논문의 한 쪽을 한국어로 번역하는 번역기입니다. 이 쪽은 번호가 붙은 여러 문단으로 구성되어 있습니다. 아래 규칙을 지키세요.',
     PAGE_PROMPT_RULES,

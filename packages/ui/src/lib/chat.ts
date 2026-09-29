@@ -119,8 +119,11 @@ export function questionParts(text: string): { kind: 'quote' | 'text'; text: str
     const kind = quoted === null ? 'text' : 'quote';
     const value = quoted === null ? line : quoted[1];
     const last = parts[parts.length - 1];
-    if (last !== undefined && last.kind === kind) last.text += `\n${value}`;
-    else parts.push({ kind, text: value });
+    if (last !== undefined && last.kind === kind) {
+      last.text += `\n${value}`;
+    } else {
+      parts.push({ kind, text: value });
+    }
   }
   return parts.map((part) => ({ kind: part.kind, text: part.text.replace(/^\n+|\n+$/g, '') })).filter((part) => part.text.trim().length > 0);
 }

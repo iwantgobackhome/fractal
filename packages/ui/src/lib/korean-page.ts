@@ -122,13 +122,19 @@ export function detectColumnCount(pageBlocks: readonly Block[], page: number): 1
     if (box === null || box.width >= FULL_WIDTH_RATIO) continue;
     const center = box.x + box.width / 2;
     const candidate = { box, multiline: block.regions.filter((region) => region.page === page).length >= 2 };
-    if (center < COLUMN_MID_LOW) left.push(candidate);
-    else if (center > COLUMN_MID_HIGH) right.push(candidate);
+    if (center < COLUMN_MID_LOW) {
+      left.push(candidate);
+    } else if (center > COLUMN_MID_HIGH) {
+      right.push(candidate);
+    }
   }
-  const verticallyMatched = left.some((a) => right.some((b) =>
-    Math.max(a.box.y, b.box.y) <= Math.min(a.box.y + a.box.height, b.box.y + b.box.height) + 0.03
-    && ((left.length >= 2 && right.length >= 2) || (a.multiline && b.multiline)),
-  ));
+  const verticallyMatched = left.some((a) =>
+    right.some(
+      (b) =>
+        Math.max(a.box.y, b.box.y) <= Math.min(a.box.y + a.box.height, b.box.y + b.box.height) + 0.03 &&
+        ((left.length >= 2 && right.length >= 2) || (a.multiline && b.multiline)),
+    ),
+  );
   return left.length > 0 && right.length > 0 && verticallyMatched ? 2 : 1;
 }
 
@@ -210,9 +216,7 @@ export function buildKoreanLayout(blocks: readonly Block[], translations: readon
 
 /** One row of the Korean page grid: either a full-width item, or a pair of column stacks
  * running in parallel until the next full-width item breaks them. */
-export type KoreanSegment =
-  | { type: 'full'; item: KoreanFlowItem }
-  | { type: 'columns'; left: KoreanFlowItem[]; right: KoreanFlowItem[] };
+export type KoreanSegment = { type: 'full'; item: KoreanFlowItem } | { type: 'columns'; left: KoreanFlowItem[]; right: KoreanFlowItem[] };
 
 /**
  * Group a page's flow items into rendering segments.
@@ -241,8 +245,11 @@ export function groupKoreanSegments(items: readonly KoreanFlowItem[], columnCoun
       segments.push({ type: 'full', item });
       continue;
     }
-    if (item.column === 'left') left.push(item);
-    else right.push(item);
+    if (item.column === 'left') {
+      left.push(item);
+    } else {
+      right.push(item);
+    }
   }
   flush();
   return segments;

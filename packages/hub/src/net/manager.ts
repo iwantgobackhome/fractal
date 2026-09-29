@@ -8,14 +8,17 @@ export class NetworkManager {
   private settings: NetworkSettings;
   private lastStatus: NetworkStatus | null = null;
   private explicit: { lan: string[]; tailscale: string[] } | null = null;
-  constructor(directory: string, private readonly port: () => number, private readonly bind: (addresses: string[]) => Promise<void>, private readonly detect = systemAddresses) {
+  constructor(
+    directory: string,
+    private readonly port: () => number,
+    private readonly bind: (addresses: string[]) => Promise<void>,
+    private readonly detect = systemAddresses,
+  ) {
     this.path = join(directory, 'network-settings.json');
-    this.settings = existsSync(this.path)
-      ? networkSettingsSchema.parse(JSON.parse(readFileSync(this.path, 'utf8')))
-      : { lan: false, tailscale: false };
+    this.settings = existsSync(this.path) ? networkSettingsSchema.parse(JSON.parse(readFileSync(this.path, 'utf8'))) : { lan: false, tailscale: false };
   }
   async status(): Promise<NetworkStatus> {
-    this.lastStatus = networkStatus(this.settings, this.explicit ?? await this.detect(), this.port());
+    this.lastStatus = networkStatus(this.settings, this.explicit ?? (await this.detect()), this.port());
     return this.lastStatus;
   }
   configureExplicit(addresses: string[]): void {
@@ -27,8 +30,7 @@ export class NetworkManager {
     this.settings = { lan: lan.length > 0, tailscale: tailscale.length > 0 };
   }
   statusSyncUrls(port: number): string[] {
-    return (this.lastStatus?.addresses ?? []).filter((entry) => entry.kind !== 'loopback' && entry.enabled)
-      .map((entry) => `http://${entry.address}:${port}`);
+    return (this.lastStatus?.addresses ?? []).filter((entry) => entry.kind !== 'loopback' && entry.enabled).map((entry) => `http://${entry.address}:${port}`);
   }
   async apply(): Promise<NetworkStatus> {
     const status = await this.status();

@@ -7,8 +7,12 @@ export const DEFAULT_SETTINGS: AiSettings = { default: { provider: 'codex', mode
 export class JsonSettingsStore implements SettingsStore {
   constructor(private readonly directory: string) {}
   async read(): Promise<AiSettings | null> {
-    try { return aiSettingsSchema.parse(JSON.parse(await readFile(join(this.directory, 'settings.json'), 'utf8'))); }
-    catch (error) { if ((error as NodeJS.ErrnoException).code === 'ENOENT') return null; throw error; }
+    try {
+      return aiSettingsSchema.parse(JSON.parse(await readFile(join(this.directory, 'settings.json'), 'utf8')));
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') return null;
+      throw error;
+    }
   }
   async write(value: AiSettings): Promise<void> {
     const validated = aiSettingsSchema.parse(value);

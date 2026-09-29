@@ -50,13 +50,21 @@ function pdf(): Buffer {
 
 class FakeProvider implements AiProvider {
   readonly id: 'codex' | 'claude';
-  constructor(id: 'codex' | 'claude') { this.id = id; }
-  async status() { return { id: this.id, installed: true, loggedIn: true, version: 'e2e-stub' }; }
-  async listModels() { return [{ id: this.id === 'codex' ? model : 'sonnet', label: 'Stub model' }]; }
+  constructor(id: 'codex' | 'claude') {
+    this.id = id;
+  }
+  async status() {
+    return { id: this.id, installed: true, loggedIn: true, version: 'e2e-stub' };
+  }
+  async listModels() {
+    return [{ id: this.id === 'codex' ? model : 'sonnet', label: 'Stub model' }];
+  }
   async *complete(_input: CompleteInput): AsyncIterable<ProviderDelta> {
     yield { type: 'text', text: 'The result is forty two [p.1].' };
   }
-  async usage() { return null; }
+  async usage() {
+    return null;
+  }
 }
 
 async function main(): Promise<void> {
@@ -83,19 +91,36 @@ async function main(): Promise<void> {
   const pipeline = new TranslationPipeline({ store, jobs, translator });
   const html = join(root, 'packages/ui/dist/index.html');
   const server = createApiServer({
-    store, jobs, translator, pipeline, paperChat: chat, aiRegistry: registry,
+    store,
+    jobs,
+    translator,
+    pipeline,
+    paperChat: chat,
+    aiRegistry: registry,
     librarySearch: new FtsLibrarySearch(store),
     session: {
-      startLogin: async () => { throw new Error('Login is disabled in e2e'); },
-      getLogin: async () => { throw new Error('Login is disabled in e2e'); },
-      cancelLogin: async () => { throw new Error('Login is disabled in e2e'); },
+      startLogin: async () => {
+        throw new Error('Login is disabled in e2e');
+      },
+      getLogin: async () => {
+        throw new Error('Login is disabled in e2e');
+      },
+      cancelLogin: async () => {
+        throw new Error('Login is disabled in e2e');
+      },
       logout: async () => ({ connection }),
     },
     acquirer: {
-      identify: (input) => store.getPaper(input) === null ? null : input,
-      resolve: async () => { throw new Error('Network acquire is disabled in e2e'); },
-      acquire: async () => { throw new Error('Network acquire is disabled in e2e'); },
-      reextract: async () => { throw new Error('Network acquire is disabled in e2e'); },
+      identify: (input) => (store.getPaper(input) === null ? null : input),
+      resolve: async () => {
+        throw new Error('Network acquire is disabled in e2e');
+      },
+      acquire: async () => {
+        throw new Error('Network acquire is disabled in e2e');
+      },
+      reextract: async () => {
+        throw new Error('Network acquire is disabled in e2e');
+      },
     },
     clientHtml: () => readFileSync(html, 'utf8'),
     clientAssets: servedAssets(join(root, 'packages/ui/dist/assets')),
@@ -112,13 +137,15 @@ async function main(): Promise<void> {
       body: new Uint8Array(pdf()),
     });
     if (response.status !== 201) throw new Error(`PDF upload failed: ${response.status} ${await response.text()}`);
-    const { data: { paper } } = await response.json() as { data: { paper: { paperKey: string } } };
+    const {
+      data: { paper },
+    } = (await response.json()) as { data: { paper: { paperKey: string } } };
 
     browser = await chromium.launch({ channel: 'msedge', headless: true });
     page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
     page.on('pageerror', (error) => console.error('Browser error:', error));
     page.setDefaultTimeout(15_000);
-    await page.route('**/*', (route) => new URL(route.request().url()).origin === url ? route.continue() : route.abort());
+    await page.route('**/*', (route) => (new URL(route.request().url()).origin === url ? route.continue() : route.abort()));
     await page.goto(url);
     await page.locator('.home-front').waitFor();
     console.log('PASS home renders');
@@ -152,7 +179,7 @@ async function main(): Promise<void> {
     console.log('PASS drag opens selection menu');
     await page.locator('.selection-menu .hl-yellow').click();
     await page.locator('.highlight-box').first().waitFor();
-    const highlights = await (await fetch(`${url}/api/papers/${paper.paperKey}/highlights`)).json() as { data: unknown[] };
+    const highlights = (await (await fetch(`${url}/api/papers/${paper.paperKey}/highlights`)).json()) as { data: unknown[] };
     assert.ok(highlights.data.length > 0);
     console.log('PASS highlight is visible and persisted through API');
 
@@ -194,4 +221,7 @@ async function main(): Promise<void> {
   }
 }
 
-main().catch((error) => { console.error(error); process.exitCode = 1; });
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});

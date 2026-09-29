@@ -14,7 +14,11 @@ const stores: SqlitePaperStore[] = [];
 
 afterEach(() => {
   for (const store of stores.splice(0)) {
-    try { store.db.close(); } catch { /* already closed for a migration test */ }
+    try {
+      store.db.close();
+    } catch {
+      /* already closed for a migration test */
+    }
   }
   for (const directory of directories.splice(0)) rmSync(directory, { recursive: true, force: true });
 });
@@ -51,7 +55,7 @@ function arxivPaper(arxivId: string, author = 'Ashish Vaswani'): Paper {
 
 describe('citation year and key', () => {
   it('reports an unknown Crossref DOI as non-retryable NOT_FOUND', async () => {
-    const missing = (async () => ({ ok: false, status: 404 } as Response)) as typeof fetch;
+    const missing = (async () => ({ ok: false, status: 404 }) as Response) as typeof fetch;
     let error: unknown;
     try {
       await resolveDoi('10.1234/doesnotexist', missing);
@@ -68,7 +72,7 @@ describe('citation year and key', () => {
       },
     });
 
-    const unavailable = (async () => ({ ok: false, status: 503 } as Response)) as typeof fetch;
+    const unavailable = (async () => ({ ok: false, status: 503 }) as Response) as typeof fetch;
     let upstreamError: unknown;
     try {
       await resolveDoi('10.1234/doesnotexist', unavailable);
@@ -79,11 +83,12 @@ describe('citation year and key', () => {
   });
 
   it('uses the Crossref issued year when published is absent', async () => {
-    const response = (async () => ({
-      ok: true,
-      status: 200,
-      json: async () => ({ message: { issued: { 'date-parts': [[2022, 5, 1]] } } }),
-    } as Response)) as typeof fetch;
+    const response = (async () =>
+      ({
+        ok: true,
+        status: 200,
+        json: async () => ({ message: { issued: { 'date-parts': [[2022, 5, 1]] } } }),
+      }) as Response) as typeof fetch;
     const metadata = await resolveDoi('10.1234/example', response, '');
     expect(metadata.year).toBe(2022);
   });
@@ -148,11 +153,14 @@ describe('citation year and key', () => {
     const update = store.db.prepare('UPDATE bibliography SET data = ? WHERE paper_key = ?');
     for (const paper of [first, second, edited]) {
       const record = store.getLibrary(paper.paperKey)!;
-      update.run(JSON.stringify({
-        ...record,
-        year: null,
-        bibtexKey: paper === edited ? 'my-transformer-key' : 'vaswani2026',
-      }), paper.paperKey);
+      update.run(
+        JSON.stringify({
+          ...record,
+          year: null,
+          bibtexKey: paper === edited ? 'my-transformer-key' : 'vaswani2026',
+        }),
+        paper.paperKey,
+      );
     }
     store.db.close();
 

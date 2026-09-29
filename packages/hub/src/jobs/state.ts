@@ -70,8 +70,11 @@ export class JobManager {
       if (!block.translatable) continue;
       const page = block.regions[0]?.page ?? 1;
       const blocks = pages.get(page);
-      if (blocks) blocks.push(block);
-      else pages.set(page, [block]);
+      if (blocks) {
+        blocks.push(block);
+      } else {
+        pages.set(page, [block]);
+      }
     }
     return pages;
   }
@@ -79,14 +82,16 @@ export class JobManager {
   private countCompleted(job: Job): number {
     const translations = this.store.listTranslations(job.paperKey);
     return [...this.translatablePages(job.paperKey).values()].filter((blocks) =>
-      blocks.every((b) => translations.some(
-        (t) =>
-          t.blockId === b.blockId &&
-          t.sourceHash === b.sourceHash &&
-          t.modelId === job.modelId &&
-          t.promptVersion === job.promptVersion &&
-          t.status === 'completed',
-      )),
+      blocks.every((b) =>
+        translations.some(
+          (t) =>
+            t.blockId === b.blockId &&
+            t.sourceHash === b.sourceHash &&
+            t.modelId === job.modelId &&
+            t.promptVersion === job.promptVersion &&
+            t.status === 'completed',
+        ),
+      ),
     ).length;
   }
 

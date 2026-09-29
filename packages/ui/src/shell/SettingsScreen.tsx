@@ -1,6 +1,17 @@
 import { useCallback, useEffect, useState, type JSX } from 'react';
 import { THEME_CHOICES, type ThemeChoice } from './theme';
-import type { AiChoice, AiFeature, AiSettings, HubApi, NetworkResult, PairedDevice, PairingSession, ProviderStatus, ProvidersResult, UsageResult } from './hub-api';
+import type {
+  AiChoice,
+  AiFeature,
+  AiSettings,
+  HubApi,
+  NetworkResult,
+  PairedDevice,
+  PairingSession,
+  ProviderStatus,
+  ProvidersResult,
+  UsageResult,
+} from './hub-api';
 
 interface Props {
   hub: HubApi;
@@ -127,7 +138,9 @@ function AiSection({ hub, onManageCodexLogin }: { hub: HubApi; onManageCodexLogi
                   로그인 관리
                 </button>
               ) : !p.loggedIn && p.installed ? (
-                <span className="settings__quiet">터미널에서 <code>claude</code>를 실행해 로그인하세요.</span>
+                <span className="settings__quiet">
+                  터미널에서 <code>claude</code>를 실행해 로그인하세요.
+                </span>
               ) : null}
             </dd>
           </div>
@@ -147,7 +160,9 @@ function AiSection({ hub, onManageCodexLogin }: { hub: HubApi; onManageCodexLogi
           <select
             aria-label="추론 강도"
             value={data.settings.default.effort ?? ''}
-            onChange={(event) => void save({ ...data.settings, default: { ...data.settings.default, effort: (event.target.value || undefined) as AiChoice['effort'] } })}
+            onChange={(event) =>
+              void save({ ...data.settings, default: { ...data.settings.default, effort: (event.target.value || undefined) as AiChoice['effort'] } })
+            }
           >
             <option value="">추론 강도 기본</option>
             {efforts.map((e) => (
@@ -174,8 +189,11 @@ function AiSection({ hub, onManageCodexLogin }: { hub: HubApi; onManageCodexLogi
                   allowInherit
                   onChange={(choice) => {
                     const overrides = { ...data.settings.overrides };
-                    if (choice === undefined) delete overrides[f.id];
-                    else overrides[f.id] = choice;
+                    if (choice === undefined) {
+                      delete overrides[f.id];
+                    } else {
+                      overrides[f.id] = choice;
+                    }
                     void save({ ...data.settings, overrides });
                   }}
                 />
@@ -186,11 +204,7 @@ function AiSection({ hub, onManageCodexLogin }: { hub: HubApi; onManageCodexLogi
       </table>
 
       <h3 className="settings__sub">사용량</h3>
-      {usage === undefined ? null : usage === null ? (
-        <Unavailable what="사용량" />
-      ) : (
-        <UsageTable usage={usage} />
-      )}
+      {usage === undefined ? null : usage === null ? <Unavailable what="사용량" /> : <UsageTable usage={usage} />}
     </>
   );
 }
@@ -273,7 +287,10 @@ function DevicesSection({ hub }: { hub: HubApi }): JSX.Element {
   const toggle = async (kind: 'lan' | 'tailscale') => {
     setError(null);
     try {
-      const next = await hub.saveNetwork({ lan: kind === 'lan' ? !enabled('lan') : enabled('lan'), tailscale: kind === 'tailscale' ? !enabled('tailscale') : enabled('tailscale') });
+      const next = await hub.saveNetwork({
+        lan: kind === 'lan' ? !enabled('lan') : enabled('lan'),
+        tailscale: kind === 'tailscale' ? !enabled('tailscale') : enabled('tailscale'),
+      });
       if (next !== null) setNetwork(next);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : '설정을 바꾸지 못했습니다.');
@@ -297,13 +314,19 @@ function DevicesSection({ hub }: { hub: HubApi }): JSX.Element {
               <input type="checkbox" checked={enabled(kind)} disabled={address === ''} onChange={() => void toggle(kind)} />
               <span className="toggle__text">
                 <span>{kind === 'lan' ? '같은 Wi-Fi에서 연결' : 'Tailscale로 어디서나 연결'}</span>
-                <span className="settings__quiet">{address === '' ? (kind === 'lan' ? '네트워크 주소를 찾지 못했습니다' : 'Tailscale이 실행 중이 아닙니다') : address}</span>
+                <span className="settings__quiet">
+                  {address === '' ? (kind === 'lan' ? '네트워크 주소를 찾지 못했습니다' : 'Tailscale이 실행 중이 아닙니다') : address}
+                </span>
               </span>
             </label>
           );
         })}
       </div>
-      {error !== null ? <p className="settings__warn" role="alert">{error}</p> : null}
+      {error !== null ? (
+        <p className="settings__warn" role="alert">
+          {error}
+        </p>
+      ) : null}
 
       <div className="pairing">
         {pairing !== null && secondsLeft > 0 ? (
@@ -312,7 +335,8 @@ function DevicesSection({ hub }: { hub: HubApi }): JSX.Element {
             <div>
               <p className="pairing__lead">태블릿의 Fractal 앱에서 QR을 찍으세요.</p>
               <p className="settings__quiet">
-                {Math.floor(secondsLeft / 60)}:{String(secondsLeft % 60).padStart(2, '0')} 후 만료 · 코드 <code className="pairing__code">{pairing.code.match(/.{1,4}/g)?.join(' ')}</code>
+                {Math.floor(secondsLeft / 60)}:{String(secondsLeft % 60).padStart(2, '0')} 후 만료 · 코드{' '}
+                <code className="pairing__code">{pairing.code.match(/.{1,4}/g)?.join(' ')}</code>
               </p>
               <button type="button" className="text-link" onClick={() => setPairing(null)}>
                 닫기

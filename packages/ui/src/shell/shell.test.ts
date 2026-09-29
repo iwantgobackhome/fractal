@@ -41,7 +41,13 @@ describe('nextTheme', () => {
 
 describe('hub usage', () => {
   it('turns Codex quota windows into labelled limits', () => {
-    const limits = readLimits({ codex: { primary: { usedPercent: 42, windowDurationMins: 300, resetsAt: 1_790_000_000 }, secondary: { usedPercent: 7, windowDurationMins: 10_080, resetsAt: null } }, claude: null });
+    const limits = readLimits({
+      codex: {
+        primary: { usedPercent: 42, windowDurationMins: 300, resetsAt: 1_790_000_000 },
+        secondary: { usedPercent: 7, windowDurationMins: 10_080, resetsAt: null },
+      },
+      claude: null,
+    });
     expect(limits.map((l) => [l.provider, l.label, l.usedPercent])).toEqual([
       ['codex', '5시간 한도', 42],
       ['codex', '주간 한도', 7],
@@ -49,7 +55,9 @@ describe('hub usage', () => {
   });
 
   it('keeps missing token counts at zero', () => {
-    const usage = readUsage({ totals: [{ day: '2026-09-30', provider: 'claude', model: 'sonnet', requests: 2, inputTokens: null, outputTokens: 30, durationMs: 10 }] });
+    const usage = readUsage({
+      totals: [{ day: '2026-09-30', provider: 'claude', model: 'sonnet', requests: 2, inputTokens: null, outputTokens: 30, durationMs: 10 }],
+    });
     expect(usage.rows[0]).toMatchObject({ requests: 2, inputTokens: 0, outputTokens: 30 });
   });
 });

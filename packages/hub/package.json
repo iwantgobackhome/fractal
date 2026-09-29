@@ -5,8 +5,23 @@
   "type": "module",
   "main": "./dist/index.mjs",
   "types": "./src/main.ts",
-  "exports": { ".": { "types": "./src/main.ts", "default": "./dist/index.mjs" } },
-  "engines": { "node": ">=22.12" },
-  "scripts": { "build": "npm run typecheck && node ../../scripts/build-hub.mjs", "typecheck": "tsc --noEmit -p tsconfig.json", "test": "vitest run" },
-  "dependencies": { "@fractal/shared": "0.1.0", "pdfjs-dist": "^6.3.289", "qrcode": "^1.5.4" }
+  "exports": {
+    ".": {
+      "types": "./src/main.ts",
+      "default": "./dist/index.mjs"
+    }
+  },
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "build": "npm run typecheck && node ../../scripts/build-hub.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@fractal/shared": "0.1.0",
+    "pdfjs-dist": "^6.3.289",
+    "qrcode": "^1.5.4"
+  }
 }

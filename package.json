@@ -20,6 +20,8 @@
     "desktop": "npm run desktop:build && electron .",
     "desktop:dist": "npm run desktop:build && electron-builder --win nsis",
     "e2e": "tsx scripts/e2e.ts",
+    "format": "prettier --write \"packages/**/*.{ts,tsx,css,json}\" \"scripts/**\" \"apps/desktop/**/*.{js,cjs,ts}\"",
+    "format:check": "prettier --check \"packages/**/*.{ts,tsx,css,json}\" \"scripts/**\" \"apps/desktop/**/*.{js,cjs,ts}\"",
     "tokens": "node scripts/gen-tokens.mjs"
   },
   "devDependencies": {
@@ -29,6 +31,7 @@
     "electron-builder": "26.15.3",
     "esbuild": "^0.25.0",
     "playwright-core": "^1.63.0",
+    "prettier": "^3.9.9",
     "tsx": "^4.20.0",
     "typescript": "^5.9.0",
     "vitest": "^3.2.0"

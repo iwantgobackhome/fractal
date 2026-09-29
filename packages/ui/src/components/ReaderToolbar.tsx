@@ -117,57 +117,60 @@ function ReplacementDialog({ paper, replacement, canTranslate, onConfirm, onCanc
     };
   }, []);
 
-  const onKeyDown = useCallback((event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      onCancel();
-      return;
-    }
-    if (event.key !== 'Tab') return;
-    const dialog = dialogRef.current;
-    if (dialog === null) return;
-    const elements = focusableElements(dialog);
-    if (elements.length === 0) {
-      event.preventDefault();
-      dialog.focus();
-      return;
-    }
-    const first = elements[0];
-    const last = elements[elements.length - 1];
-    if (event.shiftKey && (document.activeElement === first || document.activeElement === dialog)) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
-    }
-  }, [onCancel]);
+  const onKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        onCancel();
+        return;
+      }
+      if (event.key !== 'Tab') return;
+      const dialog = dialogRef.current;
+      if (dialog === null) return;
+      const elements = focusableElements(dialog);
+      if (elements.length === 0) {
+        event.preventDefault();
+        dialog.focus();
+        return;
+      }
+      const first = elements[0];
+      const last = elements[elements.length - 1];
+      if (event.shiftKey && (document.activeElement === first || document.activeElement === dialog)) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    },
+    [onCancel],
+  );
 
   return (
     <div className="dialog-scrim" role="presentation">
-      <div
-        ref={dialogRef}
-        className="replacement-dialog"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        tabIndex={-1}
-        onKeyDown={onKeyDown}
-      >
+      <div ref={dialogRef} className="replacement-dialog" role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1} onKeyDown={onKeyDown}>
         <p className="eyebrow">새로 번역</p>
         <h2 id={titleId}>{replacementTitle(paper)} 새로 번역</h2>
         <div className="replacement-dialog__copy">
-          {replacement.oldTranslationExists ? <p><strong>기존 번역은 영구적으로 삭제됩니다.</strong></p> : null}
+          {replacement.oldTranslationExists ? (
+            <p>
+              <strong>기존 번역은 영구적으로 삭제됩니다.</strong>
+            </p>
+          ) : null}
           <p>원본 PDF, 하이라이트, 메모는 보존됩니다.</p>
           <p>이 작업은 ChatGPT 구독 사용량을 사용합니다.</p>
-          <p>선택한 모델: <strong>{replacement.modelId}</strong></p>
+          <p>
+            선택한 모델: <strong>{replacement.modelId}</strong>
+          </p>
           <p>현재 번역 작업이 진행 중이어도 이 논문을 새로 번역할 수 있습니다.</p>
         </div>
         <div className="replacement-dialog__actions">
           <button type="button" className="primary" onClick={onConfirm} disabled={!canTranslate || replacement.modelId.trim().length === 0}>
             새로 번역 시작
           </button>
-          <button type="button" onClick={onCancel}>취소</button>
+          <button type="button" onClick={onCancel}>
+            취소
+          </button>
         </div>
       </div>
     </div>
@@ -230,80 +233,88 @@ export function ReaderToolbar({
     <>
       <section className="reader-toolbar" aria-label="번역 도구">
         <div className="reader-toolbar__main">
-        <div className="reader-toolbar__summary">
-          <p className="eyebrow">현재 논문</p>
-          <h2 title={title}>{title}</h2>
-          <div className="translation-progress" aria-live="polite">
-            {statusDetails}
-            {job !== null ? <span className="model-chip">모델 {job.modelId}</span> : null}
+          <div className="reader-toolbar__summary">
+            <p className="eyebrow">현재 논문</p>
+            <h2 title={title}>{title}</h2>
+            <div className="translation-progress" aria-live="polite">
+              {statusDetails}
+              {job !== null ? <span className="model-chip">모델 {job.modelId}</span> : null}
+            </div>
           </div>
-        </div>
-        <div className="reader-toolbar__controls">
-          <label className="model-picker">
-            <span>번역 모델</span>
-            <select value={selectedModelId} onChange={(event) => onModelChange(event.target.value)} disabled={modelIds.length === 0}>
-              {modelIds.length === 0 ? <option value="">사용 가능한 모델 없음</option> : null}
-              {modelIds.map((modelId) => <option key={modelId} value={modelId}>{modelId}</option>)}
-            </select>
-          </label>
-          <div className="reader-toolbar__actions">
-            <button
-              type="button"
-              className={action === 'start' ? 'primary' : undefined}
-              onClick={handlePrimary}
-              disabled={primaryDisabled || action === 'saved'}
-              aria-describedby={!canTranslate && disabledReason !== null ? 'translation-disabled-reason' : undefined}
-            >
-              {primaryLabel(job)}
-            </button>
-            <button type="button" onClick={onRequestReplacement} disabled={!hasPaper || job === null || selectedModelId.trim().length === 0}>
-              새로 번역
-            </button>
-            {onRequestDelete !== undefined ? (
-              <span className="toolbar-menu">
-                <button type="button" aria-label="논문 메뉴" aria-haspopup="menu" aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)}>
-                  ⋯
+          <div className="reader-toolbar__controls">
+            <label className="model-picker">
+              <span>번역 모델</span>
+              <select value={selectedModelId} onChange={(event) => onModelChange(event.target.value)} disabled={modelIds.length === 0}>
+                {modelIds.length === 0 ? <option value="">사용 가능한 모델 없음</option> : null}
+                {modelIds.map((modelId) => (
+                  <option key={modelId} value={modelId}>
+                    {modelId}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <div className="reader-toolbar__actions">
+              <button
+                type="button"
+                className={action === 'start' ? 'primary' : undefined}
+                onClick={handlePrimary}
+                disabled={primaryDisabled || action === 'saved'}
+                aria-describedby={!canTranslate && disabledReason !== null ? 'translation-disabled-reason' : undefined}
+              >
+                {primaryLabel(job)}
+              </button>
+              <button type="button" onClick={onRequestReplacement} disabled={!hasPaper || job === null || selectedModelId.trim().length === 0}>
+                새로 번역
+              </button>
+              {onRequestDelete !== undefined ? (
+                <span className="toolbar-menu">
+                  <button type="button" aria-label="논문 메뉴" aria-haspopup="menu" aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)}>
+                    ⋯
+                  </button>
+                  {menuOpen ? (
+                    <div className="toolbar-menu__list" role="menu">
+                      <button
+                        type="button"
+                        role="menuitem"
+                        className="toolbar-menu__danger"
+                        onClick={() => {
+                          setMenuOpen(false);
+                          onRequestDelete();
+                        }}
+                      >
+                        저장한 자료 삭제
+                      </button>
+                    </div>
+                  ) : null}
+                </span>
+              ) : null}
+            </div>
+            {chat !== undefined ? (
+              // Its own group, set off from the translation actions (whose ⋯ menu ends them): it
+              // opens the panel that docks on this side.
+              <div className="reader-toolbar__panel">
+                <button
+                  ref={chat.buttonRef}
+                  type="button"
+                  className="chat-toggle"
+                  aria-expanded={chat.open}
+                  aria-controls={chat.controls}
+                  onClick={chat.onToggle}
+                >
+                  <IconChat />
+                  질문하기
                 </button>
-                {menuOpen ? (
-                  <div className="toolbar-menu__list" role="menu">
-                    <button
-                      type="button"
-                      role="menuitem"
-                      className="toolbar-menu__danger"
-                      onClick={() => {
-                        setMenuOpen(false);
-                        onRequestDelete();
-                      }}
-                    >
-                      저장한 자료 삭제
-                    </button>
-                  </div>
-                ) : null}
-              </span>
+              </div>
             ) : null}
           </div>
-          {chat !== undefined ? (
-            // Its own group, set off from the translation actions (whose ⋯ menu ends them): it
-            // opens the panel that docks on this side.
-            <div className="reader-toolbar__panel">
-              <button
-                ref={chat.buttonRef}
-                type="button"
-                className="chat-toggle"
-                aria-expanded={chat.open}
-                aria-controls={chat.controls}
-                onClick={chat.onToggle}
-              >
-                <IconChat />
-                질문하기
-              </button>
-            </div>
-          ) : null}
-        </div>
         </div>
         {hint !== null || (!canTranslate && disabledReason !== null) ? (
           <div className="reader-toolbar__meta">
-            {!canTranslate && disabledReason !== null ? <p id="translation-disabled-reason" className="toolbar-disabled-reason" role="status">{disabledReason}</p> : null}
+            {!canTranslate && disabledReason !== null ? (
+              <p id="translation-disabled-reason" className="toolbar-disabled-reason" role="status">
+                {disabledReason}
+              </p>
+            ) : null}
             {hint !== null && (canTranslate || disabledReason === null) ? <p className="toolbar-hint">{hint}</p> : null}
           </div>
         ) : null}

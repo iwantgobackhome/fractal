@@ -102,7 +102,9 @@ export function LibraryScreen({ papers, query, onQueryChange, onOpen, onRequestD
 
         {visible.length === 0 ? (
           <p className="library__empty">
-            {papers.length === 0 ? '보관함이 비어 있습니다. 위 입력창에 arXiv 번호나 DOI를 넣거나, PDF를 이 창에 끌어다 놓으세요.' : '조건에 맞는 논문이 없습니다.'}
+            {papers.length === 0
+              ? '보관함이 비어 있습니다. 위 입력창에 arXiv 번호나 DOI를 넣거나, PDF를 이 창에 끌어다 놓으세요.'
+              : '조건에 맞는 논문이 없습니다.'}
           </p>
         ) : (
           <ol className="paper-list">

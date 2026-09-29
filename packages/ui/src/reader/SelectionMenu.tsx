@@ -72,7 +72,13 @@ export function SelectionMenu({ selection, onHighlight, onMemo, onAsk, onClose }
     >
       <div className="selection-menu__colors" role="group" aria-label="하이라이트">
         {COLORS.map((c) => (
-          <button key={c.value} type="button" className={`selection-menu__swatch hl-${c.value}`} aria-label={`${c.label} 하이라이트`} onClick={() => onHighlight(c.value)} />
+          <button
+            key={c.value}
+            type="button"
+            className={`selection-menu__swatch hl-${c.value}`}
+            aria-label={`${c.label} 하이라이트`}
+            onClick={() => onHighlight(c.value)}
+          />
         ))}
       </div>
       <span className="selection-menu__rule" aria-hidden="true" />

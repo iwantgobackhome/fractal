@@ -24,8 +24,11 @@ function read(): ThemeChoice {
 /** `system` leaves the attribute off so tokens.css follows prefers-color-scheme. */
 function apply(choice: ThemeChoice): void {
   const root = document.documentElement;
-  if (choice === 'system') root.removeAttribute('data-theme');
-  else root.setAttribute('data-theme', choice);
+  if (choice === 'system') {
+    root.removeAttribute('data-theme');
+  } else {
+    root.setAttribute('data-theme', choice);
+  }
 }
 
 export function useTheme(): [ThemeChoice, (choice: ThemeChoice) => void] {

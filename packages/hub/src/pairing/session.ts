@@ -2,11 +2,21 @@ import { randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
 import type { PairingPayload, PairingClaimRequest, PairingClaimResponse } from '@fractal/shared';
 import type { DeviceStore } from './store';
 
-interface Session { id: string; code: string; expiresAt: number; payload: PairingPayload }
+interface Session {
+  id: string;
+  code: string;
+  expiresAt: number;
+  payload: PairingPayload;
+}
 
 export class PairingSessions {
   private current: Session | null = null;
-  constructor(private readonly devices: DeviceStore, private readonly name: string, private readonly urls: () => string[], private readonly now = Date.now) {}
+  constructor(
+    private readonly devices: DeviceStore,
+    private readonly name: string,
+    private readonly urls: () => string[],
+    private readonly now = Date.now,
+  ) {}
   start(): { session: string; expiresAt: string; payload: PairingPayload } {
     const code = randomBytes(12).toString('hex');
     const expiresAt = this.now() + 5 * 60_000;

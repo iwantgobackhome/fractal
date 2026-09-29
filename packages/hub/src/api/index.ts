@@ -1,7 +1,21 @@
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
 import { randomBytes, randomUUID } from 'node:crypto';
 import type { AddressInfo } from 'node:net';
-import type { AppError, Block, Highlight, Job, LogoutResult, Paper, PaperChat, PaperListResult, Region, RestartTranslationRequest, Snapshot, Translation, Translator } from '@fractal/shared';
+import type {
+  AppError,
+  Block,
+  Highlight,
+  Job,
+  LogoutResult,
+  Paper,
+  PaperChat,
+  PaperListResult,
+  Region,
+  RestartTranslationRequest,
+  Snapshot,
+  Translation,
+  Translator,
+} from '@fractal/shared';
 import type { AccountSession } from '../codex/auth-contract';
 import { PaperStore, appError, invalidInput, notFound } from '../store/index';
 import { assertSafeKey } from '../store/validate';
@@ -198,7 +212,25 @@ function requireJobIdField(body: Record<string, unknown>, field: string): string
 }
 
 /** Path words kept verbatim in the request log; every other segment is an identifier. */
-const ROUTE_WORDS = new Set(['api', 'papers', 'open', 'pdf', 'translation', 'restart', 'highlights', 'chat', 'jobs', 'pause', 'resume', 'connection', 'login', 'logout', 'cancel', 'assets', 'index.html']);
+const ROUTE_WORDS = new Set([
+  'api',
+  'papers',
+  'open',
+  'pdf',
+  'translation',
+  'restart',
+  'highlights',
+  'chat',
+  'jobs',
+  'pause',
+  'resume',
+  'connection',
+  'login',
+  'logout',
+  'cancel',
+  'assets',
+  'index.html',
+]);
 
 function requireInt(body: Record<string, unknown>, field: string, min: number): number {
   const value = body[field];
@@ -366,26 +398,37 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
       // The upload route accepts PDF and multipart bytes. Reuse the same host,
       // origin and token gate while exempting only its media-type check.
       const upload = method === 'POST' && segments[0] === 'api' && segments[1] === 'papers' && segments[2] === 'upload';
-      const gated = upload ? (Object.assign(Object.create(request), { headers: { ...request.headers, 'content-type': 'application/json' } }) as IncomingMessage) : request;
+      const gated = upload
+        ? (Object.assign(Object.create(request), { headers: { ...request.headers, 'content-type': 'application/json' } }) as IncomingMessage)
+        : request;
       if (!ping) {
-        if (local) assertLocalRequest(gated, token, mutating && !claim);
-        else if (options.devices !== undefined) assertRemoteRequest(request, options.devices, claim);
-        else throw new HttpError(401, { code: 'AUTH_REQUIRED', message: 'A paired device token is required', retryable: false });
+        if (local) {
+          assertLocalRequest(gated, token, mutating && !claim);
+        } else if (options.devices !== undefined) {
+          assertRemoteRequest(request, options.devices, claim);
+        } else {
+          throw new HttpError(401, { code: 'AUTH_REQUIRED', message: 'A paired device token is required', retryable: false });
+        }
       }
 
       const result = await route_(method, segments, request, { devices: options.devices, pairing: options.pairing, network: options.network, local, url });
       if (result.kind === 'json') {
         send(response, result.status, { data: result.data });
       } else if (result.kind === 'sse') {
-        response.writeHead(200, { ...baseHeaders(), 'content-type': 'text/event-stream; charset=utf-8', 'connection': 'keep-alive' });
-        try { for await (const event of result.events) response.write(`event: ${event.type}\ndata: ${safeJson(event)}\n\n`); }
-        catch (cause) { const { error } = toHttp(cause); response.write(`event: error\ndata: ${safeJson({ type: 'error', error })}\n\n`); }
+        response.writeHead(200, { ...baseHeaders(), 'content-type': 'text/event-stream; charset=utf-8', connection: 'keep-alive' });
+        try {
+          for await (const event of result.events) response.write(`event: ${event.type}\ndata: ${safeJson(event)}\n\n`);
+        } catch (cause) {
+          const { error } = toHttp(cause);
+          response.write(`event: error\ndata: ${safeJson({ type: 'error', error })}\n\n`);
+        }
         response.end();
       } else {
         const headers = { ...baseHeaders() };
         // The entry document must load its own script; the API CSP forbids everything.
         if (result.contentType.startsWith('text/html')) {
-          headers['content-security-policy'] = "default-src 'self'; connect-src 'self'; img-src 'self' blob: data:; style-src 'self' 'unsafe-inline'; object-src 'none'; frame-ancestors 'none'; base-uri 'none'";
+          headers['content-security-policy'] =
+            "default-src 'self'; connect-src 'self'; img-src 'self' blob: data:; style-src 'self' 'unsafe-inline'; object-src 'none'; frame-ancestors 'none'; base-uri 'none'";
         }
         response.writeHead(result.status, {
           ...headers,
@@ -423,7 +466,10 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
       const libraryCtx = { store, acquirer };
       const structureResult = structure ? await handleStructure(method, segments, request, { ...libraryCtx, structure }) : undefined;
       if (structureResult !== undefined) return structureResult;
-      const domain = (await handleLibrary(method, segments, request, libraryCtx)) ?? (await handleAnnotations(method, segments, request, libraryCtx)) ?? (await handleSync(method, segments, request, libraryCtx));
+      const domain =
+        (await handleLibrary(method, segments, request, libraryCtx)) ??
+        (await handleAnnotations(method, segments, request, libraryCtx)) ??
+        (await handleSync(method, segments, request, libraryCtx));
       if (domain !== undefined) return domain;
     }
     // The client entry document, with the request credential embedded.
@@ -640,8 +686,11 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
     if (!acquiring.has(pending.paperKey)) {
       const acquisition = ++nextAcquisition;
       acquiring.set(pending.paperKey, acquisition);
-      if (storedPdf === null) void acquireInBackground(pending.paperKey, input, acquisition);
-      else void reextractInBackground(pending.paperKey, storedPdf, acquisition, carried);
+      if (storedPdf === null) {
+        void acquireInBackground(pending.paperKey, input, acquisition);
+      } else {
+        void reextractInBackground(pending.paperKey, storedPdf, acquisition, carried);
+      }
     }
     return pending;
   }
@@ -967,10 +1016,15 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
       const port = (server.address() as AddressInfo).port;
       for (const host of addresses) {
         if (host === LOOPBACK || listeners.has(host)) continue;
-        const listener = createServer((request, response) => { void handle(request, response); });
+        const listener = createServer((request, response) => {
+          void handle(request, response);
+        });
         await new Promise<void>((resolve, reject) => {
           listener.once('error', reject);
-          listener.listen(port, host, () => { listener.removeListener('error', reject); resolve(); });
+          listener.listen(port, host, () => {
+            listener.removeListener('error', reject);
+            resolve();
+          });
         });
         listeners.set(host, listener);
       }

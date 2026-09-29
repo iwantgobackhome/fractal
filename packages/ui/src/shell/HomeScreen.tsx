@@ -57,7 +57,19 @@ function relative(iso: string | null): string {
 }
 
 /** One paper as a headline: title, byline, why it is here, and a quiet save action. */
-function Headline({ item, size, onOpen, onSave, saving }: { item: FeedItem; size: 'lead' | 'normal' | 'compact'; onOpen(): void; onSave(): void; saving: boolean }): JSX.Element {
+function Headline({
+  item,
+  size,
+  onOpen,
+  onSave,
+  saving,
+}: {
+  item: FeedItem;
+  size: 'lead' | 'normal' | 'compact';
+  onOpen(): void;
+  onSave(): void;
+  saving: boolean;
+}): JSX.Element {
   return (
     <article className={`headline headline--${size}`}>
       <button type="button" className="headline__title" onClick={onOpen}>
@@ -103,8 +115,11 @@ function InterestPicker({ hub, onSaved }: { hub: HubApi; onSaved(): void }): JSX
   const toggle = (category: string) =>
     setChosen((current) => {
       const next = new Set(current);
-      if (next.has(category)) next.delete(category);
-      else next.add(category);
+      if (next.has(category)) {
+        next.delete(category);
+      } else {
+        next.add(category);
+      }
       return next;
     });
 
@@ -189,7 +204,14 @@ export function HomeScreen({ hub, papers, onOpen, onOpenExternal, onShowLibrary 
   const recommended = sections === undefined ? [] : once(sections.recommended, seen, 6);
   const empty = sections === undefined || (sections.top.length === 0 && sections.rankings.length === 0 && sections.news.length === 0);
   const headline = (item: FeedItem, size: 'lead' | 'normal' | 'compact') => (
-    <Headline key={item.id} item={item} size={size} onOpen={() => (item.kind === 'news' ? window.open(item.url, '_blank', 'noopener') : onOpenExternal(openTarget(item)))} onSave={() => save(item)} saving={saving.has(item.id)} />
+    <Headline
+      key={item.id}
+      item={item}
+      size={size}
+      onOpen={() => (item.kind === 'news' ? window.open(item.url, '_blank', 'noopener') : onOpenExternal(openTarget(item)))}
+      onSave={() => save(item)}
+      saving={saving.has(item.id)}
+    />
   );
 
   return (

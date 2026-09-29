@@ -137,8 +137,11 @@ export function orderedAnchors(anchors: readonly ScrollAnchor[]): ScrollAnchor[]
     let hi = tails.length;
     while (lo < hi) {
       const mid = (lo + hi) >> 1;
-      if (sorted[tails[mid]].translation < value) lo = mid + 1;
-      else hi = mid;
+      if (sorted[tails[mid]].translation < value) {
+        lo = mid + 1;
+      } else {
+        hi = mid;
+      }
     }
     if (lo > 0) previous[i] = tails[lo - 1];
     tails[lo] = i;

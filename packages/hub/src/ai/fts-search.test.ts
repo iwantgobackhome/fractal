@@ -15,11 +15,39 @@ afterEach(() => {
 const hash = (s: string) => createHash('sha256').update(s).digest('hex');
 
 function paper(key: string, title: string): Paper {
-  return { paperKey: key, sourceKind: 'publication', arxivId: null, version: null, title, authors: [], sourceUrl: 'https://example.org/p.pdf', pdfSha256: hash(key), pageCount: 2, extractionVersion: 'test', status: 'ready', coverage: { totalPages: 2, textPages: 2, unsupportedPages: [] }, createdAt: '2026-09-30T00:00:00.000Z' };
+  return {
+    paperKey: key,
+    sourceKind: 'publication',
+    arxivId: null,
+    version: null,
+    title,
+    authors: [],
+    sourceUrl: 'https://example.org/p.pdf',
+    pdfSha256: hash(key),
+    pageCount: 2,
+    extractionVersion: 'test',
+    status: 'ready',
+    coverage: { totalPages: 2, textPages: 2, unsupportedPages: [] },
+    createdAt: '2026-09-30T00:00:00.000Z',
+  };
 }
 
 function block(key: string, id: string, page: number, text: string): Block {
-  return { blockId: id, paperKey: key, order: page, kind: 'paragraph', sourceText: text, sourceHash: hash(text), regions: [{ page, x: 0.1, y: 0.1, width: 0.8, height: 0.1 }], alignment: 'exact', translatable: true, fontFamily: 'serif', fontWeight: 'normal', fontSize: 0.012, pageOrdinal: 0 };
+  return {
+    blockId: id,
+    paperKey: key,
+    order: page,
+    kind: 'paragraph',
+    sourceText: text,
+    sourceHash: hash(text),
+    regions: [{ page, x: 0.1, y: 0.1, width: 0.8, height: 0.1 }],
+    alignment: 'exact',
+    translatable: true,
+    fontFamily: 'serif',
+    fontWeight: 'normal',
+    fontSize: 0.012,
+    pageOrdinal: 0,
+  };
 }
 
 const A = `pdf-${hash('a')}-${hash('a.pdf')}`;

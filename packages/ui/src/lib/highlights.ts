@@ -156,8 +156,11 @@ function columnEdges(spans: SpanBox[]): number[] {
   const edges: { left: number; count: number }[] = [];
   for (const span of longRuns.sort((a, b) => a.rect.left - b.rect.left)) {
     const edge = edges.find((candidate) => Math.abs(candidate.left - span.rect.left) <= lineHeight * COLUMN_EDGE_TOLERANCE_LINES);
-    if (edge === undefined) edges.push({ left: span.rect.left, count: 1 });
-    else edge.count += 1;
+    if (edge === undefined) {
+      edges.push({ left: span.rect.left, count: 1 });
+    } else {
+      edge.count += 1;
+    }
   }
   // A column needs a few lines of evidence; a single wide caption or equation is not one.
   const supported = edges.filter((edge) => edge.count >= 3);
@@ -236,9 +239,13 @@ export function sweepSelection(spans: SpanBox[], down: Point, up: Point): { rect
     const inColumn = (span: SpanBox) => columnOf(edges, span.rect, lineHeight) === column;
     for (let index = first; index <= last; index += 1) {
       const row = rows[index].spans.filter(inColumn);
-      if (index === first) picked.push(row.filter((span) => span.rect.left + span.rect.width >= start.x));
-      else if (index === last) picked.push(row.filter((span) => span.rect.left <= end.x));
-      else picked.push(row);
+      if (index === first) {
+        picked.push(row.filter((span) => span.rect.left + span.rect.width >= start.x));
+      } else if (index === last) {
+        picked.push(row.filter((span) => span.rect.left <= end.x));
+      } else {
+        picked.push(row);
+      }
     }
   }
 
@@ -246,7 +253,11 @@ export function sweepSelection(spans: SpanBox[], down: Point, up: Point): { rect
   if (lines.length === 0) return null;
   return {
     rects: lines.map((row) => unionRect(row.map((span) => span.rect))),
-    text: lines.map((row) => row.map((span) => span.text).join(' ')).join(' ').replace(/\s+/g, ' ').trim(),
+    text: lines
+      .map((row) => row.map((span) => span.text).join(' '))
+      .join(' ')
+      .replace(/\s+/g, ' ')
+      .trim(),
   };
 }
 

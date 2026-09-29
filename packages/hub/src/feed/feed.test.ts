@@ -16,9 +16,18 @@ import { CachedFetcher, newsSource, parseArxivAtom, parseHfDaily, parseSyndicati
 const interests: FeedInterests = { categories: ['cs.CL'], topics: ['language model'], authors: [] };
 const now = new Date('2026-09-30T12:00:00.000Z');
 const base: RawItem = {
-  id: 'arxiv:2609.12345', kind: 'paper', title: 'Language models for science', authors: ['A Researcher'],
-  abstract: 'A useful language model.', source: 'arxiv', url: 'https://arxiv.org/abs/2609.12345',
-  arxivId: '2609.12345', doi: null, categories: ['cs.CL'], publishedAt: '2026-09-29T12:00:00.000Z', popularity: 0,
+  id: 'arxiv:2609.12345',
+  kind: 'paper',
+  title: 'Language models for science',
+  authors: ['A Researcher'],
+  abstract: 'A useful language model.',
+  source: 'arxiv',
+  url: 'https://arxiv.org/abs/2609.12345',
+  arxivId: '2609.12345',
+  doi: null,
+  categories: ['cs.CL'],
+  publishedAt: '2026-09-29T12:00:00.000Z',
+  popularity: 0,
 };
 const arxivXml = `<?xml version="1.0"?><feed xmlns:arxiv="http://arxiv.org/schemas/atom">
   <entry><id>http://arxiv.org/abs/2609.12345v1</id><title>Language &amp; Vision</title>
@@ -32,16 +41,26 @@ const atom = `<feed><entry><title>Field update</title><link href="https://exampl
 
 describe('feed sources and ranking', () => {
   it('parses arXiv Atom categories, DOI and authors', () => {
-    expect(parseArxivAtom(arxivXml)).toMatchObject([{ title: 'Language & Vision', arxivId: '2609.12345',
-      doi: '10.1234/example', authors: ['A Researcher'], categories: ['cs.CV', 'cs.CL'] }]);
+    expect(parseArxivAtom(arxivXml)).toMatchObject([
+      { title: 'Language & Vision', arxivId: '2609.12345', doi: '10.1234/example', authors: ['A Researcher'], categories: ['cs.CV', 'cs.CL'] },
+    ]);
   });
 
   it('parses Hugging Face daily papers and upvotes', () => {
-    const rows = [{ paper: { id: '2609.12345', title: 'Language models for science', summary: 'Abstract',
-      authors: [{ name: 'A Researcher' }], publishedAt: '2026-09-24T12:00:00Z',
-      submittedOnDailyAt: '2026-09-29T12:00:00Z', upvotes: 42 } }];
-    expect(parseHfDaily(rows)).toMatchObject([{ arxivId: '2609.12345', popularity: 42,
-      publishedAt: '2026-09-29T12:00:00.000Z', authors: ['A Researcher'] }]);
+    const rows = [
+      {
+        paper: {
+          id: '2609.12345',
+          title: 'Language models for science',
+          summary: 'Abstract',
+          authors: [{ name: 'A Researcher' }],
+          publishedAt: '2026-09-24T12:00:00Z',
+          submittedOnDailyAt: '2026-09-29T12:00:00Z',
+          upvotes: 42,
+        },
+      },
+    ];
+    expect(parseHfDaily(rows)).toMatchObject([{ arxivId: '2609.12345', popularity: 42, publishedAt: '2026-09-29T12:00:00.000Z', authors: ['A Researcher'] }]);
   });
 
   it('parses RSS 2.0 and Atom news', () => {
@@ -51,19 +70,25 @@ describe('feed sources and ranking', () => {
 
   it('selects curated news feeds for the reader field', async () => {
     const get = vi.fn().mockResolvedValue(rss);
-    await newsSource.load({ interests: { categories: ['q-bio.MN'], topics: [], authors: [] },
-      libraryArxivIds: [], rssFeeds: [], get, now });
+    await newsSource.load({ interests: { categories: ['q-bio.MN'], topics: [], authors: [] }, libraryArxivIds: [], rssFeeds: [], get, now });
     expect(get).toHaveBeenCalledOnce();
     expect(get.mock.calls[0]?.[0]).toBe('https://www.nature.com/subjects/biological-sciences.rss');
   });
 
   it('deduplicates arXiv, DOI and title and ranks interest matches first', () => {
     const duplicate = { ...base, id: 'hf:2609.12345', source: 'huggingFace', popularity: 100 };
-    const unrelated = { ...base, id: 'other', arxivId: null, title: 'New material discovery', categories: [],
-      abstract: '', publishedAt: '2026-09-30T11:00:00.000Z' };
+    const unrelated = {
+      ...base,
+      id: 'other',
+      arxivId: null,
+      title: 'New material discovery',
+      categories: [],
+      abstract: '',
+      publishedAt: '2026-09-30T11:00:00.000Z',
+    };
     expect(deduplicate([base, duplicate])).toHaveLength(1);
     const ranked = rankItems([unrelated, base, duplicate], interests, [], now);
-    expect(ranked.map(item => item.title)).toEqual(['Language models for science', 'New material discovery']);
+    expect(ranked.map((item) => item.title)).toEqual(['Language models for science', 'New material discovery']);
     expect(ranked[0]?.reason).toBe('관심 분야 cs.CL');
     expect(ranked[0]?.popularity).toBe(100);
   });
@@ -72,20 +97,27 @@ describe('feed sources and ranking', () => {
     const directory = mkdtempSync(join(tmpdir(), 'feed-cache-'));
     const store = new SqlitePaperStore(directory);
     try {
-      const fetcher = vi.fn().mockResolvedValueOnce(new Response('first', { headers: { etag: '"a"' } }))
+      const fetcher = vi
+        .fn()
+        .mockResolvedValueOnce(new Response('first', { headers: { etag: '"a"' } }))
         .mockResolvedValueOnce(new Response(null, { status: 304 }));
       const cache = new CachedFetcher(store, fetcher);
       expect(await cache.get('https://example.org/rss')).toBe('first');
       expect(await cache.get('https://example.org/rss')).toBe('first');
       expect(fetcher.mock.calls[1]?.[1]?.headers['If-None-Match']).toBe('"a"');
-    } finally { store.db.close(); rmSync(directory, { recursive: true, force: true }); }
+    } finally {
+      store.db.close();
+      rmSync(directory, { recursive: true, force: true });
+    }
   });
 
   it('posts library seeds to Semantic Scholar recommendations', async () => {
-    const get = vi.fn().mockResolvedValue(JSON.stringify({ recommendedPapers: [{ paperId: 's2-id',
-      title: 'A recommended paper', publicationDate: '2026-09-28', citationCount: 10 }] }));
-    const result = await recommendationSource.load({ interests, libraryArxivIds: ['2609.12345'],
-      rssFeeds: [], get, now });
+    const get = vi
+      .fn()
+      .mockResolvedValue(
+        JSON.stringify({ recommendedPapers: [{ paperId: 's2-id', title: 'A recommended paper', publicationDate: '2026-09-28', citationCount: 10 }] }),
+      );
+    const result = await recommendationSource.load({ interests, libraryArxivIds: ['2609.12345'], rssFeeds: [], get, now });
     expect(JSON.parse(get.mock.calls[0]?.[2] as string)).toEqual({ positivePaperIds: ['ARXIV:2609.12345'], negativePaperIds: [] });
     expect(result).toMatchObject([{ source: 'recommendations', title: 'A recommended paper' }]);
   });
@@ -128,7 +160,12 @@ describe('feed service and route', () => {
   it('preserves partial results when one source fails', async () => {
     const feed = service([
       { id: 'arxiv', load: async () => [base] },
-      { id: 'huggingFace', load: async () => { throw new Error('offline'); } },
+      {
+        id: 'huggingFace',
+        load: async () => {
+          throw new Error('offline');
+        },
+      },
     ]);
     feed.putInterests(interests);
     const result = await feed.refresh();
@@ -159,8 +196,7 @@ describe('feed service and route', () => {
     const feed = service([{ id: 'arxiv', load: async () => [base] }]);
     const body = Readable.from([JSON.stringify(interests)]) as IncomingMessage;
     body.headers = {};
-    const put = await handleFeed('PUT', ['api', 'feed', 'interests'], body,
-      { feed, url: new URL('http://localhost/api/feed/interests') });
+    const put = await handleFeed('PUT', ['api', 'feed', 'interests'], body, { feed, url: new URL('http://localhost/api/feed/interests') });
     expect(put).toMatchObject({ kind: 'json', data: interests });
     await feed.refresh();
     const request = Readable.from([]) as IncomingMessage;

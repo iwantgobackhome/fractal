@@ -1,10 +1,6 @@
 /** What the single input box was given: something to open, or words to search for. */
 export type InputIntent =
-  | { kind: 'arxiv'; value: string }
-  | { kind: 'doi'; value: string }
-  | { kind: 'url'; value: string }
-  | { kind: 'search'; value: string }
-  | { kind: 'empty' };
+  { kind: 'arxiv'; value: string } | { kind: 'doi'; value: string } | { kind: 'url'; value: string } | { kind: 'search'; value: string } | { kind: 'empty' };
 
 const ARXIV_ID = /^(?:arxiv:\s*)?((?:\d{4}\.\d{4,5}|[a-z-]+(?:\.[a-z]{2})?\/\d{7})(?:v\d+)?)$/i;
 const DOI = /^(?:doi:\s*)?(10\.\d{4,9}\/\S+)$/i;

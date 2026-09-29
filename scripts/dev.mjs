@@ -23,7 +23,9 @@ function stop() {
     if (child.pid === undefined) continue;
     if (process.platform === 'win32') {
       spawn('taskkill', ['/PID', String(child.pid), '/T', '/F'], { stdio: 'ignore', windowsHide: true });
-    } else child.kill('SIGTERM');
+    } else {
+      child.kill('SIGTERM');
+    }
   }
 }
 

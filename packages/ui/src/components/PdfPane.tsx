@@ -66,7 +66,20 @@ export interface PageCanvasProps {
  * Only pages inside the visible window are mounted, so a 40-page paper never
  * rasterises 40 canvases at once.
  */
-export function PageCanvas({ doc, page, zoom, dpr, ariaLabel, size, onSize, registerPage, children, onMouseDown, onMouseUp, pageColors }: PageCanvasProps): JSX.Element {
+export function PageCanvas({
+  doc,
+  page,
+  zoom,
+  dpr,
+  ariaLabel,
+  size,
+  onSize,
+  registerPage,
+  children,
+  onMouseDown,
+  onMouseUp,
+  pageColors,
+}: PageCanvasProps): JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [renderedSize, setRenderedSize] = useState<Size | null>(null);
   const box = size ?? renderedSize;
@@ -93,7 +106,12 @@ export function PageCanvas({ doc, page, zoom, dpr, ariaLabel, size, onSize, regi
       canvas.style.width = `${rendered.width}px`;
       canvas.style.height = `${rendered.height}px`;
 
-      const render = proxy.render({ canvas, canvasContext: context, viewport: proxy.getViewport({ scale: zoom * dpr }), ...(pageColors === undefined ? {} : { pageColors }) });
+      const render = proxy.render({
+        canvas,
+        canvasContext: context,
+        viewport: proxy.getViewport({ scale: zoom * dpr }),
+        ...(pageColors === undefined ? {} : { pageColors }),
+      });
       task = render;
       try {
         await render.promise;
@@ -201,7 +219,24 @@ interface PageViewProps {
  * click — one that did not drag — is hit-tested against the page's readable
  * blocks directly, and a drag becomes a highlight of the lines it swept.
  */
-function PageView({ doc, page, zoom, dpr, size, blocks, highlights, onSize, registerPage, onSelectBlock, onSelectText, onOpenHighlight, pending, pageColors, ink, structure }: PageViewProps): JSX.Element {
+function PageView({
+  doc,
+  page,
+  zoom,
+  dpr,
+  size,
+  blocks,
+  highlights,
+  onSize,
+  registerPage,
+  onSelectBlock,
+  onSelectText,
+  onOpenHighlight,
+  pending,
+  pageColors,
+  ink,
+  structure,
+}: PageViewProps): JSX.Element {
   const pageHighlights = useMemo(() => highlights.filter((h) => h.page === page), [highlights, page]);
   // Where the drag began, in viewport pixels; null while no button is down on this page.
   const dragStart = useRef<Point | null>(null);
@@ -248,7 +283,11 @@ function PageView({ doc, page, zoom, dpr, size, blocks, highlights, onSize, regi
         if (swept === null) return;
         // pdf.js emits C0 codes for glyphs it cannot map to Unicode (math symbols); the
         // stored excerpt is one line of prose, never raw control characters.
-        const text = swept.text.replace(/\p{Cc}+/gu, ' ').replace(/\s+/g, ' ').trim().slice(0, 2000);
+        const text = swept.text
+          .replace(/\p{Cc}+/gu, ' ')
+          .replace(/\s+/g, ' ')
+          .trim()
+          .slice(0, 2000);
         const regions = selectionToRegions(swept.rects, { left: pageBox.left, top: pageBox.top, width: pageBox.width, height: pageBox.height }, page);
         if (regions !== null && text.length > 0) {
           const last = swept.rects.reduce((a, b) => (b.top + b.height > a.top + a.height ? b : a), swept.rects[0]);
@@ -268,7 +307,18 @@ function PageView({ doc, page, zoom, dpr, size, blocks, highlights, onSize, regi
   );
 
   return (
-    <PageCanvas doc={doc} page={page} zoom={zoom} dpr={dpr} size={size} onSize={onSize} registerPage={registerPage} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} pageColors={pageColors}>
+    <PageCanvas
+      doc={doc}
+      page={page}
+      zoom={zoom}
+      dpr={dpr}
+      size={size}
+      onSize={onSize}
+      registerPage={registerPage}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      pageColors={pageColors}
+    >
       <TextLayerOverlay doc={doc} page={page} zoom={zoom} />
       {structure !== undefined ? (
         <StructureLayer
@@ -280,11 +330,22 @@ function PageView({ doc, page, zoom, dpr, size, blocks, highlights, onSize, regi
       ) : null}
       <HighlightLayer highlights={pageHighlights} onOpen={onOpenHighlight} />
       {ink !== undefined ? (
-        <InkLayer page={page} strokes={ink.strokes.filter((s) => s.page === page && !s.deleted)} color={ink.color} onCreate={ink.onCreate} onErase={ink.onErase} />
+        <InkLayer
+          page={page}
+          strokes={ink.strokes.filter((s) => s.page === page && !s.deleted)}
+          color={ink.color}
+          onCreate={ink.onCreate}
+          onErase={ink.onErase}
+        />
       ) : null}
       {pending !== null && pending.page === page
         ? pending.regions.map((r, i) => (
-            <div key={i} className="selection-pending" style={{ left: `${r.x * 100}%`, top: `${r.y * 100}%`, width: `${r.width * 100}%`, height: `${r.height * 100}%` }} aria-hidden="true" />
+            <div
+              key={i}
+              className="selection-pending"
+              style={{ left: `${r.x * 100}%`, top: `${r.y * 100}%`, width: `${r.width * 100}%`, height: `${r.height * 100}%` }}
+              aria-hidden="true"
+            />
           ))
         : null}
     </PageCanvas>
@@ -321,7 +382,26 @@ export interface PdfPaneProps {
  * every page offset stay correct without rendering the whole document.
  */
 export function PdfPages(props: PdfPaneProps): JSX.Element {
-  const { doc, pageCount, currentPage, zoom, blocks, highlights, pageIntrinsicSize, onSize, registerPage, bodyRef, onScroll, onSelectBlock, onSelectText, onOpenHighlight, pending, pageColors, ink, structure } = props;
+  const {
+    doc,
+    pageCount,
+    currentPage,
+    zoom,
+    blocks,
+    highlights,
+    pageIntrinsicSize,
+    onSize,
+    registerPage,
+    bodyRef,
+    onScroll,
+    onSelectBlock,
+    onSelectText,
+    onOpenHighlight,
+    pending,
+    pageColors,
+    ink,
+    structure,
+  } = props;
   const dpr = useMemo(() => Math.min(2, typeof window === 'undefined' ? 1 : window.devicePixelRatio || 1), []);
   const live = useMemo(() => new Set(visiblePageWindow(currentPage, pageCount, 1)), [currentPage, pageCount]);
 

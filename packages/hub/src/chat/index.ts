@@ -31,12 +31,20 @@ export interface ChatServiceOptions {
 }
 
 /** A persisted question whose answer was lost with the process that was writing it. */
-export const RESTARTED_ERROR: AppError = { code: 'NETWORK', message: '서비스가 다시 시작되어 답변이 중단되었습니다. 다시 물어볼 수 있습니다.', retryable: true };
+export const RESTARTED_ERROR: AppError = {
+  code: 'NETWORK',
+  message: '서비스가 다시 시작되어 답변이 중단되었습니다. 다시 물어볼 수 있습니다.',
+  retryable: true,
+};
 /** A stored question this process never answered and did not find at startup (the file changed
  * underneath it). Not worded as a restart, because none happened. */
 export const INTERRUPTED_ERROR: AppError = { code: 'NETWORK', message: '답변이 중단되었습니다. 다시 물어볼 수 있습니다.', retryable: true };
 /** Logging out ends this app's official session; an answer on it cannot finish. */
-export const LOGGED_OUT_ERROR: AppError = { code: 'AUTH_REQUIRED', message: '로그아웃되어 답변이 중단되었습니다. 다시 로그인한 뒤 다시 물어볼 수 있습니다.', retryable: true };
+export const LOGGED_OUT_ERROR: AppError = {
+  code: 'AUTH_REQUIRED',
+  message: '로그아웃되어 답변이 중단되었습니다. 다시 로그인한 뒤 다시 물어볼 수 있습니다.',
+  retryable: true,
+};
 const EMPTY_ANSWER_ERROR: AppError = { code: 'NETWORK', message: '빈 답변을 받았습니다. 다시 물어볼 수 있습니다.', retryable: true };
 const UNKNOWN_ERROR: AppError = { code: 'INTERNAL', message: '답변을 만드는 중 알 수 없는 오류가 발생했습니다.', retryable: false };
 
@@ -228,7 +236,16 @@ export class ChatService {
     const previous = this.threadInstructions.get(conversationId);
     const stale = previous !== undefined && previous !== digest;
     const createdAt = this.now().toISOString();
-    const question: ChatMessage = { messageId: this.newId(), role: 'user', text: request.question, status: 'completed', modelId: null, error: null, usage: null, createdAt };
+    const question: ChatMessage = {
+      messageId: this.newId(),
+      role: 'user',
+      text: request.question,
+      status: 'completed',
+      modelId: null,
+      error: null,
+      usage: null,
+      createdAt,
+    };
     // `messages` came from load(): an answer whose write had failed is written with it now.
     const saved = this.store.saveConversation(paperKey, { conversationId, messages: [...messages, question] });
     this.unsaved.delete(paperKey);
@@ -321,13 +338,21 @@ export class ChatService {
 
   // ---------------------------------------------------------------- internals
 
-  private async answer(paperKey: string, flight: Flight, input: { conversationId: string; modelId: string; instructions: string; history: { question: string; answer: string }[]; question: string }, staleThread = false): Promise<void> {
+  private async answer(
+    paperKey: string,
+    flight: Flight,
+    input: { conversationId: string; modelId: string; instructions: string; history: { question: string; answer: string }[]; question: string },
+    staleThread = false,
+  ): Promise<void> {
     let settled: ChatMessage;
     try {
       if (staleThread) {
         const dropped = await Promise.resolve()
           .then(() => this.chat.forget(input.conversationId))
-          .then(() => null, (cause: unknown) => cause);
+          .then(
+            () => null,
+            (cause: unknown) => cause,
+          );
         // Dropping the old thread is best effort, unless it turned up isolation evidence: then
         // this question is not asked at all.
         if (dropped !== null && isUnsafe(dropped)) throw dropped;
@@ -476,7 +501,12 @@ export class ChatService {
     let unsaved = this.unsaved.get(paperKey);
     if (unsaved === undefined || unsaved.conversationId !== stored.conversationId || unsaved.afterMessageId !== last.messageId) {
       // Kept, so every read shows the same message until a save writes it.
-      unsaved = { conversationId: stored.conversationId, afterMessageId: last.messageId, message: this.interruptedAnswer(INTERRUPTED_ERROR), placeholder: true };
+      unsaved = {
+        conversationId: stored.conversationId,
+        afterMessageId: last.messageId,
+        message: this.interruptedAnswer(INTERRUPTED_ERROR),
+        placeholder: true,
+      };
       this.unsaved.set(paperKey, unsaved);
     }
     return { conversationId: stored.conversationId, messages: [...stored.messages, unsaved.message] };

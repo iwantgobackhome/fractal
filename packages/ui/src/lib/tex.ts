@@ -21,7 +21,15 @@ export function renderTex(tex: string, display: boolean): string {
   if (cached !== undefined) return cached;
   let html: string;
   try {
-    html = katex.renderToString(tex, { displayMode: display, throwOnError: false, trust: false, strict: 'ignore', output: 'htmlAndMathml', maxSize: 40, maxExpand: 500 });
+    html = katex.renderToString(tex, {
+      displayMode: display,
+      throwOnError: false,
+      trust: false,
+      strict: 'ignore',
+      output: 'htmlAndMathml',
+      maxSize: 40,
+      maxExpand: 500,
+    });
   } catch {
     html = `<span class="md-math-error">${escapeHtml(tex)}</span>`;
   }

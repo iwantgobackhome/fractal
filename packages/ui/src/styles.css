@@ -10,9 +10,16 @@
   --error: var(--c-danger);
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
-html, body, #root { height: 100%; margin: 0; }
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
 
 body {
   background: var(--bg);
@@ -28,7 +35,9 @@ body {
   outline-offset: 2px;
 }
 
-button, select, input {
+button,
+select,
+input {
   font: inherit;
   color: inherit;
 }
@@ -41,8 +50,13 @@ button {
   cursor: pointer;
 }
 
-button:hover:not(:disabled) { border-color: var(--accent); }
-button:disabled { opacity: 0.45; cursor: not-allowed; }
+button:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
 
 button.primary {
   background: var(--accent);
@@ -154,13 +168,24 @@ button.primary {
   box-shadow: 0 0 0 3px rgba(28, 28, 26, 0.05);
 }
 
-.status-dot--ok { background: #2f9e5f; }
-.status-dot--off { background: #b0b0aa; }
-.status-dot--warn { background: #d9931b; }
-.status-dot--pending { background: #b0b0aa; animation: status-pulse 1.2s ease-in-out infinite; }
+.status-dot--ok {
+  background: #2f9e5f;
+}
+.status-dot--off {
+  background: #b0b0aa;
+}
+.status-dot--warn {
+  background: #d9931b;
+}
+.status-dot--pending {
+  background: #b0b0aa;
+  animation: status-pulse 1.2s ease-in-out infinite;
+}
 
 @keyframes status-pulse {
-  50% { opacity: 0.35; }
+  50% {
+    opacity: 0.35;
+  }
 }
 
 .popover-layer {
@@ -194,11 +219,25 @@ button.primary {
   border-bottom: 1px solid var(--line);
   font-size: 13px;
 }
-.notice.error { background: #fdeeee; color: var(--error); }
-.notice.info { background: #eef4f0; color: var(--accent); }
-.notice.warn { background: #fdf4e3; color: var(--warn); }
-.notice__text { flex: 1 1 auto; }
-.notice button { flex: 0 0 auto; color: inherit; }
+.notice.error {
+  background: #fdeeee;
+  color: var(--error);
+}
+.notice.info {
+  background: #eef4f0;
+  color: var(--accent);
+}
+.notice.warn {
+  background: #fdf4e3;
+  color: var(--warn);
+}
+.notice__text {
+  flex: 1 1 auto;
+}
+.notice button {
+  flex: 0 0 auto;
+  color: inherit;
+}
 
 /* ------------------------------------------------------------------- home */
 
@@ -314,7 +353,9 @@ button.primary {
   min-height: 0;
 }
 
-.reader[hidden] { display: none; }
+.reader[hidden] {
+  display: none;
+}
 
 .toolbar-hint {
   flex: 1 1 320px;
@@ -334,11 +375,21 @@ button.primary {
   color: var(--muted);
 }
 
-.toolbar-details div { display: flex; gap: 6px; }
-.toolbar-details dt::after { content: ':'; }
-.toolbar-details dd { margin: 0; color: var(--ink); }
+.toolbar-details div {
+  display: flex;
+  gap: 6px;
+}
+.toolbar-details dt::after {
+  content: ':';
+}
+.toolbar-details dd {
+  margin: 0;
+  color: var(--ink);
+}
 
-.toolbar-menu { position: relative; }
+.toolbar-menu {
+  position: relative;
+}
 
 .toolbar-menu__list {
   position: absolute;
@@ -360,9 +411,14 @@ button.primary {
   white-space: nowrap;
 }
 
-.toolbar-menu__danger { color: var(--error); }
+.toolbar-menu__danger {
+  color: var(--error);
+}
 
-.pane-title { font-weight: 700; color: var(--ink); }
+.pane-title {
+  font-weight: 700;
+  color: var(--ink);
+}
 
 .pane-tools {
   display: inline-flex;
@@ -370,7 +426,9 @@ button.primary {
   gap: 4px;
 }
 
-.pane-tools button { padding: 3px 9px; }
+.pane-tools button {
+  padding: 3px 9px;
+}
 
 .pane-readout {
   min-width: 3.5em;
@@ -378,7 +436,9 @@ button.primary {
   font-variant-numeric: tabular-nums;
 }
 
-.pane-readout--wide { min-width: 0; }
+.pane-readout--wide {
+  min-width: 0;
+}
 
 .pane-hint {
   margin-left: auto;
@@ -386,7 +446,9 @@ button.primary {
   color: var(--muted);
 }
 
-.pane-head .pane-switch { margin-left: 8px; }
+.pane-head .pane-switch {
+  margin-left: 8px;
+}
 
 .reader-status {
   margin: auto;
@@ -405,7 +467,9 @@ button.primary {
   color: var(--muted);
 }
 
-.reader.resetting .pane[aria-label="한국어 번역"] .pane-body { opacity: 0.45; }
+.reader.resetting .pane[aria-label='한국어 번역'] .pane-body {
+  opacity: 0.45;
+}
 
 /* ------------------------------------------------------------------- panes */
 
@@ -463,7 +527,9 @@ button.primary {
   padding: 0;
   border-radius: 0;
 }
-.splitter:hover { background: var(--accent); }
+.splitter:hover {
+  background: var(--accent);
+}
 
 /* --------------------------------------------------------------- pdf pages */
 
@@ -474,7 +540,9 @@ button.primary {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
 }
 
-.pdf-page canvas { display: block; }
+.pdf-page canvas {
+  display: block;
+}
 
 .pdf-placeholder {
   display: flex;
@@ -495,7 +563,9 @@ button.primary {
   border-radius: 0;
   background: transparent;
 }
-.source-block-target:hover:not(:disabled) { border: 0; }
+.source-block-target:hover:not(:disabled) {
+  border: 0;
+}
 
 /* -------------------------------------------------------------- text layer */
 
@@ -602,7 +672,9 @@ button.primary {
   border: 2px solid transparent;
   padding: 0;
 }
-.highlight-color-swatch.selected { border-color: var(--ink); }
+.highlight-color-swatch.selected {
+  border-color: var(--ink);
+}
 
 .highlight-popover-actions {
   display: flex;
@@ -612,7 +684,11 @@ button.primary {
 
 /* ------------------------------------------------------------ translations */
 
-.empty { color: var(--muted); padding: 24px 12px; text-align: center; }
+.empty {
+  color: var(--muted);
+  padding: 24px 12px;
+  text-align: center;
+}
 
 /* ----------------------------------------------------------- korean pages */
 
@@ -644,7 +720,9 @@ button.primary {
   min-width: 0;
 }
 
-.kr-row-full { width: 100%; }
+.kr-row-full {
+  width: 100%;
+}
 
 .kr-text {
   margin: 0 0 0.8em;
@@ -659,23 +737,49 @@ button.primary {
 
 /* ----------------------------------------------------------- narrow screen */
 
-.pane-switch { display: none; }
+.pane-switch {
+  display: none;
+}
 
 /* PC side-by-side is the main mode; a narrow screen — or a reader narrowed by the docked
    question panel (App, one-pane) — shows one pane at a time. The other pane stays laid out
    underneath, invisible, so the scroll link keeps it in line and switching shows the same
    place; it takes no clicks, no focus and is not read out. */
 @media (max-width: 860px) {
-  .pane-switch { display: inline-flex; gap: 6px; }
-  .splitter { display: none; }
-  .reader.narrow .pane { flex: 1 1 100% !important; width: 100% !important; }
-  .reader.narrow .pane.hidden { position: absolute; inset: 0; visibility: hidden; }
+  .pane-switch {
+    display: inline-flex;
+    gap: 6px;
+  }
+  .splitter {
+    display: none;
+  }
+  .reader.narrow .pane {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+  }
+  .reader.narrow .pane.hidden {
+    position: absolute;
+    inset: 0;
+    visibility: hidden;
+  }
 }
 
-.reader.one-pane .pane-switch { display: inline-flex; gap: 6px; }
-.reader.one-pane .splitter { display: none; }
-.reader.one-pane .pane { flex: 1 1 100% !important; width: 100% !important; }
-.reader.one-pane .pane.hidden { position: absolute; inset: 0; visibility: hidden; }
+.reader.one-pane .pane-switch {
+  display: inline-flex;
+  gap: 6px;
+}
+.reader.one-pane .splitter {
+  display: none;
+}
+.reader.one-pane .pane {
+  flex: 1 1 100% !important;
+  width: 100% !important;
+}
+.reader.one-pane .pane.hidden {
+  position: absolute;
+  inset: 0;
+  visibility: hidden;
+}
 
 /* ------------------------------------------------------------ session views */
 
@@ -1112,11 +1216,15 @@ button.primary {
 /* A hint gives way before its head would wrap: the original's head holds the zoom and page
    tools as well, the Korean one only a readout. */
 @container pane-head (max-width: 760px) {
-  .pane-head--source .pane-hint { display: none; }
+  .pane-head--source .pane-hint {
+    display: none;
+  }
 }
 
 @container pane-head (max-width: 420px) {
-  .pane-hint { display: none; }
+  .pane-hint {
+    display: none;
+  }
 }
 
 @media (max-width: 720px) {
@@ -1141,7 +1249,6 @@ button.primary {
 }
 
 @media (max-width: 600px) {
-
   .reader-toolbar {
     gap: 12px;
     padding: 12px;
@@ -1206,7 +1313,9 @@ button.primary {
   min-width: 0;
 }
 
-.icon { flex: 0 0 auto; }
+.icon {
+  flex: 0 0 auto;
+}
 
 /* Toolbar toggle: its own group after the translation actions, set off by a rule. */
 .reader-toolbar__panel {
@@ -1225,7 +1334,7 @@ button.primary {
   white-space: nowrap;
 }
 
-.chat-toggle[aria-expanded="true"] {
+.chat-toggle[aria-expanded='true'] {
   border-color: var(--accent);
   background: var(--accent-soft);
   color: var(--accent-ink);
@@ -1285,7 +1394,9 @@ button.primary {
   word-break: keep-all;
 }
 
-.chat-dock__failed p { margin: 0; }
+.chat-dock__failed p {
+  margin: 0;
+}
 
 .chat-dock__failed-actions {
   display: flex;
@@ -1293,10 +1404,16 @@ button.primary {
   gap: 6px;
 }
 
-.chat-dock__failed-actions button { font-size: 12.5px; }
-.chat-dock__failed-actions button:not(.primary) { color: var(--ink); }
+.chat-dock__failed-actions button {
+  font-size: 12.5px;
+}
+.chat-dock__failed-actions button:not(.primary) {
+  color: var(--ink);
+}
 
-.chat-scrim { display: none; }
+.chat-scrim {
+  display: none;
+}
 
 /* ----------------------------------------------------------- panel frame */
 
@@ -1395,8 +1512,12 @@ button.primary {
 }
 
 @container chat (max-width: 380px) {
-  .chat__title { font-size: 16px; }
-  .chat__new { padding: 3px 7px; }
+  .chat__title {
+    font-size: 16px;
+  }
+  .chat__new {
+    padding: 3px 7px;
+  }
   /* The button keeps its words for assistive technology; on screen the + says it. */
   .chat__new-label {
     position: absolute;
@@ -1408,8 +1529,8 @@ button.primary {
   }
 }
 
-.chat__new[aria-expanded="true"],
-.chat__new[aria-expanded="true"]:hover:not(:disabled) {
+.chat__new[aria-expanded='true'],
+.chat__new[aria-expanded='true']:hover:not(:disabled) {
   border-color: var(--error);
   color: var(--error);
 }
@@ -1434,7 +1555,9 @@ button.primary {
   animation: chat-rise-in 140ms var(--chat-ease);
 }
 
-.chat__confirm p { margin: 0 0 10px; }
+.chat__confirm p {
+  margin: 0 0 10px;
+}
 
 .chat__confirm-actions {
   display: flex;
@@ -1442,7 +1565,9 @@ button.primary {
   gap: 6px;
 }
 
-.chat__confirm button { font-size: 12.5px; }
+.chat__confirm button {
+  font-size: 12.5px;
+}
 
 .chat__confirm-clear {
   border-color: var(--error);
@@ -1450,10 +1575,16 @@ button.primary {
   color: var(--c-accent-ink);
 }
 
-.chat__confirm-clear:hover:not(:disabled) { border-color: var(--error); background: #862525; }
+.chat__confirm-clear:hover:not(:disabled) {
+  border-color: var(--error);
+  background: #862525;
+}
 
 @keyframes chat-rise-in {
-  from { opacity: 0; transform: translateY(-4px); }
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
 }
 
 /* ---------------------------------------------------------- conversation */
@@ -1471,12 +1602,16 @@ button.primary {
   scrollbar-gutter: stable;
 }
 
-.chat__scroll:focus-visible { outline-offset: -3px; }
+.chat__scroll:focus-visible {
+  outline-offset: -3px;
+}
 
 /* The list keeps a gutter for its scrollbar (ChatPanel measures it into --chat-gutter); the
    right padding gives that width back, so the text ends on the same line as the header's and
    the composer's controls. */
-.chat__content { padding: 18px calc(var(--chat-inset) - var(--chat-gutter, 0px)) 28px var(--chat-inset); }
+.chat__content {
+  padding: 18px calc(var(--chat-inset) - var(--chat-gutter, 0px)) 28px var(--chat-inset);
+}
 
 .chat__loading,
 .chat__load-error p {
@@ -1499,7 +1634,9 @@ button.primary {
   gap: 20px;
 }
 
-.msg { min-width: 0; }
+.msg {
+  min-width: 0;
+}
 
 /* The reader's own question: a quiet bubble on the right. */
 .msg--question {
@@ -1515,14 +1652,18 @@ button.primary {
   overflow-wrap: anywhere;
 }
 
-.msg--question.is-pending { opacity: 0.7; }
+.msg--question.is-pending {
+  opacity: 0.7;
+}
 
 .msg__text {
   margin: 0;
   white-space: pre-wrap;
 }
 
-.msg__text + .msg__text { margin-top: 6px; }
+.msg__text + .msg__text {
+  margin-top: 6px;
+}
 
 .msg__quote {
   margin: 0;
@@ -1548,7 +1689,9 @@ button.primary {
 
 .msg__quote-wrap + .msg__text,
 .msg__text + .msg__quote-wrap,
-.msg__quote-wrap + .msg__quote-wrap { margin-top: 6px; }
+.msg__quote-wrap + .msg__quote-wrap {
+  margin-top: 6px;
+}
 
 .msg__quote-toggle {
   margin: 4px 0 0 10px;
@@ -1563,10 +1706,14 @@ button.primary {
   text-underline-offset: 2px;
 }
 
-.msg__quote-toggle:hover:not(:disabled) { color: var(--ink); }
+.msg__quote-toggle:hover:not(:disabled) {
+  color: var(--ink);
+}
 
 /* The answer: full-width reading prose. */
-.msg--answer { width: 100%; }
+.msg--answer {
+  width: 100%;
+}
 
 .msg__meta {
   display: flex;
@@ -1645,7 +1792,9 @@ button.primary {
   color: var(--ink);
 }
 
-.copy-button.is-done { color: var(--accent); }
+.copy-button.is-done {
+  color: var(--accent);
+}
 
 /* Waiting for the first words. */
 .typing {
@@ -1671,12 +1820,24 @@ button.primary {
   animation: chat-dot 1.2s ease-in-out infinite;
 }
 
-.typing__dots i:nth-child(2) { animation-delay: 0.15s; }
-.typing__dots i:nth-child(3) { animation-delay: 0.3s; }
+.typing__dots i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.typing__dots i:nth-child(3) {
+  animation-delay: 0.3s;
+}
 
 @keyframes chat-dot {
-  0%, 80%, 100% { opacity: 0.25; transform: translateY(0); }
-  40% { opacity: 1; transform: translateY(-2px); }
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
 }
 
 .chat__jump {
@@ -1697,7 +1858,10 @@ button.primary {
 }
 
 @keyframes chat-rise {
-  from { opacity: 0; transform: translate(-50%, 6px); }
+  from {
+    opacity: 0;
+    transform: translate(-50%, 6px);
+  }
 }
 
 /* Empty conversation */
@@ -1734,10 +1898,14 @@ button.primary {
   line-height: 1.45;
   text-align: left;
   word-break: keep-all;
-  transition: border-color 0.15s, background-color 0.15s;
+  transition:
+    border-color 0.15s,
+    background-color 0.15s;
 }
 
-.chat-empty__chip:hover:not(:disabled) { background: #f7faf8; }
+.chat-empty__chip:hover:not(:disabled) {
+  background: #f7faf8;
+}
 
 .chat-empty__tip {
   margin: 0;
@@ -1801,7 +1969,9 @@ button.primary {
   border: 1px solid var(--line);
   border-radius: 12px;
   background: var(--panel);
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
 }
 
 .chat__composer:focus-within {
@@ -1816,7 +1986,9 @@ button.primary {
   box-shadow: 0 0 0 3px #f6e1e1;
 }
 
-.chat__composer.is-disabled { background: var(--bg); }
+.chat__composer.is-disabled {
+  background: var(--bg);
+}
 
 .chat__composer textarea {
   display: block;
@@ -1840,9 +2012,15 @@ button.primary {
 }
 
 /* The composer's frame carries the focus ring for its textarea. */
-.chat__composer textarea:focus-visible { outline: none; }
-.chat__composer textarea::placeholder { color: var(--c-faint); }
-.chat__composer textarea:disabled { cursor: not-allowed; }
+.chat__composer textarea:focus-visible {
+  outline: none;
+}
+.chat__composer textarea::placeholder {
+  color: var(--c-faint);
+}
+.chat__composer textarea:disabled {
+  cursor: not-allowed;
+}
 
 .chat__composer-bar {
   display: flex;
@@ -1876,10 +2054,15 @@ button.primary {
   border-radius: 50%;
   background: var(--accent);
   color: var(--c-accent-ink);
-  transition: background-color 0.15s, border-color 0.15s;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s;
 }
 
-.chat__send:hover:not(:disabled) { border-color: var(--accent-ink); background: var(--accent-ink); }
+.chat__send:hover:not(:disabled) {
+  border-color: var(--accent-ink);
+  background: var(--accent-ink);
+}
 
 .chat__send:disabled {
   border-color: var(--line);
@@ -1892,7 +2075,10 @@ button.primary {
   background: var(--ink);
 }
 
-.chat__send.is-stop:hover:not(:disabled) { border-color: var(--c-ink); background: var(--c-ink); }
+.chat__send.is-stop:hover:not(:disabled) {
+  border-color: var(--c-ink);
+  background: var(--c-ink);
+}
 
 .chat__hint,
 .chat__blocked {
@@ -1902,7 +2088,9 @@ button.primary {
   word-break: keep-all;
 }
 
-.chat__hint { color: var(--muted); }
+.chat__hint {
+  color: var(--muted);
+}
 
 .chat__blocked {
   display: flex;
@@ -1913,7 +2101,9 @@ button.primary {
   font-size: 12.5px;
 }
 
-.chat__blocked span { flex: 1 1 180px; }
+.chat__blocked span {
+  flex: 1 1 180px;
+}
 
 /* Actions keep the ink of the panel's other buttons; the tint stays with the words. */
 .chat__blocked button {
@@ -1931,10 +2121,16 @@ button.primary {
   overflow-wrap: anywhere;
 }
 
-.md > :first-child { margin-top: 0; }
-.md > :last-child { margin-bottom: 0; }
+.md > :first-child {
+  margin-top: 0;
+}
+.md > :last-child {
+  margin-bottom: 0;
+}
 
-.md p { margin: 0 0 0.8em; }
+.md p {
+  margin: 0 0 0.8em;
+}
 
 /* Answer headings step down clearly from one level to the next and all stay under the panel's
    own 17px title: 16.5 / 15.7 / 14.5px (in the soft ink) against 14.5px prose. */
@@ -1946,10 +2142,22 @@ button.primary {
   line-height: 1.45;
 }
 
-.md-h1 { font-size: 1.14em; }
-.md-h2 { font-size: 1.08em; }
-.md-h3 { font-size: 1em; color: var(--ink-soft); }
-.md-h4, .md-h5, .md-h6 { font-size: 0.94em; color: var(--muted); }
+.md-h1 {
+  font-size: 1.14em;
+}
+.md-h2 {
+  font-size: 1.08em;
+}
+.md-h3 {
+  font-size: 1em;
+  color: var(--ink-soft);
+}
+.md-h4,
+.md-h5,
+.md-h6 {
+  font-size: 0.94em;
+  color: var(--muted);
+}
 
 .md ul,
 .md ol {
@@ -1957,13 +2165,26 @@ button.primary {
   padding-left: 1.4em;
 }
 
-.md li { margin: 0.25em 0; padding-left: 0.1em; }
-.md li > p { margin: 0 0 0.4em; }
-.md li > :last-child { margin-bottom: 0; }
+.md li {
+  margin: 0.25em 0;
+  padding-left: 0.1em;
+}
+.md li > p {
+  margin: 0 0 0.4em;
+}
+.md li > :last-child {
+  margin-bottom: 0;
+}
 .md li > ul,
-.md li > ol { margin: 0.25em 0 0.35em; }
-.md li::marker { color: var(--muted); }
-.md ol > li::marker { font-variant-numeric: tabular-nums; }
+.md li > ol {
+  margin: 0.25em 0 0.35em;
+}
+.md li::marker {
+  color: var(--muted);
+}
+.md ol > li::marker {
+  font-variant-numeric: tabular-nums;
+}
 
 .md blockquote {
   margin: 0 0 0.8em;
@@ -1985,9 +2206,13 @@ button.primary {
   text-underline-offset: 2px;
 }
 
-.md a:hover { color: var(--accent-ink); }
+.md a:hover {
+  color: var(--accent-ink);
+}
 
-.md strong { font-weight: 700; }
+.md strong {
+  font-weight: 700;
+}
 
 .md-inline-code {
   padding: 0.1em 0.35em;
@@ -2002,7 +2227,9 @@ button.primary {
 }
 
 /* A short span (`dropout = 0.1`) is one token: it moves to the next line whole. */
-.md-inline-code--short { white-space: nowrap; }
+.md-inline-code--short {
+  white-space: nowrap;
+}
 
 .md-code {
   margin: 0 0 0.9em;
@@ -2023,7 +2250,9 @@ button.primary {
   font-size: 11.5px;
 }
 
-.md-code__lang { font-family: var(--mono); }
+.md-code__lang {
+  font-family: var(--mono);
+}
 
 .md-code pre {
   margin: 0;
@@ -2047,9 +2276,13 @@ button.primary {
 
 /* Code shows the characters it copies as: no programming ligatures ("->" drawn as an arrow). */
 .md-code pre,
-.md-inline-code { font-variant-ligatures: none; }
+.md-inline-code {
+  font-variant-ligatures: none;
+}
 
-.md-code pre:focus-visible { outline-offset: -3px; }
+.md-code pre:focus-visible {
+  outline-offset: -3px;
+}
 
 .md-table {
   max-width: 100%;
@@ -2059,7 +2292,9 @@ button.primary {
   border-radius: 8px;
 }
 
-.md-table:focus-visible { outline-offset: 1px; }
+.md-table:focus-visible {
+  outline-offset: 1px;
+}
 
 .md-table table {
   min-width: 100%;
@@ -2088,10 +2323,16 @@ button.primary {
 }
 
 /* A formula in a cell is read as one piece; it never breaks after an operator. */
-.md-table .katex { white-space: nowrap; }
+.md-table .katex {
+  white-space: nowrap;
+}
 
-.md-table tr > :last-child { border-right: 0; }
-.md-table tbody tr:last-child > td { border-bottom: 0; }
+.md-table tr > :last-child {
+  border-right: 0;
+}
+.md-table tbody tr:last-child > td {
+  border-bottom: 0;
+}
 
 .md-math--display {
   display: block;
@@ -2107,10 +2348,20 @@ button.primary {
   padding: 2px 0;
 }
 
-.md-math-block .md-math--display { margin: 0; }
-.md .katex { font-size: 1.06em; }
-.md .katex-display { margin: 0.2em 0; }
-.md-math-error { color: var(--error); font-family: var(--mono); font-size: 0.9em; }
+.md-math-block .md-math--display {
+  margin: 0;
+}
+.md .katex {
+  font-size: 1.06em;
+}
+.md .katex-display {
+  margin: 0.2em 0;
+}
+.md-math-error {
+  color: var(--error);
+  font-family: var(--mono);
+  font-size: 0.9em;
+}
 
 /* What scrolls sideways in an answer gets a scrollbar that does not outweigh its content. */
 .md-code pre,
@@ -2128,8 +2379,12 @@ button.primary {
   font-size: 0.92em;
 }
 
-.md-tail--block { margin: 0 0 0.8em; }
-.md > .md-tail--block:last-child { margin-bottom: 0; }
+.md-tail--block {
+  margin: 0 0 0.8em;
+}
+.md > .md-tail--block:last-child {
+  margin-bottom: 0;
+}
 
 /* The writing caret at the end of an answer still streaming in. */
 .md-caret {
@@ -2144,7 +2399,9 @@ button.primary {
 }
 
 @keyframes chat-caret {
-  50% { opacity: 0; }
+  50% {
+    opacity: 0;
+  }
 }
 
 /* ------------------------------------------------ quoting into a question */
@@ -2168,11 +2425,18 @@ button.primary {
   animation: quote-pop 120ms ease-out;
 }
 
-.quote-button.is-below { transform: translate(-50%, 0); }
-.quote-button:hover:not(:disabled) { border: 0; background: var(--c-ink); }
+.quote-button.is-below {
+  transform: translate(-50%, 0);
+}
+.quote-button:hover:not(:disabled) {
+  border: 0;
+  background: var(--c-ink);
+}
 
 @keyframes quote-pop {
-  from { opacity: 0; }
+  from {
+    opacity: 0;
+  }
 }
 
 .highlight-popover-ask {
@@ -2188,7 +2452,9 @@ button.primary {
   white-space: nowrap;
 }
 
-.highlight-popover-actions button { white-space: nowrap; }
+.highlight-popover-actions button {
+  white-space: nowrap;
+}
 
 /* ------------------------------------------- narrow reader: overlay sheet */
 
@@ -2216,7 +2482,9 @@ button.primary {
       visibility 0s;
   }
 
-  .chat-dock__inner { width: 100%; }
+  .chat-dock__inner {
+    width: 100%;
+  }
 
   .chat-scrim {
     position: absolute;
@@ -2234,7 +2502,9 @@ button.primary {
 
 @media (max-width: 600px) {
   .chat-dock,
-  .chat-dock.is-open { width: 100%; }
+  .chat-dock.is-open {
+    width: 100%;
+  }
 
   .reader-toolbar__panel {
     flex: 1 1 auto;
@@ -2243,7 +2513,10 @@ button.primary {
     border-left: 0;
   }
 
-  .chat-toggle { flex: 1 1 auto; justify-content: center; }
+  .chat-toggle {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2251,14 +2524,20 @@ button.primary {
   .chat-dock.is-open,
   .chat__composer,
   .chat__send,
-  .chat-empty__chip { transition: none; }
+  .chat-empty__chip {
+    transition: none;
+  }
 
   .typing__dots i,
   .md-caret,
   .chat__jump,
   .chat__confirm,
   .quote-button,
-  .chat-scrim { animation: none; }
+  .chat-scrim {
+    animation: none;
+  }
 
-  .typing__dots i { opacity: 0.6; }
+  .typing__dots i {
+    opacity: 0.6;
+  }
 }

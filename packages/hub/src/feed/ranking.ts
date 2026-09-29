@@ -1,16 +1,21 @@
 import type { FeedInterests, FeedItem, LibraryRecord } from '@fractal/shared';
 import type { RawItem } from './sources';
 
-const words = (value: string): string[] => value.toLowerCase().normalize('NFKC').match(/[\p{L}\p{N}]{2,}/gu) ?? [];
+const words = (value: string): string[] =>
+  value
+    .toLowerCase()
+    .normalize('NFKC')
+    .match(/[\p{L}\p{N}]{2,}/gu) ?? [];
 const normalizedTitle = (value: string): string => words(value).join(' ');
-const identity = (item: RawItem): string => item.arxivId ? `a:${item.arxivId.toLowerCase().replace(/v\d+$/, '')}` : item.doi ? `d:${item.doi.toLowerCase()}` : `t:${normalizedTitle(item.title)}`;
+const identity = (item: RawItem): string =>
+  item.arxivId ? `a:${item.arxivId.toLowerCase().replace(/v\d+$/, '')}` : item.doi ? `d:${item.doi.toLowerCase()}` : `t:${normalizedTitle(item.title)}`;
 
 export function deduplicate(items: RawItem[]): RawItem[] {
   const seen = new Map<string, number>();
   const output: RawItem[] = [];
   for (const item of items) {
     const keys = [identity(item), `t:${normalizedTitle(item.title)}`];
-    const index = keys.map(key => seen.get(key)).find(value => value !== undefined);
+    const index = keys.map((key) => seen.get(key)).find((value) => value !== undefined);
     if (index !== undefined) {
       const existing = output[index]!;
       const merged: RawItem = {
@@ -34,11 +39,13 @@ export function deduplicate(items: RawItem[]): RawItem[] {
 }
 
 function libraryMatch(item: RawItem, library: LibraryRecord[]): boolean {
-  return library.some(record => Boolean(
-    (item.arxivId && record.arxivId?.replace(/v\d+$/, '').toLowerCase() === item.arxivId.toLowerCase()) ||
-    (item.doi && record.doi?.toLowerCase() === item.doi.toLowerCase()) ||
-    (record.title && normalizedTitle(record.title) === normalizedTitle(item.title)),
-  ));
+  return library.some((record) =>
+    Boolean(
+      (item.arxivId && record.arxivId?.replace(/v\d+$/, '').toLowerCase() === item.arxivId.toLowerCase()) ||
+      (item.doi && record.doi?.toLowerCase() === item.doi.toLowerCase()) ||
+      (record.title && normalizedTitle(record.title) === normalizedTitle(item.title)),
+    ),
+  );
 }
 
 /** Small BM25-like term score over title and abstract, with title weighted twice. */
@@ -49,25 +56,34 @@ function relevance(item: RawItem, interests: FeedInterests): { score: number; re
   let termScore = 0;
   let bestTerm = '';
   for (const term of wanted) {
-    const frequency = title.filter(word => word === term).length * 2 + abstract.filter(word => word === term).length;
-    const score = frequency ? 2.2 * frequency / (frequency + 1.2 * (0.25 + 0.75 * (title.length * 2 + abstract.length) / 180)) : 0;
+    const frequency = title.filter((word) => word === term).length * 2 + abstract.filter((word) => word === term).length;
+    const score = frequency ? (2.2 * frequency) / (frequency + 1.2 * (0.25 + (0.75 * (title.length * 2 + abstract.length)) / 180)) : 0;
     termScore += score;
     if (score > 0 && !bestTerm) bestTerm = term;
   }
-  const category = item.categories.find(value => interests.categories.includes(value));
-  const author = item.authors.find(value => interests.authors.some(wantedAuthor => value.toLowerCase().includes(wantedAuthor.toLowerCase())));
+  const category = item.categories.find((value) => interests.categories.includes(value));
+  const author = item.authors.find((value) => interests.authors.some((wantedAuthor) => value.toLowerCase().includes(wantedAuthor.toLowerCase())));
   const score = termScore + (category ? 4 : 0) + (author ? 5 : 0);
-  const reason = author ? `팔로우한 저자 ${author}` : category ? `관심 분야 ${category}` : bestTerm ? `관심 주제 ${bestTerm}` : item.source.includes('recommendations') ? '보관한 논문과 비슷함' : '이번 주 새 소식';
+  const reason = author
+    ? `팔로우한 저자 ${author}`
+    : category
+      ? `관심 분야 ${category}`
+      : bestTerm
+        ? `관심 주제 ${bestTerm}`
+        : item.source.includes('recommendations')
+          ? '보관한 논문과 비슷함'
+          : '이번 주 새 소식';
   return { score, reason };
 }
 
 export function rankItems(items: RawItem[], interests: FeedInterests, library: LibraryRecord[], now: Date): FeedItem[] {
-  return deduplicate(items).map(item => {
-    const match = relevance(item, interests);
-    const ageDays = Math.max(0, (now.getTime() - Date.parse(item.publishedAt)) / 86400000);
-    const recency = 2 * Math.exp(-ageDays / 7);
-    const popularity = Math.min(4, Math.log1p(item.popularity) / 2);
-    return { ...item, score: Math.round((match.score + recency + popularity) * 100) / 100,
-      reason: match.reason, inLibrary: libraryMatch(item, library) };
-  }).sort((a, b) => b.score - a.score || b.publishedAt.localeCompare(a.publishedAt) || a.id.localeCompare(b.id));
+  return deduplicate(items)
+    .map((item) => {
+      const match = relevance(item, interests);
+      const ageDays = Math.max(0, (now.getTime() - Date.parse(item.publishedAt)) / 86400000);
+      const recency = 2 * Math.exp(-ageDays / 7);
+      const popularity = Math.min(4, Math.log1p(item.popularity) / 2);
+      return { ...item, score: Math.round((match.score + recency + popularity) * 100) / 100, reason: match.reason, inLibrary: libraryMatch(item, library) };
+    })
+    .sort((a, b) => b.score - a.score || b.publishedAt.localeCompare(a.publishedAt) || a.id.localeCompare(b.id));
 }

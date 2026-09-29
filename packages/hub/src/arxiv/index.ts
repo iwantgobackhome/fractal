@@ -1,10 +1,21 @@
 import type { AppError, ErrorCode } from '@fractal/shared';
 
 export class SourceError extends Error implements AppError {
-  constructor(public code: ErrorCode, message: string, public retryable = false,
-    public reason?: string) { super(message); this.name = 'SourceError'; }
+  constructor(
+    public code: ErrorCode,
+    message: string,
+    public retryable = false,
+    public reason?: string,
+  ) {
+    super(message);
+    this.name = 'SourceError';
+  }
 }
-export interface ArxivIdentifier { arxivId: string; version: number | null; paperKey: string }
+export interface ArxivIdentifier {
+  arxivId: string;
+  version: number | null;
+  paperKey: string;
+}
 
 /** Only identifiers and canonical arxiv.org reading URLs, never arbitrary fetch URLs. */
 export function normalizeArxiv(input: string): ArxivIdentifier {

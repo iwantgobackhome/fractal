@@ -87,7 +87,17 @@ export interface CitationState {
   added: Set<string>;
 }
 
-export function CitationCard({ state, onClose, onAdd, onOpenUrl }: { state: CitationState; onClose(): void; onAdd(n: string): void; onOpenUrl(url: string): void }): JSX.Element {
+export function CitationCard({
+  state,
+  onClose,
+  onAdd,
+  onOpenUrl,
+}: {
+  state: CitationState;
+  onClose(): void;
+  onAdd(n: string): void;
+  onOpenUrl(url: string): void;
+}): JSX.Element {
   return (
     <FloatingCard anchor={state.anchor} onClose={onClose} label="참고문헌">
       {state.error !== null ? <p className="float-card__error">{state.error}</p> : null}
@@ -103,7 +113,9 @@ export function CitationCard({ state, onClose, onAdd, onOpenUrl }: { state: Cita
             <h3 className="reference__title">{title}</h3>
             <p className="reference__meta">
               {[entry.authors, enrichment?.venue, year].filter((v) => v !== undefined && v !== null && v !== '').join(' · ')}
-              {enrichment?.citationCount !== null && enrichment?.citationCount !== undefined ? ` · 인용 ${enrichment.citationCount.toLocaleString('ko-KR')}` : ''}
+              {enrichment?.citationCount !== null && enrichment?.citationCount !== undefined
+                ? ` · 인용 ${enrichment.citationCount.toLocaleString('ko-KR')}`
+                : ''}
             </p>
             {enrichment?.abstract !== null && enrichment?.abstract !== undefined ? <p className="reference__abstract">{enrichment.abstract}</p> : null}
             <p className="reference__actions">

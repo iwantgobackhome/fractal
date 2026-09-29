@@ -4,7 +4,9 @@ import { invalidInput, notFound } from '../../store/errors';
 import type { StructureService } from '../../structure/service';
 import { json, type LibraryRouteContext, type Result } from './types';
 
-export interface StructureRouteContext extends LibraryRouteContext { structure: StructureService }
+export interface StructureRouteContext extends LibraryRouteContext {
+  structure: StructureService;
+}
 
 export async function handleStructure(method: string, segments: string[], _request: IncomingMessage, ctx: StructureRouteContext): Promise<Result | undefined> {
   if (segments[0] !== 'api' || segments[1] !== 'papers' || segments.length < 4) return undefined;

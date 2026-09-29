@@ -18,11 +18,25 @@ export type Result =
   | { kind: 'sse'; status: 200; events: AsyncIterable<AiSseEvent> };
 
 /** Per-request facts every route handler may use: who is asking and the parsed URL. */
-export interface RouteContext { devices?: DeviceStore; pairing?: PairingSessions; network?: NetworkManager; local: boolean; url: URL }
+export interface RouteContext {
+  devices?: DeviceStore;
+  pairing?: PairingSessions;
+  network?: NetworkManager;
+  local: boolean;
+  url: URL;
+}
 /** Services the AI routes need. */
-export interface AiRouteContext { store: PaperStore; registry: ProviderRegistry; librarySearch: LibrarySearch }
+export interface AiRouteContext {
+  store: PaperStore;
+  registry: ProviderRegistry;
+  librarySearch: LibrarySearch;
+}
 /** Services the library, annotation and sync routes need. */
-export interface LibraryRouteContext { store: SqlitePaperStore; acquirer: PaperAcquirer; fetcher?: typeof fetch }
+export interface LibraryRouteContext {
+  store: SqlitePaperStore;
+  acquirer: PaperAcquirer;
+  fetcher?: typeof fetch;
+}
 
 export const json = (data: unknown, status = 200): Result => ({ kind: 'json', status, data });
 

@@ -1,0 +1,9 @@
+**/dist/**
+**/node_modules/**
+package-lock.json
+packages/ui/src/design/tokens.css
+packages/shared/tokens/generated/**
+apps/android/**
+**/test/fixtures/**
+**/__fixtures__/**
+docs/reports/*.md

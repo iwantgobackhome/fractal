@@ -276,11 +276,7 @@ export class PaperStore {
     const block = this.getBlock(paperKey, validated.blockId);
     if (block === null) throw notFound(`block not found for translation: ${validated.blockId}`);
     if (block.sourceHash !== validated.sourceHash) {
-      throw appError(
-        'SOURCE_CHANGED',
-        `translation sourceHash ${validated.sourceHash} does not match block sourceHash ${block.sourceHash}`,
-        false,
-      );
+      throw appError('SOURCE_CHANGED', `translation sourceHash ${validated.sourceHash} does not match block sourceHash ${block.sourceHash}`, false);
     }
 
     const existing = this.listTranslations(paperKey);
@@ -323,17 +319,9 @@ export class PaperStore {
    * blockId, sourceHash, modelId and promptVersion — a changed source hash
    * always forces a fresh translation.
    */
-  findReusableTranslation(
-    paperKey: string,
-    blockId: string,
-    sourceHash: string,
-    modelId: string,
-    promptVersion: string,
-  ): Translation | null {
+  findReusableTranslation(paperKey: string, blockId: string, sourceHash: string, modelId: string, promptVersion: string): Translation | null {
     const id = translationId({ blockId, sourceHash, modelId, promptVersion });
-    return (
-      this.listTranslations(paperKey).find((t) => t.status === 'completed' && t.text !== null && translationId(t) === id) ?? null
-    );
+    return this.listTranslations(paperKey).find((t) => t.status === 'completed' && t.text !== null && translationId(t) === id) ?? null;
   }
 
   // ------------------------------------------------------------------ job
@@ -549,7 +537,9 @@ export class PaperStore {
     // Progress is counted in pages, exactly as the job manager counts it: the pages holding at
     // least one translatable block. A paragraph count here showed "7/103" beside "8쪽 처리 중".
     const totalTranslatableBlocks = new Set(
-      this.listBlocks(paperKey).filter((block) => block.translatable).map((block) => block.regions[0]?.page ?? 1),
+      this.listBlocks(paperKey)
+        .filter((block) => block.translatable)
+        .map((block) => block.regions[0]?.page ?? 1),
     ).size;
     const intent = makeTranslationResetIntent(
       paperKey,
@@ -605,8 +595,11 @@ export class PaperStore {
     const validated = validateHighlight(highlight, paperKey);
     const existing = this.listHighlights(paperKey);
     const index = existing.findIndex((h) => h.highlightId === validated.highlightId);
-    if (index >= 0) existing[index] = validated;
-    else existing.push(validated);
+    if (index >= 0) {
+      existing[index] = validated;
+    } else {
+      existing.push(validated);
+    }
     const dir = this.ensurePaperDir(paperKey);
     writeRecord(join(dir, HIGHLIGHTS_FILE), existing);
     return validated;

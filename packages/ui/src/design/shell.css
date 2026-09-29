@@ -16,7 +16,9 @@ body {
   font-size: var(--fs-body);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-  font-feature-settings: 'tnum' 0, 'ss01' 1;
+  font-feature-settings:
+    'tnum' 0,
+    'ss01' 1;
 }
 
 /* The legacy reader styles give every button a rounded border; shell controls are drawn from scratch. */
@@ -873,10 +875,22 @@ kbd {
   width: 80%;
 }
 
-.theme-swatch[data-swatch='light'] .theme-swatch__page { background: #fbfaf7; color: #1c1b19; }
-.theme-swatch[data-swatch='sepia'] .theme-swatch__page { background: #f4ecdc; color: #3a2f22; }
-.theme-swatch[data-swatch='dark'] .theme-swatch__page { background: #161614; color: #e9e6df; }
-.theme-swatch[data-swatch='system'] .theme-swatch__page { background: linear-gradient(135deg, #fbfaf7 50%, #161614 50%); color: #7a776f; }
+.theme-swatch[data-swatch='light'] .theme-swatch__page {
+  background: #fbfaf7;
+  color: #1c1b19;
+}
+.theme-swatch[data-swatch='sepia'] .theme-swatch__page {
+  background: #f4ecdc;
+  color: #3a2f22;
+}
+.theme-swatch[data-swatch='dark'] .theme-swatch__page {
+  background: #161614;
+  color: #e9e6df;
+}
+.theme-swatch[data-swatch='system'] .theme-swatch__page {
+  background: linear-gradient(135deg, #fbfaf7 50%, #161614 50%);
+  color: #7a776f;
+}
 
 .theme-swatch input:checked + .theme-swatch__page {
   outline: 2px solid var(--c-ink);

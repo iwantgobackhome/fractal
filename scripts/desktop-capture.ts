@@ -26,7 +26,10 @@ function samplePdf(): Buffer {
   return Buffer.from(body);
 }
 try {
-  const page = browser.contexts()[0]?.pages().find((candidate) => candidate.url().startsWith('http://127.0.0.1:'));
+  const page = browser
+    .contexts()[0]
+    ?.pages()
+    .find((candidate) => candidate.url().startsWith('http://127.0.0.1:'));
   assert.ok(page, 'Electron app page is open');
   const url = new URL(page.url()).origin;
   const token = await page.locator('meta[name="paperread-token"]').getAttribute('content');
@@ -38,7 +41,9 @@ try {
     body: new Uint8Array(pdf),
   });
   if (response.status !== 201) throw new Error(`PDF upload failed: ${response.status} ${await response.text()}`);
-  const { data: { paper } } = await response.json() as { data: { paper: { paperKey: string } } };
+  const {
+    data: { paper },
+  } = (await response.json()) as { data: { paper: { paperKey: string } } };
   await page.goto(`${url}/?capture=1#/library`);
   await page.locator('.paper-row__open').first().click();
   await page.waitForURL((current) => current.hash === `#/paper/${encodeURIComponent(paper.paperKey)}`);

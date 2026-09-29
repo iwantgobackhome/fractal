@@ -4,8 +4,12 @@ import { invalidInput } from '../../store/errors';
 import type { FeedService } from '../../feed/index';
 import { json, parseRequest, readJson, type Result } from './types';
 
-export async function handleFeed(method: string, segments: string[], request: IncomingMessage,
-  ctx: { feed: FeedService; url: URL }): Promise<Result | undefined> {
+export async function handleFeed(
+  method: string,
+  segments: string[],
+  request: IncomingMessage,
+  ctx: { feed: FeedService; url: URL },
+): Promise<Result | undefined> {
   if (segments[0] !== 'api' || segments[1] !== 'feed') return undefined;
   if (segments.length === 2 && method === 'GET') return json(ctx.feed.read(ctx.url.searchParams.get('week') ?? undefined));
   if (segments.length === 3 && segments[2] === 'interests') {
@@ -23,7 +27,11 @@ export async function handleFeed(method: string, segments: string[], request: In
   }
   if (segments.length === 5 && segments[4] === 'save' && segments[2] === 'items' && method === 'POST') {
     let id: string;
-    try { id = decodeURIComponent(segments[3]!); } catch { throw invalidInput('항목 ID가 올바르지 않습니다.'); }
+    try {
+      id = decodeURIComponent(segments[3]!);
+    } catch {
+      throw invalidInput('항목 ID가 올바르지 않습니다.');
+    }
     return json(await ctx.feed.save(id), 201);
   }
   return undefined;
