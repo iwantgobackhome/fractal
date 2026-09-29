@@ -263,7 +263,7 @@ export function ChatView(props: ChatViewProps): JSX.Element {
   return (
     <div className="chat" onKeyDown={onKeyDown}>
       <header className="chat__header">
-        <h2 className="chat__title">이 논문에 질문</h2>
+        <h2 className="chat__title">질문</h2>
         <div className="chat__tools">
           <select className="chat__model" aria-label="답변 모델" title="답변 모델" value={modelId} disabled={modelIds.length === 0} onChange={(event) => props.onModelChange(event.target.value)}>
             {modelIds.length === 0 ? <option value="">사용 가능한 모델 없음</option> : null}
@@ -322,17 +322,7 @@ export function ChatView(props: ChatViewProps): JSX.Element {
               </div>
             ) : empty ? (
               <div className="chat-empty">
-                <p className="chat-empty__lead">논문 전문을 읽은 모델이 답합니다. 읽다가 막힌 부분을 물어보세요.</p>
-                <ul className="chat-empty__list" aria-label="질문 예시">
-                  {SUGGESTIONS.map((suggestion) => (
-                    <li key={suggestion}>
-                      <button type="button" className="chat-empty__chip" disabled={blocked !== null} onClick={() => props.onSuggestion(suggestion)}>
-                        {suggestion}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-                <p className="chat-empty__tip">한국어 지면에서 문장을 선택하면 질문에 인용할 수 있습니다.</p>
+                <p className="chat-empty__lead">원문에서 문장을 골라 묻거나, 아래에 바로 적어 보세요.</p>
               </div>
             ) : (
               <div className="chat__messages">
@@ -459,7 +449,7 @@ export function ChatView(props: ChatViewProps): JSX.Element {
             ) : null}
           </p>
         ) : (
-          <p id={hintId} className="chat__hint">
+          <p id={hintId} className="sr-only">
             {CHAT_SEND_HINT}
           </p>
         )}

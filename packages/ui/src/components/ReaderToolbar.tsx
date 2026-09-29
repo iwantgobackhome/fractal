@@ -321,4 +321,4 @@ export function ReaderToolbar({
   );
 }
 
-export { jobLabel, primaryAction, primaryLabel };
+export { ReplacementDialog, jobLabel, primaryAction, primaryLabel };

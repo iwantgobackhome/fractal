@@ -17,6 +17,7 @@
     "@fractal/shared": "0.1.0",
     "katex": "^0.18.7",
     "pdfjs-dist": "^6.3.289",
+    "perfect-freehand": "^1.2.3",
     "pretendard": "^1.3.9",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

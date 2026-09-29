@@ -1,4 +1,4 @@
-import type { AiFeature, AiSettings, ModelSelection, NetworkStatus, PairedDevice, PairingPayload, ProviderModel, ProviderStatus as HubProviderStatus, UsageRecord } from '@fractal/shared';
+import type { AiFeature, AiSettings, Annotation, ModelSelection, NetworkStatus, PairedDevice, PairingPayload, ProviderModel, ProviderStatus as HubProviderStatus, UsageRecord } from '@fractal/shared';
 import { TOKEN_HEADER } from '../lib/api';
 
 /*
@@ -156,6 +156,14 @@ export class HubApi {
 
   revokeDevice(id: string): Promise<unknown> {
     return this.call(`/api/pairing/devices/${encodeURIComponent(id)}`, { method: 'DELETE' });
+  }
+
+  annotations(paperKey: string): Promise<Annotation[] | null> {
+    return this.call(`/api/papers/${encodeURIComponent(paperKey)}/annotations`);
+  }
+
+  saveAnnotation(annotation: Annotation): Promise<{ id: string; applied: boolean; rev: number } | null> {
+    return this.call(`/api/papers/${encodeURIComponent(annotation.paperKey)}/annotations`, { method: 'POST', body: annotation });
   }
 
   /** Upload a local PDF; the hub extracts metadata and merges duplicates. */

@@ -5,6 +5,7 @@ import '@fontsource-variable/source-serif-4';
 import './design/tokens.css';
 import './styles.css';
 import './design/shell.css';
+import './design/reader.css';
 import App from './App';
 
 const root = document.getElementById('root');

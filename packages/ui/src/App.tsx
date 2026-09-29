@@ -1,5 +1,5 @@
 import { Suspense, lazy, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type JSX, type RefObject } from 'react';
-import type { AppError, Block, Connection, Highlight, LoginAttempt, Paper, Region, RestartTranslationRequest, Snapshot } from '@fractal/shared';
+import type { AppError, Block, Connection, InkStroke, Highlight, LoginAttempt, Paper, Region, RestartTranslationRequest, Snapshot } from '@fractal/shared';
 import { AccountPanel } from './components/AccountPanel';
 import { ChatBoundary } from './components/ChatBoundary';
 import type { ChatQuote } from './components/ChatPanel';
@@ -7,7 +7,12 @@ import { HighlightPopover } from './components/HighlightLayer';
 import { KoreanPages, type SelectVia } from './components/KoreanPane';
 import { DeleteDialog } from './components/LibraryPanel';
 import { PdfPages } from './components/PdfPane';
-import { ReaderToolbar, type ReplacementRequest } from './components/ReaderToolbar';
+import { ReplacementDialog, type ReplacementRequest } from './components/ReaderToolbar';
+import type { InkProps, PageColors } from './components/PdfPane';
+import { DESKTOP_PEN_WIDTH } from './reader/InkLayer';
+import { NotesPanel } from './reader/NotesPanel';
+import { ReaderBar, type ViewMode } from './reader/ReaderBar';
+import { SelectionMenu, type PendingSelection } from './reader/SelectionMenu';
 import { SelectionQuote } from './components/SelectionQuote';
 import { ApiClient, extractError, readToken } from './lib/api';
 import { blockPage, type Size } from './lib/geometry';
@@ -43,6 +48,8 @@ import {
 import { CONTROL_LIMITS, clampSplit, clampZoom, isReadable, nextPage, onePaneBesideChat, paragraphJumpDelay, shouldPoll } from './lib/view';
 
 const POLL_MS = 1_500;
+/** Widest a page is drawn by 폭 맞춤, in CSS pixels. */
+const MAX_PAGE_WIDTH = 920;
 const LOGIN_POLL_MS = 2_000;
 const FALLBACK_INTRINSIC_SIZE: Size = { width: 640, height: 828 };
 /** Where a confirmed restart waits until its answer is confirmed. Never holds login data. */
@@ -67,6 +74,21 @@ const hub = new HubApi(readToken(document));
 function viewFromHash(): ShellView {
   const name = window.location.hash.replace(/^#\/?/, '');
   return name === 'library' || name === 'settings' ? name : 'home';
+}
+
+/** An open paper is `#/paper/<key>`. */
+function paperFromHash(): string | null {
+  const match = /^#\/paper\/(.+)$/.exec(window.location.hash);
+  if (match === null) return null;
+  try {
+    return decodeURIComponent(match[1]);
+  } catch {
+    return null;
+  }
+}
+
+function paperHash(key: string): string {
+  return `#/paper/${encodeURIComponent(key)}`;
 }
 
 function prefersReducedMotion(): boolean {
@@ -214,6 +236,14 @@ export function App(): JSX.Element {
   const [split, setSplit] = useState(0.5);
   const [leader, setLeader] = useState<Pane | null>(null);
   const [narrowPane, setNarrowPane] = useState<Pane>('source');
+  // 원문 alone until there is a translation to put beside it; the reader's own choice sticks per paper.
+  const [viewMode, setViewMode] = useState<ViewMode>('source');
+  const viewChosen = useRef(false);
+  const [pendingSelection, setPendingSelection] = useState<PendingSelection | null>(null);
+  // Handwriting on this paper (from the tablet, or a desktop pen).
+  const [inkStrokes, setInkStrokes] = useState<InkStroke[]>([]);
+  // The side panel holds the reader's notes and the questions; one of them is in front.
+  const [panelTab, setPanelTab] = useState<'notes' | 'questions'>('questions');
 
   const pdfBody = useRef<HTMLDivElement | null>(null);
   const textBody = useRef<HTMLDivElement | null>(null);
@@ -239,6 +269,31 @@ export function App(): JSX.Element {
   const paper = snapshot?.paper ?? null;
   const job = snapshot?.job ?? null;
   const readable = paper !== null && isReadable(paper.status);
+  const translated = (snapshot?.translations ?? []).some((t) => t.status === 'completed') || job?.state === 'running';
+
+  // Once a translation exists it goes beside the original, unless the reader picked a view.
+  useEffect(() => {
+    if (translated && !viewChosen.current) setViewMode('split');
+  }, [translated]);
+
+  const chooseView = useCallback((mode: ViewMode) => {
+    viewChosen.current = true;
+    setViewMode(mode);
+    if (mode !== 'split') setNarrowPane(mode);
+  }, []);
+
+  // Dark and sepia pages take the theme's paper and ink; light pages keep the PDF's own colours.
+  const prefersDark = useMediaQuery('(prefers-color-scheme: dark)');
+  const resolvedTheme = theme === 'system' ? (prefersDark ? 'dark' : 'light') : theme;
+  const [pageColors, setPageColors] = useState<PageColors | undefined>(undefined);
+  useEffect(() => {
+    if (resolvedTheme === 'light') {
+      setPageColors(undefined);
+      return;
+    }
+    const style = getComputedStyle(document.documentElement);
+    setPageColors({ background: style.getPropertyValue('--c-surface').trim(), foreground: style.getPropertyValue('--c-ink').trim() });
+  }, [resolvedTheme]);
   const blockedReason = translationBlockedReason(connection, paper);
   const canTranslate = client.canMutate && blockedReason === null && !busy && !resetting;
 
@@ -349,6 +404,7 @@ export function App(): JSX.Element {
 
   /** Make `key` the paper being read, dropping every answer still in flight for the old one. */
   const enterPaper = useCallback((key: string) => {
+    if (window.location.hash !== paperHash(key)) window.history.pushState(null, '', paperHash(key));
     epoch.current += 1;
     paperKeyRef.current = key;
     snapshotRef.current = null;
@@ -360,6 +416,9 @@ export function App(): JSX.Element {
     setHighlights([]);
     setOpenHighlightId(null);
     setNarrowPane('source');
+    setViewMode('source');
+    viewChosen.current = false;
+    setPendingSelection(null);
     setResetting(false);
     setReplacement(null);
     setChatOpen(false);
@@ -413,14 +472,6 @@ export function App(): JSX.Element {
     [leaveReader],
   );
 
-  useEffect(() => {
-    const onPop = () => {
-      if (paperKeyRef.current !== null) leaveReader();
-      setView(viewFromHash());
-    };
-    window.addEventListener('popstate', onPop);
-    return () => window.removeEventListener('popstate', onPop);
-  }, [leaveReader]);
 
   /** The single input: identifiers open a paper, anything else searches the library. */
   const submitIntent = useCallback(
@@ -480,6 +531,25 @@ export function App(): JSX.Element {
     },
     [enterPaper, refresh, fail],
   );
+
+  // Back/forward and links move between screens and papers; a paper link opens on load too.
+  // `follow` reads the current hash each time, so the listener is registered once.
+  const followHash = useRef<() => void>(() => undefined);
+  followHash.current = () => {
+    const key = paperFromHash();
+    if (key !== null) {
+      if (paperKeyRef.current !== key) void openStored(key);
+      return;
+    }
+    if (paperKeyRef.current !== null) leaveReader();
+    setView(viewFromHash());
+  };
+  useEffect(() => {
+    const follow = () => followHash.current();
+    if (paperFromHash() !== null) follow();
+    window.addEventListener('popstate', follow);
+    return () => window.removeEventListener('popstate', follow);
+  }, []);
 
   const act = useCallback(
     async (run: () => Promise<unknown>) => {
@@ -675,12 +745,16 @@ export function App(): JSX.Element {
   }, [paperKey, fail]);
 
   const createHighlight = useCallback(
-    (page: number, rects: Region[], text: string) => {
-      if (paperKey === null) return;
-      void client
-        .createHighlight(paperKey, { page, rects, text })
-        .then((created) => setHighlights((list) => [...list, created]))
-        .catch(fail);
+    async (page: number, rects: Region[], text: string, color: Highlight['color'] = 'yellow'): Promise<Highlight | null> => {
+      if (paperKey === null) return null;
+      try {
+        const created = await client.createHighlight(paperKey, { page, rects, text, color });
+        setHighlights((list) => [...list, created]);
+        return created;
+      } catch (cause) {
+        fail(cause);
+        return null;
+      }
     },
     [paperKey, fail],
   );
@@ -978,7 +1052,8 @@ export function App(): JSX.Element {
     const size = intrinsic.current.get(currentPage) ?? intrinsic.current.get(1);
     if (size === undefined || size.width <= 0) return null;
     // Pane padding on both sides plus a hairline, so no horizontal scrollbar appears.
-    const available = body.clientWidth - 24 - 2;
+    // Alone on a wide screen a page would grow past a comfortable reading measure.
+    const available = Math.min(body.clientWidth - 24 - 2, MAX_PAGE_WIDTH);
     return available <= 0 ? null : clampZoom(available / size.width);
   }, [currentPage]);
 
@@ -989,6 +1064,67 @@ export function App(): JSX.Element {
   }, [changeZoom, fitZoom]);
   const fitWidthRef = useRef(fitWidth);
   fitWidthRef.current = fitWidth;
+
+  // Handwriting arrives from the tablet through the hub; it is re-read while the paper is open.
+  useEffect(() => {
+    if (paperKey === null) {
+      setInkStrokes([]);
+      return;
+    }
+    let cancelled = false;
+    const load = () => {
+      if (document.visibilityState !== 'visible') return;
+      hub
+        .annotations(paperKey)
+        .then((list) => {
+          if (!cancelled && list !== null) setInkStrokes(list.filter((a): a is InkStroke => a.kind === 'ink' && !a.deleted));
+        })
+        .catch(() => undefined);
+    };
+    load();
+    const timer = window.setInterval(load, 10_000);
+    return () => {
+      cancelled = true;
+      window.clearInterval(timer);
+    };
+  }, [paperKey]);
+
+  const ink = useMemo<InkProps | undefined>(() => {
+    if (paperKey === null) return undefined;
+    return {
+      strokes: inkStrokes,
+      // Stored as an absolute colour so every device draws the same ink; dark themes invert it on screen.
+      color: '#1C1B19',
+      onCreate: (page, points, color) => {
+        const stroke: InkStroke = {
+          kind: 'ink',
+          id: newRequestId(),
+          paperKey,
+          page,
+          tool: 'pen',
+          color,
+          width: DESKTOP_PEN_WIDTH,
+          points: points.map(([x, y, p, t]) => [x, y, Math.min(1, Math.max(0, p)), Math.max(0, t)]),
+          updatedAt: new Date().toISOString(),
+          deleted: false,
+          rev: 0,
+          deviceId: 'desktop',
+        };
+        setInkStrokes((list) => [...list, stroke]);
+        void hub.saveAnnotation(stroke).catch(fail);
+      },
+      onErase: (stroke) => {
+        setInkStrokes((list) => list.filter((s) => s.id !== stroke.id));
+        void hub.saveAnnotation({ ...stroke, deleted: true, updatedAt: new Date().toISOString(), deviceId: 'desktop' }).catch(fail);
+      },
+    };
+  }, [paperKey, inkStrokes, fail]);
+
+  // One pane or two: the page width changes, so the page is fitted again.
+  useEffect(() => {
+    const timer = window.setTimeout(() => fitWidthRef.current(), 60);
+    return () => window.clearTimeout(timer);
+  }, [viewMode]);
 
   // The first time a document's page sizes are known, start at fit-width rather than 100%.
   const fittedDoc = useRef<PDFDocumentProxy | null>(null);
@@ -1059,6 +1195,20 @@ export function App(): JSX.Element {
     [scrollKoreanToPage, scrollPaneTo],
   );
 
+  // [p.N] in an answer opens that page of the original (Markdown renders them as .page-ref).
+  useEffect(() => {
+    const onClick = (event: MouseEvent) => {
+      const ref = (event.target as HTMLElement | null)?.closest<HTMLElement>('.page-ref[data-page]');
+      if (ref === null || ref === undefined) return;
+      const page = Number(ref.dataset.page);
+      if (!Number.isInteger(page) || page < 1) return;
+      if (viewMode === 'translation') chooseView('source');
+      goToPage(Math.min(page, pageCount || page));
+    };
+    document.addEventListener('click', onClick);
+    return () => document.removeEventListener('click', onClick);
+  }, [goToPage, pageCount, viewMode, chooseView]);
+
   // ---------------------------------------------------------- question panel
 
   /**
@@ -1092,7 +1242,20 @@ export function App(): JSX.Element {
   useEffect(() => () => window.clearTimeout(refitTimer.current), []);
 
   const closeChat = useCallback(() => showChat(false), [showChat]);
-  const toggleChat = useCallback(() => showChat(!chatOpen), [showChat, chatOpen]);
+  /** The panel's buttons: open on that tab, switch tabs while open, or close from the tab in front. */
+  const togglePanel = useCallback(
+    (tab: 'notes' | 'questions') => {
+      if (chatOpen && panelTab === tab) {
+        showChat(false);
+        return;
+      }
+      setPanelTab(tab);
+      if (!chatOpen) showChat(true);
+    },
+    [chatOpen, panelTab, showChat],
+  );
+  const toggleChat = useCallback(() => togglePanel('questions'), [togglePanel]);
+  const toggleNotes = useCallback(() => togglePanel('notes'), [togglePanel]);
 
   /** The account menu, opened from the top bar or from the question panel. */
   const openAccountFrom = useCallback((element: HTMLElement | null, fromChat: boolean) => {
@@ -1248,6 +1411,7 @@ export function App(): JSX.Element {
     }
     return list;
   }, [navigate, theme, setTheme, paperKey, chatOpen, toggleChat, papers, openStored, openAccountFrom]);
+  const activePane: Pane = viewMode === 'split' ? narrowPane : viewMode;
   const deleteTarget = deleteConfirmation === null ? undefined : papers.find((p) => p.paperKey === deleteConfirmation) ?? (paper?.paperKey === deleteConfirmation ? paper : undefined);
 
   return (
@@ -1340,25 +1504,48 @@ export function App(): JSX.Element {
         )
       ) : (
         <main className="reader-shell">
-          <ReaderToolbar
+          <ReaderBar
             paper={paper}
             job={job}
-            selectedModelId={modelId}
+            currentPage={currentPage}
+            pageCount={pageCount}
+            zoom={zoom}
+            onPage={(page) => goToPage(nextPage(page, 0, pageCount))}
+            onZoom={(direction) => changeZoom(direction * CONTROL_LIMITS.zoom.step)}
+            onFitWidth={fitWidth}
+            viewMode={viewMode}
+            narrow={onePane}
+            onViewMode={chooseView}
             modelIds={connection?.modelIds ?? []}
+            selectedModelId={modelId}
             canTranslate={canTranslate}
             disabledReason={resetting ? '새로 번역을 준비하는 중입니다.' : blockedReason}
-            replacement={replacement}
+            sendHint={SEND_HINT}
             onModelChange={setModelId}
-            onStart={(chosen) => void act(() => client.startTranslation(paperKey, chosen))}
+            onStart={(chosen) => {
+              chooseView('split');
+              void act(() => client.startTranslation(paperKey, chosen));
+            }}
             onPause={(jobId) => void act(() => client.pauseJob(jobId))}
             onResume={(jobId) => void act(() => client.resumeJob(jobId))}
             onRequestReplacement={requestReplacement}
-            onConfirmReplacement={confirmReplacement}
-            onCancelReplacement={() => setReplacement(null)}
-            hint={SEND_HINT}
+            chat={{ open: chatOpen && panelTab === 'questions', controls: CHAT_PANEL_ID, onToggle: toggleChat, buttonRef: chatButtonRef }}
+            notes={{ open: chatOpen && panelTab === 'notes', onToggle: toggleNotes }}
+            exportLinks={[
+              { label: '메모와 하이라이트 (Markdown)', href: `/api/papers/${encodeURIComponent(paperKey)}/export/markdown`, download: `${paperKey}.md` },
+              { label: 'BibTeX', href: `/api/papers/${encodeURIComponent(paperKey)}/export/bibtex`, download: `${paperKey}.bib` },
+            ]}
             onRequestDelete={() => setDeleteConfirmation(paperKey)}
-            chat={{ open: chatOpen, controls: CHAT_PANEL_ID, onToggle: toggleChat, buttonRef: chatButtonRef }}
           />
+          {replacement !== null ? (
+            <ReplacementDialog
+              paper={paper}
+              replacement={replacement}
+              canTranslate={canTranslate}
+              onConfirm={() => confirmReplacement(replacement.modelId)}
+              onCancel={() => setReplacement(null)}
+            />
+          ) : null}
 
           <div className="reader-stage">
             {paper !== null && !readable ? (
@@ -1375,46 +1562,12 @@ export function App(): JSX.Element {
 
             <div
               ref={readerRef}
-              className={`reader narrow${onePane ? ' one-pane' : ''}${resetting ? ' resetting' : ''}`}
+              className={`reader narrow${onePane || viewMode !== 'split' ? ' one-pane' : ''}${resetting ? ' resetting' : ''}`}
               hidden={paper !== null && !readable}
               // Covered by the panel's sheet on a narrow screen: out of reach until it closes.
               inert={chatOpen && chatSheet}
             >
-              <section className={`pane ${narrowPane === 'source' ? '' : 'hidden'}`} style={{ flex: `0 0 ${split * 100}%` }} aria-label="원본 PDF">
-                <div className="pane-head pane-head--source">
-                  <span className="pane-title">원본</span>
-                  <div className="pane-tools" role="group" aria-label="확대 조절">
-                    <button type="button" onClick={() => changeZoom(-CONTROL_LIMITS.zoom.step)} aria-label="축소">
-                      축소 −
-                    </button>
-                    <span data-testid="zoom" className="pane-readout">
-                      {Math.round(zoom * 100)}%
-                    </span>
-                    <button type="button" onClick={() => changeZoom(CONTROL_LIMITS.zoom.step)} aria-label="확대">
-                      확대 +
-                    </button>
-                    <button type="button" onClick={fitWidth} aria-label="폭 맞춤">
-                      폭 맞춤
-                    </button>
-                  </div>
-                  <div className="pane-tools" role="group" aria-label="쪽 이동">
-                    <button type="button" onClick={() => goToPage(nextPage(currentPage, -1, pageCount))} aria-label="이전 쪽">
-                      이전 쪽
-                    </button>
-                    <span data-testid="page" className="pane-readout">
-                      {currentPage} / {pageCount || '?'}
-                    </span>
-                    <button type="button" onClick={() => goToPage(nextPage(currentPage, 1, pageCount))} aria-label="다음 쪽">
-                      다음 쪽
-                    </button>
-                  </div>
-                  <span className="pane-hint">드래그: 하이라이트 · 클릭: 한국어 같은 쪽으로</span>
-                  <span className="pane-switch">
-                    <button type="button" onClick={() => setNarrowPane('translation')}>
-                      번역 보기
-                    </button>
-                  </span>
-                </div>
+              <section className={`pane ${activePane === 'source' ? '' : 'hidden'}`} style={{ flex: `0 0 ${split * 100}%` }} aria-label="원문">
                 <PdfPages
                   doc={doc}
                   pageCount={pageCount}
@@ -1428,7 +1581,10 @@ export function App(): JSX.Element {
                   bodyRef={pdfBody}
                   onScroll={onPdfScroll}
                   onSelectBlock={selectSourceBlock}
-                  onCreateHighlight={createHighlight}
+                  onSelectText={setPendingSelection}
+                  pending={pendingSelection}
+                  pageColors={pageColors}
+                  ink={ink}
                   onOpenHighlight={openHighlight}
                 />
                 {openHighlightRecord !== null ? (
@@ -1465,19 +1621,7 @@ export function App(): JSX.Element {
                 }}
               />
 
-              <section className={`pane ${narrowPane === 'translation' ? '' : 'hidden'}`} style={{ flex: '1 1 0' }} aria-label="한국어 번역">
-                <div className="pane-head">
-                  <span className="pane-title">한국어</span>
-                  <span data-testid="leader" className="pane-readout pane-readout--wide">
-                    {leaderLabel(leader)}
-                  </span>
-                  <span className="pane-hint">클릭: 원본 같은 쪽으로</span>
-                  <span className="pane-switch">
-                    <button type="button" onClick={() => setNarrowPane('source')}>
-                      원본 보기
-                    </button>
-                  </span>
-                </div>
+              <section className={`pane ${activePane === 'translation' ? '' : 'hidden'}`} style={{ flex: '1 1 0' }} aria-label="번역">
                 <KoreanPages
                   doc={doc}
                   pageCount={pageCount}
@@ -1507,7 +1651,25 @@ export function App(): JSX.Element {
               // reachable (it holds the toggle that closes the sheet), so the dialog is not modal.
               role={chatSheet && chatOpen ? 'dialog' : undefined}
             >
-              <div className="chat-dock__inner">
+              <div className="panel-tabs" role="tablist" aria-label="옆 패널">
+                <button type="button" role="tab" aria-selected={panelTab === 'notes'} onClick={() => setPanelTab('notes')}>
+                  노트 <span className="panel-tabs__count">{highlights.length > 0 ? highlights.length : ''}</span>
+                </button>
+                <button type="button" role="tab" aria-selected={panelTab === 'questions'} onClick={() => setPanelTab('questions')}>
+                  질문
+                </button>
+              </div>
+              {panelTab === 'notes' ? (
+                <NotesPanel
+                  highlights={highlights}
+                  onOpen={(h) => {
+                    if (viewMode === 'translation') chooseView('source');
+                    goToPage(h.page);
+                    setOpenHighlightId(h.highlightId);
+                  }}
+                />
+              ) : null}
+              <div className="chat-dock__inner" hidden={panelTab !== 'questions'}>
                 {chatMounted ? (
                   <ChatBoundary key={paperKey} open={chatOpen} onClose={closeChat}>
                     <Suspense fallback={<p className="chat-dock__loading">질문 창을 여는 중입니다.</p>}>
@@ -1537,6 +1699,30 @@ export function App(): JSX.Element {
 
       {deleteConfirmation !== null ? (
         <DeleteDialog paper={deleteTarget} paperKey={deleteConfirmation} onCancel={() => setDeleteConfirmation(null)} onConfirm={() => void confirmDelete(deleteConfirmation)} />
+      ) : null}
+
+      {pendingSelection !== null ? (
+        <SelectionMenu
+          selection={pendingSelection}
+          onClose={() => setPendingSelection(null)}
+          onHighlight={(color) => {
+            const { page, regions, text } = pendingSelection;
+            setPendingSelection(null);
+            void createHighlight(page, regions, text, color);
+          }}
+          onMemo={() => {
+            const { page, regions, text } = pendingSelection;
+            setPendingSelection(null);
+            void createHighlight(page, regions, text, 'yellow').then((created) => {
+              if (created !== null) setOpenHighlightId(created.highlightId);
+            });
+          }}
+          onAsk={() => {
+            const { text } = pendingSelection;
+            setPendingSelection(null);
+            askAboutSource(text);
+          }}
+        />
       ) : null}
 
       <CommandPalette open={paletteOpen} commands={commands} onClose={() => setPaletteOpen(false)} />

@@ -35,12 +35,34 @@ function Formula({ tex, display }: { tex: string; display: boolean }): JSX.Eleme
   return <span className={display ? 'md-math md-math--display' : 'md-math'} dangerouslySetInnerHTML={{ __html: renderTex(tex, display) }} />;
 }
 
+/** Page citations in answers — [p.3], [p. 12], [pp. 4–5] — become buttons that open that page. */
+const PAGE_REF = /\[(?:p|pp)\.\s?(\d+)(?:\s?[-–]\s?\d+)?\]/g;
+
+function withPageRefs(text: string, key: string): ReactNode {
+  PAGE_REF.lastIndex = 0;
+  if (!PAGE_REF.test(text)) return text;
+  const parts: ReactNode[] = [];
+  let last = 0;
+  PAGE_REF.lastIndex = 0;
+  for (let match = PAGE_REF.exec(text); match !== null; match = PAGE_REF.exec(text)) {
+    if (match.index > last) parts.push(text.slice(last, match.index));
+    parts.push(
+      <button key={`${key}.p${match.index}`} type="button" className="page-ref" data-page={match[1]} aria-label={`원문 ${match[1]}쪽 보기`}>
+        {match[0].slice(1, -1)}
+      </button>,
+    );
+    last = match.index + match[0].length;
+  }
+  if (last < text.length) parts.push(text.slice(last));
+  return <Fragment key={key}>{parts}</Fragment>;
+}
+
 function renderInline(nodes: MdInline[], key: string, inLink = false): ReactNode[] {
   return nodes.map((node, index) => {
     const id = `${key}.${index}`;
     switch (node.type) {
       case 'text':
-        return node.text;
+        return inLink ? node.text : withPageRefs(node.text, id);
       case 'break':
         return <br key={id} />;
       case 'strong':

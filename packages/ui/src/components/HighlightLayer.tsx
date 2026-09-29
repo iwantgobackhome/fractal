@@ -1,12 +1,11 @@
 import { useState, type JSX } from 'react';
 import type { Highlight } from '@fractal/shared';
-import { IconChat } from './ChatIcons';
 
 const COLOR_VALUES: Record<Highlight['color'], string> = {
-  yellow: 'rgba(255, 213, 79, 0.45)',
-  green: 'rgba(129, 199, 132, 0.45)',
-  blue: 'rgba(100, 181, 246, 0.45)',
-  pink: 'rgba(240, 152, 190, 0.45)',
+  yellow: 'color-mix(in srgb, var(--c-hl-yellow) 75%, transparent)',
+  green: 'color-mix(in srgb, var(--c-hl-green) 75%, transparent)',
+  blue: 'color-mix(in srgb, var(--c-hl-blue) 75%, transparent)',
+  pink: 'color-mix(in srgb, var(--c-hl-pink) 75%, transparent)',
 };
 
 export const HIGHLIGHT_COLORS: readonly Highlight['color'][] = ['yellow', 'green', 'blue', 'pink'];
@@ -74,49 +73,48 @@ export function HighlightPopover({ highlight, onSave, onDelete, onClose, onAsk }
       }}
     >
       <p className="highlight-excerpt">{highlight.text.slice(0, 200)}</p>
-      {onAsk !== undefined ? (
-        <button
-          type="button"
-          className="highlight-popover-ask"
-          onClick={() => {
-            onAsk(highlight.text);
-            if (!edited) onClose();
-          }}
-        >
-          <IconChat size={14} />
-          이 부분 질문하기
-        </button>
-      ) : null}
       <textarea
         aria-label="메모"
+        placeholder="메모"
         value={note}
         onChange={(event) => setNote(event.target.value)}
         rows={3}
         maxLength={5000}
+        autoFocus
       />
-      <div className="highlight-colors">
-        {HIGHLIGHT_COLORS.map((c) => (
-          <button
-            key={c}
-            type="button"
-            className={`highlight-color-swatch${c === color ? ' selected' : ''}`}
-            style={{ backgroundColor: COLOR_VALUES[c] }}
-            aria-label={`색 ${c}`}
-            aria-pressed={c === color}
-            onClick={() => setColor(c)}
-          />
-        ))}
-      </div>
-      <div className="highlight-popover-actions">
-        <button type="button" onClick={() => onSave(note.trim().length === 0 ? '' : note, color)}>
-          저장
-        </button>
-        <button type="button" onClick={onDelete}>
-          삭제
-        </button>
-        <button type="button" onClick={onClose}>
-          닫기
-        </button>
+      <div className="highlight-popover-row">
+        <div className="highlight-colors" role="group" aria-label="색">
+          {HIGHLIGHT_COLORS.map((c) => (
+            <button
+              key={c}
+              type="button"
+              className={`highlight-color-swatch${c === color ? ' selected' : ''}`}
+              style={{ backgroundColor: COLOR_VALUES[c] }}
+              aria-label={`색 ${c}`}
+              aria-pressed={c === color}
+              onClick={() => setColor(c)}
+            />
+          ))}
+        </div>
+        <div className="highlight-popover-actions">
+          {onAsk !== undefined ? (
+            <button
+              type="button"
+              onClick={() => {
+                onAsk(highlight.text);
+                if (!edited) onClose();
+              }}
+            >
+              질문
+            </button>
+          ) : null}
+          <button type="button" onClick={onDelete}>
+            삭제
+          </button>
+          <button type="button" className="is-primary" onClick={() => onSave(note.trim().length === 0 ? '' : note, color)}>
+            저장
+          </button>
+        </div>
       </div>
     </div>
   );
