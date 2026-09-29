@@ -2,7 +2,7 @@ import type { PaperStructure, ReferenceEnrichment, ReferenceEntry, StructureItem
 import type { SqlitePaperStore } from '../store/sqlite';
 import { PdfJsStructureDetector, STRUCTURE_VERSION, type StructureDetector } from './detector';
 import { fetchArxivSource, matchLatex, type SourceFragment } from './source';
-import { enrichReference } from './enrichment';
+import { ENRICHMENT_CACHE_VERSION, enrichReference } from './enrichment';
 
 type Row = Record<string, unknown>;
 
@@ -37,13 +37,14 @@ export class StructureService {
         if (!bytes || !paper) return;
         const result = await this.detector.detect(bytes, key, this.store.listBlocks(key));
         if (paper.arxivId) {
-          const sourceKey = `${paper.arxivId}${paper.version ? `v${paper.version}` : ''}`;
+          const sourceId = `${paper.arxivId}${paper.version ? `v${paper.version}` : ''}`;
+          const sourceKey = `latex-numbers-v2:${sourceId}`;
           const cached = this.store.db.prepare('SELECT data FROM arxiv_source_cache WHERE source_key=?').get(sourceKey) as Row | undefined;
           let fragments: SourceFragment[];
           if (cached) {
             fragments = JSON.parse(String(cached.data)) as SourceFragment[];
           } else {
-            fragments = await fetchArxivSource(sourceKey, this.fetcher);
+            fragments = await fetchArxivSource(sourceId, this.fetcher);
             this.store.db.prepare('INSERT OR REPLACE INTO arxiv_source_cache VALUES(?,?,datetime(\'now\'))').run(sourceKey, JSON.stringify(fragments));
           }
           result.items = matchLatex(result.items, fragments);
@@ -76,7 +77,8 @@ export class StructureService {
   }
 
   async enrichment(reference: ReferenceEntry): Promise<ReferenceEnrichment | null> {
-    const cacheKey = reference.doi?.toLowerCase() ?? reference.arxivId?.toLowerCase() ?? reference.title?.toLowerCase() ?? reference.raw.toLowerCase();
+    const identity = reference.doi?.toLowerCase() ?? reference.arxivId?.toLowerCase() ?? reference.title?.toLowerCase() ?? reference.raw.toLowerCase();
+    const cacheKey = `${ENRICHMENT_CACHE_VERSION}:${identity}`;
     const cached = this.store.db.prepare('SELECT data FROM reference_enrichment WHERE cache_key=?').get(cacheKey) as Row | undefined;
     if (cached) return JSON.parse(String(cached.data)) as ReferenceEnrichment | null;
     const data = await enrichReference(reference, this.fetcher);

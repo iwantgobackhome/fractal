@@ -7,6 +7,9 @@ import { paperInstructions } from '../../chat/paper-text';
 import type { AiRouteContext as RouteContext, Result } from './types';
 
 const json = (data: unknown): Result => ({ kind: 'json', status: 200, data });
+const questionLanguage = 'Answer in the same language as the user question. Answer Korean questions in Korean.';
+const explainKorean = '반드시 간결한 한국어로 답하세요. 수식은 LaTeX로 유지하고 전문 용어는 처음 나올 때 한국어(English)로 쓰세요. 무엇인지, 각 기호의 뜻(해당하는 경우), 이 논문에서 왜 중요한지 설명하고 근거를 [p.N]으로 인용하세요.';
+const glossaryKorean = 'JSON 배열만 반환하세요. 각 definition은 간결한 한국어로 쓰고 전문 용어는 처음 나올 때 한국어(English)로 쓰세요. 정의마다 [p.N] 근거를 포함하세요.';
 async function body(request: IncomingMessage): Promise<unknown> {
   const parts: Buffer[] = []; let size = 0;
   for await (const part of request) { const chunk = Buffer.from(part); size += chunk.length; if (size > 5_000_000) throw invalidInput('AI request is too large'); parts.push(chunk); }
@@ -48,7 +51,7 @@ export async function handleAi(method: string, segments: string[], request: Inco
   if (segments[1] === 'library' && segments[2] === 'ask' && segments.length === 3 && method === 'POST') {
     const input = parse(libraryAskSchema, await body(request)); const hits = await ctx.librarySearch.searchLibrary(input.question);
     const context = hits.map(h => `[paper:${h.paperKey} p.${h.page}] ${h.title}\n${h.text}`).join('\n\n');
-    return { kind: 'sse', status: 200, events: generate(ctx, 'chat', `Answer from these library excerpts. Cite claims as [paper:KEY p.N]. If no excerpt supports an answer, say so.\n${context}`, input.question, input.selection, { libraryCitation: hits[0] ? `[paper:${hits[0].paperKey} p.${hits[0].page}]` : undefined }) };
+    return { kind: 'sse', status: 200, events: generate(ctx, 'chat', `${questionLanguage}\nAnswer from these library excerpts. Cite claims as [paper:KEY p.N]. If no excerpt supports an answer, say so.\n${context}`, input.question, input.selection, { libraryCitation: hits[0] ? `[paper:${hits[0].paperKey} p.${hits[0].page}]` : undefined }) };
   }
   if (segments[1] !== 'papers' || segments.length !== 4 || method !== 'POST') return undefined;
   const key = paperKey(segments[2]); const paper = ctx.store.getPaper(key); if (!paper) throw notFound('Paper not found');
@@ -56,20 +59,20 @@ export async function handleAi(method: string, segments: string[], request: Inco
   if (segments[3] === 'ask') {
     const input = parse(askPaperSchema, await body(request));
     const question = `${input.question}${input.selectedText ? `\nSelected text: ${input.selectedText}` : ''}${input.page ? `\nCurrent page: ${input.page}` : ''}${input.rect ? `\nSelected box: ${JSON.stringify(input.rect)}` : ''}`;
-    return { kind: 'sse', status: 200, events: generate(ctx, 'chat', `${paperInstructions(paper, blocks)}\n\nCite evidence using [p.N] page markers.`, question, input.selection, { page: input.page ?? blocks[0]?.regions[0]?.page }) };
+    return { kind: 'sse', status: 200, events: generate(ctx, 'chat', `${paperInstructions(paper, blocks)}\n\n${questionLanguage}\nCite evidence using [p.N] page markers.`, question, input.selection, { page: input.page ?? blocks[0]?.regions[0]?.page }) };
   }
   if (segments[3] === 'explain') {
     const input = parse(explainSchema, await body(request));
     const pageText = blocks.filter(b => b.regions.some(r => r.page === input.page)).map(b => b.sourceText).join('\n').slice(0, 30000);
-    const question = `Explain this ${input.kind} on page ${input.page}, box ${JSON.stringify(input.bbox)}. ${input.kind === 'equation' ? 'Include its LaTeX in $$...$$.' : ''}\nSurrounding text: ${input.surroundingText ?? ''}`;
+    const question = `이 ${input.kind}을 설명하세요. 페이지 ${input.page}, 영역 ${JSON.stringify(input.bbox)}. ${input.kind === 'equation' ? '수식을 $$...$$ 형태의 LaTeX로 포함하세요.' : ''}\n주변 텍스트: ${input.surroundingText ?? ''}`;
     // The CLI adapters currently accept text only. The crop is validated but surrounding page text is used.
-    return { kind: 'sse', status: 200, events: generate(ctx, 'explain', `Paper: ${paper.title ?? key}\n[page ${input.page}]\n${pageText}\nCite [p.${input.page}].`, question, input.selection, { page: input.page, equation: input.kind === 'equation' }) };
+    return { kind: 'sse', status: 200, events: generate(ctx, 'explain', `${explainKorean}\nPaper: ${paper.title ?? key}\n[page ${input.page}]\n${pageText}\nCite [p.${input.page}].`, question, input.selection, { page: input.page, equation: input.kind === 'equation' }) };
   }
   if (segments[3] === 'glossary') {
     const input = parse(glossarySchema, await body(request)); const digest = createHash('sha256').update(JSON.stringify(blocks.map(b => [b.sourceHash, b.regions[0]?.page]))).digest('hex'); const cacheKey = `${key}:${input.selection?.provider ?? 'default'}:${input.selection?.model ?? 'default'}:${digest}`;
     const cached = glossaryCache.get(cacheKey);
     if (cached) return { kind: 'sse', status: 200, events: (async function*() { yield { type: 'done', answer: cached.answer, terms: cached.terms } as AiSseEvent; })() };
-    return { kind: 'sse', status: 200, events: generate(ctx, 'digest', `${paperInstructions(paper, blocks)}\nReturn only a JSON array of {"term":string,"page":number,"definition":string}. Use first-occurrence page.`, 'List up to 20 key terms.', input.selection, { glossaryKey: cacheKey }) };
+    return { kind: 'sse', status: 200, events: generate(ctx, 'digest', `${paperInstructions(paper, blocks)}\n${glossaryKorean}\nReturn only a JSON array of {"term":string,"page":number,"definition":string}. Use first-occurrence page.`, 'List up to 20 key terms.', input.selection, { glossaryKey: cacheKey }) };
   }
   return undefined;
 }

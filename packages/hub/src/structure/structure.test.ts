@@ -8,8 +8,8 @@ import { DatabaseSync } from 'node:sqlite';
 import type { IncomingMessage } from 'node:http';
 import { describe, expect, it } from 'vitest';
 import { PdfJsStructureDetector, expandCitation } from './detector';
-import { latexFiles, matchLatex, parseLatexSources } from './source';
-import { enrichReference } from './enrichment';
+import { latexFiles, matchLatex, mathSimilarity, parseLatexSources } from './source';
+import { ENRICHMENT_CACHE_VERSION, enrichReference, validEnrichment } from './enrichment';
 import { StructureService } from './service';
 import { SqlitePaperStore } from '../store/sqlite';
 import { extractPdf } from '../pdf/index';
@@ -65,6 +65,22 @@ describe('paper structure', () => {
     expect(matched[1]?.latex).toContain('mc^2');
   });
 
+  it('does not count a starred align block or assign its formula to either numbered equation', () => {
+    const fragments = parseLatexSources([fixture('equation-order.tex').toString('utf8')]);
+    expect(fragments.map((fragment) => fragment.number)).toEqual(['1', undefined, '2']);
+    const bbox = { x: 0.3, y: 0.3, width: 0.5, height: 0.1 };
+    const items = [
+      { id: 'ffn', kind: 'equation' as const, page: 2, bbox, label: '(2)', caption: 'FFN( x ) = max(0, xW 1 + b 1)W 2 + b 2', confidence: 0.8 },
+      { id: 'attention', kind: 'equation' as const, page: 1, bbox, label: '(1)', caption: 'QK T Attention( Q, K, V ) = softmax( sqrt(d k) ) V', confidence: 0.8 },
+      { id: 'unrelated', kind: 'equation' as const, page: 3, bbox, label: '(3)', caption: 'z = integral of unrelated symbols', confidence: 0.5 },
+    ];
+    const matched = matchLatex(items, fragments);
+    expect(matched[0]?.sourceLabel).toBe('eq:ffn');
+    expect(matched[1]?.sourceLabel).toBe('eq:attention');
+    expect(matched[2]?.latex).toBeUndefined();
+    expect(mathSimilarity(items[0].caption, fragments[0].latex!)).toBeLessThan(mathSimilarity(items[0].caption, fragments[2].latex!));
+  });
+
   it('uses Semantic Scholar, then OpenAlex when the first service fails', async () => {
     const reference = { n: '1', raw: 'Example Method', doi: '10.1234/example' };
     const semantic = async () => new Response(JSON.stringify({ title: 'Example Method', abstract: 'Abstract', year: 2020, venue: 'Journal', externalIds: { DOI: '10.1234/example' }, citationCount: 3, openAccessPdf: { url: 'https://example.org/a.pdf' } }), { status: 200 });
@@ -75,6 +91,50 @@ describe('paper structure', () => {
       return urls.length === 1 ? new Response(null, { status: 429 }) : new Response(JSON.stringify({ results: [{ title: 'Example Method', publication_year: 2020, cited_by_count: 4, ids: { doi: 'https://doi.org/10.1234/example' }, best_oa_location: { pdf_url: 'https://example.org/b.pdf' } }] }), { status: 200 });
     };
     expect((await enrichReference(reference, fallback as typeof fetch))?.provider).toBe('openalex');
+  });
+
+  it('rejects wrong titles and years from mocked reference providers', async () => {
+    const reference = { n: '11', raw: 'Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun. Deep residual learning for im- age recognition. In CVPR, 2016.', authors: 'Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun', year: 2016 };
+    const good = { title: 'Deep Residual Learning for Image Recognition', year: 2016, authors: [{ name: 'Kaiming He' }], externalIds: {} };
+    const wrongTitle = { ...good, title: 'Person search: New paradigm of person re-identification' };
+    const wrongYear = { ...good, year: 2020 };
+    const mock = (candidate: object, fallback: object = { results: [] }) => {
+      const seen: string[] = [];
+      const fetcher = (async (input: string | URL | Request) => {
+        seen.push(String(input));
+        return new Response(JSON.stringify(seen.length === 1 ? candidate : fallback), { status: 200 });
+      }) as typeof fetch;
+      return { fetcher, seen };
+    };
+    const accepted = mock(good);
+    expect((await enrichReference(reference, accepted.fetcher))?.title).toBe(good.title);
+    expect(accepted.seen).toHaveLength(1);
+    const rejectedTitle = mock(wrongTitle, { results: [{ title: good.title, publication_year: 2016, authorships: [{ author: { display_name: 'Jian Sun' } }] }] });
+    expect((await enrichReference(reference, rejectedTitle.fetcher))?.provider).toBe('openalex');
+    const rejectedYear = mock(wrongYear);
+    expect(await enrichReference(reference, rejectedYear.fetcher)).toBeNull();
+    expect(validEnrichment(reference, { title: wrongTitle.title, abstract: null, year: 2020, venue: null, externalIds: {}, citationCount: null, openAccessPdf: null, provider: 'semantic-scholar' }, ['Kaiming He'])).toBe(false);
+  });
+
+  it('ignores enrichment cache rows written before candidate validation', async () => {
+    const directory = mkdtempSync(join(tmpdir(), 'fractal-reference-cache-'));
+    const store = new SqlitePaperStore(directory);
+    try {
+      const reference = { n: '11', raw: 'Deep residual learning for image recognition.', doi: '10.1000/correct' };
+      store.db.prepare("INSERT INTO reference_enrichment VALUES(?,?,datetime('now'))").run('10.1000/correct', JSON.stringify({ title: 'Wrong paper' }));
+      let calls = 0;
+      const fetcher = (async () => {
+        calls += 1;
+        return new Response(JSON.stringify({ title: 'Deep residual learning for image recognition', externalIds: { DOI: '10.1000/correct' } }), { status: 200 });
+      }) as typeof fetch;
+      const service = new StructureService(store, new PdfJsStructureDetector(), fetcher);
+      expect((await service.enrichment(reference))?.title).toBe('Deep residual learning for image recognition');
+      expect(calls).toBe(1);
+      expect(store.db.prepare('SELECT cache_key FROM reference_enrichment WHERE cache_key=?').get(`${ENRICHMENT_CACHE_VERSION}:10.1000/correct`)).toBeTruthy();
+    } finally {
+      store.db.close();
+      rmSync(directory, { recursive: true, force: true });
+    }
   });
 
   it('stores detection and serves pending and ready route responses', async () => {

@@ -46,6 +46,8 @@ The HTTP credential name remains compatible with the browser. PaperRead data is 
 
 The SQLite migration adds versioned structure state, items, references, markers, and two enrichment caches. Saving extracted blocks schedules detection without holding up ingest. Reads can also schedule it, and refresh forces a new pass. arXiv source enrichment downloads at most 20 MB, reads only `.tex` members from a tar/gzip archive in memory, and caches fragments per revision. Reference details are fetched only when requested, first from Semantic Scholar and then OpenAlex, with a shared request interval and cached results. No archive member is written or executed.
 
+Equation matching joins right-margin PDF equation numbers, source environment numbering, and normalized math-symbol similarity. It only attaches a one-to-one source match above the confidence threshold. Reference candidates from both providers are validated against identifiers or title, year, and author metadata before caching; cache versions isolate earlier unvalidated results.
+
 ## Library storage and sync
 
 The hub opens `%LOCALAPPDATA%/Fractal` on Windows or `$XDG_DATA_HOME/fractal` on Unix; `FRACTAL_DATA` overrides it. `node:sqlite` holds paper snapshots, blocks, translations, jobs, bibliography, collections, tags, annotations, conversations, a migration ledger, and an append-only change log. PDFs are files named by SHA-256 under `pdfs/`. On first startup it imports verified records from the old PaperRead directory, including highlights. FTS5 indexes bibliography fields and extracted block text.

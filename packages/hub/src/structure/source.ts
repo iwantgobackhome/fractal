@@ -1,7 +1,7 @@
 import { gunzipSync } from 'node:zlib';
 import type { StructureItem } from '@fractal/shared';
 
-export interface SourceFragment { kind: StructureItem['kind']; label?: string; caption?: string; latex?: string; number?: string }
+export interface SourceFragment { kind: StructureItem['kind']; label?: string; caption?: string; latex?: string; number?: string; numberedRows?: number }
 const MAX_ARCHIVE = 20 * 1024 * 1024;
 const MAX_SOURCE = 80 * 1024 * 1024;
 
@@ -65,7 +65,12 @@ export function parseLatexSources(files: readonly string[]): SourceFragment[] {
       const label = /\\label\{([^}]+)\}/.exec(body)?.[1];
       const caption = /\\caption(?:\[[^\]]*\])?\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}/.exec(body)?.[1];
       const kind = environment.startsWith('figure') ? 'figure' : environment.startsWith('table') ? 'table' : 'equation';
-      fragments.push({ kind, ...(label ? { label } : {}), ...(caption ? { caption: cleanCaption(caption) } : {}), ...(kind === 'equation' ? { latex: body.replace(/\\label\{[^}]+\}/g, '').trim() } : {}) });
+      const numberedRows = kind !== 'equation' || environment.endsWith('*')
+        ? 0
+        : environment === 'align'
+          ? body.split(/\\\\(?:\[[^\]]*\])?/g).filter((row) => row.trim() && !/\\(?:notag|nonumber)\b/.test(row)).length
+          : /\\(?:notag|nonumber)\b/.test(body) ? 0 : 1;
+      fragments.push({ kind, ...(label ? { label } : {}), ...(caption ? { caption: cleanCaption(caption) } : {}), ...(kind === 'equation' ? { latex: body.replace(/\\label\{[^}]+\}/g, '').trim(), numberedRows } : {}) });
     }
     for (const match of source.matchAll(/\$\$([\s\S]*?)\$\$|\\\[([\s\S]*?)\\\]/g)) {
       fragments.push({ kind: 'equation', latex: (match[1] ?? match[2]).trim() });
@@ -73,13 +78,20 @@ export function parseLatexSources(files: readonly string[]): SourceFragment[] {
   }
   const counts = { figure: 0, table: 0, equation: 0 };
   for (const fragment of fragments) {
+    if (fragment.kind === 'equation') {
+      if (!fragment.numberedRows) continue;
+      const explicit = /\\tag\{(\d+)\}/.exec(fragment.latex ?? '')?.[1];
+      fragment.number = explicit ?? String(counts.equation + 1);
+      counts.equation += fragment.numberedRows;
+      continue;
+    }
     counts[fragment.kind] += 1;
     fragment.number = String(counts[fragment.kind]);
   }
   return fragments;
 }
 
-function similarity(a: string, b: string): number {
+function captionSimilarity(a: string, b: string): number {
   const words = (value: string) => new Set(value.toLowerCase().match(/[a-z]{3,}/g) ?? []);
   const left = words(a);
   const right = words(b);
@@ -87,15 +99,79 @@ function similarity(a: string, b: string): number {
   return overlap / Math.max(1, Math.min(left.size, right.size));
 }
 
-export function matchLatex(items: StructureItem[], fragments: readonly SourceFragment[]): StructureItem[] {
+const greek: Record<string, string> = {
+  'θ': 'theta', 'α': 'alpha', 'β': 'beta', 'μ': 'mu', 'σ': 'sigma', 'ϵ': 'epsilon',
+  'ε': 'epsilon', 'π': 'pi', '∑': 'sum', '∏': 'prod', '√': 'sqrt',
+};
+
+/** Compare the visible symbol sequence while ignoring TeX presentation commands. */
+export function mathSimilarity(pdfText: string, latex: string): number {
+  const normalize = (value: string): string => value
+    .replace(/\\(?:left|right|bigl|bigr|Bigl|Bigr|quad|qquad)\b/g, '')
+    .replace(/\\(?:mathrm|mathbf|mathit|mathsf|text|operatorname)\s*\{/g, '{')
+    .replace(/\\(?:dfrac|tfrac|frac)\b/g, 'frac')
+    .replace(/\\([A-Za-z]+)/g, (_match, command: string) => command.replace(/^b(?=x|mu|epsilon)/, ''))
+    .replace(/[θαβμσϵεπ∑∏√]/g, (symbol) => greek[symbol] ?? symbol)
+    .toLowerCase()
+    .replace(/[^a-z0-9=+\-*/]/g, '');
+  const left = normalize(pdfText);
+  const right = normalize(latex);
+  if (left.length < 3 || right.length < 3) return 0;
+  const grams = (value: string) => {
+    const counts = new Map<string, number>();
+    for (let index = 0; index <= value.length - 3; index += 1) {
+      const gram = value.slice(index, index + 3);
+      counts.set(gram, (counts.get(gram) ?? 0) + 1);
+    }
+    return counts;
+  };
+  const a = grams(left);
+  const b = grams(right);
+  let overlap = 0;
+  for (const [gram, count] of a) overlap += Math.min(count, b.get(gram) ?? 0);
+  return 2 * overlap / Math.max(1, left.length + right.length - 4);
+}
+
+function equationMatches(items: readonly StructureItem[], fragments: readonly SourceFragment[]): Map<string, SourceFragment> {
+  const candidates: Array<{ item: StructureItem; fragment: SourceFragment; score: number }> = [];
+  for (const item of items) {
+    if (item.kind !== 'equation') continue;
+    const number = /^\((\d+)\)$/.exec(item.label)?.[1];
+    for (const fragment of fragments) {
+      if (fragment.kind !== 'equation' || !fragment.latex) continue;
+      const similarity = mathSimilarity(item.caption, fragment.latex);
+      if (similarity < 0.34) continue;
+      const numbered = number && fragment.number === number;
+      const conflicting = number && fragment.number && fragment.number !== number;
+      const score = similarity + (numbered ? 0.24 : 0) - (conflicting ? 0.16 : 0);
+      if (score >= 0.48) candidates.push({ item, fragment, score });
+    }
+  }
+  candidates.sort((a, b) => b.score - a.score);
+  const matches = new Map<string, SourceFragment>();
   const used = new Set<SourceFragment>();
-  return items.map((item, index) => {
+  for (const candidate of candidates) {
+    if (matches.has(candidate.item.id) || used.has(candidate.fragment)) continue;
+    matches.set(candidate.item.id, candidate.fragment);
+    used.add(candidate.fragment);
+  }
+  return matches;
+}
+
+export function matchLatex(items: StructureItem[], fragments: readonly SourceFragment[]): StructureItem[] {
+  const equations = equationMatches(items, fragments);
+  const used = new Set<SourceFragment>();
+  return items.map((item) => {
+    if (item.kind === 'equation') {
+      const fragment = equations.get(item.id);
+      return fragment ? { ...item, latex: fragment.latex!, ...(fragment.label ? { sourceLabel: fragment.label } : {}) } : item;
+    }
     const number = /\d+/.exec(item.label)?.[0];
     let best: SourceFragment | undefined;
     let bestScore = 0;
     for (const fragment of fragments) {
       if (fragment.kind !== item.kind || used.has(fragment)) continue;
-      const score = (number && fragment.number === number ? 0.6 : 0) + similarity(item.caption, fragment.caption ?? '') * 0.5 + (item.kind === 'equation' && !number && fragment.number === String(index + 1) ? 0.2 : 0);
+      const score = (number && fragment.number === number ? 0.6 : 0) + captionSimilarity(item.caption, fragment.caption ?? '') * 0.5;
       if (score > bestScore) {
         best = fragment;
         bestScore = score;

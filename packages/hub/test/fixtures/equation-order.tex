@@ -1,0 +1,13 @@
+\begin{equation}
+\mathrm{Attention}(Q,K,V)=\mathrm{softmax}(QK^T/\sqrt{d_k})V
+\label{eq:attention}
+\end{equation}
+
+\begin{align*}
+\mathrm{MultiHead}(Q,K,V)&=\mathrm{Concat}(head_1,head_2)W^O
+\end{align*}
+
+\begin{equation}
+\mathrm{FFN}(x)=\max(0,xW_1+b_1)W_2+b_2
+\label{eq:ffn}
+\end{equation}

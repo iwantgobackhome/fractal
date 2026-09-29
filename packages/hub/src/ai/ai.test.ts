@@ -145,4 +145,24 @@ describe('AI providers and routes', () => {
     expect(query).toBe('answer'); expect(library?.kind).toBe('sse');
     if (library?.kind === 'sse') { const events = []; for await (const event of library.events) events.push(event); expect(events.at(-1)).toMatchObject({ type: 'done', answer: { text: 'Answer [paper:paper1 p.2]' } }); }
   });
+  it('asks for Korean explanations and glossary definitions while matching question language for chat', async () => {
+    const codex = new RecordingProvider('codex', '답변');
+    const claude = new RecordingProvider('claude', '설명');
+    const registry = new ProviderRegistry([codex, claude], new MemorySettings());
+    const librarySearch: LibrarySearch = { async searchLibrary() { return [{ paperKey: 'paper1', title: 'Example', page: 2, text: 'The answer is 42.' }]; } };
+    const ctx = { store, registry, librarySearch };
+    const consume = async (result: Awaited<ReturnType<typeof handleAi>>) => {
+      if (result?.kind === 'sse') for await (const _ of result.events) { /* consume */ }
+    };
+    await consume(await handleAi('POST', ['api', 'papers', 'paper1', 'explain'], req({ kind: 'equation', page: 2, bbox: { x: 0, y: 0, width: .5, height: .2 } }), ctx));
+    expect(claude.seen[0]?.system).toContain('반드시 간결한 한국어로 답하세요');
+    expect(claude.seen[0]?.system).toContain('각 기호의 뜻');
+    expect(claude.seen[0]?.system).toContain('[p.N]');
+    await consume(await handleAi('POST', ['api', 'papers', 'paper1', 'glossary'], req({}), ctx));
+    expect(codex.seen[0]?.system).toContain('각 definition은 간결한 한국어로');
+    await consume(await handleAi('POST', ['api', 'papers', 'paper1', 'ask'], req({ question: '왜 중요한가요?' }), ctx));
+    expect(codex.seen[1]?.system).toContain('Answer Korean questions in Korean');
+    await consume(await handleAi('POST', ['api', 'library', 'ask'], req({ question: '왜 중요한가요?' }), ctx));
+    expect(codex.seen[2]?.system).toContain('Answer Korean questions in Korean');
+  });
 });

@@ -3,7 +3,7 @@ import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
 import type { Block, CitationMarker, PaperStructure, ReferenceEntry, StructureBox, StructureItem } from '@fractal/shared';
 import { extractPdf, textItemRegion } from '../pdf/index';
 
-export const STRUCTURE_VERSION = 'pdfjs-structure-v1';
+export const STRUCTURE_VERSION = 'pdfjs-structure-v2';
 
 export interface StructureDetector {
   detect(bytes: Uint8Array, paperKey: string, blocks?: Block[]): Promise<PaperStructure>;
@@ -170,6 +170,21 @@ export function itemsFromBlocks(blocks: readonly Block[]): StructureItem[] {
 
 interface TextPiece { text: string; box: StructureBox; page: number; baseline: number; font: string }
 
+/** Equation tags are often separate PDF text runs after fraction glyphs in reading order. */
+function attachRightMarginNumbers(items: StructureItem[], pieces: readonly TextPiece[]): void {
+  const tags = pieces.filter((piece) => /^\(\d+\)$/.test(piece.text.trim()) && piece.box.x >= 0.78);
+  for (const item of items) {
+    if (item.kind !== 'equation' || item.label) continue;
+    const match = tags.find((piece) => piece.page === item.page
+      && piece.box.x >= item.bbox.x + item.bbox.width * 0.6
+      && piece.box.y <= item.bbox.y + item.bbox.height + 0.012
+      && piece.box.y + piece.box.height >= item.bbox.y - 0.012);
+    if (!match) continue;
+    item.label = match.text.trim();
+    item.confidence = Math.max(item.confidence, 0.82);
+  }
+}
+
 function supplementalEquations(pieces: readonly TextPiece[], blocks: readonly Block[], existing: readonly StructureItem[]): StructureItem[] {
   const rows = new Map<string, TextPiece[]>();
   for (const piece of pieces) {
@@ -272,6 +287,7 @@ export class PdfJsStructureDetector implements StructureDetector {
     }
     const items = itemsFromBlocks(blocks);
     items.push(...supplementalEquations(pieces, blocks, items));
+    attachRightMarginNumbers(items, pieces);
     const markers = markersFromPieces(pieces, references, blocks.filter((block) => block.kind === 'reference'));
     return { version: STRUCTURE_VERSION, status: 'ready', items, references, markers };
   }
