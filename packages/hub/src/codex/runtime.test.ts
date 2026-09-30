@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { assertNoCustomInstructions, childEnvironment, disabledMcpArgs, resolveCodexExecutable, restrictedArgs } from './runtime';
+import { assertNoCustomInstructions, childEnvironment, disabledMcpArgs, restrictedArgs } from './runtime';
 import { assertIsolatedRequest, isolatedThreadRequest } from './isolation';
 import { CodexProvider } from '../ai/codex';
 import type { PaperChat, Translator } from '@fractal/shared';
@@ -33,7 +33,11 @@ describe('Codex CLI isolation', () => {
       );
       const env = childEnvironment({ ...process.env, CODEX_HOME: home });
       await expect(assertNoCustomInstructions(env)).rejects.toMatchObject({ code: 'UNSAFE_RUNTIME' });
-      const args = await disabledMcpArgs(await resolveCodexExecutable(), env);
+      const probe = vi.fn(async (_file: string, args: string[]) => ({
+        stdout: JSON.stringify([{ name: 'unsafe', enabled: !args.includes('mcp_servers.unsafe.enabled=false') }]),
+        stderr: '',
+      })) as unknown as Parameters<typeof disabledMcpArgs>[2];
+      const args = await disabledMcpArgs('codex.exe', env, probe);
       expect(args).toContain('mcp_servers.unsafe.enabled=false');
       const request = isolatedThreadRequest('gpt-6-sol', home, 'Fractal text-only instructions');
       expect(assertIsolatedRequest(request)).toMatchObject({

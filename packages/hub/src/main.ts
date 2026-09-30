@@ -12,7 +12,7 @@ import { CodexTranslator, createOfficialRpcFactory } from './codex/index';
 import { startOfficialRpc } from './codex/runtime';
 import { CodexProvider } from './ai/codex';
 import { ClaudeProvider } from './ai/claude';
-import { AccountManager } from './ai/accounts';
+import { AccountManager, type AccountCli } from './ai/accounts';
 import { ProviderInstallManager } from './ai/install';
 import { ProviderRegistry } from './ai/registry';
 import { JsonSettingsStore } from './ai/settings';
@@ -131,6 +131,12 @@ export interface ServiceOptions {
   indexHtml?: string;
   log?: (event: ApiLogEvent | PipelineLogEvent) => void;
   bindAddresses?: string[];
+  /** Tests default to no real CLI subprocesses; opt in only for an explicit integration probe. */
+  allowRealCli?: boolean;
+  /** Tests default to no scheduled feed refresh. */
+  startBackground?: boolean;
+  /** Injected network for shutdown tests and offline integrations. */
+  fetcher?: typeof fetch;
 }
 
 export interface Service {
@@ -190,6 +196,18 @@ export function servedAssets(assetDirectory: string) {
 }
 
 export async function startService(options: ServiceOptions = {}): Promise<Service> {
+  const inTest = process.env.VITEST !== undefined || process.env.NODE_ENV === 'test';
+  const serviceShutdown = new AbortController();
+  const allowRealCli = options.allowRealCli ?? !inTest;
+  const startBackground = options.startBackground ?? !inTest;
+  const disabledCli: AccountCli = {
+    probe: async () => {
+      throw new Error('CLI probes are disabled in tests');
+    },
+    login: async () => {
+      throw new Error('CLI login is disabled in tests');
+    },
+  };
   const dataDirectory = options.dataDirectory ?? defaultDataDirectory();
   const legacyDirectory =
     process.env.PAPERREAD_DATA ??
@@ -206,24 +224,51 @@ export async function startService(options: ServiceOptions = {}): Promise<Servic
   let translator: CodexTranslator;
   let pipeline: TranslationPipeline;
   let aiAdapter: RegistryLegacyAdapter;
-  const accounts = new AccountManager(store, dataDirectory, async (provider) => {
-    pipeline.abortAll();
-    const deadline = Date.now() + 30_000;
-    while (jobs.currentActive() && pipeline.isRunning(jobs.currentActive()!.jobId)) {
-      if (Date.now() > deadline) throw Object.assign(new Error('Translation is still stopping'), { code: 'BUSY' });
-      await new Promise((resolve) => setTimeout(resolve, 50));
-    }
-    await aiRegistry.waitIdle(provider);
-    if (provider === 'codex') await aiAdapter.waitIdle();
-    if (provider === 'codex') await translator.disconnect();
-  });
+  const accounts = new AccountManager(
+    store,
+    dataDirectory,
+    async (provider) => {
+      pipeline.abortAll();
+      const deadline = Date.now() + 30_000;
+      while (jobs.currentActive() && pipeline.isRunning(jobs.currentActive()!.jobId)) {
+        if (Date.now() > deadline) throw Object.assign(new Error('Translation is still stopping'), { code: 'BUSY' });
+        await new Promise((resolve) => setTimeout(resolve, 50));
+      }
+      await aiRegistry.waitIdle(provider);
+      if (provider === 'codex') await aiAdapter.waitIdle();
+      if (provider === 'codex') await translator.disconnect();
+    },
+    allowRealCli ? undefined : disabledCli,
+    allowRealCli
+      ? undefined
+      : async () => {
+          throw new Error('Claude usage is disabled in tests');
+        },
+  );
   const installer = new ProviderInstallManager();
-  const official = createOfficialRpcFactory(() => startOfficialRpc(accounts.activeEnvironment('codex')));
+  const official = createOfficialRpcFactory(() =>
+    allowRealCli
+      ? startOfficialRpc(accounts.activeEnvironment('codex'), serviceShutdown.signal)
+      : Promise.reject(Object.assign(new Error('Codex CLI is disabled in tests'), { code: 'UNSAFE_RUNTIME' })),
+  );
   translator = new CodexTranslator(official);
-  const claude = new ClaudeProvider(undefined, undefined, () => accounts.activeEnvironment('claude'));
+  const claude = new ClaudeProvider(
+    allowRealCli
+      ? undefined
+      : () => {
+          throw new Error('Claude CLI is disabled in tests');
+        },
+    allowRealCli
+      ? undefined
+      : async () => {
+          throw new Error('Claude CLI is disabled in tests');
+        },
+    () => accounts.activeEnvironment('claude'),
+    serviceShutdown.signal,
+  );
   claude.onRateLimit = (event) => accounts.observeClaude(accounts.active('claude').id, event);
   aiRegistry = new ProviderRegistry(
-    [new CodexProvider(translator), claude],
+    [new CodexProvider(translator, undefined, serviceShutdown.signal), claude],
     new JsonSettingsStore(dataDirectory),
     undefined,
     new JsonUsageStore(dataDirectory),
@@ -249,7 +294,7 @@ export async function startService(options: ServiceOptions = {}): Promise<Servic
   });
 
   const acquirer = realAcquirer(join(dataDirectory, '.pdf-cache'));
-  const feed = new FeedService(store, acquirer, aiRegistry, fetch, undefined, undefined, dataDirectory);
+  const feed = new FeedService(store, acquirer, aiRegistry, options.fetcher ?? fetch, undefined, undefined, dataDirectory);
 
   const server = createApiServer({
     store,
@@ -261,7 +306,7 @@ export async function startService(options: ServiceOptions = {}): Promise<Servic
     paperChat: aiAdapter,
     aiRegistry,
     accounts,
-    installer,
+    installer: allowRealCli ? installer : undefined,
     librarySearch: new FtsLibrarySearch(store),
     acquirer,
     feed,
@@ -277,7 +322,7 @@ export async function startService(options: ServiceOptions = {}): Promise<Servic
   const address = await server.listen(options.port ?? 0, LOOPBACK);
   if (options.bindAddresses !== undefined) network.configureExplicit(options.bindAddresses);
   await network.apply();
-  feed.start();
+  if (startBackground) feed.start();
   return {
     server,
     store,
@@ -288,9 +333,11 @@ export async function startService(options: ServiceOptions = {}): Promise<Servic
     pairing,
     network,
     async stop() {
+      serviceShutdown.abort();
+      const accountsStopped = accounts.stop();
       await feed.stop();
+      await accountsStopped;
       await server.close();
-      accounts.stop();
       installer.stop();
       await translator.disconnect();
       store.db.close();

@@ -134,15 +134,23 @@ export function parseClaudeUsageScreen(output: string, now = new Date()): Window
 }
 
 /** Drive /usage in a PTY. This command reads quota status and never sends a model prompt. */
-export async function readClaudeUsageViaPty(env: NodeJS.ProcessEnv, dataDirectory: string, accountId: string): Promise<Windows> {
+export async function readClaudeUsageViaPty(
+  env: NodeJS.ProcessEnv,
+  dataDirectory: string,
+  accountId: string,
+  signal?: AbortSignal,
+  spawnPty?: typeof import('@lydell/node-pty').spawn,
+): Promise<Windows> {
   if (process.platform !== 'win32') return empty();
+  signal?.throwIfAborted();
   const cwd = usageDirectory(dataDirectory, accountId);
-  let pty: typeof import('@lydell/node-pty');
+  let spawn: typeof import('@lydell/node-pty').spawn;
   try {
-    pty = await import('@lydell/node-pty');
+    spawn = spawnPty ?? (await import('@lydell/node-pty')).spawn;
   } catch {
     throw new Error('Claude PTY module is unavailable');
   }
+  signal?.throwIfAborted();
   const command = resolveClaudePtyCommand(env);
   const childEnv = { ...env };
   delete childEnv.CLAUDECODE;
@@ -150,7 +158,7 @@ export async function readClaudeUsageViaPty(env: NodeJS.ProcessEnv, dataDirector
   return new Promise((resolve, reject) => {
     let terminal: IPty;
     try {
-      terminal = pty.spawn(command.file, command.args, {
+      terminal = spawn(command.file, command.args, {
         name: 'xterm-256color',
         cols: 120,
         rows: 40,
@@ -167,9 +175,11 @@ export async function readClaudeUsageViaPty(env: NodeJS.ProcessEnv, dataDirector
     let settled = false;
     let poll: ReturnType<typeof setInterval> | undefined;
     let deadline: ReturnType<typeof setTimeout> | undefined;
+    const onAbort = () => finish('Claude usage check was cancelled');
     const finish = (reason?: string) => {
       if (settled) return;
       settled = true;
+      signal?.removeEventListener('abort', onAbort);
       if (poll) clearInterval(poll);
       if (deadline) clearTimeout(deadline);
       try {
@@ -188,6 +198,11 @@ export async function readClaudeUsageViaPty(env: NodeJS.ProcessEnv, dataDirector
       const state = classifyClaudeUsageScreen(output, cwd);
       finish(state.kind === 'other' && output ? `Claude first-run screen: ${state.title}` : 'Claude CLI exited before showing usage');
     });
+    signal?.addEventListener('abort', onAbort, { once: true });
+    if (signal?.aborted) {
+      onAbort();
+      return;
+    }
     poll = setInterval(() => {
       const screen = output.replace(ansi, '');
       const state = classifyClaudeUsageScreen(output, cwd);

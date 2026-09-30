@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
-import { classifyClaudeUsageScreen, parseClaudeUsageScreen, resolveClaudePtyCommand } from './claude-usage';
+import { describe, expect, it, vi } from 'vitest';
+import { classifyClaudeUsageScreen, parseClaudeUsageScreen, readClaudeUsageViaPty, resolveClaudePtyCommand } from './claude-usage';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -40,6 +40,24 @@ describe('Claude /usage screen', () => {
       expect(() => resolveClaudePtyCommand({ Path: join(directory, 'missing') })).toThrow('not found on PATH');
     } finally {
       rmSync(directory, { recursive: true, force: true });
+    }
+  });
+  it('kills a running usage PTY as soon as shutdown aborts', async () => {
+    const root = mkdtempSync(join(tmpdir(), 'fractal-usage-stop-'));
+    const executable = join(root, 'claude.exe');
+    writeFileSync(executable, '');
+    const kill = vi.fn();
+    const terminal = { onData: vi.fn(), onExit: vi.fn(), write: vi.fn(), kill };
+    const spawn = vi.fn(() => terminal) as unknown as typeof import('@lydell/node-pty').spawn;
+    const shutdown = new AbortController();
+    try {
+      const pending = readClaudeUsageViaPty({ Path: root }, root, 'claude:system', shutdown.signal, spawn);
+      shutdown.abort();
+      await expect(pending).rejects.toThrow('cancelled');
+      expect(kill).toHaveBeenCalledTimes(1);
+      expect(spawn).toHaveBeenCalledTimes(1);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
     }
   });
 });

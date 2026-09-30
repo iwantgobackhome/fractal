@@ -53,14 +53,14 @@ export function restrictedArgs(): string[] {
 const run = promisify(execFile);
 /** Discover configured server names without opening credential files or exposing server settings.
  * Already-disabled servers need no override; some app-managed entries reject one. */
-export async function disabledMcpArgs(executable: string, env: NodeJS.ProcessEnv, probe: typeof run = run): Promise<string[]> {
+export async function disabledMcpArgs(executable: string, env: NodeJS.ProcessEnv, probe: typeof run = run, signal?: AbortSignal): Promise<string[]> {
   // List servers under the same overrides the app-server runs with: plugin- and app-provided
   // entries (the desktop app's codex_app, cua_repl) vanish once those features are off, and they
   // reject an mcp_servers.<name> override because they have no transport of their own.
   const base = restrictedArgs().filter((_, index, all) => index >= all.indexOf('-c'));
   let first: unknown;
   try {
-    first = JSON.parse((await probe(executable, ['mcp', 'list', '--json', ...base], { env, windowsHide: true, timeout: 10_000 })).stdout) as unknown;
+    first = JSON.parse((await probe(executable, ['mcp', 'list', '--json', ...base], { env, windowsHide: true, timeout: 10_000, signal })).stdout) as unknown;
   } catch {
     throw failure('UNSAFE_RUNTIME', 'Codex MCP list could not be read.');
   }
@@ -74,7 +74,7 @@ export async function disabledMcpArgs(executable: string, env: NodeJS.ProcessEnv
     const override = ['-c', `mcp_servers.${name}.enabled=false`];
     try {
       const checked = JSON.parse(
-        (await probe(executable, ['mcp', 'list', '--json', ...base, ...override], { env, windowsHide: true, timeout: 10_000 })).stdout,
+        (await probe(executable, ['mcp', 'list', '--json', ...base, ...override], { env, windowsHide: true, timeout: 10_000, signal })).stdout,
       ) as unknown;
       if (!Array.isArray(checked) || !checked.some((entry) => entry && typeof entry === 'object' && entry.name === name && entry.enabled === false))
         throw new Error('override not reflected');
@@ -85,7 +85,9 @@ export async function disabledMcpArgs(executable: string, env: NodeJS.ProcessEnv
   }
   let checked: unknown;
   try {
-    checked = JSON.parse((await probe(executable, ['mcp', 'list', '--json', ...base, ...args], { env, windowsHide: true, timeout: 10_000 })).stdout) as unknown;
+    checked = JSON.parse(
+      (await probe(executable, ['mcp', 'list', '--json', ...base, ...args], { env, windowsHide: true, timeout: 10_000, signal })).stdout,
+    ) as unknown;
   } catch {
     throw failure('UNSAFE_RUNTIME', `Codex MCP isolation could not verify ${enabled.join(', ') || 'the server list'}.`);
   }
@@ -155,12 +157,14 @@ export async function resolveCodexExecutable(): Promise<string> {
   }
   throw Object.assign(new Error('Codex is not installed'), { code: 'ENOENT' });
 }
-export async function startOfficialRpc(sourceEnv: NodeJS.ProcessEnv = process.env): Promise<JsonLineRpc> {
+export async function startOfficialRpc(sourceEnv: NodeJS.ProcessEnv = process.env, signal?: AbortSignal): Promise<JsonLineRpc> {
+  signal?.throwIfAborted();
   const executable = await resolveCodexExecutable();
   const env = childEnvironment(sourceEnv);
   await assertNoCustomInstructions(env);
-  const mcpArgs = await disabledMcpArgs(executable, env);
-  const child = spawn(executable, [...restrictedArgs(), ...mcpArgs], { shell: false, windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'], env });
+  const mcpArgs = await disabledMcpArgs(executable, env, run, signal);
+  signal?.throwIfAborted();
+  const child = spawn(executable, [...restrictedArgs(), ...mcpArgs], { shell: false, windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'], env, signal });
   const rpc = new JsonLineRpc(child);
   try {
     await rpc.request('initialize', { clientInfo: { name: 'paperread', title: 'PaperRead', version: '0.1.0' }, capabilities: { experimentalApi: true } });

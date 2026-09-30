@@ -58,22 +58,23 @@ function claudeCommand(env: NodeJS.ProcessEnv): { file: string; args: string[] }
   return process.platform === 'win32' ? resolveClaudePtyCommand(env) : { file: 'claude', args: [] };
 }
 export interface AccountCli {
-  probe(provider: ProviderId, args: string[], env: NodeJS.ProcessEnv): Promise<string>;
-  login(provider: ProviderId, args: string[], env: NodeJS.ProcessEnv): ChildProcess | Promise<ChildProcess>;
+  probe(provider: ProviderId, args: string[], env: NodeJS.ProcessEnv, signal?: AbortSignal): Promise<string>;
+  login(provider: ProviderId, args: string[], env: NodeJS.ProcessEnv, signal?: AbortSignal): ChildProcess | Promise<ChildProcess>;
 }
 const defaultCli: AccountCli = {
-  async probe(provider, args, env) {
+  async probe(provider, args, env, signal) {
     const command = provider === 'codex' ? { file: await resolveCodexExecutable(), args: [] } : claudeCommand(env);
-    const result = await run(command.file, [...command.args, ...args], { env, timeout: 12000, windowsHide: true });
+    const result = await run(command.file, [...command.args, ...args], { env, timeout: 12000, windowsHide: true, signal });
     return `${result.stdout}\n${result.stderr}`;
   },
-  async login(provider, args, env) {
+  async login(provider, args, env, signal) {
     const command = provider === 'codex' ? { file: await resolveCodexExecutable(), args: [] } : claudeCommand(env);
     return spawn(command.file, [...command.args, ...args], {
       env,
       windowsHide: true,
       shell: false,
       stdio: ['ignore', 'pipe', 'pipe'],
+      signal,
     });
   },
 };
@@ -84,9 +85,15 @@ export class AccountManager {
   private readonly observations = new Map<string, AiAccountLimits>();
   private readonly checked = new Map<string, number>();
   private readonly refreshing = new Set<string>();
-  stop(): void {
+  private readonly pendingRefreshes = new Set<Promise<void>>();
+  private readonly activeRpcs = new Set<Awaited<ReturnType<typeof startOfficialRpc>>>();
+  private readonly shutdown = new AbortController();
+  async stop(): Promise<void> {
+    this.shutdown.abort();
     for (const child of this.loginProcesses.values()) child.kill();
     this.loginProcesses.clear();
+    await Promise.allSettled([...this.activeRpcs].map((rpc) => rpc.close()));
+    await Promise.allSettled([...this.pendingRefreshes]);
   }
   constructor(
     private readonly store: SqlitePaperStore,
@@ -127,10 +134,10 @@ export class AccountManager {
     try {
       const env = this.environment(row);
       if (row.provider === 'codex') {
-        const result = await this.cli.probe('codex', ['login', 'status'], env);
+        const result = await this.cli.probe('codex', ['login', 'status'], env, this.shutdown.signal);
         return { loggedIn: /^Logged in/im.test(result) };
       }
-      const result = JSON.parse(await this.cli.probe('claude', ['auth', 'status'], env)) as Record<string, unknown>;
+      const result = JSON.parse(await this.cli.probe('claude', ['auth', 'status'], env, this.shutdown.signal)) as Record<string, unknown>;
       return {
         loggedIn: result.loggedIn === true,
         ...(typeof result.email === 'string' ? { email: result.email } : {}),
@@ -178,7 +185,7 @@ export class AccountManager {
           : ['auth', 'login', '--claudeai'];
     let child: ChildProcess;
     try {
-      child = await this.cli.login(row.provider, args, this.environment(row));
+      child = await this.cli.login(row.provider, args, this.environment(row), this.shutdown.signal);
     } catch {
       const failed: AiLoginProgress = { state: 'failed', message: this.message('Could not start login', '로그인을 시작할 수 없습니다.') };
       this.progress.set(id, failed);
@@ -244,7 +251,7 @@ export class AccountManager {
     if (row.active) throw invalidInput('Activate another account before removal');
     this.loginProcesses.get(id)?.kill();
     try {
-      await this.cli.probe(row.provider, row.provider === 'codex' ? ['logout'] : ['auth', 'logout'], this.environment(row));
+      await this.cli.probe(row.provider, row.provider === 'codex' ? ['logout'] : ['auth', 'logout'], this.environment(row), this.shutdown.signal);
     } catch {
       /* directory removal clears the managed login */
     }
@@ -272,10 +279,17 @@ export class AccountManager {
     });
   }
   requestRefresh(id: string, force = false): void {
+    if (this.shutdown.signal.aborted) return;
     if (this.refreshing.has(id) || (!force && Date.now() - (this.checked.get(id) ?? 0) < 60_000)) return;
     this.refreshing.add(id);
     this.checked.set(id, Date.now());
-    void this.refresh(id).finally(() => this.refreshing.delete(id));
+    const pending = this.refresh(id)
+      .catch(() => undefined)
+      .finally(() => {
+        this.refreshing.delete(id);
+        this.pendingRefreshes.delete(pending);
+      });
+    this.pendingRefreshes.add(pending);
   }
   async limits(): Promise<AiLimitsResponse> {
     const accounts = await this.accounts();
@@ -306,10 +320,12 @@ export class AccountManager {
     return { accounts: result };
   }
   async refresh(id: string): Promise<void> {
+    if (this.shutdown.signal.aborted) return;
     const row = this.row(id);
     if (row.provider === 'claude') {
       try {
-        const windows = await this.claudeUsage(this.environment(row), this.root, row.id);
+        const windows = await this.claudeUsage(this.environment(row), this.root, row.id, this.shutdown.signal);
+        if (this.shutdown.signal.aborted) return;
         const previous = this.observations.get(id);
         this.observations.set(id, {
           provider: 'claude',
@@ -325,6 +341,7 @@ export class AccountManager {
             : {}),
         });
       } catch (error) {
+        if (this.shutdown.signal.aborted) return;
         const reason = error instanceof Error ? error.message : 'Unknown PTY failure';
         this.observations.set(id, {
           provider: 'claude',
@@ -341,9 +358,12 @@ export class AccountManager {
       return;
     }
     try {
-      const rpc = await startOfficialRpc(this.environment(row));
+      const rpc = await startOfficialRpc(this.environment(row), this.shutdown.signal);
+      this.activeRpcs.add(rpc);
       try {
+        this.shutdown.signal.throwIfAborted();
         const result = object(await rpc.request('account/rateLimits/read', {}));
+        this.shutdown.signal.throwIfAborted();
         const windows = mapCodexWindows(result?.rateLimits);
         this.observations.set(id, {
           provider: row.provider,
@@ -360,8 +380,10 @@ export class AccountManager {
         });
       } finally {
         await rpc.close();
+        this.activeRpcs.delete(rpc);
       }
     } catch {
+      if (this.shutdown.signal.aborted) return;
       this.observations.set(id, {
         provider: row.provider,
         accountId: id,

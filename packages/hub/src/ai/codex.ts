@@ -12,7 +12,8 @@ export class CodexProvider implements AiProvider {
   constructor(
     private readonly translator: Translator & PaperChat,
     private readonly versionProbe = async () =>
-      (await run(await resolveCodexExecutable(), ['--version'], { windowsHide: true, timeout: 10_000 })).stdout.trim(),
+      (await run(await resolveCodexExecutable(), ['--version'], { windowsHide: true, timeout: 10_000, signal: this.shutdown })).stdout.trim(),
+    private readonly shutdown?: AbortSignal,
   ) {}
   async status(): Promise<ProviderStatus> {
     const state = await this.translator.connection();

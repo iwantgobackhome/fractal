@@ -62,6 +62,7 @@ export class FeedService {
   readonly topics: TopicService;
   private readonly articleReader: ArticleReader;
   private readonly quick: QuickTranslator;
+  private readonly shutdown = new AbortController();
   private timer: ReturnType<typeof setTimeout> | null = null;
   private running: Promise<FeedResponse> | null = null;
   private stopped = false;
@@ -75,11 +76,13 @@ export class FeedService {
     private readonly sources: FeedSource[] = SOURCES,
     imageRoot?: string,
   ) {
-    this.cache = new CachedFetcher(store, fetcher);
-    this.images = imageRoot ? new FeedImageStore(store, imageRoot, fetcher) : null;
+    const scopedFetch: typeof fetch = (input, init) =>
+      fetcher(input, { ...init, signal: init?.signal ? AbortSignal.any([init.signal, this.shutdown.signal]) : this.shutdown.signal });
+    this.cache = new CachedFetcher(store, scopedFetch);
+    this.images = imageRoot ? new FeedImageStore(store, imageRoot, scopedFetch) : null;
     this.topics = new TopicService(store, registry);
-    this.articleReader = new ArticleReader(store, this.images, fetcher);
-    this.quick = new QuickTranslator(store, registry, fetcher);
+    this.articleReader = new ArticleReader(store, this.images, scopedFetch);
+    this.quick = new QuickTranslator(store, registry, scopedFetch);
   }
   async image(hash: string): Promise<{ body: Buffer; contentType: string } | null> {
     return this.images?.get(hash) ?? null;
@@ -227,6 +230,7 @@ export class FeedService {
   }
 
   async refresh(): Promise<FeedResponse> {
+    this.shutdown.signal.throwIfAborted();
     if (this.running) return this.running;
     this.running = this.refreshOnce().finally(() => {
       this.running = null;
@@ -256,6 +260,7 @@ export class FeedService {
     const old = this.rawForWeek(week);
     const newItems: RawItem[] = [];
     for (const source of this.sources) {
+      this.shutdown.signal.throwIfAborted();
       if (!settings.sources[source.id as keyof FeedSettings['sources']]) {
         statuses.push({ source: source.id, state: 'disabled', fetchedAt: null });
         continue;
@@ -275,6 +280,7 @@ export class FeedService {
         });
       }
     }
+    this.shutdown.signal.throwIfAborted();
     const ranked = rankItems(newItems, context.interests, library, now, context.uiLanguage);
     for (const item of ranked) {
       const topicId = (item as FeedItem & { topicIds?: string[] }).topicIds?.[0];
@@ -294,6 +300,7 @@ export class FeedService {
           item.kind === 'news' && (context.uiLanguage === 'ko' ? /[A-Za-z]{3}/.test(item.title) && !/[가-힣]/.test(item.title) : /[가-힣]/.test(item.title)),
       );
       for (let offset = 0; offset < candidates.length; offset += 100) {
+        this.shutdown.signal.throwIfAborted();
         const batch = candidates.slice(offset, offset + 100);
         try {
           const result = await this.quick.translate({
@@ -323,6 +330,7 @@ export class FeedService {
       await Promise.all(
         Array.from({ length: 5 }, async () => {
           while (cursor < selected.length) {
+            if (this.shutdown.signal.aborted) return;
             const item = selected[cursor++]!;
             try {
               let candidate = (item as RawItem).imageCandidate;
@@ -351,6 +359,7 @@ export class FeedService {
       );
       dropSharedImages(retained, fingerprints);
     }
+    this.shutdown.signal.throwIfAborted();
     this.store.db.exec('SAVEPOINT feed_refresh');
     try {
       this.store.db.prepare('DELETE FROM feed_items WHERE week=?').run(week);
@@ -369,6 +378,7 @@ export class FeedService {
       throw error;
     }
     if (settings.digestEnabled) await this.generateDigest(week, retained).catch(() => undefined);
+    this.shutdown.signal.throwIfAborted();
     const activeFields = [...context.interests.categories, ...(context.interests.custom ?? []).map((item) => `custom:${item.id}`)];
     for (const field of activeFields) {
       const headlines = retained.filter((item) => item.categories.includes(field)).map((item) => item.title);
@@ -376,7 +386,7 @@ export class FeedService {
         field,
         retained.filter((item) => item.categories.includes(field)),
       );
-      void this.topics.suggest(field, week, headlines).catch(() => undefined);
+      void this.topics.suggest(field, week, headlines, this.shutdown.signal).catch(() => undefined);
     }
     return this.read(week);
   }
@@ -408,9 +418,10 @@ export class FeedService {
         ? '한국어로 이번 주 연구 동향을 짧은 문단으로 요약하세요. 주제별로 묶고 각 문단에 제공된 [번호] 인용을 넣으세요. 제공되지 않은 사실은 쓰지 마세요.'
         : `Summarize this week's research trends in ${language} in short paragraphs. Group by topic and cite supplied [numbers] in each paragraph. Do not add unsupported facts.`;
     let text = '';
-    for await (const delta of this.registry.complete('digest', { system, messages: [{ role: 'user', content: references }] })) {
+    for await (const delta of this.registry.complete('digest', { system, messages: [{ role: 'user', content: references }], signal: this.shutdown.signal })) {
       if (delta.type === 'text') text += delta.text;
     }
+    this.shutdown.signal.throwIfAborted();
     if (!text.trim()) return;
     const digest: FeedDigest = { week, generatedAt: this.now().toISOString(), text: text.trim() };
     this.store.db.prepare('INSERT OR IGNORE INTO feed_digests(week,data) VALUES(?,?)').run(digestKey, JSON.stringify(digest));
@@ -437,6 +448,7 @@ export class FeedService {
   async stop(): Promise<void> {
     this.stopped = true;
     if (this.timer) clearTimeout(this.timer);
+    this.shutdown.abort();
     await this.running?.catch(() => undefined);
   }
 }

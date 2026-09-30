@@ -7,7 +7,7 @@ import { resolveClaudePtyCommand } from './claude-usage';
 
 const run = promisify(execFile);
 export type SpawnClaude = (args: string[], env?: NodeJS.ProcessEnv) => ChildProcessWithoutNullStreams;
-export type ProbeClaude = (args: string[], env?: NodeJS.ProcessEnv) => Promise<{ stdout: string }>;
+export type ProbeClaude = (args: string[], env?: NodeJS.ProcessEnv, signal?: AbortSignal) => Promise<{ stdout: string }>;
 const models: ProviderModel[] = [
   ...['opus', 'sonnet', 'haiku'].map((id) => ({ id, label: `Claude ${id}` })),
   { id: 'claude-sonnet-5-5', label: 'Claude Sonnet 5.5' },
@@ -44,21 +44,22 @@ export class ClaudeProvider implements AiProvider {
       const command = process.platform === 'win32' ? resolveClaudePtyCommand(env ?? process.env) : { file: 'claude', args: [] };
       return spawn(command.file, [...command.args, ...args], { stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true, shell: false, env });
     },
-    private readonly probe: ProbeClaude = (args, env) => {
+    private readonly probe: ProbeClaude = (args, env, signal) => {
       const command = process.platform === 'win32' ? resolveClaudePtyCommand(env ?? process.env) : { file: 'claude', args: [] };
-      return run(command.file, [...command.args, ...args], { windowsHide: true, timeout: 10_000, env });
+      return run(command.file, [...command.args, ...args], { windowsHide: true, timeout: 10_000, env, signal });
     },
     private readonly environment: () => NodeJS.ProcessEnv = () => process.env,
+    private readonly shutdown?: AbortSignal,
   ) {}
   async status(): Promise<ProviderStatus> {
     let version: string;
     try {
-      version = (await this.probe(['--version'], this.environment())).stdout.trim();
+      version = (await this.probe(['--version'], this.environment(), this.shutdown)).stdout.trim();
     } catch {
       return { id: this.id, installed: false, loggedIn: false, version: null, detail: 'Claude CLI is not installed', loginCommand: 'claude auth login' };
     }
     try {
-      const auth = record(JSON.parse((await this.probe(['auth', 'status'], this.environment())).stdout));
+      const auth = record(JSON.parse((await this.probe(['auth', 'status'], this.environment(), this.shutdown)).stdout));
       return {
         id: this.id,
         installed: true,
@@ -79,6 +80,8 @@ export class ClaudeProvider implements AiProvider {
   }
   async *complete(input: CompleteInput): AsyncIterable<ProviderDelta> {
     if (input.images?.length) throw Object.assign(new Error('Claude CLI image input is not supported in this integration'), { code: 'INVALID_INPUT' });
+    const signal = input.signal && this.shutdown ? AbortSignal.any([input.signal, this.shutdown]) : (input.signal ?? this.shutdown);
+    signal?.throwIfAborted();
     const args = [
       '-p',
       '--output-format',
@@ -97,10 +100,10 @@ export class ClaudeProvider implements AiProvider {
     if (input.effort) args.push('--effort', input.effort);
     const child = this.spawnProcess(args, this.environment());
     const abort = () => child.kill();
-    if (input.signal?.aborted) {
+    if (signal?.aborted) {
       abort();
     } else {
-      input.signal?.addEventListener('abort', abort, { once: true });
+      signal?.addEventListener('abort', abort, { once: true });
     }
     let stderr = '';
     child.stderr.setEncoding('utf8');
@@ -143,7 +146,7 @@ export class ClaudeProvider implements AiProvider {
       if (!streamed && fallback) yield { type: 'text', text: fallback };
       if (!reported) yield { type: 'usage', inputTokens: null, outputTokens: null };
     } finally {
-      input.signal?.removeEventListener('abort', abort);
+      signal?.removeEventListener('abort', abort);
       if (!child.killed && child.exitCode === null) child.kill();
     }
   }

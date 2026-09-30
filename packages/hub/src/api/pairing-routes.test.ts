@@ -14,7 +14,7 @@ afterAll(async () => {
 
 describe('pairing routes', () => {
   it('starts, renders, claims once, and revokes through the local API', async () => {
-    service = await startService({ dataDirectory: directory, port: 17327, log: () => {} });
+    service = await startService({ dataDirectory: directory, port: 17327, log: () => {}, allowRealCli: false, startBackground: false });
     const url = service.url;
     const headers = { origin: url, 'x-paperread-token': service.token, 'content-type': 'application/json' };
     const network = await fetch(`${url}/api/hub/network`);

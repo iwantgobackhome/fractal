@@ -121,8 +121,9 @@ export class TopicService {
     this.save([...all.filter((topic) => topic.origin !== 'trending' || topic.field !== field), ...trending]);
   }
   /** Runs after refresh without holding it open. Repeated calls in the same week are no-ops. */
-  async suggest(field: string, week: string, headlines: string[]): Promise<void> {
+  async suggest(field: string, week: string, headlines: string[], signal?: AbortSignal): Promise<void> {
     if (!this.registry || !headlines.length) return;
+    if (signal?.aborted) return;
     const key = `topicSuggestions:${field}`;
     const prior = this.store.db.prepare('SELECT data FROM feed_meta WHERE key=?').get(key) as { data: string } | undefined;
     if (prior?.data === week) return;
@@ -130,11 +131,14 @@ export class TopicService {
     try {
       // In particular, do not start an AI turn just to discover that no CLI is signed in.
       if (!(await this.registry.providersInfo()).some((provider) => provider.status.installed && provider.status.loggedIn)) return;
+      if (signal?.aborted) return;
       for await (const part of this.registry.complete('digest', {
         system: 'Return only a JSON array of 8 concise current research and news topic names. No markdown. No tools.',
         messages: [{ role: 'user', content: `Field ${field}. Headlines:\n${headlines.slice(0, 20).join('\n').slice(0, 3500)}` }],
+        signal,
       }))
         if (part.type === 'text') response += part.text;
+      if (signal?.aborted) return;
       const names = JSON.parse(response.trim()) as unknown;
       if (!Array.isArray(names)) return;
       const topics = names

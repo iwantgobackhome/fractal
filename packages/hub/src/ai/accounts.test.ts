@@ -9,6 +9,37 @@ import { SqlitePaperStore } from '../store/sqlite';
 import { AccountManager, mapClaudeWindows, mapCodexWindows, type AccountCli } from './accounts';
 
 describe('AI accounts and quota windows', () => {
+  it('aborts and joins a background limits refresh during shutdown', async () => {
+    const root = mkdtempSync(join(tmpdir(), 'fractal-account-stop-'));
+    const store = new SqlitePaperStore(root);
+    const aborted = vi.fn();
+    const cli: AccountCli = {
+      probe: async () => 'Not logged in',
+      login: async () => {
+        throw new Error('unused');
+      },
+    };
+    const usage = async (_env: NodeJS.ProcessEnv, _root: string, _id: string, signal?: AbortSignal) =>
+      new Promise<ReturnType<typeof mapCodexWindows>>((_resolve, reject) => {
+        signal?.addEventListener(
+          'abort',
+          () => {
+            aborted();
+            reject(new Error('cancelled'));
+          },
+          { once: true },
+        );
+      });
+    const manager = new AccountManager(store, root, async () => {}, cli, usage);
+    try {
+      manager.requestRefresh('claude:system');
+      await manager.stop();
+      expect(aborted).toHaveBeenCalledTimes(1);
+    } finally {
+      store.db.close();
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
   it('returns the specific Claude probe failure reason in unavailable limits', async () => {
     const root = mkdtempSync(join(tmpdir(), 'fractal-limits-message-'));
     const store = new SqlitePaperStore(root);
