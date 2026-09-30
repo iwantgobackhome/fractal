@@ -3,11 +3,22 @@ import { z } from 'zod';
 /** ISO week, Monday through Sunday, used as the feed snapshot key. */
 export const feedWeekSchema = z.string().regex(/^\d{4}-W(?:0[1-9]|[1-4]\d|5[0-3])$/);
 export const feedInterestsSchema = z.object({
-  categories: z.array(z.string().regex(/^[a-z-]+\.[A-Za-z-]{2,}$/)).max(30),
+  categories: z.array(z.string().regex(/^(?:[a-z-]+\.[A-Za-z-]+|gr-qc|hep-ex|hep-lat|hep-ph|hep-th|math-ph|nucl-ex|nucl-th|quant-ph)$/)).max(30),
   topics: z.array(z.string().trim().min(2).max(100)).max(30),
   authors: z.array(z.string().trim().min(2).max(100)).max(30),
+  custom: z
+    .array(z.object({ id: z.string().min(1).max(100), label: z.string().trim().min(2).max(100), query: z.string().trim().min(1).max(200) }))
+    .max(30)
+    .default([]),
 });
-export type FeedInterests = z.infer<typeof feedInterestsSchema>;
+/** Input type permits legacy callers to omit custom; parsed/stored responses include []. */
+export type FeedInterests = z.input<typeof feedInterestsSchema>;
+export const feedInterestsInputSchema = feedInterestsSchema.extend({
+  custom: z
+    .array(z.object({ id: z.string().min(1).max(100).optional(), label: z.string().trim().min(2).max(100), query: z.string().trim().max(200).default('') }))
+    .max(30)
+    .optional(),
+});
 
 export const feedSettingsSchema = z.object({
   sources: z.object({ arxiv: z.boolean(), huggingFace: z.boolean(), news: z.boolean(), recommendations: z.boolean() }),
@@ -35,6 +46,15 @@ export const feedItemSchema = z.object({
   reasonParams: z.record(z.string(), z.string()),
   inLibrary: z.boolean(),
   popularity: z.number().nonnegative(),
+  image: z
+    .object({
+      url: z.string().regex(/^\/api\/feed\/images\/[a-f0-9]{64}$/),
+      width: z.number().int().positive().optional(),
+      height: z.number().int().positive().optional(),
+      alt: z.string().optional(),
+    })
+    .nullable()
+    .default(null),
 });
 export type FeedItem = z.infer<typeof feedItemSchema>;
 
@@ -54,9 +74,10 @@ export const feedResponseSchema = z.object({
   generatedAt: z.string().datetime().nullable(),
   sections: z.object({
     top: z.array(feedItemSchema),
-    byField: z.array(z.object({ field: z.string(), items: z.array(feedItemSchema) })),
+    byField: z.array(z.object({ field: z.string(), label: z.string().optional(), items: z.array(feedItemSchema) })),
     rankings: z.array(feedItemSchema),
     news: z.array(feedItemSchema),
+    newsByField: z.array(z.object({ field: z.string(), label: z.string().optional(), items: z.array(feedItemSchema) })),
     recommended: z.array(feedItemSchema),
   }),
   sourceStatus: z.array(feedSourceStatusSchema),

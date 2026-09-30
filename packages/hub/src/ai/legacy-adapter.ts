@@ -17,10 +17,18 @@ import { decodeTranslationText, decodeTranslationPageText, translationPrompt, tr
 const emptyUsage: Usage = { inputTokens: null, outputTokens: null, limits: null, observedAt: null };
 /** Keeps the existing chat and translation endpoints while selecting their provider through the registry. */
 export class RegistryLegacyAdapter implements Translator, PaperChat {
+  private activeCodex = 0;
   constructor(
     private readonly registry: ProviderRegistry,
     private readonly codex: Translator & PaperChat,
   ) {}
+  async waitIdle(timeoutMs = 30000): Promise<void> {
+    const deadline = Date.now() + timeoutMs;
+    while (this.activeCodex > 0) {
+      if (Date.now() > deadline) throw Object.assign(new Error('Codex is still processing a request'), { code: 'BUSY' });
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+  }
   private async selection(feature: 'chat' | 'translate', model: string): Promise<ModelSelection> {
     const settings = await this.registry.getSettings();
     const preferred = settings.overrides[feature] ?? settings.default;
@@ -45,6 +53,7 @@ export class RegistryLegacyAdapter implements Translator, PaperChat {
   async ask(input: PaperQuestionInput): Promise<PaperQuestionOutput> {
     const selection = await this.selection('chat', input.modelId);
     if (selection.provider === 'codex') {
+      this.activeCodex++;
       const started = Date.now();
       let output: PaperQuestionOutput | undefined;
       try {
@@ -54,6 +63,7 @@ export class RegistryLegacyAdapter implements Translator, PaperChat {
         await this.registry
           .recordUsage('codex', input.modelId, output?.usage.inputTokens ?? null, output?.usage.outputTokens ?? null, Date.now() - started)
           .catch(() => {});
+        this.activeCodex--;
       }
     }
     let text = '',
@@ -90,6 +100,7 @@ export class RegistryLegacyAdapter implements Translator, PaperChat {
   async translate(input: TranslationInput): Promise<TranslationOutput> {
     const selection = await this.selection('translate', input.modelId);
     if (selection.provider === 'codex') {
+      this.activeCodex++;
       const started = Date.now();
       let output: TranslationOutput | undefined;
       try {
@@ -99,6 +110,7 @@ export class RegistryLegacyAdapter implements Translator, PaperChat {
         await this.registry
           .recordUsage('codex', input.modelId, output?.usage.inputTokens ?? null, output?.usage.outputTokens ?? null, Date.now() - started)
           .catch(() => {});
+        this.activeCodex--;
       }
     }
     let text = '',
@@ -115,6 +127,7 @@ export class RegistryLegacyAdapter implements Translator, PaperChat {
   async translatePage(input: TranslationPageInput): Promise<TranslationPageOutput> {
     const selection = await this.selection('translate', input.modelId);
     if (selection.provider === 'codex') {
+      this.activeCodex++;
       const started = Date.now();
       let output: TranslationPageOutput | undefined;
       try {
@@ -124,6 +137,7 @@ export class RegistryLegacyAdapter implements Translator, PaperChat {
         await this.registry
           .recordUsage('codex', input.modelId, output?.usage.inputTokens ?? null, output?.usage.outputTokens ?? null, Date.now() - started)
           .catch(() => {});
+        this.activeCodex--;
       }
     }
     let text = '',

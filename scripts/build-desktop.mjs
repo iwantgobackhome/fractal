@@ -7,6 +7,7 @@ await build({
   platform: 'node',
   format: 'esm',
   target: 'node22',
+  external: ['@lydell/node-pty'],
   outfile: 'apps/desktop/dist/hub.mjs',
   banner: { js: "import { createRequire as fractalCreateRequire } from 'node:module'; const require = fractalCreateRequire(import.meta.url);" },
 });

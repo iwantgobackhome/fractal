@@ -1,8 +1,13 @@
 import { createHash } from 'node:crypto';
 import type { FeedItem, FeedInterests, FeedSourceStatus } from '@fractal/shared';
+import { arxivCategories, arxivGroups } from '@fractal/shared';
 import type { SqlitePaperStore } from '../store/sqlite';
 
-export type RawItem = Omit<FeedItem, 'score' | 'reason' | 'reasonCode' | 'reasonParams' | 'inLibrary'>;
+export type RawItem = Omit<FeedItem, 'score' | 'reason' | 'reasonCode' | 'reasonParams' | 'inLibrary' | 'image'> & {
+  image?: FeedItem['image'];
+  imageCandidate?: string;
+  basedOn?: string;
+};
 export interface FeedSource {
   id: string;
   load(context: SourceContext): Promise<RawItem[]>;
@@ -10,6 +15,7 @@ export interface FeedSource {
 export interface SourceContext {
   interests: FeedInterests;
   libraryArxivIds: string[];
+  libraryTitles?: Record<string, string>;
   rssFeeds: string[];
   get(url: string, headers?: Record<string, string>, body?: string): Promise<string>;
   now: Date;
@@ -43,6 +49,10 @@ const date = (value: unknown): string | null => {
 };
 const arxivId = (value: string): string | null => /(?:arxiv\.org\/(?:abs|pdf)\/|arxiv:)([^/?#\s]+)/i.exec(value)?.[1]?.replace(/v\d+$/, '') ?? null;
 const doi = (value: string): string | null => /10\.\d{4,9}\/[^\s<>"']+/i.exec(value)?.[0]?.replace(/[.,;]$/, '') ?? null;
+export function customSearchQuery(query: string): string {
+  const terms = query.match(/[\p{L}\p{N}-]+/gu)?.slice(0, 12) ?? [];
+  return terms.map((term) => `all:${term}`).join(' AND ');
+}
 
 export function parseArxivAtom(xml: string): RawItem[] {
   return groups(xml, 'entry').flatMap((entry) => {
@@ -69,6 +79,7 @@ export function parseArxivAtom(xml: string): RawItem[] {
         categories: [...new Set([...primary, ...categories])],
         publishedAt,
         popularity: 0,
+        imageCandidate: attr(entry, 'media:thumbnail', 'url')[0] ?? attr(entry, 'media:content', 'url')[0],
       },
     ];
   });
@@ -103,6 +114,14 @@ export function parseHfDaily(value: unknown): RawItem[] {
         categories,
         publishedAt,
         popularity: Math.max(0, Number(row.numUpvotes ?? paper.upvotes ?? row.upvotes ?? 0) || 0),
+        imageCandidate:
+          Array.isArray(paper.mediaUrls) && typeof paper.mediaUrls[0] === 'string'
+            ? paper.mediaUrls[0]
+            : typeof paper.thumbnail === 'string'
+              ? paper.thumbnail
+              : typeof paper.image === 'string'
+                ? paper.image
+                : undefined,
       },
     ];
   });
@@ -114,7 +133,16 @@ export function parseSyndication(xml: string, source: string): RawItem[] {
     const title = field(entry, 'title');
     const rssLink = field(entry, 'link');
     const atomLink = attr(entry, 'link', 'href').find((link) => /^https?:\/\//.test(link));
-    const url = rssLink || atomLink || '';
+    const link = rssLink || atomLink || '';
+    let url = link;
+    if (/^https?:\/\/www\.bing\.com\/news\/apiclick\.aspx/.test(link)) {
+      try {
+        url = new URL(link).searchParams.get('url') ?? link;
+      } catch {
+        /* use feed link */
+      }
+    }
+    url = url.replace(/^http:\/\//, 'https://');
     const publishedAt = date(field(entry, 'pubDate') || field(entry, 'published') || field(entry, 'updated'));
     if (!title || !publishedAt || !/^https?:\/\//.test(url)) return [];
     return [
@@ -131,12 +159,21 @@ export function parseSyndication(xml: string, source: string): RawItem[] {
         categories: [],
         publishedAt,
         popularity: 0,
+        imageCandidate:
+          (
+            attr(entry, 'media:content', 'url')[0] ??
+            attr(entry, 'media:thumbnail', 'url')[0] ??
+            attr(entry, 'enclosure', 'url')[0] ??
+            field(entry, 'News:Image') ??
+            field(groups(entry, 'image')[0] ?? '', 'url') ??
+            ''
+          ).replace(/^http:\/\//, 'https://') || undefined,
       },
     ];
   });
 }
 
-export function parseRecommendations(value: unknown): RawItem[] {
+export function parseRecommendations(value: unknown, basedOn?: string): RawItem[] {
   const rows = (value as { recommendedPapers?: unknown } | null)?.recommendedPapers;
   if (!Array.isArray(rows)) return [];
   return rows.flatMap((raw) => {
@@ -161,6 +198,7 @@ export function parseRecommendations(value: unknown): RawItem[] {
         categories: [],
         publishedAt,
         popularity: Math.max(0, (Number(row.citationCount ?? 0) || 0) / Math.max(1, new Date().getUTCFullYear() - new Date(publishedAt).getUTCFullYear() + 1)),
+        ...(basedOn ? { basedOn } : {}),
       },
     ];
   });
@@ -203,19 +241,24 @@ export const arxivSource: FeedSource = {
   async load(context) {
     const cutoff = context.now.getTime() - 7 * 86400000;
     const results = await Promise.allSettled(
-      context.interests.categories.map(async (category) => {
+      [
+        ...context.interests.categories.map((category) => ({ field: category, query: `cat:${category}` })),
+        ...(context.interests.custom ?? []).map((interest) => ({ field: `custom:${interest.id}`, query: customSearchQuery(interest.query) })),
+      ].map(async ({ field, query: searchQuery }) => {
         const query = new URL('https://export.arxiv.org/api/query');
-        query.searchParams.set('search_query', `cat:${category}`);
+        query.searchParams.set('search_query', searchQuery);
         query.searchParams.set('start', '0');
-        query.searchParams.set('max_results', '500');
+        query.searchParams.set('max_results', '150');
         query.searchParams.set('sortBy', 'submittedDate');
         query.searchParams.set('sortOrder', 'descending');
-        return parseArxivAtom(await context.get(query.href)).filter((item) => Date.parse(item.publishedAt) >= cutoff);
+        return parseArxivAtom(await context.get(query.href))
+          .filter((item) => Date.parse(item.publishedAt) >= cutoff)
+          .map((item) => ({ ...item, categories: [...new Set([...item.categories, field])] }));
       }),
     );
     results.forEach((result, index) =>
       context.report?.({
-        source: `arxiv:${context.interests.categories[index]}`,
+        source: `arxiv:${[...context.interests.categories, ...(context.interests.custom ?? []).map((item) => `custom:${item.id}`)][index]}`,
         state: result.status === 'fulfilled' ? 'ok' : 'error',
         fetchedAt: result.status === 'fulfilled' ? context.now.toISOString() : null,
         ...(result.status === 'rejected' ? { message: '분야별 새 논문을 가져오지 못했습니다.' } : {}),
@@ -249,11 +292,42 @@ export const huggingFaceSource: FeedSource = {
 export const newsSource: FeedSource = {
   id: 'news',
   async load(context) {
-    const feeds = [...new Set([...curatedFeeds(context.interests.categories), ...context.rssFeeds])];
-    const results = await Promise.allSettled(feeds.map(async (url) => parseSyndication(await context.get(url), new URL(url).hostname)));
+    const generalFeeds = [...new Set([...curatedFeeds(context.interests.categories), ...context.rssFeeds])];
+    const interests = [
+      ...[...new Set(context.interests.categories.map((code) => arxivCategories.find((item) => item.code === code)?.group ?? code.split('.')[0]))].map(
+        (group) => ({ field: group!, label: arxivGroups.find((item) => item.id === group)?.name.en ?? group! }),
+      ),
+      ...context.interests.categories.map((code) => ({ field: code, label: arxivCategories.find((item) => item.code === code)?.name.en ?? code })),
+      ...(context.interests.custom ?? []).map((item) => ({ field: `custom:${item.id}`, label: item.query })),
+    ];
+    const searches = interests.flatMap((interest) =>
+      ['en', 'ko']
+        .map((language) => {
+          const query = new URL('https://news.google.com/rss/search');
+          query.searchParams.set('q', `${interest.label} when:7d`);
+          query.searchParams.set('hl', language === 'ko' ? 'ko' : 'en-US');
+          query.searchParams.set('gl', language === 'ko' ? 'KR' : 'US');
+          query.searchParams.set('ceid', language === 'ko' ? 'KR:ko' : 'US:en');
+          return { url: query.href, field: interest.field };
+        })
+        .concat([
+          (() => {
+            const query = new URL('https://www.bing.com/news/search');
+            query.searchParams.set('q', interest.label);
+            query.searchParams.set('format', 'rss');
+            return { url: query.href, field: interest.field };
+          })(),
+        ]),
+    );
+    const feeds = [...generalFeeds.map((url) => ({ url, field: '' })), ...searches];
+    const results = await Promise.allSettled(
+      feeds.map(async ({ url, field }) =>
+        parseSyndication(await context.get(url), new URL(url).hostname).map((item) => ({ ...item, categories: field ? [field] : [] })),
+      ),
+    );
     results.forEach((result, index) =>
       context.report?.({
-        source: `news:${new URL(feeds[index]!).hostname}`,
+        source: `news:${new URL(feeds[index]!.url).hostname}:${feeds[index]!.field}`,
         state: result.status === 'fulfilled' ? 'ok' : 'error',
         fetchedAt: result.status === 'fulfilled' ? context.now.toISOString() : null,
         ...(result.status === 'rejected' ? { message: '뉴스 피드를 가져오지 못했습니다.' } : {}),
@@ -277,7 +351,10 @@ export const recommendationSource: FeedSource = {
     const headers: Record<string, string> = {};
     if (process.env.SEMANTIC_SCHOLAR_API_KEY) headers['x-api-key'] = process.env.SEMANTIC_SCHOLAR_API_KEY;
     const body = JSON.stringify({ positivePaperIds: ids.map((id) => `ARXIV:${id}`), negativePaperIds: [] });
-    return parseRecommendations(JSON.parse(await context.get(url.href, headers, body)) as unknown);
+    return parseRecommendations(
+      JSON.parse(await context.get(url.href, headers, body)) as unknown,
+      ids.length === 1 ? context.libraryTitles?.[ids[0]!] : undefined,
+    );
   },
 };
 

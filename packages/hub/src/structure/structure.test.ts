@@ -34,6 +34,8 @@ describe('paper structure', () => {
         { version: 4 },
         { version: 5 },
         { version: 6 },
+        { version: 7 },
+        { version: 8 },
       ]);
       expect(store.db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='structure_items'").get()).toMatchObject({ name: 'structure_items' });
       store.db.close();

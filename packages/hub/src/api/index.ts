@@ -34,6 +34,8 @@ import { handlePairing } from './routes/pairing';
 import type { RouteContext, Result } from './routes/types';
 import { handleAi } from './routes/ai';
 import type { ProviderRegistry } from '../ai/registry';
+import type { AccountManager } from '../ai/accounts';
+import { RelatedPaperService } from '../feed/related';
 import type { LibrarySearch } from '../ai/library-search';
 import { SqlitePaperStore } from '../store/sqlite';
 import { handleLibrary } from './routes/library';
@@ -85,6 +87,7 @@ export interface ApiServerOptions {
    * the translator and from the account session: it never gains account methods. */
   paperChat: PaperChat;
   aiRegistry?: ProviderRegistry;
+  accounts?: AccountManager;
   librarySearch?: LibrarySearch;
   log?: (event: ApiLogEvent) => void;
   /** Overridable for tests; production mints a fresh 256-bit credential. */
@@ -335,6 +338,7 @@ export function injectToken(html: string, token: string): string {
 export function createApiServer(options: ApiServerOptions): ApiServer {
   const { store, jobs, translator, pipeline, acquirer } = options;
   const structure = store instanceof SqlitePaperStore ? new StructureService(store) : undefined;
+  const related = store instanceof SqlitePaperStore ? new RelatedPaperService(store) : undefined;
   const log = options.log ?? (() => {});
   const token = options.token ?? randomBytes(32).toString('hex');
   const recovered: string[] = [];
@@ -447,6 +451,9 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
   const json = (data: unknown, status = 200): Result => ({ kind: 'json', status, data });
 
   async function route_(method: string, segments: string[], request: IncomingMessage, ctx: RouteContext): Promise<Result> {
+    if (related && method === 'GET' && segments.length === 4 && segments[0] === 'api' && segments[1] === 'papers' && segments[3] === 'related') {
+      return json(await related.get(readPaperKey(segments[2]!)));
+    }
     if (store instanceof SqlitePaperStore && segments[0] === 'api' && segments[1] === 'preferences' && segments.length === 2) {
       if (method === 'GET') return json(store.getPreferences());
       if (method === 'PUT') {
@@ -464,7 +471,12 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
     const pairing = await handlePairing(method, segments, request, ctx);
     if (pairing !== undefined) return pairing;
     if (options.aiRegistry && options.librarySearch) {
-      const ai = await handleAi(method, segments, request, { store, registry: options.aiRegistry, librarySearch: options.librarySearch });
+      const ai = await handleAi(method, segments, request, {
+        store,
+        registry: options.aiRegistry,
+        librarySearch: options.librarySearch,
+        accounts: options.accounts,
+      });
       if (ai) return ai;
     }
     if (store instanceof SqlitePaperStore) {

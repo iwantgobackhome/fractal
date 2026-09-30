@@ -78,10 +78,21 @@ These routes use the same loopback, Origin, and token guard as the rest of the A
 | `GET /api/ai/providers` | — | `{ providers: ProviderInfo[], settings: AiSettings }` |
 | `PUT /api/ai/settings` | `{ default?: { provider, model, effort? }, overrides?: { chat?, translate?, explain?, digest? } }` | `AiSettings` |
 | `GET /api/ai/usage` | — | `{ totals: UsageRecord[], limits: { codex?, claude? } }` grouped by UTC day, provider and model |
+| `GET /api/ai/accounts` | — | `{ accounts: AiAccount[] }` |
+| `POST /api/ai/accounts` | `{provider: "codex"\|"claude", label: string}` | Created managed `AiAccount` (201); starts official CLI login |
+| `GET /api/ai/accounts/:id/login` | — | `{state: "pending"\|"done"\|"failed", verificationUrl?, userCode?, message?}` |
+| `POST /api/ai/accounts/:id/login` | `{}` | Retries login and returns progress |
+| `PATCH /api/ai/accounts/:id` | `{label?, active?}` | Updated `AiAccount`; activating switches the provider after current calls settle |
+| `DELETE /api/ai/accounts/:id` | — | `{deleted: true}`; managed accounts only; activate another account first |
+| `GET /api/ai/limits` | — | `{accounts: AiAccountLimits[]}` |
 | `POST /api/papers/:key/ask` | `{ question, selectedText?, page?, rect?, selection? }` | SSE answer with `[p.N]` page citations |
 | `POST /api/papers/:key/explain` | `{ kind: "equation"\|"figure"\|"table"\|"text", page, bbox, croppedPngBase64?, surroundingText?, selection? }` | SSE explanation; `done.latex` when an equation contains `$$...$$` or `\\(...\\)` |
 | `POST /api/library/ask` | `{ question, selection? }` | SSE answer using library hits with `[paper:KEY p.N]` citations |
 | `POST /api/papers/:key/glossary` | `{ selection? }` | SSE `done.terms` with `{ term, page, definition }[]`; cached by paper content and selection |
+
+`AiAccount` is `{id, provider, label, kind: "system"|"managed", loggedIn, active, email?, plan?}`. The system account for each provider is always present and inherits the user's CLI configuration. Managed accounts use separate CLI homes under `<data>/accounts/<provider>/<id>/`. One account per provider is active. Login uses the official `codex login --device-auth` or `claude auth login --claudeai` command and progress can include a verification URL and code. The service never reads CLI credential files.
+
+Each `/api/ai/limits` entry is `{provider, accountId, label, kind, active, windows: {fiveHour, weekly}, plan?, observedAt, state, message?}`. A window is `{usedPercent, resetsAt}` or `null`. `resetsAt` is ISO UTC; absent provider windows stay `null`. Reads return the last observation immediately and start a background refresh at most once per 60 seconds while requested. A finished Fractal AI call also refreshes its account. Codex reads `account/rateLimits/read` without a turn. Claude first observes `rate_limit_event` fields from Fractal calls, then uses the official interactive `/usage` screen through a PTY when needed. If that screen is unavailable, its state is `unavailable` with a localized message. There is no general AI usage event on `/api/events`; clients poll `/api/ai/limits` every 60 seconds.
 
 `selection` is `{ provider: "codex"|"claude", model: string, effort?: "low"|"medium"|"high"|"xhigh" }`. It overrides the saved feature selection for one request. Normalized boxes use `x`, `y`, `width`, `height` in `[0,1]` and must fit on the page. The provider adapters currently use extracted page text for explanation; `croppedPngBase64` is accepted but not sent to the CLI. Claude model aliases are `opus`, `sonnet`, and `haiku`; full `claude-*` model IDs are also accepted. The legacy `/api/papers/:key/chat` and translation endpoints select their provider through the same registry using their `modelId`.
 Explain responses and glossary definitions follow `answerLanguage`, retaining LaTeX formulas and page citations. Paper and library questions follow the question language when `answerLanguage` is `auto`.
@@ -130,14 +141,22 @@ The discovery feed uses the same `{data}` envelope and local mutation guard. `we
 | --- | --- | --- |
 | `GET /api/feed?week=YYYY-Www` | — | `{week, generatedAt, sections, sourceStatus, digest?}` |
 | `GET /api/feed/interests` | — | `{interests, suggestions: [{category, count}]}`; suggestions come from saved arXiv papers' metadata |
-| `PUT /api/feed/interests` | `{categories: string[], topics: string[], authors: string[]}` | Saved interests |
+| `PUT /api/feed/interests` | `{categories: string[], topics: string[], authors: string[], custom?: {id?, label, query?}[]}` | Saved interests with stable IDs; missing IDs are assigned, empty queries fall back to labels |
+| `GET /api/feed/categories?q=` | — | `{items: ArxivCategory[]}`; searches code and English/Korean names, or returns all categories for empty `q` |
 | `GET /api/feed/settings` | — | Current feed settings |
 | `PUT /api/feed/settings` | `{sources: {arxiv, huggingFace, news, recommendations}, customRssFeeds: string[], digestEnabled: boolean, refreshIntervalHours: number}` | Saved settings; custom feeds require HTTPS, interval is 1–168 hours |
 | `POST /api/feed/refresh` | `{}` | Refreshed feed snapshot |
 | `GET /api/feed/digest?week=YYYY-Www` | — | `{week, generatedAt, text}` or `null`; opt-in only |
 | `POST /api/feed/items/:id/save` | `{}` | `{paperKey}` (201), after the existing URL/DOI/arXiv ingest succeeds |
+| `GET /api/feed/images/:hash` | — | Cached proxied image bytes (PNG, JPEG, WebP, GIF, or AVIF); `Cache-Control: public, max-age=86400` |
 
-`sections` contains `top: Item[]`, `byField: {field, items}[]`, `rankings: Item[]`, `news: Item[]`, and `recommended: Item[]`. Each item has `id`, `kind`, `title`, `authors`, trimmed `abstract`, `source`, `url`, nullable `arxivId` and `doi`, `categories`, `publishedAt`, numeric `score`, localized `reason`, stable `reasonCode` (`followed_author`, `interest_category`, `interest_topic`, `similar_library`, or `new_this_week`), `reasonParams`, `inLibrary`, and numeric `popularity`. `rankings` lists Hugging Face daily papers by upvotes; `recommended` omits items already saved in the library. Digest generation is off by default and uses the AI provider registry's `digest` selection only when enabled. Schemas are in `packages/shared/src/contracts/feed.ts`.
+`sections` contains `top: Item[]`, `byField: {field, label?, items}[]`, `rankings: Item[]`, `news: Item[]`, `newsByField: {field, label?, items}[]`, and `recommended: Item[]`. `field` is an arXiv category code or `custom:<id>`. Each item has `id`, `kind`, `title`, `authors`, trimmed `abstract`, `source`, `url`, nullable `arxivId` and `doi`, `categories`, `publishedAt`, numeric `score`, localized `reason`, stable `reasonCode` (`followed_author`, `interest_category`, `interest_topic`, `similar_library`, or `new_this_week`), `reasonParams`, `inLibrary`, numeric `popularity`, and `image: {url, width?, height?, alt?}|null`. Image URLs are always Hub relative. Custom interest papers come from bounded arXiv search terms; field news comes from Google/Bing News RSS in Korean and English, alongside curated feeds. Images use arXiv HTML first figures, feed media, or article Open Graph images, with public HTTPS image proxying and a 300 MB disk cache. `reasonParams.basedOn` names the saved paper when a recommendation can be tied to one known source paper. `rankings` lists Hugging Face daily papers by upvotes; `recommended` omits items already saved in the library. Digest generation is off by default and uses the AI provider registry's `digest` selection only when enabled. The full 155 category taxonomy and 20 groups are exported from `packages/shared/src/contracts/arxiv.ts`.
+
+| Method and path | Request JSON | `data` response |
+| --- | --- | --- |
+| `GET /api/papers/:key/related` | — | `{items: RelatedPaper[], source: "semanticScholar", fetchedAt}`; cached in SQLite for seven days |
+
+`RelatedPaper` is `{title, authors, year, venue?, abstract?, arxivId, doi, url, citationCount?, relation: "similar"|"cites"|"citedBy", inLibrary, image?}`. Semantic Scholar recommendations, references, and citations are merged by arXiv ID, DOI, or title. Requests are serialized and 429 responses use backoff; an offline read returns a cached result or a network error. To save one, send its `arxivId`, `doi`, or `url` as `input` to the existing `POST /api/papers/open` acquire route.
 
 ## Desktop bridge
 

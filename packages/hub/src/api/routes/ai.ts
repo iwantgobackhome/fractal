@@ -2,6 +2,7 @@ import type { IncomingMessage } from 'node:http';
 import { createHash } from 'node:crypto';
 import {
   aiSettingsPatchSchema,
+  providerIdSchema,
   askPaperSchema,
   explainSchema,
   glossarySchema,
@@ -119,6 +120,41 @@ async function* generate(
 export async function handleAi(method: string, segments: string[], request: IncomingMessage, ctx: RouteContext): Promise<Result | undefined> {
   if (segments[0] !== 'api') return undefined;
   if (segments[1] === 'ai') {
+    if (ctx.accounts && segments.length === 3 && segments[2] === 'accounts') {
+      if (method === 'GET') return json({ accounts: await ctx.accounts.accounts() });
+      if (method === 'POST') {
+        const input = (await body(request)) as Record<string, unknown>;
+        const provider = parse(providerIdSchema, input.provider);
+        const label = typeof input.label === 'string' ? input.label.trim() : '';
+        if (!label || label.length > 80) throw invalidInput('Invalid account label');
+        return { kind: 'json', status: 201, data: await ctx.accounts.create(provider, label) };
+      }
+    }
+    if (ctx.accounts && segments.length === 3 && segments[2] === 'limits' && method === 'GET') return json(await ctx.accounts.limits());
+    if (ctx.accounts && segments.length >= 4 && segments[2] === 'accounts') {
+      const id = decodeURIComponent(segments[3]!);
+      if (segments.length === 5 && segments[4] === 'login') {
+        if (method === 'GET') return json(await ctx.accounts.loginProgress(id));
+        if (method === 'POST') return json(await ctx.accounts.login(id));
+      }
+      if (segments.length === 4 && method === 'PATCH') {
+        const input = (await body(request)) as Record<string, unknown>;
+        const patch: { label?: string; active?: boolean } = {};
+        if ('label' in input) {
+          if (typeof input.label !== 'string' || !input.label.trim() || input.label.length > 80) throw invalidInput('Invalid account label');
+          patch.label = input.label.trim();
+        }
+        if ('active' in input) {
+          if (typeof input.active !== 'boolean') throw invalidInput('Invalid active flag');
+          patch.active = input.active;
+        }
+        return json(await ctx.accounts.patch(id, patch));
+      }
+      if (segments.length === 4 && method === 'DELETE') {
+        await ctx.accounts.remove(id);
+        return json({ deleted: true });
+      }
+    }
     if (segments.length === 3 && segments[2] === 'providers' && method === 'GET')
       return json({ providers: await ctx.registry.providersInfo(), settings: await ctx.registry.getSettings() });
     if (segments.length === 3 && segments[2] === 'usage' && method === 'GET') return json(await ctx.registry.usage());

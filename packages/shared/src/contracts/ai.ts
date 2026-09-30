@@ -194,6 +194,41 @@ export const aiSettingsSchema = z.object({
 });
 export const aiSettingsPatchSchema = z.object({ default: modelSelectionSchema.optional(), overrides: aiSettingsSchema.shape.overrides.partial().optional() });
 export type ProviderId = z.infer<typeof providerIdSchema>;
+export interface AiAccount {
+  id: string;
+  provider: ProviderId;
+  label: string;
+  kind: 'system' | 'managed';
+  loggedIn: boolean;
+  active: boolean;
+  email?: string;
+  plan?: string;
+}
+export interface AiLoginProgress {
+  state: 'pending' | 'done' | 'failed';
+  verificationUrl?: string;
+  userCode?: string;
+  message?: string;
+}
+export interface AiLimitWindow {
+  usedPercent: number;
+  resetsAt: string | null;
+}
+export interface AiAccountLimits {
+  provider: ProviderId;
+  accountId: string;
+  label: string;
+  active: boolean;
+  kind: 'system' | 'managed';
+  windows: { fiveHour: AiLimitWindow | null; weekly: AiLimitWindow | null };
+  plan?: string;
+  observedAt: string | null;
+  state: 'ok' | 'unavailable' | 'notLoggedIn';
+  message?: string;
+}
+export interface AiLimitsResponse {
+  accounts: AiAccountLimits[];
+}
 export type AiFeature = z.infer<typeof featureSchema>;
 export type ModelSelection = z.infer<typeof modelSelectionSchema>;
 export type AiSettings = z.infer<typeof aiSettingsSchema>;

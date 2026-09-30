@@ -1,5 +1,7 @@
 import type { FeedDigest, FeedInterests, FeedItem, FeedResponse, FeedSettings, FeedSourceStatus } from '@fractal/shared';
 import { feedWeekSchema } from '@fractal/shared';
+import { arxivCategories, type ArxivCategory } from '@fractal/shared';
+import { randomUUID } from 'node:crypto';
 import type { ProviderRegistry } from '../ai/registry';
 import type { SqlitePaperStore } from '../store/sqlite';
 import { invalidInput, notFound } from '../store/errors';
@@ -7,8 +9,9 @@ import { ingestUrl } from '../ingest/index';
 import type { PaperAcquirer } from '../api/index';
 import { CachedFetcher, arxivSource, huggingFaceSource, newsSource, recommendationSource, parseArxivAtom, type FeedSource, type RawItem } from './sources';
 import { rankItems } from './ranking';
+import { FeedImageStore, firstFigureImage, imageDimensions, ogImage } from './images';
 
-const DEFAULT_INTERESTS: FeedInterests = { categories: [], topics: [], authors: [] };
+const DEFAULT_INTERESTS: FeedInterests = { categories: [], topics: [], authors: [], custom: [] };
 const DEFAULT_SETTINGS: FeedSettings = {
   sources: { arxiv: true, huggingFace: true, news: true, recommendations: true },
   customRssFeeds: [],
@@ -34,6 +37,7 @@ interface MetaRow {
 }
 export class FeedService {
   private readonly cache: CachedFetcher;
+  private readonly images: FeedImageStore | null;
   private timer: ReturnType<typeof setTimeout> | null = null;
   private running: Promise<FeedResponse> | null = null;
   private stopped = false;
@@ -45,8 +49,13 @@ export class FeedService {
     fetcher: typeof fetch = fetch,
     private readonly now: () => Date = () => new Date(),
     private readonly sources: FeedSource[] = SOURCES,
+    imageRoot?: string,
   ) {
     this.cache = new CachedFetcher(store, fetcher);
+    this.images = imageRoot ? new FeedImageStore(store, imageRoot, fetcher) : null;
+  }
+  async image(hash: string): Promise<{ body: Buffer; contentType: string } | null> {
+    return this.images?.get(hash) ?? null;
   }
 
   private meta<T>(key: string, fallback: T): T {
@@ -59,14 +68,22 @@ export class FeedService {
   }
 
   interests(): FeedInterests {
-    return this.meta('interests', DEFAULT_INTERESTS);
+    return { ...DEFAULT_INTERESTS, ...this.meta('interests', DEFAULT_INTERESTS) };
+  }
+  categories(query = ''): ArxivCategory[] {
+    const q = query.trim().toLocaleLowerCase();
+    return q
+      ? arxivCategories.filter((item) => [item.code, item.name.en, item.name.ko].some((value) => value.toLocaleLowerCase().includes(q)))
+      : arxivCategories;
   }
   settings(): FeedSettings {
     return this.meta('settings', DEFAULT_SETTINGS);
   }
-  putInterests(value: FeedInterests): FeedInterests {
-    this.putMeta('interests', value);
-    return value;
+  putInterests(value: Omit<FeedInterests, 'custom'> & { custom?: { id?: string; label: string; query?: string }[] }): FeedInterests {
+    const custom = (value.custom ?? []).map((item) => ({ id: item.id ?? randomUUID(), label: item.label, query: item.query?.trim() || item.label }));
+    const result: FeedInterests = { categories: value.categories, topics: value.topics, authors: value.authors, custom };
+    this.putMeta('interests', result);
+    return result;
   }
   putSettings(value: FeedSettings): FeedSettings {
     this.putMeta('settings', value);
@@ -117,7 +134,16 @@ export class FeedService {
     if (!feedWeekSchema.safeParse(week).success) throw invalidInput('주차 형식은 YYYY-Www이어야 합니다.');
     const items = rankItems(this.rawForWeek(week), this.interests(), this.store.listLibrary(), this.now(), this.store.getPreferences().uiLanguage);
     const papers = items.filter((item) => item.kind === 'paper');
-    const byField = this.interests().categories.map((field) => ({ field, items: papers.filter((item) => item.categories.includes(field)).slice(0, 20) }));
+    const interests = this.interests();
+    const fields = [
+      ...interests.categories.map((field) => ({ field })),
+      ...(interests.custom ?? []).map((interest) => ({ field: `custom:${interest.id}`, label: interest.label })),
+    ];
+    const byField = fields.map((entry) => ({ ...entry, items: papers.filter((item) => item.categories.includes(entry.field)).slice(0, 20) }));
+    const newsByField = fields.map((entry) => ({
+      ...entry,
+      items: items.filter((item) => item.kind === 'news' && item.categories.includes(entry.field)).slice(0, 20),
+    }));
     const prefs = this.store.getPreferences();
     const digestLanguage = prefs.answerLanguage === 'auto' ? prefs.uiLanguage : prefs.answerLanguage;
     const digest = this.store.db.prepare('SELECT data FROM feed_digests WHERE week=?').get(`${week}:${digestLanguage}`) as MetaRow | undefined;
@@ -132,6 +158,7 @@ export class FeedService {
           .sort((a, b) => b.popularity - a.popularity)
           .slice(0, 30),
         news: items.filter((item) => item.kind === 'news').slice(0, 30),
+        newsByField,
         recommended: papers.filter((item) => item.source.includes('recommendations') && !item.inLibrary).slice(0, 30),
       },
       sourceStatus: week === isoWeek(this.now()) ? this.status() : [],
@@ -175,6 +202,7 @@ export class FeedService {
     const context = {
       interests: this.interests(),
       libraryArxivIds: library.map((item) => item.arxivId).filter((id): id is string => !!id),
+      libraryTitles: Object.fromEntries(library.filter((item) => item.arxivId && item.title).map((item) => [item.arxivId!, item.title!])),
       rssFeeds: settings.customRssFeeds,
       get: this.cache.get.bind(this.cache),
       now,
@@ -204,11 +232,44 @@ export class FeedService {
       }
     }
     const ranked = rankItems(newItems, context.interests, library, now, this.store.getPreferences().uiLanguage);
+    if (this.images) {
+      const selected = [...ranked.filter((item) => item.kind === 'paper').slice(0, 30), ...ranked.filter((item) => item.kind === 'news').slice(0, 30)];
+      let cursor = 0;
+      await Promise.all(
+        Array.from({ length: 5 }, async () => {
+          while (cursor < selected.length) {
+            const item = selected[cursor++]!;
+            try {
+              let candidate = (item as RawItem).imageCandidate;
+              if (!candidate && item.kind === 'paper' && item.arxivId) {
+                const pageUrl = `https://arxiv.org/html/${encodeURIComponent(item.arxivId)}`;
+                candidate = firstFigureImage(await this.cache.get(pageUrl), pageUrl) ?? undefined;
+              }
+              if (!candidate && item.kind === 'news') {
+                const article = await this.images!.article(item.url);
+                candidate = ogImage(article.html, article.url) ?? undefined;
+              }
+              const image = candidate ? this.images!.register(candidate) : null;
+              if (image) {
+                const fetched = await this.images!.get(image.url.split('/').at(-1)!);
+                if (fetched) item.image = { ...image, ...imageDimensions(fetched.body, fetched.contentType), alt: item.title };
+              }
+            } catch {
+              item.image = null;
+            }
+          }
+        }),
+      );
+    }
     this.store.db.exec('SAVEPOINT feed_refresh');
     try {
       this.store.db.prepare('DELETE FROM feed_items WHERE week=?').run(week);
       const insert = this.store.db.prepare('INSERT INTO feed_items(week,id,data) VALUES(?,?,?)');
-      for (const item of ranked) insert.run(week, item.id, JSON.stringify(item));
+      for (const item of ranked) {
+        const { imageCandidate: _candidate, basedOn: _basedOn, ...clean } = item as FeedItem & { imageCandidate?: string; basedOn?: string };
+        if (_basedOn) clean.reasonParams = { ...clean.reasonParams, basedOn: _basedOn };
+        insert.run(week, item.id, JSON.stringify(clean));
+      }
       this.putMeta(`generated:${week}`, now.toISOString());
       this.putMeta('sourceStatus', statuses);
       this.store.db.exec('RELEASE feed_refresh');

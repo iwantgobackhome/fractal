@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@fractal/shared": "0.1.0",
+    "@lydell/node-pty": "^1.2.0-beta.15",
     "pdfjs-dist": "^6.3.289",
     "qrcode": "^1.5.4"
   }

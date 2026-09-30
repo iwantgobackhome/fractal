@@ -12,6 +12,7 @@ import { CodexTranslator, createOfficialRpcFactory } from './codex/index';
 import { startOfficialRpc } from './codex/runtime';
 import { CodexProvider } from './ai/codex';
 import { ClaudeProvider } from './ai/claude';
+import { AccountManager } from './ai/accounts';
 import { ProviderRegistry } from './ai/registry';
 import { JsonSettingsStore } from './ai/settings';
 import { FtsLibrarySearch } from './ai/library-search';
@@ -200,20 +201,38 @@ export async function startService(options: ServiceOptions = {}): Promise<Servic
   backfillTitles(store);
   const jobs = new JobManager(store);
   // The official process uses the same Codex login as the user's terminal.
-  const official = createOfficialRpcFactory(startOfficialRpc);
-  const translator = new CodexTranslator(official);
-  const aiRegistry = new ProviderRegistry(
-    [new CodexProvider(translator), new ClaudeProvider()],
+  let aiRegistry: ProviderRegistry;
+  let translator: CodexTranslator;
+  let pipeline: TranslationPipeline;
+  let aiAdapter: RegistryLegacyAdapter;
+  const accounts = new AccountManager(store, dataDirectory, async (provider) => {
+    pipeline.abortAll();
+    const deadline = Date.now() + 30_000;
+    while (jobs.currentActive() && pipeline.isRunning(jobs.currentActive()!.jobId)) {
+      if (Date.now() > deadline) throw Object.assign(new Error('Translation is still stopping'), { code: 'BUSY' });
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+    await aiRegistry.waitIdle(provider);
+    if (provider === 'codex') await aiAdapter.waitIdle();
+    if (provider === 'codex') await translator.disconnect();
+  });
+  const official = createOfficialRpcFactory(() => startOfficialRpc(accounts.activeEnvironment('codex')));
+  translator = new CodexTranslator(official);
+  const claude = new ClaudeProvider(undefined, undefined, () => accounts.activeEnvironment('claude'));
+  claude.onRateLimit = (event) => accounts.observeClaude(accounts.active('claude').id, event);
+  aiRegistry = new ProviderRegistry(
+    [new CodexProvider(translator), claude],
     new JsonSettingsStore(dataDirectory),
     undefined,
     new JsonUsageStore(dataDirectory),
   );
-  const aiAdapter = new RegistryLegacyAdapter(aiRegistry, translator);
+  aiRegistry.onUsageRecorded = (provider) => accounts.requestRefresh(accounts.active(provider).id, true);
+  aiAdapter = new RegistryLegacyAdapter(aiRegistry, translator);
   const log = options.log ?? ((event) => process.stdout.write(`${JSON.stringify(event)}\n`));
   // Isolation evidence that outlived its turn still ends the process (CodexTranslator); here it is
   // also recorded, with the path only — never any provider text.
   translator.onLateBreach = (path) => log({ event: 'codex', action: 'late-breach', path, code: 'UNSAFE_RUNTIME' });
-  const pipeline = new TranslationPipeline({ store, jobs, translator: aiAdapter, log });
+  pipeline = new TranslationPipeline({ store, jobs, translator: aiAdapter, log });
   const devices = new JsonDeviceStore(dataDirectory);
   let apiServer: ApiServer | undefined;
   const network = new NetworkManager(
@@ -228,7 +247,7 @@ export async function startService(options: ServiceOptions = {}): Promise<Servic
   });
 
   const acquirer = realAcquirer(join(dataDirectory, '.pdf-cache'));
-  const feed = new FeedService(store, acquirer, aiRegistry);
+  const feed = new FeedService(store, acquirer, aiRegistry, fetch, undefined, undefined, dataDirectory);
 
   const server = createApiServer({
     store,
@@ -239,6 +258,7 @@ export async function startService(options: ServiceOptions = {}): Promise<Servic
     // threads; the translation pipeline never receives this path.
     paperChat: aiAdapter,
     aiRegistry,
+    accounts,
     librarySearch: new FtsLibrarySearch(store),
     acquirer,
     feed,
@@ -267,6 +287,7 @@ export async function startService(options: ServiceOptions = {}): Promise<Servic
     async stop() {
       await feed.stop();
       await server.close();
+      accounts.stop();
       await translator.disconnect();
       store.db.close();
     },
