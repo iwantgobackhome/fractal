@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tool_ballpoint">Ballpoint pen</string>
+    <string name="tool_fountain">Fountain pen</string>
+    <string name="tool_pencil">Pencil</string>
+    <string name="tool_highlighter">Highlighter</string>
+    <string name="tool_eraser">Eraser</string>
+    <string name="tool_shape">Shape</string>
+    <string name="tool_lasso">Lasso</string>
+    <string name="eraser_stroke">Stroke eraser</string>
+    <string name="eraser_partial">Partial eraser</string>
+    <string name="spen_eraser_mode">S Pen button: %1$s</string>
+    <string name="shape_line">Line</string>
+    <string name="shape_arrow">Arrow</string>
+    <string name="shape_rectangle">Rectangle</string>
+    <string name="shape_ellipse">Ellipse</string>
+    <string name="width_fine">Fine</string>
+    <string name="width_medium">Medium</string>
+    <string name="width_broad">Broad</string>
+    <string name="add_color">Add color</string>
+    <string name="undo">Undo</string>
+    <string name="redo">Redo</string>
+    <string name="color_swatch">Color %1$s</string>
+    <string name="copy_selection">Copy</string>
+    <string name="delete_selection">Delete</string>
+    <string name="ask_selection">Ask</string>
+    <string name="custom_color">Custom color</string>
+    <string name="hex_color">Hex color</string>
+    <string name="red">Red</string>
+    <string name="green">Green</string>
+    <string name="blue">Blue</string>
+    <string name="apply">Apply</string>
+    <string name="cancel">Cancel</string>
+    <string name="add_symbol">+</string>
+    <string name="undo_symbol">↶</string>
+    <string name="redo_symbol">↷</string>
+</resources>

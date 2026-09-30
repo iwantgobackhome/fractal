@@ -15,6 +15,7 @@ compose-ui = { module = "androidx.compose.ui:ui" }
 compose-foundation = { module = "androidx.compose.foundation:foundation" }
 compose-material3 = { module = "androidx.compose.material3:material3" }
 compose-activity = { module = "androidx.activity:activity-compose", version = "1.10.1" }
+appcompat = { module = "androidx.appcompat:appcompat", version = "1.6.1" }
 ink-authoring = { module = "androidx.ink:ink-authoring", version.ref = "ink" }
 ink-rendering = { module = "androidx.ink:ink-rendering", version.ref = "ink" }
 ink-strokes = { module = "androidx.ink:ink-strokes", version.ref = "ink" }

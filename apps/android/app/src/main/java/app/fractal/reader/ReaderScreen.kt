@@ -49,6 +49,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.geometry.Size
@@ -144,21 +145,21 @@ fun ReaderScreen(app: ReaderApplication, paper: LibraryEntity, onBack: () -> Uni
         }
     }
     LaunchedEffect(paper.paperKey) {
-        status = "PDF 불러오는 중"
+        status = app.getString(R.string.loading_pdf)
         runCatching {
             val local = paper.pdfSha256?.let(app.cache::existing)
             val file = if (local != null) {
                 local
             } else {
                 val metadata = app.sync.refreshPaperMetadata(paper.paperKey)
-                    ?: throw IllegalStateException("PDF가 아직 허브에 없습니다")
+                    ?: throw IllegalStateException(app.getString(R.string.pdf_not_on_hub))
                 app.downloader.download(paper.paperKey, metadata.first)
             }
             PdfPages(file)
         }.onSuccess {
             pages = it
             status = ""
-        }.onFailure { status = "오프라인 · PC와 연결하면 읽을 수 있습니다" }
+        }.onFailure { status = app.getString(R.string.offline_unavailable) }
     }
     val openedPages = pages
     DisposableEffect(openedPages) { onDispose { openedPages?.close() } }
@@ -176,26 +177,26 @@ fun ReaderScreen(app: ReaderApplication, paper: LibraryEntity, onBack: () -> Uni
     Column(Modifier.fillMaxSize().background(colors.paper)) {
         if (barVisible) {
             Row(Modifier.fillMaxWidth().height(48.dp).padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                TextButton(onClick = onBack) { Text("‹", fontSize = 24.sp, color = colors.ink) }
+                TextButton(onClick = onBack) { Text(stringResource(R.string.back_symbol), fontSize = 24.sp, color = colors.ink) }
                 Text(paper.title ?: paper.paperKey, Modifier.weight(1f), fontFamily = FontFamily.Serif,
                     maxLines = 1, overflow = TextOverflow.Ellipsis, color = colors.ink)
-                Text("$activePage / ${pages?.pageCount ?: 0}", color = colors.inkSoft, fontSize = 12.sp)
+                Text(stringResource(R.string.page_count, activePage, pages?.pageCount ?: 0), color = colors.inkSoft, fontSize = 12.sp)
                 Box {
-                    TextButton(onClick = { viewMenu = true }) { Text("보기", fontSize = 12.sp, color = colors.ink) }
+                    TextButton(onClick = { viewMenu = true }) { Text(stringResource(R.string.view), fontSize = 12.sp, color = colors.ink) }
                     DropdownMenu(viewMenu, onDismissRequest = { viewMenu = false }) {
-                        DropdownMenuItem(text = { Text("원문") }, onClick = { viewMode = "original"; viewMenu = false })
+                        DropdownMenuItem(text = { Text(stringResource(R.string.original)) }, onClick = { viewMode = "original"; viewMenu = false })
                         if (translatedBlocks.isNotEmpty()) {
-                            DropdownMenuItem(text = { Text("번역") }, onClick = { viewMode = "translation"; viewMenu = false })
+                            DropdownMenuItem(text = { Text(stringResource(R.string.translation)) }, onClick = { viewMode = "translation"; viewMenu = false })
                         }
                     }
                 }
-                TextButton(onClick = { panelTab = "notes"; panel = true }) { Text("노트", fontSize = 12.sp, color = colors.ink) }
-                TextButton(onClick = { panelTab = "questions"; panel = true }) { Text("질문", fontSize = 12.sp, color = colors.ink) }
+                TextButton(onClick = { panelTab = "notes"; panel = true }) { Text(stringResource(R.string.notes), fontSize = 12.sp, color = colors.ink) }
+                TextButton(onClick = { panelTab = "questions"; panel = true }) { Text(stringResource(R.string.questions), fontSize = 12.sp, color = colors.ink) }
                 Box {
-                    TextButton(onClick = { moreMenu = true }) { Text("⋯", fontSize = 20.sp, color = colors.ink) }
+                    TextButton(onClick = { moreMenu = true }) { Text(stringResource(R.string.more_symbol), fontSize = 20.sp, color = colors.ink) }
                     DropdownMenu(moreMenu, onDismissRequest = { moreMenu = false }) {
-                        DropdownMenuItem(text = { Text("폭 맞춤") }, onClick = { zoom = 1f; moreMenu = false })
-                        DropdownMenuItem(text = { Text(if (panel) "패널 닫기" else "패널 열기") },
+                        DropdownMenuItem(text = { Text(stringResource(R.string.fit_width)) }, onClick = { zoom = 1f; moreMenu = false })
+                        DropdownMenuItem(text = { Text(stringResource(if (panel) R.string.close_panel else R.string.open_panel)) },
                             onClick = { panel = !panel; moreMenu = false })
                     }
                 }
@@ -221,7 +222,7 @@ fun ReaderScreen(app: ReaderApplication, paper: LibraryEntity, onBack: () -> Uni
                     LazyColumn(state = translatedList, modifier = Modifier.fillMaxSize().background(colors.paper)) {
                         items(translatedBlocks) { block ->
                             Column(Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 10.dp)) {
-                                Text("p.${block.page}", color = colors.inkSoft, fontSize = 11.sp)
+                                Text(stringResource(R.string.page_label, block.page), color = colors.inkSoft, fontSize = 11.sp)
                                 Text(block.text, fontFamily = FontFamily.Serif,
                                     fontWeight = if (block.kind == "heading") FontWeight.Bold else FontWeight.Normal,
                                     fontSize = if (block.kind == "heading") 19.sp else 16.sp, color = colors.ink)
@@ -299,7 +300,7 @@ fun ReaderScreen(app: ReaderApplication, paper: LibraryEntity, onBack: () -> Uni
     selected?.let { (page, selection) ->
         androidx.compose.material3.AlertDialog(
             onDismissRequest = { selected = null },
-            title = { Text(selection.text.ifBlank { "선택 영역" }, maxLines = 3) },
+            title = { Text(selection.text.ifBlank { stringResource(R.string.selected_region) }, maxLines = 3) },
             text = {
                 Column {
                     Row {
@@ -307,25 +308,25 @@ fun ReaderScreen(app: ReaderApplication, paper: LibraryEntity, onBack: () -> Uni
                             TextButton(onClick = {
                                 scope.launch { saveHighlight(app, paper.paperKey, page, selection, color) }
                                 selected = null
-                            }) { Text("●", color = highlightColor(color), fontSize = 28.sp) }
+                            }) { Text(stringResource(R.string.highlight_symbol), color = highlightColor(color), fontSize = 28.sp) }
                         }
                     }
-                    OutlinedTextField(memo, { memo = it }, label = { Text("메모") })
+                    OutlinedTextField(memo, { memo = it }, label = { Text(stringResource(R.string.memo)) })
                     Row {
                         TextButton(onClick = {
                             scope.launch { saveMemo(app, paper.paperKey, page, selection, memo) }
                             selected = null
                             memo = ""
-                        }) { Text("메모") }
+                        }) { Text(stringResource(R.string.memo)) }
                         TextButton(onClick = {
                             selected = null
                             panel = true
                             panelTab = "questions"
-                        }) { Text("질문") }
+                        }) { Text(stringResource(R.string.questions)) }
                         TextButton(onClick = {
-                            clipboard.setPrimaryClip(android.content.ClipData.newPlainText("PDF", selection.text))
+                            clipboard.setPrimaryClip(android.content.ClipData.newPlainText(app.getString(R.string.clipboard_pdf), selection.text))
                             selected = null
-                        }) { Text("복사") }
+                        }) { Text(stringResource(R.string.copy)) }
                     }
                 }
             },
@@ -334,7 +335,7 @@ fun ReaderScreen(app: ReaderApplication, paper: LibraryEntity, onBack: () -> Uni
                     scope.launch { saveHighlight(app, paper.paperKey, page, selection, "yellow", memo) }
                     selected = null
                     memo = ""
-                }) { Text("저장") }
+                }) { Text(stringResource(R.string.save)) }
             },
         )
     }

@@ -26,6 +26,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontFamily
@@ -66,24 +67,24 @@ fun ConnectScreen(
             }.onSuccess {
                 onConnected()
             }.onFailure {
-                error = it.message ?: "연결 실패"
+                error = it.message ?: app.getString(R.string.connection_failed)
                 busy = false
             }
         }
     }
 
     Column(Modifier.fillMaxSize().padding(24.dp), verticalArrangement = Arrangement.Center) {
-        Text("Fractal", fontFamily = FontFamily.Serif, fontSize = 38.sp, color = colors.ink)
+        Text(stringResource(R.string.app_name), fontFamily = FontFamily.Serif, fontSize = 38.sp, color = colors.ink)
         Spacer(Modifier.height(12.dp))
-        Text("PC의 Fractal과 연결합니다", color = colors.inkSoft)
+        Text(stringResource(R.string.connect_subtitle), color = colors.inkSoft)
         Spacer(Modifier.height(28.dp))
         if (scanning && cameraGranted) {
             QrCamera(onFound = ::pairQr, modifier = Modifier.fillMaxWidth().height(300.dp))
         }
         if (manual) {
-            OutlinedTextField(url, { url = it }, label = { Text("허브 주소") }, singleLine = true,
+            OutlinedTextField(url, { url = it }, label = { Text(stringResource(R.string.hub_address)) }, singleLine = true,
                 modifier = Modifier.fillMaxWidth())
-            OutlinedTextField(code, { code = it }, label = { Text("연결 코드") }, singleLine = true,
+            OutlinedTextField(code, { code = it }, label = { Text(stringResource(R.string.connection_code)) }, singleLine = true,
                 modifier = Modifier.fillMaxWidth())
             Spacer(Modifier.height(12.dp))
             Button(enabled = !busy && code.isNotBlank(), onClick = {
@@ -93,19 +94,19 @@ fun ConnectScreen(
                         app.client.claim(url, code, deviceName = android.os.Build.MODEL)
                         app.sync.syncOnce()
                     }.onSuccess { onConnected() }.onFailure {
-                        error = it.message ?: "연결 실패"
+                        error = it.message ?: app.getString(R.string.connection_failed)
                         busy = false
                     }
                 }
-            }) { Text("연결") }
+            }) { Text(stringResource(R.string.connect)) }
         } else {
             Button(onClick = {
                 if (cameraGranted) scanning = true else requestCamera()
-            }) { Text("QR 스캔") }
+            }) { Text(stringResource(R.string.scan_qr)) }
             TextButton(onClick = {
                 manual = true
                 scanning = false
-            }) { Text("주소와 코드 직접 입력") }
+            }) { Text(stringResource(R.string.enter_address_code)) }
         }
         if (error.isNotEmpty()) Text(error, color = colors.accent)
     }

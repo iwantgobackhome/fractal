@@ -31,6 +31,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,6 +46,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -61,6 +64,7 @@ fun SidePanel(
     modifier: Modifier = Modifier,
 ) {
     val colors = LocalFractalColors.current
+    val answerLanguage = if (LocalConfiguration.current.locales[0].language == "ko") "ko" else "en"
     val scope = rememberCoroutineScope()
     var question by remember { mutableStateOf("") }
     var answer by remember { mutableStateOf("") }
@@ -83,8 +87,8 @@ fun SidePanel(
     }
     CompositionLocalProvider(LocalContentColor provides colors.ink) { Column(modifier.background(colors.paper)) {
         Row(Modifier.fillMaxWidth()) {
-            TextButton(onClick = { onTabChange("notes") }) { Text("노트", color = if (tab == "notes") colors.ink else colors.inkSoft) }
-            TextButton(onClick = { onTabChange("questions") }) { Text("질문", color = if (tab == "questions") colors.ink else colors.inkSoft) }
+            TextButton(onClick = { onTabChange("notes") }) { Text(stringResource(R.string.notes), color = if (tab == "notes") colors.ink else colors.inkSoft) }
+            TextButton(onClick = { onTabChange("questions") }) { Text(stringResource(R.string.questions), color = if (tab == "questions") colors.ink else colors.inkSoft) }
         }
         HorizontalDivider(color = colors.rule)
         if (tab == "notes") {
@@ -92,14 +96,14 @@ fun SidePanel(
                 items(annotations.filter { it.kind == "highlight" || it.kind == "memo" }, key = { it.id }) { row ->
                     val json = runCatching { WireJson.format.parseToJsonElement(row.json).jsonObject }.getOrNull()
                     Column(Modifier.fillMaxWidth().clickable { onJump(row.page) }.padding(16.dp)) {
-                        Text("p.${row.page}", color = colors.inkSoft, fontSize = 12.sp)
                         val quote = json?.get("quote")?.jsonPrimitive?.content
                             ?: json?.get("text")?.jsonPrimitive?.content.orEmpty()
                         if (quote.isBlank() && row.kind == "highlight") {
-                            Text("p.${row.page} 영역", color = colors.inkSoft, fontSize = 13.sp)
+                            Text(stringResource(R.string.region_label, row.page), color = colors.inkSoft, fontSize = 13.sp)
                             RegionThumbnail(pages, row.page, row.json)
                         } else {
-                            Text(quote.ifBlank { "선택 영역" }, fontFamily = FontFamily.Serif)
+                            Text(stringResource(R.string.page_label, row.page), color = colors.inkSoft, fontSize = 12.sp)
+                            Text(if (quote.isBlank()) stringResource(R.string.selected_region) else quote, fontFamily = FontFamily.Serif)
                         }
                         json?.get("note")?.jsonPrimitive?.content?.takeIf { it != "null" }?.let {
                             Text(it, color = colors.inkSoft)
@@ -122,7 +126,7 @@ fun SidePanel(
                         }
                     }
                 }
-                if (app.credentials.load() == null) Text("질문하려면 허브가 필요합니다", Modifier.padding(16.dp), color = colors.inkSoft)
+                if (app.credentials.load() == null) Text(stringResource(R.string.questions_need_hub), Modifier.padding(16.dp), color = colors.inkSoft)
                 Row(Modifier.fillMaxWidth()) {
                     models.forEach { (provider, name) ->
                         TextButton(onClick = { model = name }) {
@@ -131,7 +135,7 @@ fun SidePanel(
                     }
                 }
                 Row(Modifier.fillMaxWidth()) {
-                    OutlinedTextField(question, { question = it }, label = { Text("질문") },
+                    OutlinedTextField(question, { question = it }, label = { Text(stringResource(R.string.questions)) },
                         modifier = Modifier.weight(1f), maxLines = 3)
                     TextButton(enabled = !busy && question.isNotBlank(), onClick = {
                         val asked = question
@@ -144,6 +148,7 @@ fun SidePanel(
                                     val selection = models.firstOrNull { it.second == model }
                                     val body = buildJsonObject {
                                         put("question", asked)
+                                        put("answerLanguage", answerLanguage)
                                         if (selection != null) {
                                             put("selection", buildJsonObject {
                                                 put("provider", selection.first)
@@ -151,8 +156,14 @@ fun SidePanel(
                                             })
                                         }
                                     }
-                                    app.client.execute("/api/papers/${HubClient.keyPath(paperKey)}/ask", "POST", body).use { response ->
-                                        if (!response.isSuccessful) error("HTTP ${response.code}")
+                                    val path = "/api/papers/${HubClient.keyPath(paperKey)}/ask"
+                                    var response = app.client.execute(path, "POST", body)
+                                    if (response.code == 400) {
+                                        response.close()
+                                        response = app.client.execute(path, "POST", JsonObject(body.filterKeys { it != "answerLanguage" }))
+                                    }
+                                    response.use {
+                                        if (!response.isSuccessful) error(app.getString(R.string.http_error, response.code))
                                         val parser = SseParser()
                                         response.body?.charStream()?.buffered()?.forEachLine { line ->
                                             parser.consume(line)?.let { event ->
@@ -162,10 +173,10 @@ fun SidePanel(
                                         }
                                     }
                                 }
-                            }.onFailure { answer = it.message ?: "질문 실패" }
+                            }.onFailure { answer = it.message ?: app.getString(R.string.question_failed) }
                             busy = false
                         }
-                    }) { Text("↗") }
+                    }) { Text(stringResource(R.string.send_symbol)) }
                 }
             }
         }
@@ -193,7 +204,7 @@ private fun RegionThumbnail(pages: PdfPages?, page: Int, annotationJson: String)
         }
     }
     cropped?.let { image ->
-        Image(image.asImageBitmap(), "p.$page 영역 미리보기",
+        Image(image.asImageBitmap(), stringResource(R.string.region_preview, page),
             Modifier.padding(top = 6.dp).width(240.dp).height(64.dp), contentScale = ContentScale.Fit)
     }
 }

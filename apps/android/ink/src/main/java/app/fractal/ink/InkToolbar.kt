@@ -45,6 +45,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -54,6 +55,23 @@ import app.fractal.design.LocalFractalColors
 
 private val palette = listOf("#1C1B19", "#233F65", "#A2362A", "#2F6B45", "#75519C", "#966A37", "#F5DC6B", "#A8CBEF")
 private fun colorOf(hex: String): Color = try { Color(AndroidColor.parseColor(hex)) } catch (_: Exception) { Color.Black }
+private fun toolLabel(item: InkTool): Int = when (item) {
+    InkTool.Ballpoint -> R.string.tool_ballpoint
+    InkTool.Fountain -> R.string.tool_fountain
+    InkTool.Pencil -> R.string.tool_pencil
+    InkTool.Highlighter -> R.string.tool_highlighter
+    InkTool.Eraser -> R.string.tool_eraser
+    InkTool.Shape -> R.string.tool_shape
+    InkTool.Lasso -> R.string.tool_lasso
+}
+private fun eraserLabel(mode: EraserMode): Int =
+    if (mode == EraserMode.Stroke) R.string.eraser_stroke else R.string.eraser_partial
+private fun shapeLabel(shape: ShapeMode): Int = when (shape) {
+    ShapeMode.Line -> R.string.shape_line
+    ShapeMode.Arrow -> R.string.shape_arrow
+    ShapeMode.Rectangle -> R.string.shape_rectangle
+    ShapeMode.Ellipse -> R.string.shape_ellipse
+}
 private fun icon(name: InkTool): ImageVector = ImageVector.Builder(name = name.name, defaultWidth = 24.dp, defaultHeight = 24.dp, viewportWidth = 24f, viewportHeight = 24f).apply {
     path(fill = null, stroke = androidx.compose.ui.graphics.SolidColor(Color.Black), strokeLineWidth = 1.7f, strokeLineCap = StrokeCap.Round) {
         when (name) {
@@ -72,19 +90,23 @@ private fun icon(name: InkTool): ImageVector = ImageVector.Builder(name = name.n
 @Composable
 fun InkToolbar(state: InkPageState, tool: InkToolState, modifier: Modifier = Modifier, onAsk: (List<InkStroke>, InkBounds) -> Unit = { _, _ -> }) {
     val colors = LocalFractalColors.current
+    val addColorLabel = stringResource(R.string.add_color)
+    val undoLabel = stringResource(R.string.undo)
+    val redoLabel = stringResource(R.string.redo)
     var popover by remember { mutableStateOf<InkTool?>(null) }
     var colorDialog by remember { mutableStateOf(false) }
     var collapsed by remember { mutableStateOf(false) }
     val body: @Composable (Boolean) -> Unit = { vertical ->
         @Composable fun ToolButton(item: InkTool) {
+            val label = stringResource(toolLabel(item))
             Box {
                 Box(
                     Modifier.size(48.dp).clickable {
                         if (tool.active == item) popover = item else { tool.active = item; popover = null }
-                    }.semantics { contentDescription = item.name },
+                    }.semantics { contentDescription = label },
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(icon(item), item.name, tint = colors.ink, modifier = Modifier.size(24.dp))
+                    Icon(icon(item), null, tint = colors.ink, modifier = Modifier.size(24.dp))
                     Canvas(Modifier.align(if (vertical) Alignment.CenterStart else Alignment.BottomCenter)
                         .then(if (vertical) Modifier.width(2.dp).height(24.dp) else Modifier.width(24.dp).height(2.dp))) {
                         if (tool.active == item) drawRect(colors.ink)
@@ -92,25 +114,29 @@ fun InkToolbar(state: InkPageState, tool: InkToolState, modifier: Modifier = Mod
                 }
                 DropdownMenu(expanded = popover == item, onDismissRequest = { popover = null }) {
                     if (item == InkTool.Eraser) {
-                        EraserMode.entries.forEach { mode -> DropdownMenuItem(text = { Text(mode.name) }, onClick = { tool.eraserMode = mode; popover = null }) }
-                        DropdownMenuItem(text = { Text("S Pen button: ${tool.buttonEraserMode.name}") }, onClick = {
+                        EraserMode.entries.forEach { mode -> DropdownMenuItem(text = { Text(stringResource(eraserLabel(mode))) }, onClick = { tool.eraserMode = mode; popover = null }) }
+                        DropdownMenuItem(text = { Text(stringResource(R.string.spen_eraser_mode,
+                            stringResource(eraserLabel(tool.buttonEraserMode)))) }, onClick = {
                             tool.buttonEraserMode = if (tool.buttonEraserMode == EraserMode.Stroke) EraserMode.Partial else EraserMode.Stroke
                         })
                     } else if (item == InkTool.Shape) {
-                        ShapeMode.entries.forEach { shape -> DropdownMenuItem(text = { Text(shape.name) }, onClick = { tool.shapeMode = shape; popover = null }) }
+                        ShapeMode.entries.forEach { shape -> DropdownMenuItem(text = { Text(stringResource(shapeLabel(shape))) }, onClick = { tool.shapeMode = shape; popover = null }) }
                     }
                     val widths = when (item) {
                         InkTool.Highlighter -> listOf(.009f,.015f,.023f)
                         InkTool.Eraser -> listOf(.008f,.014f,.025f)
                         else -> listOf(.0015f,.003f,.005f)
                     }
-                    widths.forEachIndexed { index, value -> DropdownMenuItem(text = { Text(listOf("Fine","Medium","Broad")[index]) }, onClick = { tool.width = value; popover = null }) }
+                    val widthLabels = listOf(R.string.width_fine, R.string.width_medium, R.string.width_broad)
+                    widths.forEachIndexed { index, value -> DropdownMenuItem(text = { Text(stringResource(widthLabels[index])) }, onClick = { tool.width = value; popover = null }) }
                     Slider(value = tool.width.coerceIn(.001f,.03f), onValueChange = { tool.width = it }, valueRange = .001f..03f, modifier = Modifier.width(180.dp).padding(horizontal = 12.dp))
                 }
             }
         }
         @Composable fun Swatch(hex: String) {
-            Box(Modifier.size(48.dp).clickable { tool.chooseColor(hex); if (state.selectedIds.isNotEmpty()) state.recolorSelection(hex) }, contentAlignment = Alignment.Center) {
+            val description = stringResource(R.string.color_swatch, hex)
+            Box(Modifier.size(48.dp).clickable { tool.chooseColor(hex); if (state.selectedIds.isNotEmpty()) state.recolorSelection(hex) }
+                .semantics { contentDescription = description }, contentAlignment = Alignment.Center) {
                 Box(Modifier.size(24.dp).then(if (tool.color == hex) Modifier.border(2.dp,colors.ink,CircleShape) else Modifier)
                     .padding(2.dp).size(20.dp).background(colorOf(hex),CircleShape))
             }
@@ -123,13 +149,13 @@ fun InkToolbar(state: InkPageState, tool: InkToolState, modifier: Modifier = Mod
                 InkTool.entries.forEach { ToolButton(it) }
                 Spacer(Modifier.height(8.dp))
                 (listOf(tool.color) + tool.recentColors.filterNot { it == tool.color }.take(4)).forEach { Swatch(it) }
-                TextButton(onClick = { colorDialog = true }, modifier = Modifier.size(48.dp)) { Text("+", color = colors.ink, fontSize = 24.sp) }
-                TextButton(onClick = { state.undo() }, modifier = Modifier.size(48.dp)) { Text("↶", color = colors.ink, fontSize = 24.sp) }
-                TextButton(onClick = { state.redo() }, modifier = Modifier.size(48.dp)) { Text("↷", color = colors.ink, fontSize = 24.sp) }
+                TextButton(onClick = { colorDialog = true }, modifier = Modifier.size(48.dp).semantics { contentDescription = addColorLabel }) { Text(stringResource(R.string.add_symbol), color = colors.ink, fontSize = 24.sp) }
+                TextButton(onClick = { state.undo() }, modifier = Modifier.size(48.dp).semantics { contentDescription = undoLabel }) { Text(stringResource(R.string.undo_symbol), color = colors.ink, fontSize = 24.sp) }
+                TextButton(onClick = { state.redo() }, modifier = Modifier.size(48.dp).semantics { contentDescription = redoLabel }) { Text(stringResource(R.string.redo_symbol), color = colors.ink, fontSize = 24.sp) }
                 if (state.selectedIds.isNotEmpty()) {
-                    TextButton(onClick = { state.duplicateSelection() }) { Text("Copy", color=colors.ink) }
-                    TextButton(onClick = { state.deleteSelection() }) { Text("Delete", color=colors.ink) }
-                    TextButton(onClick = { state.selection().bounds()?.let { onAsk(state.selection(),it) } }) { Text("Ask", color=colors.accent) }
+                    TextButton(onClick = { state.duplicateSelection() }) { Text(stringResource(R.string.copy_selection), color=colors.ink) }
+                    TextButton(onClick = { state.deleteSelection() }) { Text(stringResource(R.string.delete_selection), color=colors.ink) }
+                    TextButton(onClick = { state.selection().bounds()?.let { onAsk(state.selection(),it) } }) { Text(stringResource(R.string.ask_selection), color=colors.accent) }
                 }
                 }
             }
@@ -137,9 +163,9 @@ fun InkToolbar(state: InkPageState, tool: InkToolState, modifier: Modifier = Mod
             Row(Modifier.fillMaxWidth().background(colors.paper).border(.5.dp,colors.rule).horizontalScroll(rememberScrollState()), verticalAlignment = Alignment.CenterVertically) {
                 InkTool.entries.forEach { ToolButton(it) }
                 (listOf(tool.color) + tool.recentColors.filterNot { it == tool.color }.take(4)).forEach { Swatch(it) }
-                TextButton(onClick = { colorDialog = true }, modifier = Modifier.size(48.dp)) { Text("+", color=colors.ink, fontSize = 24.sp) }
-                TextButton(onClick = { state.undo() }, modifier = Modifier.size(48.dp)) { Text("↶", color=colors.ink, fontSize = 24.sp) }
-                TextButton(onClick = { state.redo() }, modifier = Modifier.size(48.dp)) { Text("↷", color=colors.ink, fontSize = 24.sp) }
+                TextButton(onClick = { colorDialog = true }, modifier = Modifier.size(48.dp).semantics { contentDescription = addColorLabel }) { Text(stringResource(R.string.add_symbol), color=colors.ink, fontSize = 24.sp) }
+                TextButton(onClick = { state.undo() }, modifier = Modifier.size(48.dp).semantics { contentDescription = undoLabel }) { Text(stringResource(R.string.undo_symbol), color=colors.ink, fontSize = 24.sp) }
+                TextButton(onClick = { state.redo() }, modifier = Modifier.size(48.dp).semantics { contentDescription = redoLabel }) { Text(stringResource(R.string.redo_symbol), color=colors.ink, fontSize = 24.sp) }
             }
         }
     }
@@ -155,7 +181,7 @@ fun InkToolbar(state: InkPageState, tool: InkToolState, modifier: Modifier = Mod
     if (colorDialog) {
         var value by remember { mutableStateOf(tool.color) }
         fun channel(shift: Int): Float = runCatching { ((AndroidColor.parseColor(value) shr shift) and 255) / 255f }.getOrDefault(0f)
-        AlertDialog(onDismissRequest = { colorDialog = false }, title = { Text("Custom colour") },
+        AlertDialog(onDismissRequest = { colorDialog = false }, title = { Text(stringResource(R.string.custom_color)) },
             text = { Column {
                 Row(Modifier.horizontalScroll(rememberScrollState())) {
                     palette.forEach { preset ->
@@ -163,10 +189,10 @@ fun InkToolbar(state: InkPageState, tool: InkToolState, modifier: Modifier = Mod
                     }
                 }
                 Box(Modifier.fillMaxWidth().height(28.dp).background(colorOf(value)))
-                OutlinedTextField(value, { value = it }, label = { Text("Hex colour") }, singleLine = true)
-                listOf("Red" to 16,"Green" to 8,"Blue" to 0).forEach { (name,shift) ->
+                OutlinedTextField(value, { value = it }, label = { Text(stringResource(R.string.hex_color)) }, singleLine = true)
+                listOf(R.string.red to 16,R.string.green to 8,R.string.blue to 0).forEach { (name,shift) ->
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(name,modifier=Modifier.width(52.dp))
+                        Text(stringResource(name),modifier=Modifier.width(52.dp))
                         Slider(channel(shift), onValueChange = { next ->
                             val current = runCatching { AndroidColor.parseColor(value) }.getOrDefault(AndroidColor.BLACK)
                             val mask = 255 shl shift
@@ -178,7 +204,7 @@ fun InkToolbar(state: InkPageState, tool: InkToolState, modifier: Modifier = Mod
             } },
             confirmButton = { TextButton(onClick = {
                 if (runCatching { AndroidColor.parseColor(value) }.isSuccess) { tool.chooseColor(value); colorDialog = false }
-            }) { Text("Apply") } },
-            dismissButton = { TextButton(onClick = { colorDialog = false }) { Text("Cancel") } })
+            }) { Text(stringResource(R.string.apply)) } },
+            dismissButton = { TextButton(onClick = { colorDialog = false }) { Text(stringResource(R.string.cancel)) } })
     }
 }

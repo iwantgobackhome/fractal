@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tool_ballpoint">볼펜</string>
+    <string name="tool_fountain">만년필</string>
+    <string name="tool_pencil">연필</string>
+    <string name="tool_highlighter">형광펜</string>
+    <string name="tool_eraser">지우개</string>
+    <string name="tool_shape">도형</string>
+    <string name="tool_lasso">올가미</string>
+    <string name="eraser_stroke">획 지우개</string>
+    <string name="eraser_partial">부분 지우개</string>
+    <string name="spen_eraser_mode">S Pen 버튼: %1$s</string>
+    <string name="shape_line">선</string>
+    <string name="shape_arrow">화살표</string>
+    <string name="shape_rectangle">사각형</string>
+    <string name="shape_ellipse">타원</string>
+    <string name="width_fine">가늘게</string>
+    <string name="width_medium">보통</string>
+    <string name="width_broad">굵게</string>
+    <string name="add_color">색상 추가</string>
+    <string name="undo">실행 취소</string>
+    <string name="redo">다시 실행</string>
+    <string name="color_swatch">색상 %1$s</string>
+    <string name="copy_selection">복사</string>
+    <string name="delete_selection">삭제</string>
+    <string name="ask_selection">질문</string>
+    <string name="custom_color">사용자 지정 색상</string>
+    <string name="hex_color">16진수 색상</string>
+    <string name="red">빨강</string>
+    <string name="green">초록</string>
+    <string name="blue">파랑</string>
+    <string name="apply">적용</string>
+    <string name="cancel">취소</string>
+    <string name="add_symbol">+</string>
+    <string name="undo_symbol">↶</string>
+    <string name="redo_symbol">↷</string>
+</resources>
