@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { mkdtempSync, rmSync, mkdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -172,7 +172,7 @@ describe('SQLite library', () => {
     expect(store.getPaper(p.paperKey)?.title).toBe(p.title);
     expect(store.listBlocks(p.paperKey)).toHaveLength(1);
     expect(store.listAnnotations(p.paperKey)[0]).toMatchObject({ id, kind: 'highlight' });
-    expect(store.db.prepare('SELECT count(*) n FROM migrations').get()).toMatchObject({ n: 10 });
+    expect(store.db.prepare('SELECT count(*) n FROM migrations').get()).toMatchObject({ n: 11 });
     store.db.close();
     const again = new SqlitePaperStore(next, old);
     expect(again.listPapers()).toHaveLength(1);
@@ -221,6 +221,7 @@ describe('SQLite library', () => {
     expect(second.paperKey).toBe(first.paperKey);
     expect(store.listPapers()).toHaveLength(1);
     expect(store.getPdf(first.paperKey)).toEqual(bytes);
+    expect(store.getLibrary(first.paperKey)).toMatchObject({ saved: false, savedAt: null, lastReadAt: null });
     store.db.close();
   });
   it('deduplicates URL and upload by PDF hash', async () => {
@@ -238,6 +239,99 @@ describe('SQLite library', () => {
     expect(opened.paperKey).toBe(uploaded.paperKey);
     expect(store.listPapers()).toHaveLength(1);
     store.db.close();
+  });
+  it('acquires a PDF for a metadata-only DOI match while preserving saved state and memberships', async () => {
+    const store = new SqlitePaperStore(root());
+    const bytes = pdf();
+    try {
+      const first = await ingestPdf(store, bytes, 'upload://first', metadataFetch);
+      const record = store.getLibrary(first.paperKey)!;
+      store.deletePaper(first.paperKey);
+      store.putFolder({ id: 'metadata-folder', name: 'Metadata' });
+      store.publishMetadata({ ...record, saved: true, collections: ['metadata-folder'], tags: ['kept'] });
+      expect(store.getPaper(first.paperKey)).toBeNull();
+      const acquired = await ingestPdf(store, bytes, 'upload://another-source', metadataFetch);
+      expect(acquired.paperKey).toBe(first.paperKey);
+      expect(store.getPdf(first.paperKey)).toEqual(bytes);
+      expect(store.getLibrary(first.paperKey)).toMatchObject({ saved: true, tags: ['kept'], collections: ['metadata-folder'] });
+    } finally {
+      store.db.close();
+    }
+  });
+  it('does not return null for an arXiv metadata-only duplicate during URL acquisition', async () => {
+    const store = new SqlitePaperStore(root());
+    try {
+      const templatePaper = paper();
+      store.savePaper(templatePaper);
+      const template = store.getLibrary(templatePaper.paperKey)!;
+      const candidate: Paper = {
+        ...templatePaper,
+        paperKey: '2501.00001v1',
+        sourceKind: 'arxiv',
+        arxivId: '2501.00001',
+        version: 1,
+        sourceUrl: 'https://arxiv.org/pdf/2501.00001v1',
+      };
+      store.publishMetadata({
+        ...template,
+        id: randomUUID(),
+        paperKey: candidate.paperKey,
+        arxivId: candidate.arxivId,
+        bibtexKey: 'metadata-arxiv',
+        saved: true,
+      });
+      const acquired = await ingestUrl(
+        store,
+        candidate.sourceUrl,
+        {
+          resolve: async () => candidate,
+          acquire: async () => ({ paper: candidate, blocks: [], pdf: Buffer.from('pdf') }),
+          reextract: async () => ({ paper: candidate, blocks: [] }),
+        },
+        metadataFetch,
+      );
+      expect(acquired.paperKey).toBe(candidate.paperKey);
+      expect(store.getLibrary(candidate.paperKey)?.saved).toBe(true);
+    } finally {
+      store.db.close();
+    }
+  });
+  it('rejects a catalog-to-reader identity mismatch before creating an unrelated duplicate', async () => {
+    const store = new SqlitePaperStore(root());
+    vi.stubEnv('FRACTAL_CONTACT_EMAIL', 'test@example.org');
+    try {
+      const templatePaper = paper();
+      store.savePaper(templatePaper);
+      const template = store.getLibrary(templatePaper.paperKey)!;
+      const catalog = store.publishMetadata({
+        ...template,
+        id: randomUUID(),
+        paperKey: 'catalog-only',
+        doi: '10.1234/catalog',
+        bibtexKey: 'catalog',
+        saved: true,
+        tags: ['kept'],
+      });
+      const candidate = paper(`pdf-${hash('different-url')}-${hash('different-pdf')}`);
+      const fetcher = (async (url: string) =>
+        ({
+          ok: true,
+          json: async () =>
+            url.includes('crossref') ? { message: { title: ['Catalog'], author: [] } } : { best_oa_location: { url_for_pdf: candidate.sourceUrl } },
+        }) as Response) as typeof fetch;
+      const acquirer = {
+        resolve: async () => candidate,
+        acquire: async () => ({ paper: candidate, blocks: [], pdf: Buffer.from('pdf') }),
+        reextract: async () => ({ paper: candidate, blocks: [] }),
+      };
+      await expect(ingestUrl(store, 'doi:10.1234/catalog', acquirer, fetcher)).rejects.toThrow('linked');
+      expect(store.getPaper(candidate.paperKey)).toBeNull();
+      expect(store.listPapers()).toEqual([templatePaper.paperKey]);
+      expect(store.getLibrary(catalog.paperKey)).toEqual(catalog);
+    } finally {
+      vi.unstubAllEnvs();
+      store.db.close();
+    }
   });
   it('exports bibliography and annotations and applies sync LWW and tombstones', () => {
     const store = new SqlitePaperStore(root()),

@@ -366,7 +366,16 @@ export class ChatService {
         ...input,
         signal: flight.controller.signal,
         onText: (text) => {
-          if (!flight.settled && typeof text === 'string') flight.message = { ...flight.message, text: text.slice(0, MAX_ANSWER_CHARS) };
+          if (!flight.settled && typeof text === 'string') {
+            flight.message = { ...flight.message, text: text.slice(0, MAX_ANSWER_CHARS) };
+            try {
+              const stored = this.store.getConversation(paperKey);
+              if (stored?.conversationId === flight.conversationId)
+                this.store.saveConversationProgress(paperKey, { ...stored, messages: [...stored.messages, flight.message] });
+            } catch (cause) {
+              this.log({ event: 'chat', action: 'answer', paperKey, code: toAppError(cause).code });
+            }
+          }
         },
       });
       if (flight.settled) return;

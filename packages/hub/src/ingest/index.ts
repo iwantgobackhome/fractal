@@ -130,8 +130,8 @@ export async function ingestPdf(store: SqlitePaperStore, bytes: Buffer, sourceUr
   }
   const metadata = found.doi ? await resolveDoi(found.doi, fetcher) : null;
   const duplicate = store.findDuplicate(found.doi, found.arxivId, hash);
-  if (duplicate) {
-    const existing = store.getPaper(duplicate)!;
+  const existing = duplicate ? store.getPaper(duplicate) : null;
+  if (duplicate && existing) {
     if (!store.getPdf(duplicate)) store.savePdf(duplicate, bytes);
     store.patchLibrary(duplicate, {
       doi: found.doi ?? metadata?.doi ?? undefined,
@@ -143,7 +143,9 @@ export async function ingestPdf(store: SqlitePaperStore, bytes: Buffer, sourceUr
     });
     return existing;
   }
-  const paperKey = `pdf-${sha(Buffer.from(sourceUrl))}-${hash}`;
+  if (duplicate && !/^pdf-[a-f0-9]{64}-[a-f0-9]{64}$/.test(duplicate))
+    throw invalidInput('Metadata publication must be linked to a PDF reader identity before upload acquisition');
+  const paperKey = duplicate ?? `pdf-${sha(Buffer.from(sourceUrl))}-${hash}`;
   const extracted = await extractPdf(bytes, paperKey);
   const now = new Date().toISOString();
   const paper: Paper = {
@@ -172,11 +174,18 @@ export async function ingestPdf(store: SqlitePaperStore, bytes: Buffer, sourceUr
   });
   return paper;
 }
-export async function ingestUrl(store: SqlitePaperStore, input: string, acquirer: PaperAcquirer, fetcher: typeof fetch = fetch): Promise<Paper> {
+export async function ingestUrl(
+  store: SqlitePaperStore,
+  input: string,
+  acquirer: PaperAcquirer,
+  fetcher: typeof fetch = fetch,
+  expectedMetadataKey?: string,
+): Promise<Paper> {
   if (/^10\./.test(input) || /^doi:/i.test(input) || /^https?:\/\/(?:dx\.)?doi\.org\//i.test(input)) {
     const meta = await resolveDoi(input, fetcher);
     if (!meta.pdfUrl) throw invalidInput('이 DOI에서 무료로 공개된 PDF를 찾지 못했습니다. PDF 파일을 직접 올려 주세요.');
-    const result = await ingestUrl(store, meta.pdfUrl, acquirer, fetcher);
+    const metadataKey = store.findDuplicate(meta.doi, null, null);
+    const result = await ingestUrl(store, meta.pdfUrl, acquirer, fetcher, metadataKey ?? expectedMetadataKey);
     store.patchLibrary(result.paperKey, {
       doi: meta.doi,
       title: meta.title,
@@ -192,10 +201,19 @@ export async function ingestUrl(store: SqlitePaperStore, input: string, acquirer
   }
   const resolved = await acquirer.resolve(input);
   const duplicate = store.findDuplicate(null, resolved.arxivId, resolved.pdfSha256);
-  if (duplicate) return store.getPaper(duplicate)!;
+  const existing = duplicate ? store.getPaper(duplicate) : null;
+  if (existing) {
+    if (expectedMetadataKey && existing.paperKey !== expectedMetadataKey)
+      throw invalidInput('Metadata publication must be linked to this reader revision before acquisition');
+    return existing;
+  }
   const acquired = await acquirer.acquire(resolved.paperKey, input);
+  if (expectedMetadataKey && acquired.paper.paperKey !== expectedMetadataKey)
+    throw invalidInput('Metadata publication must be linked to this reader revision before acquisition');
   const same = store.findDuplicate(null, acquired.paper.arxivId, acquired.paper.pdfSha256);
-  if (same) return store.getPaper(same)!;
+  const ingested = same ? store.getPaper(same) : null;
+  if (ingested) return ingested;
+  if (same && same !== acquired.paper.paperKey) throw invalidInput('Metadata publication must be linked to this reader revision before acquisition');
   store.savePaper(acquired.paper, acquired.pdf);
   store.saveBlocks(acquired.paper.paperKey, acquired.blocks);
   return acquired.paper;

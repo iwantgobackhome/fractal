@@ -1,6 +1,6 @@
 import type { IncomingMessage } from 'node:http';
 import { createHash } from 'node:crypto';
-import { collectionSchema, libraryPatchSchema, tagSchema } from '@fractal/shared';
+import { collectionSchema, folderPatchSchema, libraryPatchSchema, libraryRecordSchema, readProgressSchema, tagSchema } from '@fractal/shared';
 import { ingestPdf, ingestUrl } from '../../ingest/index';
 import { exportLibrary, markdown } from '../../export/index';
 import { searchLibrary } from '../../library/search';
@@ -31,7 +31,19 @@ export async function handleLibrary(method: string, segments: string[], request:
   const s = segments;
   if (s[0] !== 'api') return undefined;
   if (s[1] === 'library') {
-    if (s.length === 2 && method === 'GET') return json(ctx.store.listLibrary());
+    if (s.length === 3 && s[2] === 'metadata' && method === 'POST')
+      return json(ctx.store.publishMetadata(parseRequest(libraryRecordSchema, await jsonBody(request))), 201);
+    if (s.length === 2 && method === 'GET') {
+      const view = new URL(request.url ?? '/', 'http://localhost').searchParams.get('view');
+      const records = ctx.store.listLibrary();
+      return json(
+        view === 'saved'
+          ? records.filter((r) => r.saved)
+          : view === 'recent'
+            ? records.filter((r) => r.lastReadAt).sort((a, b) => b.lastReadAt!.localeCompare(a.lastReadAt!))
+            : records,
+      );
+    }
     if (s[2] === 'search' && method === 'GET') {
       const url = new URL(request.url ?? '/', 'http://localhost');
       return json(searchLibrary(url.searchParams.get('q') ?? '', { limit: Number(url.searchParams.get('limit') ?? 20), store: ctx.store }));
@@ -76,28 +88,30 @@ export async function handleLibrary(method: string, segments: string[], request:
       for (const r of ctx.store.listLibrary()) if (r.tags.includes(name)) ctx.store.patchLibrary(r.paperKey, { tags: r.tags.filter((t) => t !== name) });
       return json({ deleted: true });
     }
-    if (s[2] === 'collections' && s.length === 3 && method === 'GET') return json(ctx.store.db.prepare('SELECT id,name FROM collections ORDER BY name').all());
-    if (s[2] === 'collections' && s.length === 3 && method === 'POST') {
-      const c = parseRequest(collectionSchema, await jsonBody(request));
-      ctx.store.db.prepare('INSERT INTO collections VALUES(?,?)').run(c.id, c.name);
-      return json(c, 201);
-    }
-    if (s[2] === 'collections' && s.length === 4 && method === 'PATCH') {
-      const update = await jsonBody(request);
-      const name = String(update.name ?? '').trim();
-      if (!name) throw invalidInput('컬렉션 이름을 입력해 주세요.');
-      ctx.store.db.prepare('UPDATE collections SET name=? WHERE id=?').run(name, s[3]);
-      return json({ id: s[3], name });
-    }
-    if (s[2] === 'collections' && s.length === 4 && method === 'DELETE') {
-      ctx.store.db.prepare('DELETE FROM collections WHERE id=?').run(s[3]);
-      for (const r of ctx.store.listLibrary())
-        if (r.collections.includes(s[3]!)) ctx.store.patchLibrary(r.paperKey, { collections: r.collections.filter((id) => id !== s[3]) });
-      return json({ deleted: true });
+    if (s[2] === 'collections' || s[2] === 'folders') {
+      if (s.length === 3 && method === 'GET') return json(ctx.store.listFolders());
+      if (s.length === 3 && method === 'POST') {
+        const folder = parseRequest(collectionSchema, await jsonBody(request));
+        return json(ctx.store.putFolder(folder), 201);
+      }
+      if (s.length === 4 && method === 'PATCH') {
+        const old = ctx.store.getFolder(s[3]!);
+        if (!old || old.deleted) throw invalidInput('Folder not found');
+        const patch = parseRequest(folderPatchSchema, await jsonBody(request));
+        return json(ctx.store.putFolder({ ...old, ...patch }));
+      }
+      if (s.length === 4 && method === 'DELETE') {
+        return json({ deleted: true, folder: ctx.store.deleteFolder(s[3]!) });
+      }
     }
     if (s.length === 3 && method === 'GET') return json(ctx.store.getLibrary(s[2]!) ?? null);
     if (s.length === 3 && method === 'PATCH') return json(ctx.store.patchLibrary(s[2]!, parseRequest(libraryPatchSchema, await jsonBody(request))));
-    if (s.length === 3 && method === 'DELETE') return json(ctx.store.deletePaper(s[2]!));
+    if (s.length === 3 && method === 'DELETE') return json(ctx.store.patchLibrary(s[2]!, { saved: false }));
+  }
+  if (s[1] === 'papers' && s.length === 4 && s[3] === 'read' && method === 'POST') {
+    const input = await jsonBody(request);
+    const progress = input.readProgress === undefined ? undefined : parseRequest(readProgressSchema.nullable(), input.readProgress);
+    return json(ctx.store.patchLibrary(s[2]!, { lastReadAt: new Date().toISOString(), readProgress: progress }));
   }
   if (s[1] === 'papers' && s[2] === 'upload' && method === 'POST') {
     const type = String(request.headers['content-type'] ?? '');

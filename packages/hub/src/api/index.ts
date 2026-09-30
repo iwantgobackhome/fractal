@@ -18,6 +18,8 @@ import type {
 import { preferencesSchema, quickTranslateRequestSchema } from '@fractal/shared';
 import { PaperStore, appError, invalidInput, notFound } from '../store/index';
 import { assertSafeKey } from '../store/validate';
+import { handleHistory } from './routes/history';
+import { cancelHistory, stopHistory } from '../ai/history';
 import { JobManager } from '../jobs/state';
 import { translationPromptVersion, TranslationPipeline, type PipelineLogEvent } from '../translation/index';
 import { isExcludedModel } from '../codex/index';
@@ -453,6 +455,10 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
   const json = (data: unknown, status = 200): Result => ({ kind: 'json', status, data });
 
   async function route_(method: string, segments: string[], request: IncomingMessage, ctx: RouteContext): Promise<Result> {
+    if (store instanceof SqlitePaperStore) {
+      const result = await handleHistory(method, segments, request, { store, chat });
+      if (result) return result;
+    }
     if (related && method === 'GET' && segments.length === 4 && segments[0] === 'api' && segments[1] === 'papers' && segments[3] === 'related') {
       return json(await related.get(readPaperKey(segments[2]!)));
     }
@@ -542,6 +548,10 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
           // official thread is dropped while the stored conversation id can still be read; the
           // folder removal then takes the conversation.
           chat.forgetPaper(paperKey);
+          if (store instanceof SqlitePaperStore)
+            for (const entry of store.listHistory(paperKey)) {
+              if (entry.kind !== 'conversation') cancelHistory(store, entry.id);
+            }
           // Bumping the generation first makes every in-flight answer stale.
           jobs.deletePaperAndJobs(paperKey);
           // A late acquirer/re-extractor may not recreate this deleted revision.
@@ -1048,6 +1058,7 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
       // An answer cut off by shutdown is stored as interrupted, never left without an answer;
       // an answer whose earlier write failed gets one more try before it would be lost.
       chat.stopAll(RESTARTED_ERROR);
+      if (store instanceof SqlitePaperStore) stopHistory(store);
       chat.flushUnsaved();
       for (const listener of listeners.values()) {
         listener.closeAllConnections();

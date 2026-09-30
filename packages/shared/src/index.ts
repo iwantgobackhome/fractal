@@ -4,6 +4,7 @@ export * from './contracts/annotations';
 export * from './contracts/ai';
 export * from './contracts/ink';
 export * from './contracts/sync';
+export * from './contracts/history';
 export * from './contracts/feed';
 export * from './contracts/topic-seeds';
 export * from './contracts/arxiv';

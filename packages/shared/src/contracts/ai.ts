@@ -306,6 +306,7 @@ export const askPaperSchema = z
     page: z.number().int().positive().optional(),
     rect: bboxSchema.optional(),
     selection: modelSelectionSchema.optional(),
+    requestId: z.string().min(1).max(100).optional(),
   })
   .refine((v) => !v.rect || v.page !== undefined, 'rect requires page');
 export const explainSchema = z.object({
@@ -315,8 +316,13 @@ export const explainSchema = z.object({
   croppedPngBase64: z.string().max(4_000_000).optional(),
   surroundingText: z.string().max(30000).optional(),
   selection: modelSelectionSchema.optional(),
+  requestId: z.string().min(1).max(100).optional(),
 });
-export const libraryAskSchema = z.object({ question: z.string().trim().min(1).max(4000), selection: modelSelectionSchema.optional() });
+export const libraryAskSchema = z.object({
+  question: z.string().trim().min(1).max(4000),
+  selection: modelSelectionSchema.optional(),
+  requestId: z.string().min(1).max(100).optional(),
+});
 export const glossarySchema = z.object({ selection: modelSelectionSchema.optional() });
 export interface GlossaryTerm {
   term: string;
@@ -331,8 +337,9 @@ export interface AiAnswer {
   outputTokens: number | null;
   durationMs: number;
 }
-export type AiSseEvent =
-  { type: 'delta'; text: string } | { type: 'done'; answer: AiAnswer; latex?: string; terms?: GlossaryTerm[] } | { type: 'error'; error: AppError };
+export type AiSseEvent = (
+  { type: 'delta'; text: string } | { type: 'done'; answer: AiAnswer; latex?: string; terms?: GlossaryTerm[] } | { type: 'error'; error: AppError }
+) & { historyId?: string };
 export const glossaryTermSchema = z.object({ term: z.string().min(1), page: z.number().int().positive(), definition: z.string() });
 export const aiAnswerSchema = z.object({
   text: z.string(),
@@ -343,10 +350,17 @@ export const aiAnswerSchema = z.object({
   durationMs: z.number().nonnegative(),
 });
 export const aiSseEventSchema = z.discriminatedUnion('type', [
-  z.object({ type: z.literal('delta'), text: z.string() }),
-  z.object({ type: z.literal('done'), answer: aiAnswerSchema, latex: z.string().optional(), terms: z.array(glossaryTermSchema).optional() }),
+  z.object({ type: z.literal('delta'), text: z.string(), historyId: z.string().optional() }),
+  z.object({
+    type: z.literal('done'),
+    answer: aiAnswerSchema,
+    latex: z.string().optional(),
+    terms: z.array(glossaryTermSchema).optional(),
+    historyId: z.string().optional(),
+  }),
   z.object({
     type: z.literal('error'),
+    historyId: z.string().optional(),
     error: z.object({
       code: z.enum([
         'INVALID_INPUT',

@@ -3,11 +3,13 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSy
 import { join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import type { Annotation, Block, Highlight, Job, LibraryPatch, LibraryRecord, Paper, RestartTranslationRequest, Translation } from '@fractal/shared';
-import { annotationSchema, defaultPreferences, libraryPatchSchema, preferencesSchema, type Preferences } from '@fractal/shared';
+import { annotationSchema, defaultPreferences, libraryPatchSchema, libraryRecordSchema, preferencesSchema, type Preferences } from '@fractal/shared';
 import { PaperStore, appError, busy, invalidInput, notFound, type ConversationRecord, type DeleteReport } from './index';
 import { readRecord } from './atomic';
 import { assertSafeKey, validateBlock, validateConversationRecord, validateHighlight, validateJob, validatePaper, validateTranslation } from './validate';
 import { bibtexKeyBase, legacyBibtexKey, uniqueBibtexKey, yearFromArxivId } from '../library/citation';
+import * as foundation from './foundation';
+import type { Collection, HistoryEntry, SyncPull } from '@fractal/shared';
 
 type Row = Record<string, unknown>;
 const value = <T>(row: Row | undefined, field = 'data'): T | null => (row ? (JSON.parse(String(row[field])) as T) : null);
@@ -22,8 +24,14 @@ export class SqlitePaperStore extends PaperStore {
     mkdirSync(root, { recursive: true });
     this.db = new DatabaseSync(join(root, 'library.sqlite'));
     this.db.exec('PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON');
-    this.migrate();
-    if (legacyRoot && legacyRoot !== root) this.importLegacy(legacyRoot);
+    try {
+      this.migrate();
+      if (legacyRoot && legacyRoot !== root) this.importLegacy(legacyRoot);
+      this.recoverHistory();
+    } catch (error) {
+      this.db.close();
+      throw error;
+    }
   }
   override ensureRoot(): void {
     mkdirSync(this.root, { recursive: true });
@@ -95,6 +103,7 @@ export class SqlitePaperStore extends PaperStore {
         INSERT INTO migrations VALUES(10, datetime('now'));
         RELEASE quick_translation_migration;`);
     }
+    foundation.migrateFoundation(this);
   }
 
   getPreferences(): Preferences {
@@ -184,6 +193,7 @@ export class SqlitePaperStore extends PaperStore {
         this.db.exec('BEGIN');
         const pdf = existsSync(join(dir, 'original.pdf')) ? readFileSync(join(dir, 'original.pdf')) : undefined;
         this.savePaper(paper, pdf);
+        this.patchLibrary(key, { saved: true });
         const blocks = readRecord<Block[]>(join(dir, 'blocks.json'));
         if (blocks) this.saveBlocks(key, blocks);
         const translations = readRecord<Translation[]>(join(dir, 'translations.json')) ?? [];
@@ -206,12 +216,16 @@ export class SqlitePaperStore extends PaperStore {
     const previous = this.getPaper(p.paperKey);
     let pdfHash = p.pdfSha256 ?? previous?.pdfSha256 ?? null;
     if (pdfBytes) pdfHash = this.saveBlob(pdfBytes);
-    this.db
-      .prepare('INSERT INTO papers VALUES(?,?,?) ON CONFLICT(paper_key) DO UPDATE SET data=excluded.data,pdf_hash=COALESCE(excluded.pdf_hash,papers.pdf_hash)')
-      .run(p.paperKey, JSON.stringify({ ...p, pdfSha256: pdfHash }), pdfHash);
-    this.updateBibliography({ ...p, pdfSha256: pdfHash });
-    if (!previous || JSON.stringify(previous) !== JSON.stringify(p)) this.change('paper', p.paperKey);
-    return { ...p, pdfSha256: pdfHash };
+    return foundation.atomic(this, () => {
+      this.db
+        .prepare(
+          'INSERT INTO papers VALUES(?,?,?) ON CONFLICT(paper_key) DO UPDATE SET data=excluded.data,pdf_hash=COALESCE(excluded.pdf_hash,papers.pdf_hash)',
+        )
+        .run(p.paperKey, JSON.stringify({ ...p, pdfSha256: pdfHash }), pdfHash);
+      this.updateBibliography({ ...p, pdfSha256: pdfHash });
+      this.change('paper', p.paperKey);
+      return { ...p, pdfSha256: pdfHash };
+    });
   }
   override getPaper(key: string): Paper | null {
     assertSafeKey(key);
@@ -431,11 +445,25 @@ export class SqlitePaperStore extends PaperStore {
   override saveConversation(key: string, record: ConversationRecord): ConversationRecord {
     if (!this.getPaper(key)) throw notFound('paper not found');
     const v = validateConversationRecord(record);
-    this.db.prepare('INSERT INTO conversations VALUES(?,?) ON CONFLICT(paper_key) DO UPDATE SET data=excluded.data').run(key, JSON.stringify(v));
+    foundation.atomic(this, () => {
+      this.db.prepare('INSERT INTO conversations VALUES(?,?) ON CONFLICT(paper_key) DO UPDATE SET data=excluded.data').run(key, JSON.stringify(v));
+      foundation.mirrorConversation(this, key, v);
+    });
     return v;
   }
   override deleteConversation(key: string): boolean {
-    return Number(this.db.prepare('DELETE FROM conversations WHERE paper_key=?').run(key).changes) > 0;
+    return foundation.atomic(this, () => {
+      const record = this.getConversation(key);
+      if (record) {
+        const history = this.getHistory(`chat:${key}:${record.conversationId}`);
+        if (history && ['pending', 'running'].includes(history.status))
+          this.putHistory({ ...history, status: 'canceled', completedAt: foundation.timestamp(), error: null });
+      }
+      return Number(this.db.prepare('DELETE FROM conversations WHERE paper_key=?').run(key).changes) > 0;
+    });
+  }
+  override saveConversationProgress(key: string, record: ConversationRecord): void {
+    if (this.getConversation(key)?.conversationId === record.conversationId) foundation.mirrorConversation(this, key, record);
   }
   override deletePaper(key: string): DeleteReport {
     const pdfHash = this.getPaper(key)?.pdfSha256 ?? null;
@@ -453,6 +481,9 @@ export class SqlitePaperStore extends PaperStore {
     };
     this.db.exec('BEGIN');
     try {
+      for (const entry of this.listHistory(key)) this.deleteHistory(entry.id);
+      for (const annotation of this.listAnnotations(key))
+        this.upsertAnnotation({ ...annotation, deleted: true, updatedAt: foundation.timestamp(annotation.updatedAt), deviceId: 'hub' });
       for (const table of [
         'papers',
         'blocks',
@@ -461,7 +492,6 @@ export class SqlitePaperStore extends PaperStore {
         'highlights',
         'conversations',
         'bibliography',
-        'annotations',
         'restart_receipts',
         'structure_state',
         'structure_items',
@@ -518,8 +548,16 @@ export class SqlitePaperStore extends PaperStore {
           updatedAt: now,
           status: 'unread',
           bibtexKey: this.nextBibtexKey(bibtexKeyBase({ authors, year }), p.paperKey),
+          saved: false,
+          savedAt: null,
+          lastReadAt: null,
+          readProgress: null,
+          rev: 0,
+          deviceId: 'hub',
         };
 
+    record.rev = (old?.rev ?? 0) + 1;
+    record.updatedAt = foundation.timestamp(old?.updatedAt);
     this.db
       .prepare(
         'INSERT INTO bibliography VALUES(?,?,?,?,?) ON CONFLICT(paper_key) DO UPDATE SET doi=excluded.doi,arxiv_id=excluded.arxiv_id,pdf_hash=excluded.pdf_hash,data=excluded.data',
@@ -533,7 +571,10 @@ export class SqlitePaperStore extends PaperStore {
   listLibrary(): LibraryRecord[] {
     return (this.db.prepare('SELECT data FROM bibliography ORDER BY paper_key').all() as Row[]).map((r) => JSON.parse(String(r.data)) as LibraryRecord);
   }
-  patchLibrary(key: string, patch: LibraryPatch): LibraryRecord {
+  patchLibrary(key: string, patch: LibraryPatch, deviceId = 'hub'): LibraryRecord {
+    return foundation.atomic(this, () => this.patchLibraryRecord(key, patch, deviceId));
+  }
+  private patchLibraryRecord(key: string, patch: LibraryPatch, deviceId: string): LibraryRecord {
     const old = this.getLibrary(key);
     if (!old) throw notFound('논문을 찾을 수 없습니다.');
 
@@ -541,7 +582,21 @@ export class SqlitePaperStore extends PaperStore {
     if (!parsed.success) throw invalidInput('서지 정보 형식이 올바르지 않습니다.');
 
     const values = Object.fromEntries(Object.entries(parsed.data).filter(([, value]) => value !== undefined));
-    const next = { ...old, ...values, updatedAt: new Date().toISOString() } as LibraryRecord;
+    const next = { ...old, ...values, updatedAt: foundation.timestamp(old.updatedAt), rev: (old.rev ?? 0) + 1, deviceId } as LibraryRecord;
+    if (parsed.data.saved !== undefined) next.savedAt = parsed.data.saved ? (old.savedAt ?? next.updatedAt) : null;
+    if (parsed.data.collections !== undefined) {
+      next.collections = [...new Set(next.collections)];
+      for (const id of next.collections) {
+        // Retain pre-existing orphan memberships from older clients/data.
+        if (old.collections.includes(id)) continue;
+        const folder = this.getFolder(id);
+        if (!folder || folder.deleted) throw notFound('Folder not found');
+      }
+    }
+    next.tags = [...new Set(next.tags)];
+    if (parsed.data.lastReadAt && old.lastReadAt && parsed.data.lastReadAt < old.lastReadAt) next.lastReadAt = old.lastReadAt;
+    const pageCount = this.getPaper(key)?.pageCount;
+    if (next.readProgress && pageCount && next.readProgress.page > pageCount) throw invalidInput('Read progress page exceeds paper page count');
 
     if (parsed.data.bibtexKey !== undefined) {
       if (this.nextBibtexKey(next.bibtexKey, key) !== next.bibtexKey) {
@@ -552,12 +607,14 @@ export class SqlitePaperStore extends PaperStore {
       next.bibtexKey = this.nextBibtexKey(bibtexKeyBase(next), key);
     }
 
-    this.db
-      .prepare('UPDATE bibliography SET doi=?,arxiv_id=?,data=? WHERE paper_key=?')
-      .run(next.doi?.toLowerCase() ?? null, next.arxivId ?? null, JSON.stringify(next), key);
-    this.reindex(key);
-    this.change('paper', key);
-    return next;
+    return foundation.atomic(this, () => {
+      this.db
+        .prepare('UPDATE bibliography SET doi=?,arxiv_id=?,data=? WHERE paper_key=?')
+        .run(next.doi?.toLowerCase() ?? null, next.arxivId ?? null, JSON.stringify(next), key);
+      this.reindex(key);
+      this.change('paper', key);
+      return next;
+    });
   }
   findDuplicate(doi: string | null, arxiv: string | null, sha: string | null): string | null {
     const row = this.db
@@ -574,7 +631,7 @@ export class SqlitePaperStore extends PaperStore {
     insert.run(key, null, null, r.title ?? '', r.abstract ?? '', r.authors.map((a) => `${a.given} ${a.family}`).join(' '), '');
     for (const b of blocks) insert.run(key, b.blockId, b.regions[0]?.page ?? null, '', '', '', b.sourceText);
   }
-  pull(since: number): { cursor: string; papers: LibraryRecord[]; annotations: Annotation[] } {
+  pull(since: number): SyncPull {
     const changes = this.db.prepare('SELECT kind,item_key FROM changes WHERE seq>? ORDER BY seq').all(since) as Row[];
     const keys = new Set(changes.filter((r) => r.kind === 'paper').map((r) => String(r.item_key))),
       ids = new Set(changes.filter((r) => r.kind === 'annotation').map((r) => String(r.item_key)));
@@ -582,10 +639,80 @@ export class SqlitePaperStore extends PaperStore {
       cursor: String((this.db.prepare('SELECT COALESCE(MAX(seq),0) n FROM changes').get() as Row).n),
       papers: [...keys].map((k) => this.getLibrary(k)).filter((r): r is LibraryRecord => r !== null),
       annotations: [...ids].map((id) => this.getAnnotation(id)).filter((a): a is Annotation => a !== null),
+      folders: [...new Set(changes.filter((r) => r.kind === 'folder').map((r) => String(r.item_key)))]
+        .map((id) => this.getFolder(id))
+        .filter((r): r is Collection => r !== null),
+      history: [...new Set(changes.filter((r) => r.kind === 'history').map((r) => String(r.item_key)))]
+        .map((id) => this.getHistory(id))
+        .filter((r): r is HistoryEntry => r !== null),
+      deletedPapers: [...keys].filter((key) => this.getLibrary(key) === null),
     };
   }
   getAnnotation(id: string): Annotation | null {
     return value<Annotation>(this.db.prepare('SELECT data FROM annotations WHERE id=?').get(id) as Row | undefined);
+  }
+  /** Bibliographic publication without PDF ingestion or a fabricated reader snapshot. */
+  publishMetadata(input: LibraryRecord): LibraryRecord {
+    const parsed = libraryRecordSchema.parse(input);
+    if (this.getLibrary(parsed.paperKey)) throw invalidInput('Metadata already exists; use PATCH');
+    assertSafeKey(parsed.paperKey);
+    const next: LibraryRecord = {
+      ...parsed,
+      saved: parsed.saved ?? false,
+      savedAt: parsed.saved ? (parsed.savedAt ?? foundation.timestamp()) : null,
+      lastReadAt: parsed.lastReadAt ?? null,
+      readProgress: parsed.readProgress ?? null,
+      rev: 1,
+      deviceId: 'hub',
+      updatedAt: foundation.timestamp(),
+      bibtexKey: this.nextBibtexKey(parsed.bibtexKey, parsed.paperKey),
+    };
+    for (const id of next.collections) if (!this.getFolder(id) || this.getFolder(id)?.deleted) throw notFound('Folder not found');
+    return foundation.atomic(this, () => {
+      this.db
+        .prepare('INSERT INTO bibliography VALUES(?,?,?,?,?)')
+        .run(next.paperKey, next.doi?.toLowerCase() ?? null, next.arxivId, null, JSON.stringify(next));
+      this.reindex(next.paperKey);
+      this.change('paper', next.paperKey);
+      return next;
+    });
+  }
+  getFolder(id: string): Collection | null {
+    return foundation.getFolder(this, id);
+  }
+  listFolders(tombstones = false): Collection[] {
+    return foundation.listFolders(this, tombstones);
+  }
+  putFolder(input: Pick<Collection, 'id' | 'name' | 'parentId'>, deviceId = 'hub'): Collection {
+    return foundation.putFolder(this, input, deviceId);
+  }
+  deleteFolder(id: string, deviceId = 'hub'): Collection {
+    return foundation.deleteFolder(this, id, deviceId);
+  }
+  getHistory(id: string): HistoryEntry | null {
+    return foundation.getHistory(this, id);
+  }
+  listHistory(paperKey?: string | null, tombstones = false): HistoryEntry[] {
+    return foundation.listHistory(this, paperKey, tombstones);
+  }
+  putHistory(entry: HistoryEntry): HistoryEntry {
+    return foundation.putHistory(this, entry);
+  }
+  deleteHistory(id: string): HistoryEntry {
+    const old = this.getHistory(id);
+    if (!old) throw notFound('History not found');
+    return this.putHistory({ ...old, deleted: true });
+  }
+  private recoverHistory(): void {
+    for (const entry of this.listHistory())
+      if (entry.status === 'running' || entry.status === 'pending') {
+        this.putHistory({
+          ...entry,
+          status: 'failed',
+          completedAt: foundation.timestamp(),
+          error: { code: 'NETWORK', message: 'Generation interrupted by service restart', retryable: true },
+        });
+      }
   }
   private highlightUuid(id: string): string {
     if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) return id;

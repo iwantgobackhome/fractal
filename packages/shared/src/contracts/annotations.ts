@@ -33,6 +33,9 @@ export const memoSchema = annotationBaseSchema.extend({
   text: z.string(),
   rect: normalizedRectSchema.nullable(),
   quote: z.string().nullable(),
+  /** Optional sticky-note appearance; rect remains the normalized page position. */
+  collapsed: z.boolean().optional(),
+  color: z.enum(['yellow', 'green', 'blue', 'pink']).optional(),
 });
 export const syncedHighlightSchema = annotationBaseSchema.extend({
   kind: z.literal('highlight'),

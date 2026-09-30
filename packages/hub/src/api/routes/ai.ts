@@ -11,12 +11,14 @@ import {
   type AiFeature,
   type AiSseEvent,
   type ModelSelection,
+  type HistoryEntry,
 } from '@fractal/shared';
 import { ZodError } from 'zod';
 import { invalidInput, notFound } from '../../store/index';
 import { paperInstructions } from '../../chat/paper-text';
 import type { AiRouteContext as RouteContext, Result } from './types';
 import { SqlitePaperStore } from '../../store/sqlite';
+import { persistentGeneration } from '../../ai/history';
 
 const json = (data: unknown): Result => ({ kind: 'json', status: 200, data });
 const explainKorean =
@@ -80,20 +82,45 @@ function glossaryTerms(text: string): { term: string; page: number; definition: 
   }
 }
 const glossaryCache = new Map<string, { text: string; terms: ReturnType<typeof glossaryTerms>; answer: AiAnswer }>();
-async function* generate(
+interface GenerateOptions {
+  page?: number;
+  equation?: boolean;
+  glossaryKey?: string;
+  libraryCitation?: string;
+  history?: { paperKey: string | null; kind: 'question' | 'explanation'; question: string; requestId?: string; context: HistoryEntry['context'] };
+  signal?: AbortSignal;
+}
+function generate(
   ctx: RouteContext,
   feature: AiFeature,
   system: string,
   question: string,
   selection?: ModelSelection,
-  options?: { page?: number; equation?: boolean; glossaryKey?: string; libraryCitation?: string },
+  options?: GenerateOptions,
+): AsyncIterable<AiSseEvent> {
+  if (options?.history && ctx.store instanceof SqlitePaperStore) {
+    return persistentGeneration(ctx.store, options.history, (signal) => generateEvents(ctx, feature, system, question, selection, { ...options, signal }));
+  }
+  return generateEvents(ctx, feature, system, question, selection, options);
+}
+async function* generateEvents(
+  ctx: RouteContext,
+  feature: AiFeature,
+  system: string,
+  question: string,
+  selection?: ModelSelection,
+  options?: GenerateOptions,
 ): AsyncIterable<AiSseEvent> {
   const chosen = await ctx.registry.select(feature, selection);
   let text = '',
     inputTokens: number | null = null,
     outputTokens: number | null = null;
   const start = Date.now();
-  for await (const delta of ctx.registry.complete(feature, { system, messages: [{ role: 'user', content: question }] }, chosen.selection)) {
+  for await (const delta of ctx.registry.complete(
+    feature,
+    { system, messages: [{ role: 'user', content: question }], signal: options?.signal },
+    chosen.selection,
+  )) {
     if (delta.type === 'text') {
       text += delta.text;
       yield { type: 'delta', text: delta.text };
@@ -183,7 +210,10 @@ export async function handleAi(method: string, segments: string[], request: Inco
         `Answer in ${answerLanguage(ctx, input.question)}.\nAnswer from these library excerpts. Cite claims as [paper:KEY p.N]. If no excerpt supports an answer, say so.\n${context}`,
         input.question,
         input.selection,
-        { libraryCitation: hits[0] ? `[paper:${hits[0].paperKey} p.${hits[0].page}]` : undefined },
+        {
+          libraryCitation: hits[0] ? `[paper:${hits[0].paperKey} p.${hits[0].page}]` : undefined,
+          history: { paperKey: null, kind: 'question', question: input.question, requestId: input.requestId, context: { selection: input.selection } },
+        },
       ),
     };
   }
@@ -204,7 +234,16 @@ export async function handleAi(method: string, segments: string[], request: Inco
         `${paperInstructions(paper, blocks)}\n\nAnswer in ${answerLanguage(ctx, input.question)}.\nCite evidence using [p.N] page markers.`,
         question,
         input.selection,
-        { page: input.page ?? blocks[0]?.regions[0]?.page },
+        {
+          page: input.page ?? blocks[0]?.regions[0]?.page,
+          history: {
+            paperKey: key,
+            kind: 'question',
+            question: input.question,
+            requestId: input.requestId,
+            context: { page: input.page, rect: input.rect, selectedText: input.selectedText, selection: input.selection },
+          },
+        },
       ),
     };
   }
@@ -226,7 +265,17 @@ export async function handleAi(method: string, segments: string[], request: Inco
         `${answerLanguage(ctx) === 'ko' ? explainKorean : `Explain concisely in ${answerLanguage(ctx)}. Keep equations in LaTeX. Explain what this is, the symbols where relevant, and why it matters in this paper. Cite [p.N].`}\nPaper: ${paper.title ?? key}\n[page ${input.page}]\n${pageText}\nCite [p.${input.page}].`,
         question,
         input.selection,
-        { page: input.page, equation: input.kind === 'equation' },
+        {
+          page: input.page,
+          equation: input.kind === 'equation',
+          history: {
+            paperKey: key,
+            kind: 'explanation',
+            question,
+            requestId: input.requestId,
+            context: { page: input.page, rect: input.bbox, selectedText: input.surroundingText, explanationKind: input.kind, selection: input.selection },
+          },
+        },
       ),
     };
   }

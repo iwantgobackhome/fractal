@@ -649,6 +649,8 @@ export class PaperStore {
       return null;
     }
   }
+  /** Optional durable partial-answer history; the legacy active record still stores settled messages. */
+  saveConversationProgress(_paperKey: string, _record: ConversationRecord): void {}
 
   /**
    * Replace the paper's conversation in one atomic commit. Only settled messages are
