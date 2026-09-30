@@ -3,7 +3,10 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
-const output = path.dirname(fileURLToPath(import.meta.url));
+const reviewRoot = path.dirname(fileURLToPath(import.meta.url));
+const iteration = process.argv[2];
+if (iteration && !/^iteration-\d+$/.test(iteration)) throw new Error('Use an iteration-N output name');
+const output = iteration ? path.join(reviewRoot, iteration) : reviewRoot;
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({ channel: 'msedge', headless: true });
 const context = await browser.newContext();

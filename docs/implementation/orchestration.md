@@ -49,7 +49,15 @@ Report actual Galaxy Tab/S Pen verification as outstanding until tested on physi
 ## Design feedback
 
 - First prototype rendered in isolated Edge at representative desktop/tablet/phone sizes; no script errors or body horizontal overflow observed.
-- User rejected its visual feeling. Direction is not approved and broad product UI implementation is held. A received revision guidance; feedback question pending asynchronously.
+- User rejected its visual feeling. A received revision guidance; the user answered the asynchronous feedback question.
 - Coordinator visual diagnosis and prototype scope correction are recorded in `review/first-prototype.md`.
 - Backend and existing Android interaction corrections continue under existing authorization.
 - User clarified: prefer the original research/newspaper/paper feeling; the original issue was excessive emptiness. A received the updated direction for scholarly iteration2 with refined typography, rules, richer research metadata and useful history/progress density. No additional style question is needed.
+
+## Scholarly revision and foundation integration
+
+- Coordinator reviewed iteration2 desktop/tablet library and reader plus phone at 1440/1280/360 widths in isolated Edge: no JavaScript errors or horizontal overflow. Rich research rows, serif headings and restrained document tools match the user's clarified direction. The visible Orca preview now shows this revision. Phone metadata legibility and translated annotation scope were routed to A for refinement.
+- User authorization to implement remains active. Representative visual review has occurred; broad UI work can begin after A publishes the matching specification/assets. Future user feedback continues to steer implementation. No repeated permission request is required.
+- B foundation accepted: source `55e0f16f25e323eb374775bf5cd74e4e64c797fb`, root `3464418`. Owner evidence: shared 5 tests and hub 125 tests pass, legacy migration and HTTP disconnection/cancellation fixtures pass. Coordinator UI typecheck against the changed contracts and integrated workspace build pass.
+- B immediately reused in the exact existing terminal/worktree for fine original PDF text geometry: task `task_f4b89bac1368`, dispatch `ctx_ab01ffe8b258`. Start receipt was `outcome_unknown` because the pasted task remained in the idle composer. Exact terminal inspection confirmed the pending input; one Enter submitted it. Subsequent live terminal output confirms active work and `GPT-6.1-Sol high`. No duplicate worker was launched. Retained external terminal ownership is respected.
+- D emulator evidence confirms stable page position on pen contact (316/316/316), with normal finger scrolling retained. Pinch geometry is under scoped review. Mixed-tool synthetic cancellation remains an explicit limitation until verified; real Galaxy Tab/S Pen remains unverified.
