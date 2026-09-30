@@ -145,8 +145,12 @@ The discovery feed uses the same `{data}` envelope and local mutation guard. `we
 | `GET /api/feed/interests` | — | `{interests, suggestions: [{category, count}]}`; suggestions come from saved arXiv papers' metadata |
 | `PUT /api/feed/interests` | `{categories: string[], topics: string[], authors: string[], custom?: {id?, label, query?}[]}` | Saved interests with stable IDs; missing IDs are assigned, empty queries fall back to labels |
 | `GET /api/feed/categories?q=` | — | `{items: ArxivCategory[]}`; searches code and English/Korean names, or returns all categories for empty `q` |
+| `GET /api/feed/topics?field=cs.AI` | — | `{topics: FieldTopic[]}` with curated, trending, suggested, and user topics |
+| `PUT /api/feed/topics/:id` | `{followed: boolean}` | Updated `FieldTopic` |
+| `POST /api/feed/topics` | `{field, label, query?}` | Created user `FieldTopic` (201); followed initially |
+| `DELETE /api/feed/topics/:id` | — | `{deleted:true}`; user topics only |
 | `GET /api/feed/settings` | — | Current feed settings |
-| `PUT /api/feed/settings` | `{sources: {arxiv, huggingFace, news, recommendations}, customRssFeeds: string[], digestEnabled: boolean, refreshIntervalHours: number}` | Saved settings; custom feeds require HTTPS, interval is 1–168 hours |
+| `PUT /api/feed/settings` | `{sources: {arxiv, huggingFace, news, recommendations}, customRssFeeds: string[], digestEnabled: boolean, refreshIntervalHours: number, translateNewsTitles?: boolean}` | Saved settings; custom feeds require HTTPS, interval is 1–168 hours; title translation defaults on |
 | `POST /api/feed/refresh` | `{}` | Refreshed feed snapshot |
 | `GET /api/feed/digest?week=YYYY-Www` | — | `{week, generatedAt, text}` or `null`; opt-in only |
 | `POST /api/feed/items/:id/save` | `{}` | `{paperKey}` (201), after the existing URL/DOI/arXiv ingest succeeds |

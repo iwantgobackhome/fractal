@@ -31,6 +31,7 @@ export function deduplicate(items: RawItem[]): RawItem[] {
         source: [...new Set([...existing.source.split(','), ...item.source.split(',')])].join(','),
         image: existing.image ?? item.image ?? null,
         imageCandidate: item.source.includes('bing.com') && item.imageCandidate ? item.imageCandidate : (existing.imageCandidate ?? item.imageCandidate),
+        topicIds: [...new Set([...(existing.topicIds ?? []), ...(item.topicIds ?? [])])],
       };
       output[index] = merged;
       for (const key of keys) seen.set(key, index);

@@ -10,6 +10,7 @@ import type { PaperAcquirer } from '../api/index';
 import { CachedFetcher, arxivSource, huggingFaceSource, newsSource, recommendationSource, parseArxivAtom, type FeedSource, type RawItem } from './sources';
 import { rankItems } from './ranking';
 import { FeedImageStore, dropSharedImages, firstFigureImage, imageDimensions, ogImage } from './images';
+import { TopicService } from './topics';
 
 const DEFAULT_INTERESTS: FeedInterests = { categories: [], topics: [], authors: [], custom: [] };
 const DEFAULT_SETTINGS: FeedSettings = {
@@ -17,6 +18,7 @@ const DEFAULT_SETTINGS: FeedSettings = {
   customRssFeeds: [],
   digestEnabled: false,
   refreshIntervalHours: 6,
+  translateNewsTitles: true,
 };
 const SOURCES = [arxivSource, huggingFaceSource, newsSource, recommendationSource];
 
@@ -26,7 +28,10 @@ export function retainNewsByField(items: FeedItem[], interests: FeedInterests): 
   const news = items.filter((item) => item.kind === 'news');
   const selected = new Set<string>();
   for (const field of fields) for (const item of news.filter((candidate) => candidate.categories.includes(field)).slice(0, 30)) selected.add(item.id);
-  for (const item of news.filter((candidate) => !fields.some((field) => candidate.categories.includes(field))).slice(0, 40)) selected.add(item.id);
+  for (const item of news.filter((candidate) => !fields.some((field) => candidate.categories.includes(field)) && !(candidate as FeedItem & { topicIds?: string[] }).topicIds?.length).slice(0, 40)) selected.add(item.id);
+  const topicIds = new Set(news.flatMap((item) => (item as FeedItem & { topicIds?: string[] }).topicIds ?? []));
+  for (const topicId of topicIds)
+    for (const item of news.filter((candidate) => (candidate as FeedItem & { topicIds?: string[] }).topicIds?.includes(topicId)).slice(0, 15)) selected.add(item.id);
   return news.filter((item) => selected.has(item.id));
 }
 
@@ -48,6 +53,7 @@ interface MetaRow {
 export class FeedService {
   private readonly cache: CachedFetcher;
   private readonly images: FeedImageStore | null;
+  readonly topics: TopicService;
   private timer: ReturnType<typeof setTimeout> | null = null;
   private running: Promise<FeedResponse> | null = null;
   private stopped = false;
@@ -63,6 +69,7 @@ export class FeedService {
   ) {
     this.cache = new CachedFetcher(store, fetcher);
     this.images = imageRoot ? new FeedImageStore(store, imageRoot, fetcher) : null;
+    this.topics = new TopicService(store, registry);
   }
   async image(hash: string): Promise<{ body: Buffer; contentType: string } | null> {
     return this.images?.get(hash) ?? null;
@@ -87,7 +94,7 @@ export class FeedService {
       : arxivCategories;
   }
   settings(): FeedSettings {
-    return this.meta('settings', DEFAULT_SETTINGS);
+    return { ...DEFAULT_SETTINGS, ...this.meta('settings', DEFAULT_SETTINGS) };
   }
   putInterests(value: Omit<FeedInterests, 'custom'> & { custom?: { id?: string; label: string; query?: string }[] }): FeedInterests {
     const custom = (value.custom ?? []).map((item) => ({ id: item.id ?? randomUUID(), label: item.label, query: item.query?.trim() || item.label }));
@@ -155,6 +162,10 @@ export class FeedService {
       items: items.filter((item) => item.kind === 'news' && item.categories.includes(entry.field)).slice(0, 30),
     }));
     const generalNews = items.filter((item) => item.kind === 'news' && !fields.some((field) => item.categories.includes(field.field))).slice(0, 40);
+    const newsByTopic = this.topics.followed(fields.map((item) => item.field)).map((topic) => ({
+      field: topic.field, topicId: topic.id, label: topic.label,
+      items: items.filter((item) => item.kind === 'news' && (item as FeedItem & { topicIds?: string[] }).topicIds?.includes(topic.id)).slice(0, 15),
+    }));
     const prefs = this.store.getPreferences();
     const digestLanguage = prefs.answerLanguage === 'auto' ? prefs.uiLanguage : prefs.answerLanguage;
     const digest = this.store.db.prepare('SELECT data FROM feed_digests WHERE week=?').get(`${week}:${digestLanguage}`) as MetaRow | undefined;
@@ -171,6 +182,7 @@ export class FeedService {
         news: items.filter((item) => item.kind === 'news').slice(0, 30),
         newsByField,
         generalNews,
+        newsByTopic,
         recommended: papers.filter((item) => item.source.includes('recommendations') && !item.inLibrary).slice(0, 30),
       },
       sourceStatus: week === isoWeek(this.now()) ? this.status() : [],
@@ -220,6 +232,7 @@ export class FeedService {
       get: this.cache.get.bind(this.cache),
       now,
       report: (status: FeedSourceStatus) => statuses.push(status),
+      followedTopics: this.topics.followed([...this.interests().categories, ...(this.interests().custom ?? []).map((item) => `custom:${item.id}`)]),
     };
     await this.updateLibraryCategories(context.libraryArxivIds).catch(() => undefined);
     const old = this.rawForWeek(week);
@@ -245,6 +258,15 @@ export class FeedService {
       }
     }
     const ranked = rankItems(newItems, context.interests, library, now, context.uiLanguage);
+    for (const item of ranked) {
+      const topicId = (item as FeedItem & { topicIds?: string[] }).topicIds?.[0];
+      const topic = context.followedTopics.find((candidate) => candidate.id === topicId);
+      if (topic) {
+        item.reasonCode = 'topic';
+        item.reasonParams = { topic: topic.label };
+        item.reason = context.uiLanguage === 'ko' ? `팔로우한 주제 ${topic.label}` : `Followed topic ${topic.label}`;
+      }
+    }
     const retainedNews = retainNewsByField(ranked, context.interests);
     const retainedIds = new Set(retainedNews.map((item) => item.id));
     const retained = ranked.filter((item) => item.kind !== 'news' || retainedIds.has(item.id));
@@ -307,6 +329,12 @@ export class FeedService {
       throw error;
     }
     if (settings.digestEnabled) await this.generateDigest(week, retained).catch(() => undefined);
+    const activeFields = [...context.interests.categories, ...(context.interests.custom ?? []).map((item) => `custom:${item.id}`)];
+    for (const field of activeFields) {
+      const headlines = retained.filter((item) => item.categories.includes(field)).map((item) => item.title);
+      this.topics.updateTrending(field, retained.filter((item) => item.categories.includes(field)));
+      void this.topics.suggest(field, week, headlines).catch(() => undefined);
+    }
     return this.read(week);
   }
 

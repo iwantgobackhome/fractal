@@ -25,6 +25,7 @@ export const feedSettingsSchema = z.object({
   customRssFeeds: z.array(z.string().url().startsWith('https://')).max(20),
   digestEnabled: z.boolean(),
   refreshIntervalHours: z.number().int().min(1).max(168),
+  translateNewsTitles: z.boolean().default(true),
 });
 export type FeedSettings = z.infer<typeof feedSettingsSchema>;
 
@@ -32,6 +33,7 @@ export const feedItemSchema = z.object({
   id: z.string(),
   kind: z.enum(['paper', 'news']),
   title: z.string(),
+  titleTranslated: z.string().optional(),
   authors: z.array(z.string()),
   abstract: z.string(),
   source: z.string(),
@@ -42,7 +44,7 @@ export const feedItemSchema = z.object({
   publishedAt: z.string().datetime(),
   score: z.number(),
   reason: z.string(),
-  reasonCode: z.enum(['followed_author', 'interest_category', 'interest_topic', 'similar_library', 'new_this_week']),
+  reasonCode: z.enum(['followed_author', 'interest_category', 'interest_topic', 'similar_library', 'new_this_week', 'topic']),
   reasonParams: z.record(z.string(), z.string()),
   inLibrary: z.boolean(),
   popularity: z.number().nonnegative(),
@@ -79,9 +81,30 @@ export const feedResponseSchema = z.object({
     news: z.array(feedItemSchema),
     newsByField: z.array(z.object({ field: z.string(), label: z.string().optional(), items: z.array(feedItemSchema) })),
     generalNews: z.array(feedItemSchema),
+    newsByTopic: z.array(z.object({ field: z.string(), topicId: z.string(), label: z.string(), items: z.array(feedItemSchema) })),
     recommended: z.array(feedItemSchema),
   }),
   sourceStatus: z.array(feedSourceStatusSchema),
   digest: feedDigestSchema.optional(),
 });
 export type FeedResponse = z.infer<typeof feedResponseSchema>;
+
+export const fieldTopicSchema = z.object({
+  id: z.string(), field: z.string(), label: z.string(), query: z.string(),
+  origin: z.enum(['curated', 'trending', 'suggested', 'user']), followed: z.boolean(), score: z.number().optional(),
+});
+export type FieldTopic = z.infer<typeof fieldTopicSchema>;
+export const articleBlockSchema = z.object({
+  type: z.enum(['p', 'h2', 'h3', 'quote', 'li', 'img']), text: z.string().optional(), image: feedItemSchema.shape.image.unwrap().optional(),
+});
+export type ArticleBlock = z.infer<typeof articleBlockSchema>;
+export const articleSchema = z.object({
+  url: z.string().url(), finalUrl: z.string().url(), title: z.string(), byline: z.string().optional(), siteName: z.string().optional(),
+  publishedAt: z.string().optional(), lang: z.string().optional(), leadImage: feedItemSchema.shape.image.unwrap().optional(), blocks: z.array(articleBlockSchema),
+});
+export type Article = z.infer<typeof articleSchema>;
+export const quickTranslateRequestSchema = z.object({
+  texts: z.array(z.string().min(1).max(10000)).min(1).max(100), target: z.string().min(2).max(35),
+  source: z.string().min(2).max(35).default('auto'), allowAiFallback: z.boolean().default(false),
+});
+export type QuickTranslateRequest = z.infer<typeof quickTranslateRequestSchema>;

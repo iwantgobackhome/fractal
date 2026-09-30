@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import type { FeedItem, FeedInterests, FeedSourceStatus } from '@fractal/shared';
+import type { FeedItem, FeedInterests, FeedSourceStatus, FieldTopic } from '@fractal/shared';
 import type { Preferences } from '@fractal/shared';
 import type { SqlitePaperStore } from '../store/sqlite';
 import { newsMatchScore, newsQueriesForField } from './news-relevance';
@@ -8,6 +8,7 @@ export type RawItem = Omit<FeedItem, 'score' | 'reason' | 'reasonCode' | 'reason
   image?: FeedItem['image'];
   imageCandidate?: string;
   basedOn?: string;
+  topicIds?: string[];
 };
 export interface FeedSource {
   id: string;
@@ -22,6 +23,7 @@ export interface SourceContext {
   get(url: string, headers?: Record<string, string>, body?: string): Promise<string>;
   now: Date;
   report?: (status: FeedSourceStatus) => void;
+  followedTopics?: FieldTopic[];
 }
 
 const compact = (value: string): string => value.replace(/\s+/g, ' ').trim();
@@ -340,12 +342,25 @@ export const newsSource: FeedSource = {
         : [];
       return [...google, ...bing];
     });
-    const feeds: Array<{ url: string; field: string; outlet?: string }> = [...generalFeeds, ...searches];
+    const topicSearches = (context.followedTopics ?? []).flatMap((topic) => {
+      const query = topic.query.trim();
+      if (!query) return [];
+      const bing = new URL('https://www.bing.com/news/search');
+      bing.searchParams.set('q', query);
+      bing.searchParams.set('format', 'rss');
+      return [
+        { url: googleNewsUrl('search', 'en', query), field: topic.field, topic },
+        { url: googleNewsUrl('search', 'ko', query), field: topic.field, topic },
+        { url: bing.href, field: topic.field, topic },
+      ];
+    });
+    const feeds: Array<{ url: string; field: string; outlet?: string; topic?: FieldTopic }> = [...generalFeeds, ...searches, ...topicSearches];
     const results = await Promise.allSettled(
-      feeds.map(async ({ url, field, outlet }) =>
+      feeds.map(async ({ url, field, outlet, topic }) =>
         parseSyndication(await context.get(url), outlet ?? new URL(url).hostname)
-          .filter((item) => !field || newsMatchScore(item.title, item.abstract, context.interests, field) > 0)
-          .map((item) => ({ ...item, categories: field ? [field] : [] })),
+          .filter((item) => topic ? topicMatches(item, topic) : !field || newsMatchScore(item.title, item.abstract, context.interests, field) > 0)
+          .slice(0, topic ? 15 : undefined)
+          .map((item) => ({ ...item, categories: field ? [field] : [], ...(topic ? { topicIds: [topic.id] } : {}) })),
       ),
     );
     results.forEach((result, index) =>
@@ -362,6 +377,11 @@ export const newsSource: FeedSource = {
       .filter((item) => Date.parse(item.publishedAt) >= context.now.getTime() - 7 * 86400000);
   },
 };
+
+function topicMatches(item: RawItem, topic: FieldTopic): boolean {
+  const haystack = `${item.title} ${item.abstract}`.toLocaleLowerCase();
+  return [topic.query, topic.label].some((value) => haystack.includes(value.toLocaleLowerCase()));
+}
 
 export const recommendationSource: FeedSource = {
   id: 'recommendations',
