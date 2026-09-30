@@ -17,6 +17,12 @@
 
 <p align="center"><a href="#クイックスタート">クイックスタート</a> · <a href="#主な機能">主な機能</a> · <a href="docs/">ドキュメント</a></p>
 
+<p align="center">
+  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="Windows インストーラーをダウンロード" src="https://img.shields.io/badge/%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89-Windows%20%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%A9%E3%83%BC-2f6b45?style=for-the-badge&logo=windows&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="Android APK をダウンロード" src="https://img.shields.io/badge/%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89-Android%20APK-2f6b45?style=for-the-badge&logo=android&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="最新リリース" src="https://img.shields.io/github/v/release/iwantgobackhome/fractal?style=for-the-badge&color=3b625b"></a>
+</p>
+
 ![英語表示、ダークテーマの Fractal ホーム画面](docs/assets/readme/home-en-dark.png)
 
 **今読んでいる論文から、次に読むべき論文まで。** 原文 PDF と忠実な翻訳を並べて読み、疑問は論文に質問できます。回答に付いたページの引用から原文へ戻れます。専門分野の論文やニュースを追い、大切な資料は書庫に保存。現在利用している Codex または Claude CLI のサブスクリプションで接続でき、API キーの入力は不要です。
@@ -81,6 +87,17 @@ flowchart LR
 デスクトップアプリはハブと画面を一緒に実行します。ハブだけを起動し、ループバックアドレスをブラウザーで開くこともできます。Android はペアリング後にハブへ接続します。
 
 ## クイックスタート
+
+### ダウンロード
+
+[Releases](https://github.com/iwantgobackhome/fractal/releases/latest) から最新ビルドを入手できます。ビルドツールは不要です。
+
+| ファイル                        | プラットフォーム                   | 注意                                                                                                                        |
+| ------------------------------- | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `Fractal-Setup-<version>.exe`   | Windows 10/11 (x64)                | まだコード署名がありません。「Windows によって PC が保護されました」と表示されたら **詳細情報 → 実行** を選んでください。   |
+| `Fractal-<version>-android.apk` | Android スマートフォン・タブレット | デバッグ署名です。提供元不明のアプリのインストールを許可し、デスクトップ版の **設定 → デバイス** でペアリングしてください。 |
+
+### ソースからビルド
 
 **必要なもの:** Node.js 22.12 以降と npm。AI 機能には Codex または Claude CLI のインストールとサインインが必要です。対応環境では Fractal の設定画面から進められます。Android のビルドには JDK 17 と Android SDK も必要です。
 

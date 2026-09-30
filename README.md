@@ -17,6 +17,12 @@
 
 <p align="center"><a href="#quick-start">Quick start</a> · <a href="#features">Features</a> · <a href="docs/">Docs</a></p>
 
+<p align="center">
+  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="Download the Windows installer" src="https://img.shields.io/badge/Download-Windows%20installer-2f6b45?style=for-the-badge&logo=windows&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="Download the Android APK" src="https://img.shields.io/badge/Download-Android%20APK-2f6b45?style=for-the-badge&logo=android&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/iwantgobackhome/fractal?style=for-the-badge&color=3b625b"></a>
+</p>
+
 ![Fractal home feed in English, dark theme](docs/assets/readme/home-en-dark.png)
 
 **From the paper in front of you to the next one worth reading.** Put the original PDF beside a faithful translation. Ask questions and follow answers back to cited pages. Track papers and news in your fields, then save what matters. Fractal uses the Codex or Claude CLI sign-in tied to your existing subscription; you do not need to supply an API key.
@@ -81,6 +87,17 @@ flowchart LR
 The desktop app runs the hub and UI together. You can also run the hub and open its loopback address in a browser. Android connects to that hub after pairing.
 
 ## Quick start
+
+### Download
+
+Get the latest build from [Releases](https://github.com/iwantgobackhome/fractal/releases/latest) — no build tools needed.
+
+| File                            | Platform             | Notes                                                                                                         |
+| ------------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `Fractal-Setup-<version>.exe`   | Windows 10/11 (x64)  | Not code-signed yet: if SmartScreen says "Windows protected your PC", choose **More info → Run anyway**.      |
+| `Fractal-<version>-android.apk` | Android phone/tablet | Debug-signed: allow installs from unknown sources. Pair it with the desktop app under **Settings → Devices**. |
+
+### Build from source
 
 **Requirements:** Node.js 22.12 or newer and npm. For AI features, install and sign in to the Codex or Claude CLI, or use Fractal's supported setup flow. Building Android also requires JDK 17 and the Android SDK.
 

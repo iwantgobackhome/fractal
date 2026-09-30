@@ -17,6 +17,12 @@
 
 <p align="center"><a href="#快速开始">快速开始</a> · <a href="#主要功能">主要功能</a> · <a href="docs/">文档</a></p>
 
+<p align="center">
+  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="下载 Windows 安装程序" src="https://img.shields.io/badge/%E4%B8%8B%E8%BD%BD-Windows%20%E5%AE%89%E8%A3%85%E7%A8%8B%E5%BA%8F-2f6b45?style=for-the-badge&logo=windows&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="下载 Android APK" src="https://img.shields.io/badge/%E4%B8%8B%E8%BD%BD-Android%20APK-2f6b45?style=for-the-badge&logo=android&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="最新版本" src="https://img.shields.io/github/v/release/iwantgobackhome/fractal?style=for-the-badge&color=3b625b"></a>
+</p>
+
 ![英文深色主题的 Fractal 首页](docs/assets/readme/home-en-dark.png)
 
 **从正在读的论文，走向下一篇有价值的研究。** 将原始 PDF 与忠实译文并排阅读；向论文提问，再根据回答中的页码回到原文。关注领域内的新论文和新闻，把重要资料收进文献库。Fractal 使用你已登录的 Codex 或 Claude CLI 订阅，无须另填 API 密钥。
@@ -81,6 +87,17 @@ flowchart LR
 桌面应用会同时运行中枢和界面。也可以只启动中枢，再用浏览器打开本机地址。Android 配对后连接到该中枢。
 
 ## 快速开始
+
+### 下载
+
+从 [Releases](https://github.com/iwantgobackhome/fractal/releases/latest) 获取最新构建，无需任何开发工具。
+
+| 文件                            | 平台                | 说明                                                                                 |
+| ------------------------------- | ------------------- | ------------------------------------------------------------------------------------ |
+| `Fractal-Setup-<version>.exe`   | Windows 10/11 (x64) | 尚未进行代码签名。如果出现“Windows 已保护你的电脑”，请选择 **更多信息 → 仍要运行**。 |
+| `Fractal-<version>-android.apk` | Android 手机/平板   | 使用调试签名：请允许安装未知来源应用，并在桌面端 **设置 → 设备** 中配对。            |
+
+### 从源码构建
 
 **环境要求：**Node.js 22.12 或更高版本及 npm。AI 功能需要安装并登录 Codex 或 Claude CLI；在支持的环境中，可通过 Fractal 的设置流程完成。构建 Android 应用还需要 JDK 17 和 Android SDK。
 

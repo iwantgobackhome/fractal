@@ -17,6 +17,12 @@
 
 <p align="center"><a href="#빠른-시작">빠른 시작</a> · <a href="#주요-기능">주요 기능</a> · <a href="docs/">문서</a></p>
 
+<p align="center">
+  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="Windows 설치 파일 내려받기" src="https://img.shields.io/badge/%EB%82%B4%EB%A0%A4%EB%B0%9B%EA%B8%B0-Windows%20%EC%84%A4%EC%B9%98%20%ED%8C%8C%EC%9D%BC-2f6b45?style=for-the-badge&logo=windows&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="Android APK 내려받기" src="https://img.shields.io/badge/%EB%82%B4%EB%A0%A4%EB%B0%9B%EA%B8%B0-Android%20APK-2f6b45?style=for-the-badge&logo=android&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="최신 릴리스" src="https://img.shields.io/github/v/release/iwantgobackhome/fractal?style=for-the-badge&color=3b625b"></a>
+</p>
+
 ![한국어로 표시된 Fractal 홈 화면](docs/assets/readme/home-ko.png)
 
 **눈앞의 논문에서 다음에 읽을 논문까지.** 원문 PDF와 충실한 번역을 나란히 놓고 읽으세요. 궁금한 점은 논문에 묻고, 답변의 페이지 인용을 따라 원문을 확인하세요. 관심 분야의 논문과 뉴스를 살펴보고 중요한 자료는 서재에 담을 수 있습니다. 이미 이용 중인 Codex 또는 Claude CLI 구독 계정으로 연결하며, API 키를 따로 입력할 필요가 없습니다.
@@ -81,6 +87,17 @@ flowchart LR
 데스크톱 앱은 허브와 화면을 함께 실행합니다. 허브만 실행한 뒤 로컬 주소를 브라우저로 열 수도 있습니다. Android 앱은 QR 연결 후 허브에 접속합니다.
 
 ## 빠른 시작
+
+### 내려받기
+
+[릴리스](https://github.com/iwantgobackhome/fractal/releases/latest)에서 최신 빌드를 받으세요. 개발 도구는 필요 없습니다.
+
+| 파일                         | 플랫폼                | 참고                                                                                                                            |
+| ---------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `Fractal-Setup-<버전>.exe`   | Windows 10/11 (x64)   | 아직 코드 서명이 없습니다. "Windows의 PC 보호" 창이 뜨면 **추가 정보 → 실행**을 누르세요.                                       |
+| `Fractal-<버전>-android.apk` | Android 휴대폰·태블릿 | 테스트용(디버그) 서명입니다. 출처를 알 수 없는 앱 설치를 허용한 뒤 설치하고, 데스크톱 앱의 **설정 → 기기 연결**에서 연결하세요. |
+
+### 소스에서 빌드하기
 
 **준비물:** Node.js 22.12 이상과 npm. AI 기능에는 Codex 또는 Claude CLI 설치 및 로그인이 필요하며, 지원되는 환경에서는 Fractal의 설정 화면에서 진행할 수 있습니다. Android 빌드에는 JDK 17과 Android SDK도 필요합니다.
 
