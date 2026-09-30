@@ -1,0 +1,6 @@
+﻿--------- beginning of main
+09-30 21:26:21.896  6641  6663 I ReaderInteraction: pen viewport before=316 down=316 up=316
+09-30 21:26:26.097  6641  6663 I ReaderInteraction: mixed pen/palm viewport before=316 afterPen=316 freshFinger=97
+09-30 21:26:32.630  6641  6663 I ReaderInteraction: finger viewport before=316 after=57
+09-30 21:26:39.272  6641  6663 I ReaderInteraction: pinch before=PaperBounds(x=0, y=316, width=1080, height=1440) after=PaperBounds(x=-250, y=16, width=1620, height=2160) focus=(500.0,916.0)
+09-30 21:26:39.336  6641  6663 I ReaderInteraction: PDF marker before=(514.5, 935.0) zoomed=(522.0, 944.5) matches ink bounds

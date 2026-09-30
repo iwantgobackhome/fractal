@@ -1,0 +1,9 @@
+# Reader stage3 implementation checkpoint
+
+This is an intermediate dependency checkpoint, not final acceptance. It preserves the accepted Android library baseline while adding Room3 (derived text positions, device reader state, idempotent AI submission intents), cached original ranges, a scoped registered native ink host, split/compact panes, original sticky notes, translated selection and detached history UI.
+
+Build: `gradlew.bat -p apps/android :app:assembleDebug :app:assembleDebugAndroidTest :app:testDebugUnitTest :data:testDebugUnitTest :sync:testDebugUnitTest :ink:testDebugUnitTest --console=plain` passed. Installed both debug APKs on disposable API34 emulator5554. `am instrument -w -e class app.fractal.reader.ReaderInteractionTest,app.fractal.reader.LibraryFoundationTest app.fractal.reader.test/androidx.test.runner.AndroidJUnitRunner` passed20; the two new history repository cases passed; the two new reader cases passed after fixing isolated fixture setup and assertions. Published PDF fixtures confirm visible black rendered text inside independently derived crop/rotation envelopes on physical pages1/2/3; this establishes approximate frame coverage rather than glyph-outline precision.
+
+Actual window observations after layout changes: pen paper top442 before/down/up, fresh finger442→183; mixed pen/palm442 unchanged, fresh finger223; zoomed ink bounds1080×1440→1620×2160 with independent PDF marker514.5,1061→522,1070.5. Finger-first to sole stylus commits one stroke; genuine cancel still discards. No physical Galaxy Tab/S Pen used.
+
+Remaining: accepted optional provenance/language dependency integration, final native clipping/overlay/handle and semantic resize checks, actual Hub offline/reconnect/history bridge, finished adaptive screen captures and accessibility review. Historical annotation ratios have not been retagged or moved. No translated annotation anchors or request14 features.

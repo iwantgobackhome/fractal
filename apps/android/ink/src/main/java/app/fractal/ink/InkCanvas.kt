@@ -72,6 +72,8 @@ fun InkCanvas(
     fingerScrollsParent: Boolean = false,
     onTextSelection: (InkPoint, InkPoint) -> Unit = { _, _ -> },
     onFingerTransform: ((InkFingerTransform) -> Unit)? = null,
+    nativeInkRouting: Boolean = false,
+    nativeViewportInWindow: android.graphics.Rect? = null,
 ) {
     DisposableEffect(state, onStrokesChanged) {
         state.onChange = onStrokesChanged
@@ -91,6 +93,8 @@ fun InkCanvas(
                 surface.onTextSelection = onTextSelection
                 surface.onFingerTransform = onFingerTransform
                 surface.pageSize = pageSize
+                surface.nativeInkRouting = nativeInkRouting
+                surface.nativeViewportInWindow = nativeViewportInWindow
                 surface.sync(state.strokes, state.selectedIds)
             },
             modifier = modifier,
@@ -113,6 +117,8 @@ private class InkSurface(
 ) : FrameLayout(context) {
     var pageSize: Size = Size.Zero
     var fingerScrollsParent = false
+    var nativeInkRouting = false
+    var nativeViewportInWindow: android.graphics.Rect? = null
     var onTextSelection: (InkPoint, InkPoint) -> Unit = { _, _ -> }
     var onFingerTransform: ((InkFingerTransform) -> Unit)? = null
     private val dry = DryInkView(context)
@@ -196,7 +202,16 @@ private class InkSurface(
         tilts.add(event.getAxisValue(MotionEvent.AXIS_TILT, index))
         lastMotion = android.os.SystemClock.uptimeMillis()
     }
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        readerInputHost()?.register(this, { event ->
+            nativeInkRouting && (tool.active !in listOf(InkTool.TextSelection, InkTool.Lasso) ||
+                event.getToolType(event.actionIndex) == MotionEvent.TOOL_TYPE_ERASER ||
+                event.buttonState and MotionEvent.BUTTON_STYLUS_PRIMARY != 0)
+        }, { event -> handle(wet, event) }, { nativeViewportInWindow })
+    }
     override fun onDetachedFromWindow() {
+        readerInputHost()?.unregister(this)
         val now = android.os.SystemClock.uptimeMillis()
         val event = MotionEvent.obtain(now, now, MotionEvent.ACTION_CANCEL, 0f, 0f, 0)
         try { cancel(event) } finally { event.recycle() }

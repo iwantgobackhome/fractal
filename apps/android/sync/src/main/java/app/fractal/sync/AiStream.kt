@@ -8,6 +8,7 @@ data class AiStreamEvent(
     val type: String,
     val text: String,
     val pages: List<Int>,
+    val historyId: String? = null,
 )
 
 class SseParser {
@@ -37,7 +38,7 @@ class SseParser {
         val pages = citation.findAll(text).mapNotNull { it.groupValues[1].toIntOrNull() }.distinct().toList()
         data.clear()
         eventName = ""
-        return AiStreamEvent(type, text, pages)
+        return AiStreamEvent(type, text, pages, objectValue["historyId"]?.jsonPrimitive?.content)
     }
 
     fun parse(raw: String): List<AiStreamEvent> {

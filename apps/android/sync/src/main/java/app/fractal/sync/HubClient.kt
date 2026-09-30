@@ -20,8 +20,13 @@ import java.util.concurrent.TimeUnit
 interface HubDataClient {
     suspend fun data(path: String, method: String = "GET", body: JsonElement? = null): JsonElement
 }
+interface HubHistoryClient : HubDataClient {
+    suspend fun attachHistory(path: String, body: JsonObject): String
+}
 
-class HubClient(private val credentials: HubCredentialStore) : HubDataClient {
+class HubHttpException(val code: Int) : IOException("Hub HTTP $code")
+
+class HubClient(private val credentials: HubCredentialStore) : HubHistoryClient {
     private val http = OkHttpClient.Builder()
         .connectTimeout(3, TimeUnit.SECONDS)
         .readTimeout(40, TimeUnit.SECONDS)
@@ -61,11 +66,25 @@ class HubClient(private val credentials: HubCredentialStore) : HubDataClient {
     override suspend fun data(path: String, method: String, body: JsonElement?): JsonElement =
         withContext(Dispatchers.IO) {
             execute(path, method, body).use { response ->
-                if (!response.isSuccessful) throw IOException("Hub HTTP ${response.code}")
+                if (!response.isSuccessful) throw HubHttpException(response.code)
                 val raw = response.body?.string() ?: throw IOException("Empty hub response")
                 WireJsonAdapter.data(raw)
             }
         }
+
+    /** Admission is durable at the Hub. Close this observation as soon as its ID is known. */
+    override suspend fun attachHistory(path: String, body: JsonObject): String = withContext(Dispatchers.IO) {
+        execute(path, "POST", body).use { response ->
+            if (!response.isSuccessful) throw HubHttpException(response.code)
+            val parser = SseParser()
+            val reader = response.body?.charStream()?.buffered() ?: throw IOException("Empty generation response")
+            while (true) {
+                val line = reader.readLine() ?: break
+                parser.consume(line)?.historyId?.let { return@withContext it }
+            }
+            throw IOException("The Hub did not provide durable history; request context is retained for review.")
+        }
+    }
 
     suspend fun pair(payload: PairingPayload, deviceName: String): HubCredentials {
         var last: Exception? = null

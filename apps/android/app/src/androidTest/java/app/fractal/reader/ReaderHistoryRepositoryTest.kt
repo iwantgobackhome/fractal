@@ -1,0 +1,85 @@
+package app.fractal.reader
+
+import androidx.room.Room
+import androidx.test.platform.app.InstrumentationRegistry
+import app.fractal.data.*
+import app.fractal.sync.*
+import kotlinx.coroutines.*
+import kotlinx.serialization.json.*
+import org.junit.Assert.*
+import org.junit.Test
+import java.io.IOException
+
+class ReaderHistoryRepositoryTest {
+    private val context = InstrumentationRegistry.getInstrumentation().targetContext
+    private fun record(request: String, rev: Int = 1, status: String = "running") = buildJsonObject {
+        put("id", "retained-answer"); put("paperKey", "p"); put("requestId", request); put("kind", "question")
+        put("question", "Complete selected context question"); put("text", if (status == "completed") "Retained answer [p.2]" else "Partial answer")
+        put("status", status); put("createdAt", "2026-10-01T00:00:00Z"); put("updatedAt", "2026-10-01T00:00:01Z")
+        put("completedAt", JsonNull); put("context", buildJsonObject { put("page", 2); put("selectedText", "😀 fi é") })
+        put("answer", JsonNull); put("error", JsonNull); put("rev", rev); put("deviceId", "hub"); put("deleted", false)
+    }
+    @Test fun lostAdmissionResponseRetriesImmutableIdAndRetainsContextAcrossRepositoryRestart() = runBlocking {
+        val db = Room.inMemoryDatabaseBuilder(context, FractalDatabase::class.java).build()
+        val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+        val ids = java.util.concurrent.CopyOnWriteArrayList<String>()
+        var offline = true
+        var current: JsonObject? = null
+        val client = object : HubHistoryClient {
+            override suspend fun attachHistory(path: String, body: JsonObject): String {
+                val id = body["requestId"]!!.jsonPrimitive.content; ids += id
+                current = record(id)
+                if (offline) throw IOException("Lost response after durable admission")
+                return "retained-answer"
+            }
+            override suspend fun data(path: String, method: String, body: JsonElement?): JsonElement {
+                if (offline) throw IOException("Hub unavailable")
+                return buildJsonObject { put("history", JsonArray(listOfNotNull(current))) }
+            }
+        }
+        try {
+            val repo = HistoryRepository(db, client, scope)
+            val id = repo.create("p", "question", buildJsonObject { put("question", "Complete selected context question"); put("page", 2); put("selectedText", "😀 fi é") }, buildJsonObject { put("text", "😀 fi é"); put("origin", "original"); put("page", 2) })
+            withTimeout(5000) { while (db.reader().request(id)?.status != "failed") delay(20) }
+            assertTrue(db.reader().request(id)!!.contextJson.contains("😀 fi é"))
+            offline = false
+            // A new repository has no surviving panel observer/job. Same intent remains in Room.
+            HistoryRepository(db, client, scope).send(id)
+            withTimeout(5000) { while (db.metadata().history("retained-answer") == null) delay(20) }
+            assertEquals(listOf(id, id), ids.toList()); assertEquals("running", db.metadata().history("retained-answer")!!.status)
+            current = record(id, 3, "completed")
+            HistoryRepository(db, client, scope).refresh("p")
+            assertTrue(db.metadata().history("retained-answer")!!.json.contains("Retained answer"))
+            current = record(id, 2, "running")
+            HistoryRepository(db, client, scope).refresh("p")
+            assertEquals("completed", db.metadata().history("retained-answer")!!.status)
+            assertEquals(3, db.metadata().authority("history:retained-answer")!!.rev)
+            assertEquals("attached", db.reader().request(id)!!.status)
+        } finally { scope.cancel(); db.close() }
+    }
+
+    @Test fun closeDoesNotCancelExplicitCancelQueuesOfflineAndIsIdempotent() = runBlocking {
+        val db = Room.inMemoryDatabaseBuilder(context, FractalDatabase::class.java).build()
+        val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+        var offline = true; var cancels = 0
+        val client = object : HubHistoryClient {
+            override suspend fun attachHistory(path: String, body: JsonObject) = "retained-answer"
+            override suspend fun data(path: String, method: String, body: JsonElement?): JsonElement {
+                if (offline) throw IOException("Offline")
+                if (path.endsWith("/cancel")) { cancels++; return buildJsonObject { put("history", record("request", 2, "canceled")) } }
+                return buildJsonObject { put("history", JsonArray(listOf(record("request")))) }
+            }
+        }
+        try {
+            db.metadata().upsert(historyEntity(record("request")))
+            val repo = HistoryRepository(db, client, scope)
+            assertEquals(0, cancels) // Retained history and repository construction perform no cancellation.
+            val id = repo.action("p", "retained-answer", "cancel")
+            withTimeout(5000) { while (db.reader().request(id)?.status != "failed") delay(20) }
+            offline = false
+            assertEquals(id, repo.action("p", "retained-answer", "cancel"))
+            withTimeout(5000) { while (db.reader().request(id)?.status != "done") delay(20) }
+            assertEquals(1, cancels); assertEquals("canceled", db.metadata().history("retained-answer")!!.status)
+        } finally { scope.cancel(); db.close() }
+    }
+}

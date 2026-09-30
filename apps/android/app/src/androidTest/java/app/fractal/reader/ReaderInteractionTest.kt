@@ -30,12 +30,26 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
+import org.junit.Before
+import androidx.compose.ui.platform.ComposeView
 import kotlin.math.abs
 
 /** Software routing tests; injected tool types are not evidence of physical palm rejection. */
 class ReaderInteractionTest {
-    @get:Rule val compose = createAndroidComposeRule<ComponentActivity>()
+    @get:Rule val compose = createAndroidComposeRule<MainActivity>()
     private var downTime = 0L
+
+    @Before fun replaceInitialContentWithControlledReaderFixture() {
+        compose.runOnUiThread {
+            val content = compose.activity.findViewById<ViewGroup>(android.R.id.content)
+            fun dispose(view: View) {
+                if (view is ComposeView) view.disposeComposition()
+                else if (view is ViewGroup) repeat(view.childCount) { dispose(view.getChildAt(it)) }
+            }
+            repeat(content.childCount) { dispose(content.getChildAt(it)) }
+            content.removeAllViews()
+        }
+    }
 
     private fun reader() {
         val app = compose.activity.application as ReaderApplication
@@ -224,7 +238,7 @@ class ReaderInteractionTest {
         compose.setContent {
             FractalTheme {
                 Box(Modifier.fillMaxSize()) {
-                    InkCanvas(state, tool, Modifier.fillMaxSize(), Size.Zero,
+                    InkCanvas(state, tool, Modifier.fillMaxSize(), Size.Zero, nativeInkRouting = true,
                         onWritingStateChanged = writing, onFingerGesture = transform,
                         onTextSelection = { _, _ -> selected() })
                 }
@@ -344,9 +358,9 @@ class ReaderInteractionTest {
         compose.runOnIdle { assertEquals(1, state.strokes.size) }
     }
 
-    @Test fun frameworkCancelOnFingerFirstSoleStylusDiscardsPartialInkAndRecovers() {
-        // Compose resets pointer IDs when a mixed stream becomes a sole different tool.
-        // Treat its synthesized ACTION_CANCEL as cancellation, not as a finished stroke.
+    @Test fun fingerFirstSoleStylusCommitsOneContinuousStrokeAndRecovers() {
+        // The scoped native host owns this pen stream before Compose's tool conversion.
+        // Genuine cancellation is still covered independently by canceledInkDoesNotCommit.
         val state = InkPageState()
         val writing = mutableListOf<Boolean>()
         canvas(state, writing = { writing += it })
@@ -358,10 +372,10 @@ class ReaderInteractionTest {
         pointers(MotionEvent.ACTION_POINTER_UP, listOf(finger, pen))
         pointers(MotionEvent.ACTION_MOVE, listOf(pen.copy(x = 280f)))
         pointers(MotionEvent.ACTION_UP, listOf(pen.copy(x = 300f)))
-        compose.runOnIdle { assertTrue(state.strokes.isEmpty()); assertEquals(listOf(true, false), writing) }
+        compose.runOnIdle { assertEquals(1, state.strokes.size); assertEquals(listOf(true, false), writing) }
         event(MotionEvent.ACTION_DOWN, 200f, 600f)
         event(MotionEvent.ACTION_UP, 300f, 600f)
-        compose.runOnIdle { assertEquals(1, state.strokes.size) }
+        compose.runOnIdle { assertEquals(2, state.strokes.size) }
     }
 
     @Test fun pinchPointerRemovalDoesNotPanByTheOldCentroid() {

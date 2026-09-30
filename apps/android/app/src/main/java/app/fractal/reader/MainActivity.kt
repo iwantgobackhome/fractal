@@ -3,6 +3,9 @@ package app.fractal.reader
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.view.View
+import android.view.ViewGroup
+import app.fractal.ink.ReaderInputHost
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -49,6 +52,12 @@ import app.fractal.ink.rememberInkToolState
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
+    override fun setContentView(view: View?, params: ViewGroup.LayoutParams?) {
+        if (view == null || view is ReaderInputHost) super.setContentView(view, params)
+        else super.setContentView(ReaderInputHost(this).apply {
+            addView(view, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+        }, params)
+    }
     private val cameraPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
         cameraGranted.value = granted
     }

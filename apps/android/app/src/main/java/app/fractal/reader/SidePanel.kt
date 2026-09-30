@@ -55,134 +55,13 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 
 @Composable
-fun SidePanel(
-    app: ReaderApplication,
-    paperKey: String,
-    annotations: List<AnnotationEntity>,
-    pages: PdfPages?,
-    tab: String,
-    onTabChange: (String) -> Unit,
-    onJump: (Int) -> Unit,
-    modifier: Modifier = Modifier,
-    questionSelection: Pair<Int, PdfTextSelection>? = null,
-    onClearQuestionSelection: () -> Unit = {},
-) {
-    val colors = LocalFractalColors.current
-    val answerLanguage = if (LocalConfiguration.current.locales[0].language == "ko") "ko" else "en"
-    val scope = rememberCoroutineScope()
-    var question by remember { mutableStateOf("") }
-    var answer by remember { mutableStateOf("") }
-    var model by remember { mutableStateOf("") }
-    var models by remember { mutableStateOf<List<Pair<String, String>>>(emptyList()) }
-    var busy by remember { mutableStateOf(false) }
-    LaunchedEffect(paperKey) {
-        runCatching {
-            val response = app.client.data("/api/ai/providers").jsonObject
-            response["providers"]?.jsonArray?.flatMap { provider ->
-                val id = provider.jsonObject["status"]?.jsonObject?.get("id")?.jsonPrimitive?.content ?: ""
-                provider.jsonObject["models"]?.jsonArray?.map { item ->
-                    id to (item.jsonObject["id"]?.jsonPrimitive?.content ?: "")
-                } ?: emptyList()
-            } ?: emptyList()
-        }.onSuccess {
-            models = it
-            model = it.firstOrNull()?.second.orEmpty()
-        }
-    }
-    CompositionLocalProvider(LocalContentColor provides colors.ink) { Column(modifier.background(colors.paper)) {
-        Row(Modifier.fillMaxWidth()) {
-            TextButton(onClick = { onTabChange("notes") }) { Text(stringResource(R.string.notes), color = if (tab == "notes") colors.ink else colors.inkSoft) }
-            TextButton(onClick = { onTabChange("questions") }) { Text(stringResource(R.string.questions), color = if (tab == "questions") colors.ink else colors.inkSoft) }
-        }
-        HorizontalDivider(color = colors.rule)
-        if (tab == "notes") {
-            LazyColumn(Modifier.fillMaxSize()) {
-                items(annotations.filter { it.kind == "highlight" || it.kind == "memo" }, key = { it.id }) { row ->
-                    val json = runCatching { WireJson.format.parseToJsonElement(row.json).jsonObject }.getOrNull()
-                    Column(Modifier.fillMaxWidth().clickable { onJump(row.page) }.padding(16.dp)) {
-                        val text = readerNoteText(row.kind, json)
-                        val quote = text.quote
-                        if (quote.isBlank() && row.kind == "highlight") {
-                            Text(stringResource(R.string.region_label, row.page), color = colors.inkSoft, fontSize = 13.sp)
-                            RegionThumbnail(pages, row.page, row.json)
-                        } else {
-                            Text(stringResource(R.string.page_label, row.page), color = colors.inkSoft, fontSize = 12.sp)
-                            if (quote.isNotBlank()) Text(quote, fontFamily = FontFamily.Serif)
-                        }
-                        if (text.body.isNotBlank()) Text(text.body, color = colors.inkSoft)
-                    }
-                    HorizontalDivider(color = colors.rule, thickness = .5.dp)
-                }
-            }
-        } else {
-            Column(Modifier.fillMaxSize()) {
-                LazyColumn(Modifier.weight(1f)) {
-                    item {
-                        if (answer.isNotBlank()) {
-                            Text(answer, Modifier.padding(16.dp), color = colors.ink)
-                            Regex("""\[p\.(\d+)]""").findAll(answer).forEach { match ->
-                                TextButton(onClick = { onJump(match.groupValues[1].toInt()) }) {
-                                    Text(match.value)
-                                }
-                            }
-                        }
-                    }
-                }
-                if (app.credentials.load() == null) Text(stringResource(R.string.questions_need_hub), Modifier.padding(16.dp), color = colors.inkSoft)
-                questionSelection?.let { (page, selection) ->
-                    Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
-                        Text(stringResource(R.string.page_label, page), color = colors.inkSoft, fontSize = 12.sp)
-                        Text(selection.text.ifBlank { stringResource(R.string.selected_region) }, maxLines = 3,
-                            fontFamily = FontFamily.Serif, color = colors.inkSoft)
-                        TextButton(onClick = onClearQuestionSelection) { Text(stringResource(R.string.clear_quote)) }
-                    }
-                }
-                ResearchSelector(libraryText("Model", "모델"), model,
-                    models.map { it.second to "${it.first} · ${it.second}" }, { model = it }, Modifier.padding(horizontal = 16.dp),
-                    emptyLabel = libraryText("No models available", "사용 가능한 모델 없음"))
-                Row(Modifier.fillMaxWidth()) {
-                    OutlinedTextField(question, { question = it }, label = { Text(stringResource(R.string.questions)) },
-                        modifier = Modifier.weight(1f), maxLines = 3)
-                    TextButton(enabled = !busy && question.isNotBlank(), onClick = {
-                        val asked = question
-                        val askedSelection = questionSelection
-                        question = ""
-                        answer = ""
-                        busy = true
-                        scope.launch {
-                            runCatching {
-                                withContext(Dispatchers.IO) {
-                                    val selection = models.firstOrNull { it.second == model }
-                                    val body = readerQuestionBody(asked, answerLanguage, selection, askedSelection)
-                                    val path = "/api/papers/${HubClient.keyPath(paperKey)}/ask"
-                                    var response = app.client.execute(path, "POST", body)
-                                    if (response.code == 400) {
-                                        response.close()
-                                        response = app.client.execute(path, "POST", JsonObject(body.filterKeys { it != "answerLanguage" }))
-                                    }
-                                    response.use {
-                                        if (!response.isSuccessful) error(app.getString(R.string.http_error, response.code))
-                                        val parser = SseParser()
-                                        response.body?.charStream()?.buffered()?.forEachLine { line ->
-                                            parser.consume(line)?.let { event ->
-                                                if (event.type == "delta") answer += event.text
-                                                if (event.type == "done") answer = event.text
-                                            }
-                                        }
-                                    }
-                                }
-                            }.onFailure { answer = it.message ?: app.getString(R.string.question_failed) }
-                            busy = false
-                        }
-                    }) { Text(stringResource(R.string.send_symbol)) }
-                }
-            }
-        }
-    } }
-}
+fun SidePanel(app: ReaderApplication, paperKey: String, annotations: List<AnnotationEntity>, pages: PdfPages?, tab: String,
+    onTabChange: (String) -> Unit, onJump: (Int) -> Unit, modifier: Modifier = Modifier,
+    questionSelection: Pair<Int, PdfTextSelection>? = null, onClearQuestionSelection: () -> Unit = {}, onClose: () -> Unit = {}) =
+    DurableReaderPanel(app, paperKey, annotations, pages, tab, onTabChange, onJump, modifier, questionSelection, onClearQuestionSelection, onClose)
 
 @Composable
-private fun RegionThumbnail(pages: PdfPages?, page: Int, annotationJson: String) {
+internal fun RegionThumbnail(pages: PdfPages?, page: Int, annotationJson: String) {
     var cropped by remember(pages, page, annotationJson) { mutableStateOf<Bitmap?>(null) }
     LaunchedEffect(pages, page, annotationJson) {
         cropped = null

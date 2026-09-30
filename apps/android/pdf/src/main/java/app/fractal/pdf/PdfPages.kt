@@ -22,16 +22,36 @@ data class PdfRect(
 data class PdfTextSelection(
     val text: String,
     val rects: List<PdfRect>,
+    val start: Int? = null,
+    val end: Int? = null,
+    val origin: String = "original",
+    val blockId: String? = null,
+    val provenance: String = "native-original",
+    val quads: List<List<Pair<Float, Float>>> = emptyList(),
+    val originalRects: List<PdfRect> = rects,
+    val pdfSha256: String? = null,
+    val extractionVersion: String? = null,
+    val rotation: Int? = null,
 )
 
 /** Bitmap cache is bounded by bytes; a width change renders a fresh page. */
 class PdfPages(file: File) : Closeable {
+    private val sourceFile = file
+    private val openedLength = file.length()
+    private val openedModified = file.lastModified()
+    val pdfSha256: String = file.inputStream().use { stream ->
+        val digest = java.security.MessageDigest.getInstance("SHA-256")
+        val buffer = ByteArray(64 * 1024)
+        while (true) { val count = stream.read(buffer); if (count < 0) break; digest.update(buffer, 0, count) }
+        digest.digest().joinToString("") { "%02x".format(it) }
+    }
     private val descriptor = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
     private val renderer = PdfRenderer(descriptor)
     private val bitmaps = object : LruCache<String, Bitmap>(80 * 1024 * 1024) {
         override fun sizeOf(key: String, value: Bitmap): Int = value.byteCount
     }
     val pageCount: Int get() = renderer.pageCount
+    fun identityUnchanged(): Boolean = sourceFile.isFile && sourceFile.length() == openedLength && sourceFile.lastModified() == openedModified
 
     @Synchronized
     fun aspectRatio(index: Int): Float {

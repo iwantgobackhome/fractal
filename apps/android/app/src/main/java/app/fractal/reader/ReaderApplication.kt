@@ -10,12 +10,20 @@ import app.fractal.sync.HubCredentialStore
 import app.fractal.sync.PdfDownloader
 import app.fractal.sync.SyncEngine
 import app.fractal.sync.SyncScheduler
+import app.fractal.sync.OriginalTextRepository
+import app.fractal.sync.HistoryRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.Dispatchers
 
 class ReaderApplication : Application() {
     val database by lazy { FractalDatabase.get(this) }
     val credentials by lazy { HubCredentialStore(this) }
     val client by lazy { HubClient(credentials) }
     val sync by lazy { SyncEngine(database, client) }
+    val originalText by lazy { OriginalTextRepository(database, client) }
+    private val submissionScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    val history by lazy { HistoryRepository(database, client, submissionScope) }
     val metadata by lazy { MetadataStore(database) {
         credentials.load()?.deviceId ?: (settings.getString("localDeviceId", null)
             ?: UUID.randomUUID().toString().also { settings.edit().putString("localDeviceId", it).commit() })

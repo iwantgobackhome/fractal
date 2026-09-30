@@ -59,6 +59,37 @@ data class MetadataConflict(@PrimaryKey val requestId: String, val kind: String,
 data class MetadataMutation(@PrimaryKey val requestId: String, val kind: String, val entityId: String,
     val baseRev: Int, val baseJson: String, val patchJson: String, val deviceId: String, val createdAt: Long)
 
+@Entity(tableName = "pdf_text_pages", primaryKeys = ["pdfSha256", "version", "page"])
+data class PdfTextEntity(val pdfSha256: String, val version: String, val page: Int, val json: String, val accessedAt: Long)
+
+/** Device reading state only: never annotation coordinates or translated-position sync records. */
+@Entity(tableName = "reader_positions")
+data class ReaderPositionEntity(@PrimaryKey val paperKey: String, val json: String)
+
+/** Idempotent generation POST intent, separate from settled-history metadata imports. */
+@Entity(tableName = "ai_requests")
+data class AiRequestEntity(@PrimaryKey val requestId: String, val paperKey: String, val kind: String,
+    val bodyJson: String, val contextJson: String, val status: String, val historyId: String?,
+    val error: String?, val cancelRequested: Boolean, val createdAt: String, val updatedAt: String)
+
+@Dao
+interface ReaderDao {
+    @Query("SELECT * FROM pdf_text_pages WHERE pdfSha256 = :hash AND version = :version AND page = :page")
+    suspend fun textPage(hash: String, version: String, page: Int): PdfTextEntity?
+    @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun upsert(value: PdfTextEntity)
+    @Query("DELETE FROM pdf_text_pages WHERE rowid NOT IN (SELECT rowid FROM pdf_text_pages ORDER BY accessedAt DESC LIMIT 512)") suspend fun trimTextPages()
+    @Query("SELECT COALESCE(SUM(length(CAST(json AS BLOB))), 0) FROM pdf_text_pages") suspend fun textBytes(): Long
+    @Query("DELETE FROM pdf_text_pages WHERE rowid = (SELECT rowid FROM pdf_text_pages ORDER BY accessedAt LIMIT 1)") suspend fun evictOldestTextPage()
+    @Query("DELETE FROM pdf_text_pages WHERE pdfSha256 = :hash") suspend fun deleteTextPages(hash: String)
+    @Query("SELECT * FROM reader_positions WHERE paperKey = :key") suspend fun position(key: String): ReaderPositionEntity?
+    @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun upsert(value: ReaderPositionEntity)
+    @Query("SELECT * FROM ai_requests WHERE paperKey = :key ORDER BY createdAt DESC")
+    fun observeRequests(key: String): Flow<List<AiRequestEntity>>
+    @Query("SELECT * FROM ai_requests WHERE requestId = :id") suspend fun request(id: String): AiRequestEntity?
+    @Query("SELECT * FROM ai_requests WHERE paperKey = :key ORDER BY createdAt") suspend fun requests(key: String): List<AiRequestEntity>
+    @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun upsert(value: AiRequestEntity)
+}
+
 @Dao
 interface MetadataDao {
     @Query("SELECT COUNT(*) FROM metadata_mutations") fun observePendingCount(): Flow<Int>
@@ -159,8 +190,9 @@ interface SyncStateDao {
 
 @Database(
     entities = [LibraryEntity::class, AnnotationEntity::class, SyncStateEntity::class,
-        FolderEntity::class, HistoryEntity::class, SnapshotEntity::class, MetadataMutation::class, MetadataAuthority::class, MetadataConflict::class],
-    version = 2,
+        FolderEntity::class, HistoryEntity::class, SnapshotEntity::class, MetadataMutation::class, MetadataAuthority::class, MetadataConflict::class,
+        PdfTextEntity::class, ReaderPositionEntity::class, AiRequestEntity::class],
+    version = 3,
     exportSchema = false,
 )
 abstract class FractalDatabase : RoomDatabase() {
@@ -168,6 +200,7 @@ abstract class FractalDatabase : RoomDatabase() {
     abstract fun annotations(): AnnotationDao
     abstract fun syncState(): SyncStateDao
     abstract fun metadata(): MetadataDao
+    abstract fun reader(): ReaderDao
 
     companion object {
         val MIGRATION_1_2 = object : Migration(1, 2) {
@@ -201,6 +234,13 @@ abstract class FractalDatabase : RoomDatabase() {
                 db.execSQL("CREATE TABLE IF NOT EXISTS metadata_mutations (requestId TEXT NOT NULL PRIMARY KEY, kind TEXT NOT NULL, entityId TEXT NOT NULL, baseRev INTEGER NOT NULL, baseJson TEXT NOT NULL, patchJson TEXT NOT NULL, deviceId TEXT NOT NULL, createdAt INTEGER NOT NULL)")
             }
         }
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("CREATE TABLE IF NOT EXISTS pdf_text_pages (pdfSha256 TEXT NOT NULL, version TEXT NOT NULL, page INTEGER NOT NULL, json TEXT NOT NULL, accessedAt INTEGER NOT NULL, PRIMARY KEY(pdfSha256, version, page))")
+                db.execSQL("CREATE TABLE IF NOT EXISTS reader_positions (paperKey TEXT NOT NULL PRIMARY KEY, json TEXT NOT NULL)")
+                db.execSQL("CREATE TABLE IF NOT EXISTS ai_requests (requestId TEXT NOT NULL PRIMARY KEY, paperKey TEXT NOT NULL, kind TEXT NOT NULL, bodyJson TEXT NOT NULL, contextJson TEXT NOT NULL, status TEXT NOT NULL, historyId TEXT, error TEXT, cancelRequested INTEGER NOT NULL, createdAt TEXT NOT NULL, updatedAt TEXT NOT NULL)")
+            }
+        }
         @Volatile private var instance: FractalDatabase? = null
 
         fun get(context: Context): FractalDatabase {
@@ -209,7 +249,7 @@ abstract class FractalDatabase : RoomDatabase() {
                     context.applicationContext,
                     FractalDatabase::class.java,
                     "fractal-reader.db",
-                ).addMigrations(MIGRATION_1_2).build().also { instance = it }
+                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3).build().also { instance = it }
             }
         }
     }

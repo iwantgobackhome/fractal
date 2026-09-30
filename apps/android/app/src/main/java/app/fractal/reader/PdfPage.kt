@@ -1,11 +1,14 @@
 package app.fractal.reader
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
@@ -29,9 +32,18 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.graphics.Path
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.unit.dp
 import app.fractal.data.AnnotationEntity
 import app.fractal.data.WireJson
+import app.fractal.data.OriginalTextPage
+import app.fractal.data.OriginalTextGeometry
+import app.fractal.data.OriginalRange
+import app.fractal.data.PDF_TEXT_LAYOUT_VERSION
 import app.fractal.design.LocalFractalColors
 import app.fractal.ink.InkCanvas
 import app.fractal.ink.InkPageState
@@ -62,9 +74,33 @@ fun PdfPage(
     onDoubleTap: () -> Unit,
     onWritingStateChanged: (Boolean) -> Unit,
     onInkChanged: (List<InkStroke>, List<InkStroke>) -> Unit,
+    nativeViewport: android.graphics.Rect? = null,
+    selection: PdfTextSelection? = null,
+    regionMode: Boolean = false,
+    onSelectionUnavailable: (String) -> Unit = {},
+    contentOverlay: @Composable BoxScope.(Int, Int, OriginalTextPage?) -> Unit = { _, _, _ -> },
 ) {
     val colors = LocalFractalColors.current
     val density = LocalDensity.current
+    var textPage by remember(source, index) { mutableStateOf<OriginalTextPage?>(null) }
+    var textStatus by remember(source, index) { mutableStateOf("Original text positions are loading.") }
+    LaunchedEffect(source, index) {
+        val result = withContext(Dispatchers.IO) { app.originalText.page(paperKey, source.pdfSha256, index + 1, source.pageCount) }
+        textPage = result.page
+        textStatus = if (result.page?.coverage == "no_text") "This page has no extracted text. Deliberately select a region for a figure or scanned page."
+            else result.message
+    }
+    val geometry = remember(textPage) { textPage?.let(::OriginalTextGeometry) }
+    fun selected(range: OriginalRange): PdfTextSelection = PdfTextSelection(
+        text = range.text, rects = range.displayQuads.map(::quadRect), start = range.start, end = range.end,
+        provenance = "cached-original-approximate", quads = range.displayQuads.map { quad -> quad.map { it.x.toFloat() to it.y.toFloat() } },
+        originalRects = range.originalQuads.map(::quadRect), pdfSha256 = source.pdfSha256,
+        extractionVersion = PDF_TEXT_LAYOUT_VERSION, rotation = textPage?.rotation,
+    )
+    fun region(startX: Float, startY: Float, endX: Float, endY: Float) = PdfTextSelection("", listOf(PdfRect(
+        minOf(startX, endX), minOf(startY, endY), kotlin.math.abs(endX - startX).coerceAtLeast(.01f),
+        kotlin.math.abs(endY - startY).coerceAtLeast(.01f))), provenance = "deliberate-region",
+        pdfSha256 = source.pdfSha256, rotation = textPage?.rotation)
     BoxWithConstraints(Modifier.fillMaxWidth().padding(bottom = 12.dp)) {
         val width = maxWidth * zoom
         val widthPx = with(density) { width.roundToPx() }
@@ -123,6 +159,12 @@ fun PdfPage(
                             drawCircle(colors.ink, radius = 5.dp.toPx(), center = androidx.compose.ui.geometry.Offset(x * size.width, y * size.height))
                         }
                     }
+                    selection?.quads?.forEach { quad ->
+                        val path = Path()
+                        quad.forEachIndexed { point, (x, y) -> if (point == 0) path.moveTo(x * size.width, y * size.height) else path.lineTo(x * size.width, y * size.height) }
+                        path.close()
+                        drawPath(path, colors.focus.copy(alpha = .23f))
+                    }
                 }
                 InkCanvas(state, tool, Modifier.matchParentSize(),
                     pageSize = Size(widthPx.toFloat(), with(density) { height.roundToPx().toFloat() }),
@@ -137,27 +179,65 @@ fun PdfPage(
                         onFingerGesture(gesture.panY, factor, gesture.focusY)
                     },
                     fingerScrollsParent = true,
+                    nativeInkRouting = nativeViewport != null,
+                    nativeViewportInWindow = nativeViewport,
                     onTextSelection = { start, end ->
-                        onSelection(source.select(index, start.x, start.y, end.x, end.y) ?: PdfTextSelection(
-                            text = "",
-                            rects = listOf(PdfRect(
-                                minOf(start.x, end.x), minOf(start.y, end.y),
-                                kotlin.math.abs(end.x - start.x).coerceAtLeast(.01f),
-                                kotlin.math.abs(end.y - start.y).coerceAtLeast(.01f),
-                            )),
-                        ))
+                        if (!source.identityUnchanged()) onSelectionUnavailable("The cached PDF changed. Reopen it before selecting text.")
+                        else if (regionMode) onSelection(region(start.x, start.y, end.x, end.y))
+                        else geometry?.select(start.x.toDouble(), start.y.toDouble(), end.x.toDouble(), end.y.toDouble())
+                            ?.let { onSelection(selected(it)) }
+                            ?: onSelectionUnavailable(textStatus.ifBlank { "No selectable text at this point. Choose region selection for a figure." })
                     },
                     onFingerLongPress = { x, y ->
-                        val selected = source.select(index, x, y) ?: PdfTextSelection(
-                            text = "",
-                            rects = listOf(PdfRect((x - .08f).coerceAtLeast(0f), (y - .012f).coerceAtLeast(0f), .16f, .024f)),
-                        )
-                        onSelection(selected)
+                        if (!source.identityUnchanged()) onSelectionUnavailable("The cached PDF changed. Reopen it before selecting text.")
+                        else if (regionMode) onSelection(region((x - .08f).coerceAtLeast(0f), (y - .012f).coerceAtLeast(0f), (x + .08f).coerceAtMost(1f), (y + .012f).coerceAtMost(1f)))
+                        else geometry?.wordAt(x.toDouble(), y.toDouble())?.let { onSelection(selected(it)) }
+                            ?: onSelectionUnavailable(textStatus.ifBlank { "No selectable text at this point. Choose region selection for a figure." })
                     },
                     onFingerDoubleTap = onDoubleTap,
                     onWritingStateChanged = onWritingStateChanged,
                 )
+                val heightPx = with(density) { height.roundToPx() }
+                val latestSelection = rememberUpdatedState(selection)
+                if (geometry != null && selection?.start != null && selection.end != null) {
+                    listOf(false, true).forEach { endHandle ->
+                        val offset = if (endHandle) selection.end else selection.start
+                        geometry.handlePoint(offset!!, endHandle)?.let { point ->
+                            val touchPx = with(density) { 48.dp.toPx() }
+                            var dragX by remember(geometry, endHandle) { mutableStateOf(0.0) }
+                            var dragY by remember(geometry, endHandle) { mutableStateOf(0.0) }
+                            var opposite by remember(geometry, endHandle) { mutableStateOf(0) }
+                            Box(Modifier.offset { IntOffset((point.x * widthPx - touchPx / 2).roundToInt(), (point.y * heightPx - touchPx / 2).roundToInt()) }
+                                .size(48.dp).nativeInkBlocker().semantics { contentDescription = if (endHandle) "Selection end handle" else "Selection start handle" }
+                                .pointerInput(geometry, endHandle, widthPx, heightPx) {
+                                    detectDragGestures(onDragStart = {
+                                        val value = latestSelection.value ?: return@detectDragGestures
+                                        val current = geometry.handlePoint(if (endHandle) value.end!! else value.start!!, endHandle) ?: return@detectDragGestures
+                                        dragX = current.x; dragY = current.y
+                                        opposite = if (endHandle) value.start!! else value.end!!
+                                    }) { change, amount ->
+                                        change.consume()
+                                        if (source.identityUnchanged()) {
+                                            dragX += amount.x / widthPx; dragY += amount.y / heightPx
+                                            geometry.endpointAt(dragX, dragY)?.let { endpoint ->
+                                                geometry.range(opposite, endpoint)?.let { onSelection(selected(it)) }
+                                            }
+                                        }
+                                    }
+                                }, contentAlignment = Alignment.Center) {
+                                Canvas(Modifier.size(16.dp)) { drawCircle(colors.focus) }
+                            }
+                        }
+                    }
+                }
+                contentOverlay(widthPx, heightPx, textPage)
             }
         }
     }
+}
+
+private fun quadRect(quad: List<app.fractal.data.TextPoint>): PdfRect {
+    val left = quad.minOf { it.x }.coerceIn(0.0, 1.0); val top = quad.minOf { it.y }.coerceIn(0.0, 1.0)
+    val right = quad.maxOf { it.x }.coerceIn(left, 1.0); val bottom = quad.maxOf { it.y }.coerceIn(top, 1.0)
+    return PdfRect(left.toFloat(), top.toFloat(), (right - left).toFloat(), (bottom - top).toFloat())
 }
