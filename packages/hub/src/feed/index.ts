@@ -1,4 +1,4 @@
-import type { FeedDigest, FeedInterests, FeedItem, FeedResponse, FeedSettings, FeedSourceStatus } from '@fractal/shared';
+import type { FeedDigest, FeedInterests, FeedItem, FeedResponse, FeedSettings, FeedSourceStatus, QuickTranslateRequest } from '@fractal/shared';
 import { feedWeekSchema } from '@fractal/shared';
 import { arxivCategories, type ArxivCategory } from '@fractal/shared';
 import { createHash, randomUUID } from 'node:crypto';
@@ -12,6 +12,7 @@ import { rankItems } from './ranking';
 import { FeedImageStore, dropSharedImages, firstFigureImage, imageDimensions, ogImage } from './images';
 import { TopicService } from './topics';
 import { ArticleReader } from './article';
+import { QuickTranslator } from './quick-translate';
 
 const DEFAULT_INTERESTS: FeedInterests = { categories: [], topics: [], authors: [], custom: [] };
 const DEFAULT_SETTINGS: FeedSettings = {
@@ -56,6 +57,7 @@ export class FeedService {
   private readonly images: FeedImageStore | null;
   readonly topics: TopicService;
   private readonly articleReader: ArticleReader;
+  private readonly quick: QuickTranslator;
   private timer: ReturnType<typeof setTimeout> | null = null;
   private running: Promise<FeedResponse> | null = null;
   private stopped = false;
@@ -73,11 +75,13 @@ export class FeedService {
     this.images = imageRoot ? new FeedImageStore(store, imageRoot, fetcher) : null;
     this.topics = new TopicService(store, registry);
     this.articleReader = new ArticleReader(store, this.images, fetcher);
+    this.quick = new QuickTranslator(store, registry, fetcher);
   }
   async image(hash: string): Promise<{ body: Buffer; contentType: string } | null> {
     return this.images?.get(hash) ?? null;
   }
   article(url: string) { return this.articleReader.get(url); }
+  quickTranslate(input: QuickTranslateRequest) { return this.quick.translate(input); }
 
   private meta<T>(key: string, fallback: T): T {
     const row = this.store.db.prepare('SELECT data FROM feed_meta WHERE key=?').get(key) as MetaRow | undefined;
@@ -274,6 +278,16 @@ export class FeedService {
     const retainedNews = retainNewsByField(ranked, context.interests);
     const retainedIds = new Set(retainedNews.map((item) => item.id));
     const retained = ranked.filter((item) => item.kind !== 'news' || retainedIds.has(item.id));
+    if (settings.translateNewsTitles) {
+      const candidates = retained.filter((item) => item.kind === 'news' && (context.uiLanguage === 'ko' ? /[A-Za-z]{3}/.test(item.title) && !/[가-힣]/.test(item.title) : /[가-힣]/.test(item.title)));
+      for (let offset = 0; offset < candidates.length; offset += 100) {
+        const batch = candidates.slice(offset, offset + 100);
+        try {
+          const result = await this.quick.translate({ texts: batch.map((item) => item.title), target: context.uiLanguage, source: 'auto', allowAiFallback: false });
+          batch.forEach((item, index) => { if (result.translations[index] && result.translations[index] !== item.title) item.titleTranslated = result.translations[index]; });
+        } catch { break; /* Title translation is optional during a feed refresh. */ }
+      }
+    }
     if (this.images) {
       const fields = [...context.interests.categories, ...(context.interests.custom ?? []).map((item) => `custom:${item.id}`)];
       const newsImages = new Set<string>();

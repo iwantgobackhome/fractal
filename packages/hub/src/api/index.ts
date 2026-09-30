@@ -15,7 +15,7 @@ import type {
   Translation,
   Translator,
 } from '@fractal/shared';
-import { preferencesSchema } from '@fractal/shared';
+import { preferencesSchema, quickTranslateRequestSchema } from '@fractal/shared';
 import { PaperStore, appError, invalidInput, notFound } from '../store/index';
 import { assertSafeKey } from '../store/validate';
 import { JobManager } from '../jobs/state';
@@ -465,6 +465,11 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
       }
     }
     if (options.feed) {
+      if (method === 'POST' && segments.length === 3 && segments[0] === 'api' && segments[1] === 'translate' && segments[2] === 'quick') {
+        const parsed = quickTranslateRequestSchema.safeParse(await readJsonBody(request));
+        if (!parsed.success) throw invalidInput('Invalid quick translation request.');
+        return json(await options.feed.quickTranslate(parsed.data));
+      }
       if (method === 'GET' && segments.length === 3 && segments[0] === 'api' && segments[1] === 'news' && segments[2] === 'article') {
         const url = ctx.url.searchParams.get('url');
         if (!url) throw invalidInput('Article URL is required.');

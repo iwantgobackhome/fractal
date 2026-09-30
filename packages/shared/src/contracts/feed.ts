@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { languageSchema } from './preferences';
 
 /** ISO week, Monday through Sunday, used as the feed snapshot key. */
 export const feedWeekSchema = z.string().regex(/^\d{4}-W(?:0[1-9]|[1-4]\d|5[0-3])$/);
@@ -104,7 +105,7 @@ export const articleSchema = z.object({
 });
 export type Article = z.infer<typeof articleSchema>;
 export const quickTranslateRequestSchema = z.object({
-  texts: z.array(z.string().min(1).max(10000)).min(1).max(100), target: z.string().min(2).max(35),
-  source: z.string().min(2).max(35).default('auto'), allowAiFallback: z.boolean().default(false),
+  texts: z.array(z.string().min(1).max(10000)).min(1).max(100), target: languageSchema,
+  source: z.union([z.literal('auto'), languageSchema]).default('auto'), allowAiFallback: z.boolean().default(false),
 });
 export type QuickTranslateRequest = z.infer<typeof quickTranslateRequestSchema>;

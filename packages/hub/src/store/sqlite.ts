@@ -89,6 +89,12 @@ export class SqlitePaperStore extends PaperStore {
         INSERT INTO migrations VALUES(9, datetime('now'));
         RELEASE news_reader_migration;`);
     }
+    if (!this.db.prepare('SELECT 1 FROM migrations WHERE version = 10').get()) {
+      this.db.exec(`SAVEPOINT quick_translation_migration;
+        CREATE TABLE quick_translations(key TEXT PRIMARY KEY, translated TEXT NOT NULL, detected TEXT, created_at TEXT NOT NULL);
+        INSERT INTO migrations VALUES(10, datetime('now'));
+        RELEASE quick_translation_migration;`);
+    }
   }
 
   getPreferences(): Preferences {
