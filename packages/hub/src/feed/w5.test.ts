@@ -1,7 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 import { arxivCategories, arxivGroups } from '@fractal/shared';
-import { customSearchQuery, parseSyndication } from './sources';
-import { assertPublicImageUrl, fetchPublicArticle, fetchPublicImage, firstFigureImage, imageDimensions, ogImage } from './images';
+import { customSearchQuery, newsSource, parseSyndication } from './sources';
+import { assertPublicImageUrl, dropSharedImages, fetchPublicArticle, fetchPublicImage, firstFigureImage, imageDimensions, ogImage } from './images';
+import { newsMatchScore } from './news-relevance';
+import { toHttp } from '../api/errors';
 import { mergeRelated } from './related';
 import { RelatedPaperService } from './related';
 import type { RelatedPaper } from '@fractal/shared';
@@ -36,6 +38,39 @@ describe('W5 feed sources', () => {
       'https://arxiv.org/html/x.png',
     );
     expect(ogImage('<meta property="og:image" content="/cover.jpg">', 'https://example.com/a')).toBe('https://example.com/cover.jpg');
+    expect(
+      parseSyndication(
+        `<rss><item><title>Vision model advances - Example Daily</title><link>https://news.google.com/articles/abc</link><source url="https://example.com">Example Daily</source><description>Computer vision research</description><pubDate>${date}</pubDate><media:thumbnail url="https://news.google.com/logo.png"/></item></rss>`,
+        'news.google.com',
+      )[0],
+    ).toMatchObject({ title: 'Vision model advances', source: 'Example Daily', imageCandidate: undefined });
+  });
+  it('requires visible interest terms and rejects shared story images', () => {
+    const interests = { categories: ['cs.CV'], topics: [], authors: [], custom: [] };
+    expect(newsMatchScore('WISE volunteers identified 3,000 brown dwarfs', 'Astronomy discovery', interests, 'cs.CV')).toBe(0);
+    expect(newsMatchScore('Computer vision model advances', 'Visual pattern recognition', interests, 'cs.CV')).toBeGreaterThan(3);
+    expect(newsMatchScore('컴퓨터 비전 연구', '', interests, 'cs.CV')).toBeGreaterThan(0);
+    const image = { url: `/api/feed/images/${'a'.repeat(64)}` };
+    const items = [
+      { id: 'a', image: { ...image } },
+      { id: 'b', image: { ...image } },
+      { id: 'c', image: { url: `/api/feed/images/${'b'.repeat(64)}` } },
+    ];
+    dropSharedImages(items, new Map());
+    expect(items.map((item) => item.image)).toEqual([null, null, { url: `/api/feed/images/${'b'.repeat(64)}` }]);
+  });
+  it('filters unrelated cs.CV search results before they reach the feed', async () => {
+    const date = 'Tue, 29 Sep 2026 14:39:00 GMT';
+    const xml = `<rss><item><title>WISE volunteers identified 3,000 brown dwarfs - Example</title><link>https://news.google.com/a</link><source>Example</source><description>Astronomy discovery</description><pubDate>${date}</pubDate></item><item><title>Computer vision advances - Example</title><link>https://news.google.com/b</link><source>Example</source><description>New recognition model</description><pubDate>${date}</pubDate></item></rss>`;
+    const items = await newsSource.load({
+      interests: { categories: ['cs.CV'], topics: [], authors: [], custom: [] },
+      libraryArxivIds: [],
+      rssFeeds: [],
+      now: new Date('2026-09-30T00:00:00Z'),
+      get: async () => xml,
+    });
+    expect(items.length).toBeGreaterThan(0);
+    expect(items.every((item) => item.title.includes('Computer vision'))).toBe(true);
   });
   it('rejects private addresses, wrong image types, and oversized images', async () => {
     await expect(assertPublicImageUrl('https://127.0.0.1/a.png')).rejects.toThrow();
@@ -108,15 +143,69 @@ describe('W5 feed sources', () => {
         citationCount: 5,
       };
       const fetcher = vi.fn(
-        async (url: string) =>
-          new Response(JSON.stringify(url.includes('recommendations') ? { recommendedPapers: [item] } : { references: [item], citations: [] }), {
-            headers: { 'content-type': 'application/json' },
-          }),
+        async () => new Response(JSON.stringify({ references: [item], citations: [] }), { headers: { 'content-type': 'application/json' } }),
       ) as unknown as typeof fetch;
       const related = new RelatedPaperService(store, fetcher);
-      expect((await related.get('1706.03762v1')).items).toMatchObject([{ title: 'Related', relation: 'similar' }]);
+      expect((await related.get('1706.03762v1')).items).toMatchObject([{ title: 'Related', relation: 'cites' }]);
       expect((await related.get('1706.03762v1')).items).toHaveLength(1);
-      expect(fetcher).toHaveBeenCalledTimes(2);
+      expect(fetcher).toHaveBeenCalledTimes(1);
+    } finally {
+      store.db.close();
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+  it('falls back to OpenAlex immediately on a Semantic Scholar 429', async () => {
+    const root = mkdtempSync(join(tmpdir(), 'fractal-related-fallback-'));
+    const store = new SqlitePaperStore(root);
+    try {
+      store.savePaper({
+        paperKey: '2609.29233v1',
+        sourceKind: 'arxiv',
+        arxivId: '2609.29233',
+        version: 1,
+        title: 'Behavioral Shadows',
+        authors: [],
+        sourceUrl: 'https://arxiv.org/abs/2609.29233',
+        pdfSha256: null,
+        pageCount: null,
+        extractionVersion: null,
+        status: 'fetching',
+        coverage: null,
+        createdAt: '2026-09-30T00:00:00.000Z',
+      });
+      const fetcher = vi.fn(async (url: string) => {
+        if (url.includes('semanticscholar.org')) return new Response('', { status: 429 });
+        if (url.includes('/works/https://doi.org/'))
+          return Response.json({ id: 'https://openalex.org/W1', related_works: ['https://openalex.org/W2'], referenced_works: [] });
+        if (url.includes('openalex_id:'))
+          return Response.json({
+            results: [
+              { id: 'https://openalex.org/W2', display_name: 'Related work', doi: 'https://doi.org/10.1000/test', authorships: [], publication_year: 2025 },
+            ],
+          });
+        return Response.json({ results: [] });
+      }) as unknown as typeof fetch;
+      const started = Date.now();
+      const result = await new RelatedPaperService(store, fetcher).get('2609.29233v1');
+      expect(result).toMatchObject({ source: 'openAlex', items: [{ title: 'Related work', relation: 'similar' }] });
+      expect(fetcher).toHaveBeenCalledTimes(4);
+      expect(Date.now() - started).toBeLessThan(1000);
+      const limited = vi.fn(async () => new Response('', { status: 429 })) as unknown as typeof fetch;
+      store.db.prepare('DELETE FROM related_papers').run();
+      const failure = await new RelatedPaperService(store, limited).get('2609.29233v1').catch((error: unknown) => error);
+      expect(failure).toMatchObject({ error: { code: 'RELATED_RATE_LIMITED', retryable: true } });
+      expect(limited).toHaveBeenCalledTimes(2);
+      expect(toHttp(failure).status).toBe(429);
+      const emptyFallback = vi.fn(async (url: string) =>
+        url.includes('semanticscholar.org')
+          ? new Response('', { status: 429 })
+          : url.includes('/works/https://doi.org/')
+            ? Response.json({ id: 'https://openalex.org/W1', related_works: [], referenced_works: [] })
+            : Response.json({ results: [] }),
+      ) as unknown as typeof fetch;
+      await expect(new RelatedPaperService(store, emptyFallback).get('2609.29233v1')).rejects.toMatchObject({
+        error: { code: 'RELATED_RATE_LIMITED' },
+      });
     } finally {
       store.db.close();
       rmSync(root, { recursive: true, force: true });

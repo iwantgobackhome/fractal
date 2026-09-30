@@ -91,6 +91,7 @@ export class AccountManager {
     private readonly root: string,
     private readonly beforeSwitch: (provider: ProviderId) => Promise<void> = async () => {},
     private readonly cli: AccountCli = defaultCli,
+    private readonly claudeUsage: typeof readClaudeUsageViaPty = readClaudeUsageViaPty,
   ) {}
   private message(en: string, ko: string): string {
     return this.store.getPreferences().uiLanguage === 'ko' ? ko : en;
@@ -282,6 +283,7 @@ export class AccountManager {
                   : this.message('Checking Codex limits', 'Codex 사용량을 확인하고 있습니다.'),
             }
           : {}),
+        ...(observed?.state === 'unavailable' ? { message: observed.message ?? this.message('Usage source unavailable', '사용량 정보가 없습니다.') } : {}),
       } satisfies AiAccountLimits;
     });
     return { accounts: result };
@@ -290,7 +292,7 @@ export class AccountManager {
     const row = this.row(id);
     if (row.provider === 'claude') {
       try {
-        const windows = await readClaudeUsageViaPty(this.environment(row));
+        const windows = await this.claudeUsage(this.environment(row));
         const previous = this.observations.get(id);
         this.observations.set(id, {
           provider: 'claude',
@@ -305,7 +307,8 @@ export class AccountManager {
             ? { message: this.message('Claude usage screen did not show subscription windows', 'Claude 사용량 화면에 구독 한도가 표시되지 않았습니다.') }
             : {}),
         });
-      } catch {
+      } catch (error) {
+        const reason = error instanceof Error ? error.message : 'Unknown PTY failure';
         this.observations.set(id, {
           provider: 'claude',
           accountId: id,
@@ -315,7 +318,7 @@ export class AccountManager {
           windows: { fiveHour: null, weekly: null },
           observedAt: null,
           state: 'unavailable',
-          message: this.message('Claude usage screen unavailable', 'Claude 사용량 화면을 읽을 수 없습니다.'),
+          message: this.message(`Claude usage unavailable: ${reason}`, `Claude 사용량 확인 실패: ${reason}`),
         });
       }
       return;

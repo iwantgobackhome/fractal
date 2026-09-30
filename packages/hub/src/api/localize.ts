@@ -1,6 +1,10 @@
 import type { AppError, ErrorCode } from '@fractal/shared';
 
 const messages: Record<ErrorCode, { ko: string; en: string }> = {
+  RELATED_RATE_LIMITED: {
+    ko: 'Semantic Scholar가 바쁩니다. 잠시 후 관련 논문을 다시 시도해 주세요.',
+    en: 'Semantic Scholar is busy. Try related papers again shortly.',
+  },
   INVALID_INPUT: { ko: '요청 형식이 올바르지 않습니다.', en: 'Invalid request.' },
   NOT_FOUND: { ko: '요청한 항목을 찾을 수 없습니다.', en: 'The requested item was not found.' },
   NETWORK: { ko: '네트워크 연결을 확인해 주세요.', en: 'Check the network connection.' },

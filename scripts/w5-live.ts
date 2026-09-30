@@ -1,12 +1,13 @@
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { basename, join, resolve, sep } from 'node:path';
 import { startService } from '../packages/hub/src/main';
 import { SqlitePaperStore } from '../packages/hub/src/store/sqlite';
 import { FeedService } from '../packages/hub/src/feed/index';
 import type { PaperAcquirer } from '../packages/hub/src/api/index';
 
 const mode = process.argv[2] ?? 'limits';
+const relatedId = process.argv[3] ?? '1706.03762';
 const root = mkdtempSync(join(tmpdir(), 'fractal-w5-live-'));
 const setup = new SqlitePaperStore(root);
 const feed = new FeedService(setup, {} as PaperAcquirer);
@@ -23,13 +24,13 @@ if (mode === 'feed') {
 }
 if (mode === 'related') {
   setup.savePaper({
-    paperKey: '1706.03762v1',
+    paperKey: `${relatedId}v1`,
     sourceKind: 'arxiv',
-    arxivId: '1706.03762',
+    arxivId: relatedId,
     version: 1,
-    title: 'Attention Is All You Need',
+    title: relatedId === '1706.03762' ? 'Attention Is All You Need' : 'Post-Training Leaves Behavioral Shadows on Unrelated Decisions',
     authors: [],
-    sourceUrl: 'https://arxiv.org/abs/1706.03762',
+    sourceUrl: `https://arxiv.org/abs/${relatedId}`,
     pdfSha256: null,
     pageCount: null,
     extractionVersion: null,
@@ -107,6 +108,10 @@ try {
             newsByField: sections?.newsByField?.map((entry: any) => ({ field: entry.field, count: entry.items.length })),
             imaged: items.filter((item) => !!item.image).length,
             displayed: items.length,
+            googleNewsSources: sections?.news?.filter((item: any) => item.source === 'news.google.com').length,
+            repeatedImageUrls: items.filter(
+              (item, index) => item.image && items.findIndex((other) => (other.image as any)?.url === (item.image as any)?.url) !== index,
+            ).length,
             sourceStatus: body.data?.sourceStatus,
             error: body.error,
           },
@@ -115,13 +120,15 @@ try {
         ) + '\n',
       );
     } else if (mode === 'related') {
-      const result = await get('/api/papers/1706.03762v1/related');
+      const started = Date.now();
+      const result = await get(`/api/papers/${relatedId}v1/related`);
       const data = result.body.data as any;
       process.stdout.write(
         JSON.stringify(
           {
             mode,
             status: result.status,
+            durationMs: Date.now() - started,
             source: data?.source,
             fetchedAt: data?.fetchedAt,
             count: data?.items?.length,
@@ -141,5 +148,6 @@ try {
     await service.stop();
   }
 } finally {
+  if (!resolve(root).startsWith(resolve(tmpdir()) + sep) || !basename(root).startsWith('fractal-w5-live-')) throw new Error('Unsafe probe directory');
   rmSync(root, { recursive: true, force: true });
 }

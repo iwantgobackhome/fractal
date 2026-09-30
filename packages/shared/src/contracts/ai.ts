@@ -348,6 +348,7 @@ export const aiSseEventSchema = z.discriminatedUnion('type', [
         'AUTH_REQUIRED',
         'SUBSCRIPTION_REQUIRED',
         'QUOTA',
+        'RELATED_RATE_LIMITED',
         'MODEL_UNAVAILABLE',
         'BUSY',
         'INVALID_TRANSLATION',

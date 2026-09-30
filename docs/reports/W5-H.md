@@ -47,3 +47,13 @@ The Claude `/usage` reader now uses `@lydell/node-pty` with its Windows prebuilt
 | Unpacked Electron | Codex | `null` | `null` | 16% | 2026-10-06 15:57:33 | `ok` |
 
 The values are live CLI snapshots and can differ between launches. Each account entry also carried `active: true` and `kind: "system"`. No five-hour Codex window was reported by the CLI. The isolated Electron test process was stopped after the read.
+
+## Packaged review follow-up (2026-09-30)
+
+The reported merged installer returned Claude `unavailable` without a message. The missing message was a Hub response bug: the refresh stored a failure reason, but `limits()` omitted `observed.message`. The exact PTY failure did not reproduce in this worktree's package when launched from Git Bash through Playwright Electron with a temporary copy of the user's Fractal data and an isolated `--user-data-dir`. The PTY now resolves the Claude executable to an absolute path from the inherited Windows PATH (with a `.cmd` fallback), loads the native module inside the probe so a load failure remains recoverable, and gives a short reason for executable, native module, startup, prompt, exit, or `/usage` failures. The probe times out after 30 seconds and still sends only `/usage`.
+
+`npm run desktop:dist` succeeded. The unpacked Electron app launched by `scripts/probe-packaged-limits.mjs` from Git Bash returned Claude `ok` (session 25%, weekly 30%) and Codex `ok` (weekly 17%). The script copied the user's data into a temporary `FRACTAL_DATA`, used a separate Electron profile, and closed only its own process. The prior running Fractal instance was untouched.
+
+For `2609.29233v1`, one Semantic Scholar Graph call returned HTTP 200 with 15 reference papers through the Hub route in 280 ms. The related service no longer calls the recommendations endpoint or retries 429 with long sleeps. A Semantic Scholar 429 immediately tries OpenAlex; if both are limited or OpenAlex has no related items, the API returns HTTP 429 with `RELATED_RATE_LIMITED`, `retryable: true`, and a source-specific message. Empty fallback results are not cached. A shared 9.5-second deadline bounds the lookup. OpenAlex DOI lookup and `filter=cites:` were checked live on this PC; the mocked 429 test covers the full fallback response.
+
+A live feed refresh returned HTTP 200 with 30 news items, no item whose source was `news.google.com`, and no repeated displayed image URL. 19 of the 50 displayed paper and news items had an image after excluding Google redirect logos and shared images. Field news now requires a title or description match to the selected category's English or Korean name or custom query terms, with more matches ranked higher. The regression test specifically excludes the WISE brown-dwarf story from `cs.CV`.

@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import type { FeedItem, FeedInterests, FeedSourceStatus } from '@fractal/shared';
 import { arxivCategories, arxivGroups } from '@fractal/shared';
 import type { SqlitePaperStore } from '../store/sqlite';
+import { hasNewsInterests, newsMatchScore } from './news-relevance';
 
 export type RawItem = Omit<FeedItem, 'score' | 'reason' | 'reasonCode' | 'reasonParams' | 'inLibrary' | 'image'> & {
   image?: FeedItem['image'];
@@ -130,7 +131,7 @@ export function parseHfDaily(value: unknown): RawItem[] {
 export function parseSyndication(xml: string, source: string): RawItem[] {
   const entries = groups(xml, 'item').length ? groups(xml, 'item') : groups(xml, 'entry');
   return entries.flatMap((entry) => {
-    const title = field(entry, 'title');
+    const rawTitle = field(entry, 'title');
     const rssLink = field(entry, 'link');
     const atomLink = attr(entry, 'link', 'href').find((link) => /^https?:\/\//.test(link));
     const link = rssLink || atomLink || '';
@@ -144,7 +145,21 @@ export function parseSyndication(xml: string, source: string): RawItem[] {
     }
     url = url.replace(/^http:\/\//, 'https://');
     const publishedAt = date(field(entry, 'pubDate') || field(entry, 'published') || field(entry, 'updated'));
-    if (!title || !publishedAt || !/^https?:\/\//.test(url)) return [];
+    if (!rawTitle || !publishedAt || !/^https?:\/\//.test(url)) return [];
+    const googleNews = /(?:^|\.)news\.google\.com$/i.test(source);
+    const outlet = googleNews ? field(entry, 'source') || / - ([^-]+)$/.exec(rawTitle)?.[1]?.trim() || 'Google News' : source;
+    const title =
+      googleNews && outlet !== 'Google News' && rawTitle.toLowerCase().endsWith(` - ${outlet.toLowerCase()}`)
+        ? rawTitle.slice(0, -outlet.length - 3)
+        : rawTitle;
+    const imageCandidate = (
+      attr(entry, 'media:content', 'url')[0] ??
+      attr(entry, 'media:thumbnail', 'url')[0] ??
+      attr(entry, 'enclosure', 'url')[0] ??
+      field(entry, 'News:Image') ??
+      field(groups(entry, 'image')[0] ?? '', 'url') ??
+      ''
+    ).replace(/^http:\/\//, 'https://');
     return [
       {
         id: `news:${digest(url)}`,
@@ -152,22 +167,14 @@ export function parseSyndication(xml: string, source: string): RawItem[] {
         title,
         authors: [],
         abstract: (field(entry, 'description') || field(entry, 'summary') || field(entry, 'content')).slice(0, 3000),
-        source,
+        source: outlet,
         url,
         arxivId: null,
         doi: null,
         categories: [],
         publishedAt,
         popularity: 0,
-        imageCandidate:
-          (
-            attr(entry, 'media:content', 'url')[0] ??
-            attr(entry, 'media:thumbnail', 'url')[0] ??
-            attr(entry, 'enclosure', 'url')[0] ??
-            field(entry, 'News:Image') ??
-            field(groups(entry, 'image')[0] ?? '', 'url') ??
-            ''
-          ).replace(/^http:\/\//, 'https://') || undefined,
+        imageCandidate: !googleNews && imageCandidate && !/https:\/\/news\.google\.com\//i.test(imageCandidate) ? imageCandidate : undefined,
       },
     ];
   });
@@ -322,7 +329,9 @@ export const newsSource: FeedSource = {
     const feeds = [...generalFeeds.map((url) => ({ url, field: '' })), ...searches];
     const results = await Promise.allSettled(
       feeds.map(async ({ url, field }) =>
-        parseSyndication(await context.get(url), new URL(url).hostname).map((item) => ({ ...item, categories: field ? [field] : [] })),
+        parseSyndication(await context.get(url), new URL(url).hostname)
+          .filter((item) => !hasNewsInterests(context.interests) || newsMatchScore(item.title, item.abstract, context.interests, field) > 0)
+          .map((item) => ({ ...item, categories: field ? [field] : [] })),
       ),
     );
     results.forEach((result, index) =>
