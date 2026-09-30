@@ -2,7 +2,8 @@ import { useEffect, useLayoutEffect, useRef, useState, type JSX, type ReactNode 
 import type { ReferenceEnrichment, ReferenceEntry, StructureItem } from '@fractal/shared';
 import { Markdown } from '../components/Markdown';
 import { renderTex } from '../lib/tex';
-import { KIND_LABEL } from './StructureLayer';
+import { locale, t } from '../i18n';
+import { itemLabel } from './StructureLayer';
 
 /** A card beside what it is about: to its right when there is room, otherwise below. */
 function FloatingCard({ anchor, onClose, label, children }: { anchor: DOMRect; onClose(): void; label: string; children: ReactNode }): JSX.Element {
@@ -63,16 +64,16 @@ export function ExplainCard({ state, onClose }: { state: ExplainState; onClose()
   const { item } = state;
   const latex = state.latex ?? item.latex ?? null;
   return (
-    <FloatingCard anchor={state.anchor} onClose={onClose} label={`${item.label || KIND_LABEL[item.kind]} 설명`}>
+    <FloatingCard anchor={state.anchor} onClose={onClose} label={t('reader.explainOf', { label: itemLabel(item) })}>
       <p className="float-card__kicker">
-        {item.label || KIND_LABEL[item.kind]} · p.{item.page}
+        {itemLabel(item)} · p.{item.page}
       </p>
       {latex !== null && latex.trim() !== '' ? <div className="float-card__latex" dangerouslySetInnerHTML={{ __html: renderTex(latex, true) }} /> : null}
       {item.caption !== '' && item.kind !== 'equation' ? <p className="float-card__caption">{item.caption}</p> : null}
       {state.error !== null ? (
         <p className="float-card__error">{state.error}</p>
       ) : state.text === '' ? (
-        <p className="float-card__muted">읽는 중…</p>
+        <p className="float-card__muted">{t('reader.reading')}</p>
       ) : (
         <Markdown text={state.text} caret={!state.done} className="float-card__body" />
       )}
@@ -99,9 +100,9 @@ export function CitationCard({
   onOpenUrl(url: string): void;
 }): JSX.Element {
   return (
-    <FloatingCard anchor={state.anchor} onClose={onClose} label="참고문헌">
+    <FloatingCard anchor={state.anchor} onClose={onClose} label={t('reader.references')}>
       {state.error !== null ? <p className="float-card__error">{state.error}</p> : null}
-      {state.entries === null && state.error === null ? <p className="float-card__muted">찾는 중…</p> : null}
+      {state.entries === null && state.error === null ? <p className="float-card__muted">{t('reader.finding')}</p> : null}
       {(state.entries ?? []).map(({ entry, enrichment }) => {
         const title = enrichment?.title ?? entry.title ?? entry.raw;
         const year = enrichment?.year ?? entry.year ?? null;
@@ -114,16 +115,16 @@ export function CitationCard({
             <p className="reference__meta">
               {[entry.authors, enrichment?.venue, year].filter((v) => v !== undefined && v !== null && v !== '').join(' · ')}
               {enrichment?.citationCount !== null && enrichment?.citationCount !== undefined
-                ? ` · 인용 ${enrichment.citationCount.toLocaleString('ko-KR')}`
+                ? ` · ${t('reader.citations', { count: enrichment.citationCount.toLocaleString(locale()) })}`
                 : ''}
             </p>
             {enrichment?.abstract !== null && enrichment?.abstract !== undefined ? <p className="reference__abstract">{enrichment.abstract}</p> : null}
             <p className="reference__actions">
               {state.added.has(entry.n) ? (
-                <span className="float-card__muted">보관함에 담았습니다</span>
+                <span className="float-card__muted">{t('reader.added')}</span>
               ) : doi !== undefined || arxiv !== undefined || enrichment?.openAccessPdf ? (
                 <button type="button" className="text-link" onClick={() => onAdd(entry.n)}>
-                  보관함에 담기
+                  {t('home.save')}
                 </button>
               ) : null}
               {arxiv !== undefined ? (

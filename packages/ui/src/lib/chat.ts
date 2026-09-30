@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 import type { AppError, ChatMessage, Connection, Conversation, Paper } from '@fractal/shared';
 
 /** The longest question the composer sends, in characters. */
@@ -16,15 +17,6 @@ export const QUOTE_LIMIT = 3_000;
 export const PINNED_SLACK_PX = 48;
 
 /** Shown under the composer: what pressing send sends, and where. */
-export const CHAT_SEND_HINT = '질문을 보내면 논문 전문과 질문이 Codex(ChatGPT 구독)로 전송됩니다.';
-
-/** Starting points offered while the conversation is empty; picking one adds it to the composer. */
-export const SUGGESTIONS: readonly string[] = [
-  '이 논문의 핵심 기여를 정리해줘',
-  '제안한 방법을 쉽게 설명해줘',
-  '실험 결과에서 눈여겨볼 점은?',
-  '한계와 후속 연구 방향은?',
-];
 
 // ---------------------------------------------------------------- composer
 
@@ -69,7 +61,7 @@ export function questionCounter(length: number): { text: string; over: boolean }
 export function questionCounterLabel(length: number): string | null {
   const counter = questionCounter(length);
   if (counter === null) return null;
-  return counter.over ? `${counter.text} · ${groupDigits(length - QUESTION_LIMIT)}자를 줄여 주세요` : counter.text;
+  return counter.over ? `${counter.text} · ${t('chat.tooLong', { count: groupDigits(length - QUESTION_LIMIT) })}` : counter.text;
 }
 
 /**
@@ -139,22 +131,22 @@ export interface ChatBlock {
 /** Why a question cannot be sent right now, in the reader's words; null when it can. */
 export function chatBlockedReason(input: { canMutate: boolean; connection: Connection | null; paper: Paper | null }): ChatBlock | null {
   const { canMutate, connection, paper } = input;
-  if (!canMutate) return { message: '이 화면에서는 질문을 보낼 수 없습니다. 서비스가 알려준 주소로 다시 열어 주세요.', action: null };
-  if (paper === null) return { message: '논문을 불러오는 중입니다.', action: null };
-  if (paper.status === 'fetching' || paper.status === 'extracting') return { message: '원문 처리가 끝나면 질문할 수 있습니다.', action: null };
-  if (paper.status !== 'ready' && paper.status !== 'partial') return { message: '이 논문은 본문을 읽어 내지 못해 질문할 수 없습니다.', action: null };
-  if (connection === null) return { message: 'Codex 연결 상태를 확인하는 중입니다.', action: null };
+  if (!canMutate) return { message: t('chat.notServed'), action: null };
+  if (paper === null) return { message: t('chat.loadingPaper'), action: null };
+  if (paper.status === 'fetching' || paper.status === 'extracting') return { message: t('chat.waitForExtraction'), action: null };
+  if (paper.status !== 'ready' && paper.status !== 'partial') return { message: t('chat.unreadable'), action: null };
+  if (connection === null) return { message: t('chat.checkingAi'), action: null };
   switch (connection.status) {
     case 'subscription':
-      return connection.modelIds.length === 0 ? { message: '질문에 쓸 수 있는 모델이 없습니다.', action: null } : null;
+      return connection.modelIds.length === 0 ? { message: t('chat.noModel'), action: null } : null;
     case 'signed_out':
-      return { message: 'ChatGPT 구독으로 로그인하면 질문할 수 있습니다.', action: 'account' };
+      return { message: t('chat.notConnected'), action: 'account' };
     case 'api_key':
-      return { message: 'API 키 연결로는 질문하지 않습니다. ChatGPT 구독으로 로그인해 주세요.', action: 'account' };
+      return { message: t('chat.notConnected'), action: 'account' };
     case 'missing':
-      return { message: 'Codex CLI를 찾을 수 없습니다. 공식 Codex CLI를 설치한 뒤 다시 확인해 주세요.', action: null };
+      return { message: t('chat.notConnected'), action: 'account' };
     case 'unavailable':
-      return { message: 'Codex 연결을 지금 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.', action: 'account' };
+      return { message: t('chat.unavailable'), action: 'account' };
   }
 }
 
@@ -162,23 +154,23 @@ export function chatBlockedReason(input: { canMutate: boolean; connection: Conne
 export function chatErrorText(error: AppError): string {
   switch (error.code) {
     case 'AUTH_REQUIRED':
-      return 'Codex 로그인이 풀렸습니다. 계정 메뉴에서 다시 로그인해 주세요.';
+      return t('chat.errAuth');
     case 'SUBSCRIPTION_REQUIRED':
-      return '질문하려면 ChatGPT 구독으로 로그인해야 합니다.';
+      return t('chat.notConnected');
     case 'QUOTA':
-      return '구독 사용 한도에 걸렸습니다. 한도가 다시 열릴 때까지 기다린 뒤 물어봐 주세요.';
+      return t('chat.errQuota');
     case 'MODEL_UNAVAILABLE':
-      return '선택한 모델을 지금 쓸 수 없습니다. 다른 모델을 골라 다시 시도해 주세요.';
+      return t('chat.errModel');
     case 'UNSAFE_RUNTIME':
       // Mostly reported after the turn started (a tool item mid-answer, files left behind): the
       // question and the paper may already have gone out, so this never claims they stayed here.
-      return '안전하지 않은 실행이 감지되어 답변을 중단했습니다. 질문과 논문 본문은 이미 전송되었을 수 있습니다.';
+      return t('chat.errUnsafe');
     case 'TOO_LARGE':
-      return '논문과 대화가 이 모델이 한 번에 읽을 수 있는 분량을 넘었습니다. 새 대화로 시작하거나 다른 모델로 물어봐 주세요.';
+      return t('chat.errTooLarge');
     case 'BUSY':
-      return '이전 답변이 아직 끝나지 않았습니다.';
+      return t('chat.errBusy');
     default:
-      return error.message.trim().length > 0 ? error.message : '답변을 받지 못했습니다.';
+      return error.message.trim().length > 0 ? error.message : t('chat.noAnswer');
   }
 }
 
@@ -257,11 +249,11 @@ export function answerAnnouncement(previous: { messageId: string; status: ChatMe
   if (previous.status !== 'answering' || current.status === 'answering') return null;
   switch (current.status) {
     case 'completed':
-      return '답변을 받았습니다';
+      return t('chat.announceDone');
     case 'canceled':
-      return '답변을 멈췄습니다';
+      return t('chat.announceStopped');
     case 'failed':
-      return '답변을 받지 못했습니다';
+      return t('chat.announceFailed');
   }
 }
 

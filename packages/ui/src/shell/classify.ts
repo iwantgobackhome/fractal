@@ -1,3 +1,5 @@
+import { t } from '../i18n';
+
 /** What the single input box was given: something to open, or words to search for. */
 export type InputIntent =
   { kind: 'arxiv'; value: string } | { kind: 'doi'; value: string } | { kind: 'url'; value: string } | { kind: 'search'; value: string } | { kind: 'empty' };
@@ -29,13 +31,13 @@ export function classifyInput(raw: string): InputIntent {
 export function intentAction(intent: InputIntent): string {
   switch (intent.kind) {
     case 'arxiv':
-      return 'arXiv 열기';
+      return t('omni.openArxiv');
     case 'doi':
-      return 'DOI 열기';
+      return t('omni.openDoi');
     case 'url':
-      return '주소 열기';
+      return t('omni.openUrl');
     case 'search':
-      return '보관함 검색';
+      return t('omni.searchLibrary');
     case 'empty':
       return '';
   }

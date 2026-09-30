@@ -1,62 +1,35 @@
 import { useCallback, useEffect, useState, type JSX } from 'react';
+import { locale, t, type MessageKey } from '../i18n';
+import type { AiChoice, AiFeature, AiSettings, HubApi, NetworkResult, PairedDevice, PairingSession, Preferences, ProviderStatus, UsageResult } from './hub-api';
+import { AiConnection, LanguageFields, PROVIDER_NAME, useLoad, useProviders } from './settings-parts';
 import { THEME_CHOICES, type ThemeChoice } from './theme';
-import type {
-  AiChoice,
-  AiFeature,
-  AiSettings,
-  HubApi,
-  NetworkResult,
-  PairedDevice,
-  PairingSession,
-  ProviderStatus,
-  ProvidersResult,
-  UsageResult,
-} from './hub-api';
 
 interface Props {
   hub: HubApi;
   theme: ThemeChoice;
   onThemeChange: (theme: ThemeChoice) => void;
-  onManageCodexLogin: () => void;
+  preferences: Preferences | null;
+  onPreferencesChange(change: Partial<Preferences>): void;
+  onShowWelcome(): void;
 }
 
-const SECTIONS = [
-  { id: 'appearance', label: '외관' },
-  { id: 'ai', label: 'AI' },
-  { id: 'devices', label: '기기 연결' },
-  { id: 'data', label: '데이터' },
-] as const;
-
-const PROVIDER_NAME: Record<ProviderStatus['id'], string> = { codex: 'Codex', claude: 'Claude' };
-const FEATURES: { id: AiFeature; label: string }[] = [
-  { id: 'chat', label: '질문' },
-  { id: 'translate', label: '번역' },
-  { id: 'explain', label: '수식·그림 설명' },
-  { id: 'digest', label: '주간 요약' },
+const SECTIONS: { id: string; label: MessageKey }[] = [
+  { id: 'language', label: 'settings.language' },
+  { id: 'appearance', label: 'settings.appearance' },
+  { id: 'ai', label: 'settings.ai' },
+  { id: 'devices', label: 'settings.devices' },
+  { id: 'data', label: 'settings.data' },
 ];
 
-/** `null` = the hub has no such route yet; `undefined` = still loading. */
-type Loaded<T> = T | null | undefined;
+const FEATURES: { id: AiFeature; label: MessageKey }[] = [
+  { id: 'chat', label: 'ai.featureChat' },
+  { id: 'translate', label: 'ai.featureTranslate' },
+  { id: 'explain', label: 'ai.featureExplain' },
+  { id: 'digest', label: 'ai.featureDigest' },
+];
 
-function useLoad<T>(load: () => Promise<T | null>): [Loaded<T>, (value: T | null) => void, () => void] {
-  const [value, setValue] = useState<Loaded<T>>(undefined);
-  const reload = useCallback(() => {
-    load()
-      .then(setValue)
-      .catch(() => setValue(null));
-  }, [load]);
-  useEffect(reload, [reload]);
-  return [value, setValue, reload];
-}
-
-function Unavailable({ what }: { what: string }): JSX.Element {
-  return <p className="settings__quiet">이 허브 버전에서는 {what}을 아직 설정할 수 없습니다.</p>;
-}
-
-function providerState(p: ProviderStatus): string {
-  if (!p.installed) return '설치되지 않음';
-  if (!p.loggedIn) return '로그인 필요';
-  return p.version !== null ? `연결됨 · ${p.version.replace(/\s*\(.*\)$/, '').replace(/^codex-cli\s+/, '')}` : '연결됨';
+function Unavailable(): JSX.Element {
+  return <p className="settings__quiet">{t('settings.unavailable')}</p>;
 }
 
 function choiceKey(c: AiChoice): string {
@@ -88,9 +61,9 @@ function ModelSelect({
         onChange({ provider: provider as AiChoice['provider'], model: model.join(':'), effort: value?.effort });
       }}
     >
-      {allowInherit ? <option value="">기본값 따름</option> : null}
+      {allowInherit ? <option value="">{t('ai.inherit')}</option> : null}
       {installed.map((p) => (
-        <optgroup key={p.id} label={p.loggedIn ? PROVIDER_NAME[p.id] : `${PROVIDER_NAME[p.id]} (로그인 필요)`}>
+        <optgroup key={p.id} label={p.loggedIn ? PROVIDER_NAME[p.id] : t('ai.providerSignedOut', { name: PROVIDER_NAME[p.id] })}>
           {p.models.map((m) => (
             <option key={m.id} value={`${p.id}:${m.id}`}>
               {m.label ?? m.id}
@@ -102,15 +75,14 @@ function ModelSelect({
   );
 }
 
-function AiSection({ hub, onManageCodexLogin }: { hub: HubApi; onManageCodexLogin: () => void }): JSX.Element {
-  const loadProviders = useCallback(() => hub.providers(), [hub]);
+function AiSection({ hub }: { hub: HubApi }): JSX.Element {
+  const { data, setData, recheck, checking } = useProviders(hub);
   const loadUsage = useCallback(() => hub.usage(), [hub]);
-  const [data, setData] = useLoad<ProvidersResult>(loadProviders);
   const [usage] = useLoad<UsageResult>(loadUsage);
   const [saving, setSaving] = useState(false);
 
-  if (data === undefined) return <p className="settings__quiet">불러오는 중…</p>;
-  if (data === null) return <Unavailable what="AI 제공자" />;
+  if (data === undefined) return <p className="settings__quiet">{t('settings.loading')}</p>;
+  if (data === null) return <Unavailable />;
 
   const save = async (settings: AiSettings) => {
     setData({ ...data, settings });
@@ -127,30 +99,12 @@ function AiSection({ hub, onManageCodexLogin }: { hub: HubApi; onManageCodexLogi
 
   return (
     <>
-      <dl className="provider-list">
-        {data.providers.map((p) => (
-          <div key={p.id} className="provider">
-            <dt>{PROVIDER_NAME[p.id]}</dt>
-            <dd>
-              <span className={p.installed && p.loggedIn ? '' : 'settings__warn'}>{providerState(p)}</span>
-              {p.id === 'codex' ? (
-                <button type="button" className="text-link" onClick={onManageCodexLogin}>
-                  로그인 관리
-                </button>
-              ) : !p.loggedIn && p.installed ? (
-                <span className="settings__quiet">
-                  터미널에서 <code>claude</code>를 실행해 로그인하세요.
-                </span>
-              ) : null}
-            </dd>
-          </div>
-        ))}
-      </dl>
+      <AiConnection providers={data.providers} onRecheck={recheck} checking={checking} />
 
       <div className="field-row">
-        <span className="field-row__label">기본 모델</span>
+        <span className="field-row__label">{t('ai.defaultModel')}</span>
         <ModelSelect
-          label="기본 모델"
+          label={t('ai.defaultModel')}
           providers={data.providers}
           value={data.settings.default}
           allowInherit={false}
@@ -158,13 +112,13 @@ function AiSection({ hub, onManageCodexLogin }: { hub: HubApi; onManageCodexLogi
         />
         {efforts.length > 0 ? (
           <select
-            aria-label="추론 강도"
+            aria-label={t('ai.effort')}
             value={data.settings.default.effort ?? ''}
             onChange={(event) =>
               void save({ ...data.settings, default: { ...data.settings.default, effort: (event.target.value || undefined) as AiChoice['effort'] } })
             }
           >
-            <option value="">추론 강도 기본</option>
+            <option value="">{t('ai.effortDefault')}</option>
             {efforts.map((e) => (
               <option key={e} value={e}>
                 {e}
@@ -172,18 +126,18 @@ function AiSection({ hub, onManageCodexLogin }: { hub: HubApi; onManageCodexLogi
             ))}
           </select>
         ) : null}
-        {saving ? <span className="settings__quiet">저장 중</span> : null}
+        {saving ? <span className="settings__quiet">{t('settings.saving')}</span> : null}
       </div>
 
       <table className="plain-table">
-        <caption>기능별 모델</caption>
+        <caption>{t('ai.perFeature')}</caption>
         <tbody>
           {FEATURES.map((f) => (
             <tr key={f.id}>
-              <th scope="row">{f.label}</th>
+              <th scope="row">{t(f.label)}</th>
               <td>
                 <ModelSelect
-                  label={`${f.label} 모델`}
+                  label={t('ai.featureModel', { feature: t(f.label) })}
                   providers={data.providers}
                   value={data.settings.overrides[f.id]}
                   allowInherit
@@ -203,8 +157,8 @@ function AiSection({ hub, onManageCodexLogin }: { hub: HubApi; onManageCodexLogi
         </tbody>
       </table>
 
-      <h3 className="settings__sub">사용량</h3>
-      {usage === undefined ? null : usage === null ? <Unavailable what="사용량" /> : <UsageTable usage={usage} />}
+      <h3 className="settings__sub">{t('ai.usage')}</h3>
+      {usage === undefined ? null : usage === null ? <Unavailable /> : <UsageTable usage={usage} />}
     </>
   );
 }
@@ -213,15 +167,15 @@ function UsageTable({ usage }: { usage: UsageResult }): JSX.Element {
   const totals = new Map<string, { requests: number; tokens: number }>();
   for (const row of usage.rows) {
     const key = `${row.provider} · ${row.model}`;
-    const t = totals.get(key) ?? { requests: 0, tokens: 0 };
-    t.requests += row.requests;
-    t.tokens += row.inputTokens + row.outputTokens;
-    totals.set(key, t);
+    const total = totals.get(key) ?? { requests: 0, tokens: 0 };
+    total.requests += row.requests;
+    total.tokens += row.inputTokens + row.outputTokens;
+    totals.set(key, total);
   }
-  const number = new Intl.NumberFormat('ko-KR');
+  const number = new Intl.NumberFormat(locale());
   return (
     <>
-      {usage.limits !== undefined && usage.limits.length > 0 ? (
+      {usage.limits.length > 0 ? (
         <ul className="limit-list">
           {usage.limits.map((l) => (
             <li key={`${l.provider}-${l.label}`}>
@@ -237,22 +191,22 @@ function UsageTable({ usage }: { usage: UsageResult }): JSX.Element {
         </ul>
       ) : null}
       {totals.size === 0 ? (
-        <p className="settings__quiet">아직 기록된 사용량이 없습니다.</p>
+        <p className="settings__quiet">{t('ai.noUsage')}</p>
       ) : (
         <table className="plain-table plain-table--numbers">
           <thead>
             <tr>
-              <th scope="col">모델</th>
-              <th scope="col">요청</th>
-              <th scope="col">토큰</th>
+              <th scope="col">{t('ai.model')}</th>
+              <th scope="col">{t('ai.requests')}</th>
+              <th scope="col">{t('ai.tokens')}</th>
             </tr>
           </thead>
           <tbody>
-            {[...totals].map(([key, t]) => (
+            {[...totals].map(([key, total]) => (
               <tr key={key}>
                 <th scope="row">{key}</th>
-                <td>{number.format(t.requests)}</td>
-                <td>{number.format(t.tokens)}</td>
+                <td>{number.format(total.requests)}</td>
+                <td>{number.format(total.tokens)}</td>
               </tr>
             ))}
           </tbody>
@@ -262,7 +216,7 @@ function UsageTable({ usage }: { usage: UsageResult }): JSX.Element {
   );
 }
 
-function DevicesSection({ hub }: { hub: HubApi }): JSX.Element {
+export function DevicesSection({ hub }: { hub: HubApi }): JSX.Element {
   const loadNetwork = useCallback(() => hub.network(), [hub]);
   const loadDevices = useCallback(() => hub.devices(), [hub]);
   const [network, setNetwork] = useLoad<NetworkResult>(loadNetwork);
@@ -280,8 +234,8 @@ function DevicesSection({ hub }: { hub: HubApi }): JSX.Element {
     return () => window.clearInterval(timer);
   }, [pairing, reloadDevices]);
 
-  if (network === undefined) return <p className="settings__quiet">불러오는 중…</p>;
-  if (network === null) return <Unavailable what="기기 연결" />;
+  if (network === undefined) return <p className="settings__quiet">{t('settings.loading')}</p>;
+  if (network === null) return <Unavailable />;
 
   const enabled = (kind: 'lan' | 'tailscale') => network.settings[kind];
   const toggle = async (kind: 'lan' | 'tailscale') => {
@@ -293,7 +247,7 @@ function DevicesSection({ hub }: { hub: HubApi }): JSX.Element {
       });
       if (next !== null) setNetwork(next);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : '설정을 바꾸지 못했습니다.');
+      setError(cause instanceof Error ? cause.message : t('devices.changeFailed'));
     }
   };
   const addressOf = (kind: 'lan' | 'tailscale') =>
@@ -313,10 +267,8 @@ function DevicesSection({ hub }: { hub: HubApi }): JSX.Element {
             <label key={kind} className="toggle">
               <input type="checkbox" checked={enabled(kind)} disabled={address === ''} onChange={() => void toggle(kind)} />
               <span className="toggle__text">
-                <span>{kind === 'lan' ? '같은 Wi-Fi에서 연결' : 'Tailscale로 어디서나 연결'}</span>
-                <span className="settings__quiet">
-                  {address === '' ? (kind === 'lan' ? '네트워크 주소를 찾지 못했습니다' : 'Tailscale이 실행 중이 아닙니다') : address}
-                </span>
+                <span>{kind === 'lan' ? t('devices.lan') : t('devices.tailscale')}</span>
+                <span className="settings__quiet">{address === '' ? (kind === 'lan' ? t('devices.noLan') : t('devices.noTailscale')) : address}</span>
               </span>
             </label>
           );
@@ -331,15 +283,15 @@ function DevicesSection({ hub }: { hub: HubApi }): JSX.Element {
       <div className="pairing">
         {pairing !== null && secondsLeft > 0 ? (
           <div className="pairing__card">
-            <img className="pairing__qr" src={hub.pairingQrUrl(pairing.session)} alt="기기 연결용 QR 코드" width={168} height={168} />
+            <img className="pairing__qr" src={hub.pairingQrUrl(pairing.session)} alt={t('devices.qrAlt')} width={168} height={168} />
             <div>
-              <p className="pairing__lead">태블릿의 Fractal 앱에서 QR을 찍으세요.</p>
+              <p className="pairing__lead">{t('devices.scan')}</p>
               <p className="settings__quiet">
-                {Math.floor(secondsLeft / 60)}:{String(secondsLeft % 60).padStart(2, '0')} 후 만료 · 코드{' '}
+                {t('devices.expires', { time: `${Math.floor(secondsLeft / 60)}:${String(secondsLeft % 60).padStart(2, '0')}` })}{' '}
                 <code className="pairing__code">{pairing.code.match(/.{1,4}/g)?.join(' ')}</code>
               </p>
               <button type="button" className="text-link" onClick={() => setPairing(null)}>
-                닫기
+                {t('errors.closeLabel')}
               </button>
             </div>
           </div>
@@ -353,27 +305,27 @@ function DevicesSection({ hub }: { hub: HubApi }): JSX.Element {
               hub
                 .startPairing()
                 .then((session) => setPairing(session))
-                .catch((cause: unknown) => setError(cause instanceof Error ? cause.message : '연결을 시작하지 못했습니다.'));
+                .catch((cause: unknown) => setError(cause instanceof Error ? cause.message : t('devices.startFailed')));
             }}
           >
-            새 기기 연결
+            {t('devices.pair')}
           </button>
         )}
       </div>
 
-      <h3 className="settings__sub">연결된 기기</h3>
+      <h3 className="settings__sub">{t('devices.paired')}</h3>
       {devices === undefined ? null : devices === null || devices.devices.length === 0 ? (
-        <p className="settings__quiet">연결된 기기가 없습니다.</p>
+        <p className="settings__quiet">{t('devices.none')}</p>
       ) : (
         <ul className="device-list">
           {devices.devices.map((d) => (
             <li key={d.id}>
               <span className="device-list__name">{d.name}</span>
               <span className="settings__quiet">
-                {d.platform} · {d.lastSeen !== null ? `최근 접속 ${new Date(d.lastSeen).toLocaleString('ko-KR')}` : '접속 기록 없음'}
+                {d.platform} · {d.lastSeen !== null ? t('devices.lastSeen', { time: new Date(d.lastSeen).toLocaleString(locale()) }) : t('devices.neverSeen')}
               </span>
               <button type="button" className="text-link text-link--danger" onClick={() => void hub.revokeDevice(d.id).then(reloadDevices)}>
-                연결 해제
+                {t('devices.revoke')}
               </button>
             </li>
           ))}
@@ -383,59 +335,74 @@ function DevicesSection({ hub }: { hub: HubApi }): JSX.Element {
   );
 }
 
-export function SettingsScreen({ hub, theme, onThemeChange, onManageCodexLogin }: Props): JSX.Element {
+export function SettingsScreen({ hub, theme, onThemeChange, preferences, onPreferencesChange, onShowWelcome }: Props): JSX.Element {
   return (
     <main className="screen settings" aria-labelledby="settings-title">
-      <nav className="settings__index" aria-label="설정 항목">
+      <nav className="settings__index" aria-label={t('settings.index')}>
         <h1 id="settings-title" className="screen__title">
-          설정
+          {t('nav.settings')}
         </h1>
         <ul>
           {SECTIONS.map((s) => (
             <li key={s.id}>
-              <a href={`#settings-${s.id}`}>{s.label}</a>
+              <a href={`#settings-${s.id}`}>{t(s.label)}</a>
             </li>
           ))}
         </ul>
       </nav>
       <div className="settings__body">
+        <section id="settings-language" className="settings__section" aria-labelledby="settings-language-h">
+          <h2 id="settings-language-h">{t('settings.language')}</h2>
+          {preferences === null ? (
+            <p className="settings__quiet">{t('settings.loading')}</p>
+          ) : (
+            <LanguageFields preferences={preferences} onChange={onPreferencesChange} />
+          )}
+        </section>
+
         <section id="settings-appearance" className="settings__section" aria-labelledby="settings-appearance-h">
-          <h2 id="settings-appearance-h">외관</h2>
-          <div className="theme-picker" role="radiogroup" aria-label="테마">
-            {THEME_CHOICES.map((t) => (
-              <label key={t.value} className="theme-swatch" data-swatch={t.value}>
-                <input type="radio" name="theme" value={t.value} checked={theme === t.value} onChange={() => onThemeChange(t.value)} />
+          <h2 id="settings-appearance-h">{t('settings.appearance')}</h2>
+          <div className="theme-picker" role="radiogroup" aria-label={t('settings.theme')}>
+            {THEME_CHOICES.map((choice) => (
+              <label key={choice.value} className="theme-swatch" data-swatch={choice.value}>
+                <input type="radio" name="theme" value={choice.value} checked={theme === choice.value} onChange={() => onThemeChange(choice.value)} />
                 <span className="theme-swatch__page" aria-hidden="true">
                   <span />
                   <span />
                   <span />
                 </span>
-                <span>{t.label}</span>
+                <span>{t(choice.label)}</span>
               </label>
             ))}
           </div>
         </section>
 
         <section id="settings-ai" className="settings__section" aria-labelledby="settings-ai-h">
-          <h2 id="settings-ai-h">AI</h2>
-          <AiSection hub={hub} onManageCodexLogin={onManageCodexLogin} />
+          <h2 id="settings-ai-h">{t('settings.ai')}</h2>
+          <AiSection hub={hub} />
         </section>
 
         <section id="settings-devices" className="settings__section" aria-labelledby="settings-devices-h">
-          <h2 id="settings-devices-h">기기 연결</h2>
+          <h2 id="settings-devices-h">{t('settings.devices')}</h2>
           <DevicesSection hub={hub} />
         </section>
 
         <section id="settings-data" className="settings__section" aria-labelledby="settings-data-h">
-          <h2 id="settings-data-h">데이터</h2>
+          <h2 id="settings-data-h">{t('settings.data')}</h2>
           <div className="field-row">
-            <span className="field-row__label">보관함 내보내기</span>
+            <span className="field-row__label">{t('settings.exportLibrary')}</span>
             <a className="text-link" href={hub.exportUrl('bibtex')} download="fractal-library.bib">
               BibTeX
             </a>
             <a className="text-link" href={hub.exportUrl('csl-json')} download="fractal-library.json">
               CSL-JSON
             </a>
+          </div>
+          <div className="field-row">
+            <span className="field-row__label">{t('settings.welcome')}</span>
+            <button type="button" className="text-link" onClick={onShowWelcome}>
+              {t('settings.showWelcome')}
+            </button>
           </div>
         </section>
       </div>

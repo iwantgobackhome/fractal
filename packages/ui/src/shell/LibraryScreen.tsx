@@ -1,5 +1,6 @@
 import { useMemo, useState, type JSX } from 'react';
 import type { Paper } from '@fractal/shared';
+import { t, type MessageKey } from '../i18n';
 import { paperStatusLabel } from '../lib/status';
 import type { HubApi } from './hub-api';
 import { addedLabel, authorsLine, isProcessing, paperTitle, sourceLabel } from './paper-format';
@@ -48,27 +49,27 @@ export function LibraryScreen({ papers, query, onQueryChange, onOpen, onRequestD
     return list.sort((a, b) => (sort === 'title' ? paperTitle(a).localeCompare(paperTitle(b)) : b.createdAt.localeCompare(a.createdAt)));
   }, [papers, shelf, sort, query]);
 
-  const shelves: { id: Shelf; label: string }[] = [
-    { id: 'all', label: '모든 논문' },
-    { id: 'ready', label: '읽을 수 있음' },
-    { id: 'processing', label: '가져오는 중' },
+  const shelves: { id: Shelf; label: MessageKey }[] = [
+    { id: 'all', label: 'library.all' },
+    { id: 'ready', label: 'library.ready' },
+    { id: 'processing', label: 'library.processing' },
   ];
 
   return (
     <main className="screen library" aria-labelledby="library-title">
-      <aside className="library__shelves" aria-label="분류">
+      <aside className="library__shelves" aria-label={t('library.shelves')}>
         <ul>
           {shelves.map((s) => (
             <li key={s.id}>
               <button type="button" className="shelf" aria-current={shelf === s.id ? 'true' : undefined} onClick={() => setShelf(s.id)}>
-                <span>{s.label}</span>
+                <span>{t(s.label)}</span>
                 <span className="shelf__count">{counts[s.id]}</span>
               </button>
             </li>
           ))}
         </ul>
         <div className="library__export">
-          <span className="library__export-label">내보내기</span>
+          <span className="library__export-label">{t('library.export')}</span>
           <a href={hub.exportUrl('bibtex')} download="fractal-library.bib">
             BibTeX
           </a>
@@ -81,31 +82,27 @@ export function LibraryScreen({ papers, query, onQueryChange, onOpen, onRequestD
       <section className="library__main">
         <div className="library__head">
           <h1 id="library-title" className="screen__title">
-            보관함
+            {t('library.title')}
           </h1>
           <div className="library__tools">
             {query !== '' ? (
-              <button type="button" className="chip" onClick={() => onQueryChange('')} aria-label={`검색어 ${query} 지우기`}>
+              <button type="button" className="chip" onClick={() => onQueryChange('')} aria-label={t('library.clearQuery', { query })}>
                 “{query}” <span aria-hidden="true">×</span>
               </button>
             ) : null}
-            <div className="segmented" role="group" aria-label="정렬">
+            <div className="segmented" role="group" aria-label={t('library.sort')}>
               <button type="button" aria-pressed={sort === 'added'} onClick={() => setSort('added')}>
-                최근 추가
+                {t('library.sortAdded')}
               </button>
               <button type="button" aria-pressed={sort === 'title'} onClick={() => setSort('title')}>
-                제목
+                {t('library.sortTitle')}
               </button>
             </div>
           </div>
         </div>
 
         {visible.length === 0 ? (
-          <p className="library__empty">
-            {papers.length === 0
-              ? '보관함이 비어 있습니다. 위 입력창에 arXiv 번호나 DOI를 넣거나, PDF를 이 창에 끌어다 놓으세요.'
-              : '조건에 맞는 논문이 없습니다.'}
-          </p>
+          <p className="library__empty">{papers.length === 0 ? t('library.empty') : t('library.noMatch')}</p>
         ) : (
           <ol className="paper-list">
             {visible.map((paper) => (
@@ -115,13 +112,18 @@ export function LibraryScreen({ papers, query, onQueryChange, onOpen, onRequestD
                   <span className="paper-row__authors">{authorsLine(paper.authors)}</span>
                   <span className="paper-row__meta">
                     <span>{sourceLabel(paper)}</span>
-                    {paper.pageCount !== null ? <span>{paper.pageCount}쪽</span> : null}
+                    {paper.pageCount !== null ? <span>{t('paper.pages', { count: paper.pageCount })}</span> : null}
                     <span>{addedLabel(paper.createdAt)}</span>
                     {paper.status !== 'ready' && paper.status !== 'partial' ? <span className="paper-row__status">{paperStatusLabel(paper)}</span> : null}
                   </span>
                 </button>
-                <button type="button" className="paper-row__delete" onClick={() => onRequestDelete(paper.paperKey)} aria-label={`${paperTitle(paper)} 삭제`}>
-                  삭제
+                <button
+                  type="button"
+                  className="paper-row__delete"
+                  onClick={() => onRequestDelete(paper.paperKey)}
+                  aria-label={t('library.deleteLabel', { title: paperTitle(paper) })}
+                >
+                  {t('library.delete')}
                 </button>
               </li>
             ))}

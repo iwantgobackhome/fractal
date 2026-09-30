@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type JSX } from 'react';
 import type { Block, Translation } from '@fractal/shared';
 import { pageRenderSize, regionToPixels, sourceClickRegions, type Size } from '../lib/geometry';
@@ -142,7 +143,14 @@ function SourceCrop({ item, image }: SourceCropProps): JSX.Element {
     backgroundSize: `${image.size.width}px ${image.size.height}px`,
     backgroundPosition: `-${rect.left}px -${rect.top}px`,
   };
-  return <div className={`kr-source kr-${item.block.kind}`} style={style} data-block-id={item.block.blockId} aria-label={`${item.block.kind} 원문`} />;
+  return (
+    <div
+      className={`kr-source kr-${item.block.kind}`}
+      style={style}
+      data-block-id={item.block.blockId}
+      aria-label={t('misc.blockOriginal', { kind: item.block.kind })}
+    />
+  );
 }
 
 function FlowItemView({
@@ -184,7 +192,18 @@ interface KoreanPageViewProps {
  * original, and cropped figures add their own height — so this component measures its own
  * rendered height after layout and reports it upward for the next stage's page-boundary math.
  */
-function KoreanPageView({ doc, page, zoom, dpr, blocks, translations, placeholder, onHeight, onSelectBlock, pageColors }: KoreanPageViewProps): JSX.Element {
+export function KoreanPageView({
+  doc,
+  page,
+  zoom,
+  dpr,
+  blocks,
+  translations,
+  placeholder,
+  onHeight,
+  onSelectBlock,
+  pageColors,
+}: KoreanPageViewProps): JSX.Element {
   const image = useSourcePageImage(doc, page, zoom, dpr, pageColors);
   const layout = useMemo(() => buildKoreanLayout(blocks, translations, page), [blocks, translations, page]);
   const segments = useMemo(() => groupKoreanSegments(layout.items, layout.columnCount), [layout]);
@@ -207,7 +226,7 @@ function KoreanPageView({ doc, page, zoom, dpr, blocks, translations, placeholde
   if (image === null) {
     return (
       <div className="kr-page kr-placeholder" data-page={page} ref={containerRef} style={{ width: placeholder.width, height: placeholder.height }}>
-        {page}쪽
+        {t('misc.pageLabel', { page })}
       </div>
     );
   }
@@ -220,13 +239,13 @@ function KoreanPageView({ doc, page, zoom, dpr, blocks, translations, placeholde
   if (layout.sourceOnly) {
     return (
       <div className="kr-page kr-source-only" data-page={page} ref={containerRef} style={{ width: image.size.width, height: image.size.height }}>
-        <img src={image.url} alt={`${page}쪽 원문`} style={{ width: image.size.width, height: image.size.height, display: 'block' }} />
+        <img src={image.url} alt={t('misc.pageOriginal', { page })} style={{ width: image.size.width, height: image.size.height, display: 'block' }} />
         {sourceClickRegions(blocks, page).map(({ block, region }, index) => (
           <button
             key={`${block.blockId}-${index}`}
             type="button"
             className="source-block-target"
-            aria-label={`${page}쪽 ${block.kind}`}
+            aria-label={t('misc.blockOnPage', { page, kind: block.kind })}
             style={{ left: `${region.x * 100}%`, top: `${region.y * 100}%`, width: `${region.width * 100}%`, height: `${region.height * 100}%` }}
             onClick={() => onSelectBlock(block, 'control')}
           />
@@ -349,7 +368,7 @@ export function KoreanPages(props: KoreanPaneProps): JSX.Element {
   if (doc === null) {
     return (
       <div className="pane-body" ref={bodyRef} onScroll={onScroll}>
-        <p className="empty">원본 PDF를 아직 불러오지 않았습니다.</p>
+        <p className="empty">{t('misc.pdfNotLoaded')}</p>
       </div>
     );
   }
@@ -373,7 +392,7 @@ export function KoreanPages(props: KoreanPaneProps): JSX.Element {
           />
         ) : (
           <div key={page} className="kr-page kr-placeholder" data-page={page} style={placeholderSize(page)}>
-            {page}쪽
+            {t('misc.pageLabel', { page })}
           </div>
         ),
       )}

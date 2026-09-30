@@ -1,7 +1,13 @@
 import type { JSX } from 'react';
 import type { CitationMarker, StructureItem } from '@fractal/shared';
+import { t, type MessageKey } from '../i18n';
 
-const KIND_LABEL: Record<StructureItem['kind'], string> = { figure: '그림', table: '표', equation: '수식' };
+const KIND_KEY: Record<StructureItem['kind'], MessageKey> = { figure: 'reader.figure', table: 'reader.table', equation: 'reader.equation' };
+
+/** A recognised item's printed label, or its kind in the interface language. */
+export function itemLabel(item: StructureItem): string {
+  return item.label || t(KIND_KEY[item.kind]);
+}
 
 interface Props {
   items: StructureItem[];
@@ -30,10 +36,10 @@ export function StructureLayer({ items, markers, onExplain, onCitation }: Props)
           <button
             type="button"
             className="structure-item__explain"
-            aria-label={`${item.label || KIND_LABEL[item.kind]} 설명`}
+            aria-label={t('reader.explainOf', { label: itemLabel(item) })}
             onClick={(event) => onExplain(item, (event.currentTarget.parentElement ?? event.currentTarget).getBoundingClientRect())}
           >
-            설명
+            {t('reader.explain')}
           </button>
         </div>
       ))}
@@ -43,12 +49,10 @@ export function StructureLayer({ items, markers, onExplain, onCitation }: Props)
           type="button"
           className="citation-marker"
           style={box(marker.bbox)}
-          aria-label={`참고문헌 ${marker.references.join(', ')}`}
+          aria-label={t('reader.referencesOf', { n: marker.references.join(', ') })}
           onClick={(event) => onCitation(marker, event.currentTarget.getBoundingClientRect())}
         />
       ))}
     </div>
   );
 }
-
-export { KIND_LABEL };

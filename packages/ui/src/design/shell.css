@@ -1442,3 +1442,155 @@ kbd {
     font-size: 26px;
   }
 }
+
+/* ------------------------------------------------------------------ AI connection, languages */
+
+.provider__todo {
+  display: grid;
+  gap: 4px;
+}
+
+.command {
+  justify-self: start;
+  padding: 3px 8px;
+  border: 1px solid var(--c-rule-strong);
+  border-radius: var(--r-sm);
+  background: var(--c-sunken);
+  color: var(--c-ink);
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  user-select: all;
+}
+
+.ai-connection {
+  margin-bottom: var(--sp-4);
+}
+
+.ai-connection > .text-link {
+  font-size: var(--fs-small);
+}
+
+.language-fields .field-row {
+  margin: var(--sp-3) 0;
+}
+
+.language-fields select,
+.welcome select {
+  height: 30px;
+  padding: 0 var(--sp-2);
+  border: 1px solid var(--c-rule-strong);
+  border-radius: var(--r-sm);
+  background: var(--c-surface);
+  color: var(--c-ink);
+  font: inherit;
+}
+
+.button--danger {
+  border-color: var(--c-danger);
+  background: var(--c-danger);
+}
+
+/* ------------------------------------------------------------------ welcome */
+
+.welcome {
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  min-height: 100vh;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 var(--sp-5);
+  box-sizing: border-box;
+}
+
+.welcome__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 64px;
+}
+
+.welcome__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.welcome__progress {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-2);
+  margin: 0 0 var(--sp-7);
+  padding: 0;
+  list-style: none;
+}
+
+.welcome__progress button {
+  width: 100%;
+  padding: var(--sp-2) 0 0;
+  border: 0;
+  border-top: 2px solid var(--c-rule);
+  border-radius: 0;
+  background: none;
+  color: var(--c-faint);
+  font: inherit;
+  font-size: var(--fs-small);
+  text-align: left;
+  cursor: pointer;
+}
+
+.welcome__progress li.is-done button {
+  border-top-color: var(--c-ink-soft);
+  color: var(--c-muted);
+}
+
+.welcome__progress li[aria-current='step'] button {
+  border-top-color: var(--c-ink);
+  color: var(--c-ink);
+  font-weight: 600;
+}
+
+.welcome__title {
+  margin: 0 0 var(--sp-3);
+  font-family: var(--font-serif);
+  font-size: 34px;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.welcome__deck {
+  max-width: 36em;
+  margin: 0 0 var(--sp-6);
+  color: var(--c-ink-soft);
+  font-size: var(--fs-lead);
+  line-height: 1.55;
+}
+
+.welcome__note {
+  margin: var(--sp-4) 0 0;
+  color: var(--c-muted);
+}
+
+.welcome .interests__options {
+  margin-top: 0;
+}
+
+.welcome__nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--sp-6) 0 var(--sp-7);
+}
+
+@media (max-width: 600px) {
+  .welcome__title {
+    font-size: 28px;
+  }
+
+  .welcome__progress {
+    margin-bottom: var(--sp-6);
+  }
+}

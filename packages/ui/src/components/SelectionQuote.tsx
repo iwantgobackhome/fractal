@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 import { useEffect, useRef, useState, type JSX, type RefObject } from 'react';
 import { normalizeSelection } from '../lib/chat';
 import { IconQuote } from './ChatIcons';
@@ -138,7 +139,7 @@ export function SelectionQuote({ containerRef, onQuote }: SelectionQuoteProps): 
       }}
     >
       <IconQuote />
-      질문에 인용
+      {t('chat.quote')}
     </button>
   );
 }

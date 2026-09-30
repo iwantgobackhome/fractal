@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState, type JSX, type RefObject } from 'react';
 import type { Job, Paper } from '@fractal/shared';
-import { jobLabel, primaryAction, primaryLabel } from '../components/ReaderToolbar';
+import { jobLabel, primaryAction, primaryLabel } from './job';
+import { t, type MessageKey } from '../i18n';
 
 export type ViewMode = 'source' | 'split' | 'translation';
 
-const VIEW_LABEL: Record<ViewMode, string> = { source: '원문', split: '나란히', translation: '번역' };
+const VIEW_LABEL: Record<ViewMode, MessageKey> = { source: 'reader.viewSource', split: 'reader.viewSplit', translation: 'reader.viewTranslation' };
 
 export interface ReaderBarProps {
   paper: Paper | null;
@@ -36,12 +37,14 @@ export interface ReaderBarProps {
   chat: { open: boolean; controls: string; onToggle(): void; buttonRef: RefObject<HTMLButtonElement | null> };
   notes: { open: boolean; onToggle(): void };
   exportLinks: { label: string; href: string; download: string }[];
+  /** Save the translation as a PDF, alone or beside the original; absent without a translation. */
+  pdf?: { onSave(mode: 'translation' | 'split'): void; note: string | null; busy: boolean };
   onRequestDelete(): void;
 }
 
 function progressText(job: Job | null): string | null {
   if (job === null || job.state === 'idle') return null;
-  if (job.state === 'running') return `번역 ${job.completedBlocks}/${job.totalTranslatableBlocks}쪽`;
+  if (job.state === 'running') return t('reader.progress', { done: job.completedBlocks, total: job.totalTranslatableBlocks });
   return jobLabel(job);
 }
 
@@ -91,7 +94,7 @@ export function ReaderBar(props: ReaderBarProps): JSX.Element {
   };
 
   return (
-    <div className="reader-bar" role="toolbar" aria-label="읽기 도구">
+    <div className="reader-bar" role="toolbar" aria-label={t('reader.toolbar')}>
       <div className="reader-bar__title">
         <h1 title={title}>{title}</h1>
         {progress !== null ? (
@@ -101,8 +104,14 @@ export function ReaderBar(props: ReaderBarProps): JSX.Element {
         ) : null}
       </div>
 
-      <div className="reader-bar__group" role="group" aria-label="쪽 이동">
-        <button type="button" className="reader-bar__icon" onClick={() => props.onPage(currentPage - 1)} disabled={currentPage <= 1} aria-label="이전 쪽">
+      <div className="reader-bar__group" role="group" aria-label={t('reader.pages')}>
+        <button
+          type="button"
+          className="reader-bar__icon"
+          onClick={() => props.onPage(currentPage - 1)}
+          disabled={currentPage <= 1}
+          aria-label={t('reader.prevPage')}
+        >
           ‹
         </button>
         <span className="reader-bar__readout" data-testid="page">
@@ -113,25 +122,31 @@ export function ReaderBar(props: ReaderBarProps): JSX.Element {
           className="reader-bar__icon"
           onClick={() => props.onPage(currentPage + 1)}
           disabled={pageCount === 0 || currentPage >= pageCount}
-          aria-label="다음 쪽"
+          aria-label={t('reader.nextPage')}
         >
           ›
         </button>
       </div>
 
-      <div className="reader-bar__group" role="group" aria-label="확대">
-        <button type="button" className="reader-bar__icon" onClick={() => props.onZoom(-1)} aria-label="축소">
+      <div className="reader-bar__group" role="group" aria-label={t('reader.zoom')}>
+        <button type="button" className="reader-bar__icon" onClick={() => props.onZoom(-1)} aria-label={t('reader.zoomOut')}>
           −
         </button>
-        <button type="button" className="reader-bar__readout reader-bar__readout--button" onClick={props.onFitWidth} title="폭에 맞추기" data-testid="zoom">
+        <button
+          type="button"
+          className="reader-bar__readout reader-bar__readout--button"
+          onClick={props.onFitWidth}
+          title={t('reader.fitWidth')}
+          data-testid="zoom"
+        >
           {Math.round(zoom * 100)}%
         </button>
-        <button type="button" className="reader-bar__icon" onClick={() => props.onZoom(1)} aria-label="확대">
+        <button type="button" className="reader-bar__icon" onClick={() => props.onZoom(1)} aria-label={t('reader.zoomIn')}>
           +
         </button>
       </div>
 
-      <div className="segmented reader-bar__views" role="group" aria-label="보기">
+      <div className="segmented reader-bar__views" role="group" aria-label={t('reader.view')}>
         {modes.map((mode) => (
           <button
             key={mode}
@@ -139,7 +154,7 @@ export function ReaderBar(props: ReaderBarProps): JSX.Element {
             aria-pressed={viewMode === mode || (narrow && mode === 'source' && viewMode === 'split')}
             onClick={() => props.onViewMode(mode)}
           >
-            {VIEW_LABEL[mode]}
+            {t(VIEW_LABEL[mode])}
           </button>
         ))}
       </div>
@@ -157,7 +172,7 @@ export function ReaderBar(props: ReaderBarProps): JSX.Element {
           </button>
         ) : null}
         <button type="button" className="reader-bar__action" aria-expanded={props.notes.open} aria-controls={chat.controls} onClick={props.notes.onToggle}>
-          노트
+          {t('reader.notes')}
         </button>
         <button
           ref={chat.buttonRef}
@@ -167,13 +182,13 @@ export function ReaderBar(props: ReaderBarProps): JSX.Element {
           aria-controls={chat.controls}
           onClick={chat.onToggle}
         >
-          질문
+          {t('reader.questions')}
         </button>
         <div className="reader-bar__menu" ref={menuRef}>
           <button
             type="button"
             className="reader-bar__icon"
-            aria-label="논문 메뉴"
+            aria-label={t('reader.menu')}
             aria-haspopup="menu"
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen(!menuOpen)}
@@ -184,9 +199,9 @@ export function ReaderBar(props: ReaderBarProps): JSX.Element {
             <div className="menu" role="menu">
               <div className="menu__section">
                 <label className="menu__field">
-                  <span>번역 모델</span>
+                  <span>{t('reader.model')}</span>
                   <select value={props.selectedModelId} onChange={(event) => props.onModelChange(event.target.value)} disabled={props.modelIds.length === 0}>
-                    {props.modelIds.length === 0 ? <option value="">사용 가능한 모델 없음</option> : null}
+                    {props.modelIds.length === 0 ? <option value="">{t('reader.noModels')}</option> : null}
                     {props.modelIds.map((id) => (
                       <option key={id} value={id}>
                         {id}
@@ -203,10 +218,37 @@ export function ReaderBar(props: ReaderBarProps): JSX.Element {
                     props.onRequestReplacement();
                   }}
                 >
-                  이 모델로 새로 번역
+                  {t('reader.retranslate')}
                 </button>
               </div>
               <div className="menu__section">
+                {props.pdf !== undefined ? (
+                  <>
+                    <button
+                      type="button"
+                      role="menuitem"
+                      disabled={props.pdf.busy}
+                      onClick={() => {
+                        setMenuOpen(false);
+                        props.pdf?.onSave('translation');
+                      }}
+                    >
+                      {t('reader.pdfTranslation')}
+                      {props.pdf.note !== null ? <span className="menu__note">{props.pdf.note}</span> : null}
+                    </button>
+                    <button
+                      type="button"
+                      role="menuitem"
+                      disabled={props.pdf.busy}
+                      onClick={() => {
+                        setMenuOpen(false);
+                        props.pdf?.onSave('split');
+                      }}
+                    >
+                      {t('reader.pdfSplit')}
+                    </button>
+                  </>
+                ) : null}
                 {props.exportLinks.map((link) => (
                   <a key={link.label} role="menuitem" href={link.href} download={link.download} onClick={() => setMenuOpen(false)}>
                     {link.label}
@@ -223,7 +265,7 @@ export function ReaderBar(props: ReaderBarProps): JSX.Element {
                     props.onRequestDelete();
                   }}
                 >
-                  보관함에서 삭제
+                  {t('reader.deletePaper')}
                 </button>
               </div>
             </div>

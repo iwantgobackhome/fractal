@@ -1,12 +1,13 @@
 import type { JSX, ReactNode, RefObject } from 'react';
+import { t, type MessageKey } from '../i18n';
 import { FractalMark } from './FractalMark';
 
 export type ShellView = 'home' | 'library' | 'settings';
 
-const NAV: { view: ShellView; label: string }[] = [
-  { view: 'home', label: '홈' },
-  { view: 'library', label: '보관함' },
-  { view: 'settings', label: '설정' },
+const NAV: { view: ShellView; label: MessageKey }[] = [
+  { view: 'home', label: 'nav.home' },
+  { view: 'library', label: 'nav.library' },
+  { view: 'settings', label: 'nav.settings' },
 ];
 
 interface Props {
@@ -23,11 +24,11 @@ const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigat
 export function Masthead({ view, onNavigate, input, account, onOpenPalette, paletteButtonRef }: Props): JSX.Element {
   return (
     <header className="masthead">
-      <button type="button" className="masthead__brand" onClick={() => onNavigate('home')} aria-label="Fractal 홈">
+      <button type="button" className="masthead__brand" onClick={() => onNavigate('home')} aria-label={t('nav.brandHome')}>
         <FractalMark />
         <span className="masthead__word">Fractal</span>
       </button>
-      <nav className="masthead__nav" aria-label="주요 화면">
+      <nav className="masthead__nav" aria-label={t('nav.main')}>
         {NAV.map((item) => (
           <button
             key={item.view}
@@ -36,13 +37,13 @@ export function Masthead({ view, onNavigate, input, account, onOpenPalette, pale
             aria-current={view === item.view ? 'page' : undefined}
             onClick={() => onNavigate(item.view)}
           >
-            {item.label}
+            {t(item.label)}
           </button>
         ))}
       </nav>
       <div className="masthead__input">{input}</div>
       <div className="masthead__end">
-        <button ref={paletteButtonRef} type="button" className="masthead__palette" onClick={onOpenPalette} aria-label="명령 팔레트 열기">
+        <button ref={paletteButtonRef} type="button" className="masthead__palette" onClick={onOpenPalette} aria-label={t('nav.openPalette')}>
           <kbd>{isMac ? '⌘' : 'Ctrl'}</kbd>
           <kbd>K</kbd>
         </button>

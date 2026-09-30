@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState, type JSX } from 'react';
 import type { FeedInterests, FeedItem, FeedResponse, Paper } from '@fractal/shared';
+import { locale, t } from '../i18n';
 import { COMMON_FIELDS, fieldName } from './fields';
 import type { HubApi } from './hub-api';
 import { authorsLine, paperTitle, sourceLabel } from './paper-format';
@@ -13,11 +14,9 @@ interface Props {
   onShowLibrary(): void;
 }
 
-const today = new Intl.DateTimeFormat('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
-
 function weekLabel(week: string): string {
   const match = /^(\d{4})-W(\d{2})$/.exec(week);
-  return match === null ? week : `${match[1]}년 제${Number(match[2])}주`;
+  return match === null ? week : t('home.week', { year: match[1], week: Number(match[2]) });
 }
 
 function openTarget(item: FeedItem): string {
@@ -30,9 +29,25 @@ function byline(item: FeedItem): string {
   return [people, item.arxivId !== null ? `arXiv ${item.arxivId}` : null].filter(Boolean).join(' · ');
 }
 
-/** "관심 분야 cs.CV" reads better as the field's name. */
-function readableReason(reason: string): string {
-  return reason.replace(/관심 분야 ([a-z-]+\.[A-Za-z-]+)/, (_, category: string) => fieldName(category));
+/** Said in the interface's current language from the hub's reason code; older hubs send only text. */
+function readableReason(item: FeedItem): string {
+  const params = item.reasonParams ?? {};
+  switch (item.reasonCode) {
+    case 'followed_author':
+      if (params.author !== undefined) return t('home.reasonAuthor', { author: params.author });
+      break;
+    case 'interest_category':
+      if (params.category !== undefined) return t('home.reasonField', { field: fieldName(params.category) });
+      break;
+    case 'interest_topic':
+      if (params.topic !== undefined) return t('home.reasonTopic', { topic: params.topic });
+      break;
+    case 'similar_library':
+      return t('home.reasonSimilar');
+    case 'new_this_week':
+      return t('home.reasonNew');
+  }
+  return item.reason;
 }
 
 /** Each paper appears once on the page: the first section that carries it keeps it. */
@@ -49,11 +64,11 @@ function once(items: FeedItem[], seen: Set<string>, limit: number): FeedItem[] {
 function relative(iso: string | null): string {
   if (iso === null) return '';
   const minutes = Math.round((Date.now() - new Date(iso).getTime()) / 60_000);
-  if (minutes < 1) return '방금';
-  if (minutes < 60) return `${minutes}분 전`;
+  if (minutes < 1) return t('home.justNow');
+  if (minutes < 60) return t('home.minutesAgo', { count: minutes });
   const hours = Math.round(minutes / 60);
-  if (hours < 24) return `${hours}시간 전`;
-  return `${Math.round(hours / 24)}일 전`;
+  if (hours < 24) return t('home.hoursAgo', { count: hours });
+  return t('home.daysAgo', { count: Math.round(hours / 24) });
 }
 
 /** One paper as a headline: title, byline, why it is here, and a quiet save action. */
@@ -78,13 +93,13 @@ function Headline({
       {size !== 'compact' && item.abstract !== '' ? <p className="headline__abstract">{item.abstract}</p> : null}
       <p className="headline__meta">
         <span>{byline(item)}</span>
-        {item.kind === 'paper' ? <span className="headline__reason">{readableReason(item.reason)}</span> : null}
+        {item.kind === 'paper' ? <span className="headline__reason">{readableReason(item)}</span> : null}
         {item.kind === 'paper' ? (
           item.inLibrary ? (
-            <span className="headline__saved">보관함에 있음</span>
+            <span className="headline__saved">{t('home.inLibrary')}</span>
           ) : (
             <button type="button" className="text-link" onClick={onSave} disabled={saving}>
-              {saving ? '담는 중' : '보관함에 담기'}
+              {saving ? t('home.saving') : t('home.save')}
             </button>
           )
         ) : null}
@@ -93,7 +108,7 @@ function Headline({
   );
 }
 
-function InterestPicker({ hub, onSaved }: { hub: HubApi; onSaved(): void }): JSX.Element {
+export function InterestPicker({ hub, onSaved, heading = true }: { hub: HubApi; onSaved(): void; heading?: boolean }): JSX.Element {
   const [suggested, setSuggested] = useState<string[]>([]);
   const [chosen, setChosen] = useState<Set<string>>(new Set());
   const [saving, setSaving] = useState(false);
@@ -125,11 +140,15 @@ function InterestPicker({ hub, onSaved }: { hub: HubApi; onSaved(): void }): JSX
 
   return (
     <section className="interests" aria-labelledby="interests-title">
-      <h1 id="interests-title" className="home-front__headline">
-        어떤 분야를 읽으세요?
-      </h1>
-      <p className="home-front__deck">고른 분야의 이번 주 논문과 소식이 이 면에 실립니다.</p>
-      <div className="interests__options" role="group" aria-label="관심 분야">
+      {heading ? (
+        <>
+          <h1 id="interests-title" className="home-front__headline">
+            {t('home.pickTitle')}
+          </h1>
+          <p className="home-front__deck">{t('home.pickDeck')}</p>
+        </>
+      ) : null}
+      <div className="interests__options" role="group" aria-label={t('home.fields')}>
         {options.map((category) => (
           <button key={category} type="button" className="field-toggle" aria-pressed={chosen.has(category)} onClick={() => toggle(category)}>
             <span>{fieldName(category)}</span>
@@ -152,7 +171,7 @@ function InterestPicker({ hub, onSaved }: { hub: HubApi; onSaved(): void }): JSX
             .finally(() => setSaving(false));
         }}
       >
-        {saving ? '이번 주 논문을 모으는 중' : '이 분야로 시작'}
+        {saving ? t('home.gathering') : t('home.start')}
       </button>
     </section>
   );
@@ -218,7 +237,7 @@ export function HomeScreen({ hub, papers, onOpen, onOpenExternal, onShowLibrary 
     <main className="screen home-front" aria-labelledby="home-date">
       <div className="home-front__masthead">
         <p id="home-date" className="home-front__date">
-          {today.format(new Date())}
+          {new Intl.DateTimeFormat(locale(), { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }).format(new Date())}
         </p>
         {feed !== null && feed !== undefined ? <p className="home-front__week">{weekLabel(feed.week)}</p> : null}
       </div>
@@ -227,7 +246,7 @@ export function HomeScreen({ hub, papers, onOpen, onOpenExternal, onShowLibrary 
         <InterestPicker hub={hub} onSaved={load} />
       ) : feed === undefined ? null : empty || sections === undefined ? (
         <section className="home-front__blank">
-          <p className="home-front__deck">이번 주 소식을 아직 모으지 못했습니다.</p>
+          <p className="home-front__deck">{t('home.empty')}</p>
           <button
             type="button"
             className="text-link"
@@ -241,29 +260,29 @@ export function HomeScreen({ hub, papers, onOpen, onOpenExternal, onShowLibrary 
                 .finally(() => setRefreshing(false));
             }}
           >
-            {refreshing ? '모으는 중' : '지금 모으기'}
+            {refreshing ? t('home.refreshing') : t('home.gatherNow')}
           </button>
         </section>
       ) : (
         <>
           {feed?.digest !== undefined ? (
-            <section className="digest" aria-label="이번 주 요약">
-              <h2 className="home-front__kicker">이번 주 요약</h2>
+            <section className="digest" aria-label={t('home.digest')}>
+              <h2 className="home-front__kicker">{t('home.digest')}</h2>
               <p className="digest__text">{feed.digest.text}</p>
             </section>
           ) : null}
 
           <div className="home-front__grid">
-            <section className="home-front__lead-column" aria-label="이번 주 논문">
+            <section className="home-front__lead-column" aria-label={t('home.papers')}>
               {lead[0] !== undefined ? headline(lead[0], 'lead') : null}
               <div className="home-front__secondary">{lead.slice(1).map((item) => headline(item, 'normal'))}</div>
             </section>
 
-            <aside className="home-front__column" aria-label="곁들여 읽기">
+            <aside className="home-front__column" aria-label={t('home.aside')}>
               {recent.length > 0 ? (
                 <section aria-labelledby="home-shelf">
                   <h2 id="home-shelf" className="home-front__kicker">
-                    이어 읽기
+                    {t('home.continue')}
                   </h2>
                   <ol className="home-front__list">
                     {recent.slice(0, 3).map((paper) => (
@@ -277,7 +296,7 @@ export function HomeScreen({ hub, papers, onOpen, onOpenExternal, onShowLibrary 
                   </ol>
                   {papers.length > 3 ? (
                     <button type="button" className="text-link" onClick={onShowLibrary}>
-                      보관함 전체
+                      {t('home.allLibrary')}
                     </button>
                   ) : null}
                 </section>
@@ -286,7 +305,7 @@ export function HomeScreen({ hub, papers, onOpen, onOpenExternal, onShowLibrary 
               {sections.rankings.length > 0 ? (
                 <section aria-labelledby="home-rankings">
                   <h2 id="home-rankings" className="home-front__kicker">
-                    주간 랭킹
+                    {t('home.rankings')}
                   </h2>
                   <ol className="ranking">
                     {sections.rankings.slice(0, 10).map((item, index) => (
@@ -295,7 +314,7 @@ export function HomeScreen({ hub, papers, onOpen, onOpenExternal, onShowLibrary 
                         <button type="button" onClick={() => onOpenExternal(openTarget(item))}>
                           {item.title}
                         </button>
-                        <span className="ranking__votes" aria-label={`추천 ${item.popularity}`}>
+                        <span className="ranking__votes" aria-label={t('home.votes', { count: item.popularity })}>
                           {item.popularity}
                         </span>
                       </li>
@@ -307,7 +326,7 @@ export function HomeScreen({ hub, papers, onOpen, onOpenExternal, onShowLibrary 
               {sections.news.length > 0 ? (
                 <section aria-labelledby="home-news">
                   <h2 id="home-news" className="home-front__kicker">
-                    분야 소식
+                    {t('home.news')}
                   </h2>
                   <ul className="news">
                     {sections.news.slice(0, 6).map((item) => (
@@ -336,14 +355,14 @@ export function HomeScreen({ hub, papers, onOpen, onOpenExternal, onShowLibrary 
           )}
 
           {recommended.length > 0 ? (
-            <section className="field-section" aria-label="보관함과 비슷한 논문">
-              <h2 className="field-section__title">보관함과 비슷한 논문</h2>
+            <section className="field-section" aria-label={t('home.similar')}>
+              <h2 className="field-section__title">{t('home.similar')}</h2>
               <div className="field-section__grid">{recommended.map((item) => headline(item, 'compact'))}</div>
             </section>
           ) : null}
 
           <p className="home-front__colophon">
-            {feed?.generatedAt !== null && feed?.generatedAt !== undefined ? `${relative(feed.generatedAt)} 모음` : ''}
+            {feed?.generatedAt !== null && feed?.generatedAt !== undefined ? t('home.gathered', { time: relative(feed.generatedAt) }) : ''}
             {' · '}
             <button
               type="button"
@@ -358,7 +377,7 @@ export function HomeScreen({ hub, papers, onOpen, onOpenExternal, onShowLibrary 
                   .finally(() => setRefreshing(false));
               }}
             >
-              {refreshing ? '모으는 중' : '새로 모으기'}
+              {refreshing ? t('home.refreshing') : t('home.refresh')}
             </button>
           </p>
         </>

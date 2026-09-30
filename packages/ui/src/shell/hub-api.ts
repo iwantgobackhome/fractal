@@ -18,6 +18,7 @@ import type {
   UsageRecord,
 } from '@fractal/shared';
 import { TOKEN_HEADER } from '../lib/api';
+import { t } from '../i18n';
 
 /*
  * Client for the hub's library, AI, network and pairing endpoints. Responses
@@ -31,6 +32,16 @@ export type AiChoice = ModelSelection;
 
 export interface ProviderStatus extends HubProviderStatus {
   models: ProviderModel[];
+  /** The terminal command that signs this CLI in, when the hub reports it. */
+  loginCommand?: string;
+}
+
+/** Interface, translation and answer languages; mirrors the hub's /api/preferences. */
+export interface Preferences {
+  uiLanguage: 'ko' | 'en';
+  translationLanguage: string;
+  answerLanguage: string;
+  onboardingCompleted: boolean;
 }
 
 export interface ProvidersResult {
@@ -70,10 +81,10 @@ export interface PairingSession {
 export type ExportFormat = 'bibtex' | 'csl-json';
 
 function windowLabel(minutes: unknown): string {
-  if (typeof minutes !== 'number') return '한도';
-  if (minutes >= 7 * 24 * 60) return '주간 한도';
-  if (minutes >= 24 * 60) return `${Math.round(minutes / (24 * 60))}일 한도`;
-  return `${Math.round(minutes / 60)}시간 한도`;
+  if (typeof minutes !== 'number') return t('usage.limit');
+  if (minutes >= 7 * 24 * 60) return t('usage.weekly');
+  if (minutes >= 24 * 60) return t('usage.days', { count: Math.round(minutes / (24 * 60)) });
+  return t('usage.hours', { count: Math.round(minutes / 60) });
 }
 
 /** Codex reports `{ primary, secondary }` quota windows; other providers report nothing yet. */
@@ -163,9 +174,9 @@ export class HubApi {
     const payload: unknown = await response.json().catch(() => null);
     if (payload !== null && typeof payload === 'object' && 'error' in payload) {
       const error = (payload as { error: { message?: string } }).error;
-      throw new Error(error.message ?? '요청을 처리하지 못했습니다.');
+      throw new Error(error.message ?? t('errors.request'));
     }
-    if (!response.ok) throw new Error('요청이 거절되었습니다.');
+    if (!response.ok) throw new Error(t('errors.rejected'));
     return (payload as { data: T }).data;
   }
 
@@ -269,9 +280,17 @@ export class HubApi {
       const payload: unknown = await response.json().catch(() => null);
       const message =
         payload !== null && typeof payload === 'object' && 'error' in payload ? (payload as { error: { message?: string } }).error.message : undefined;
-      throw new Error(message ?? '설명을 요청하지 못했습니다.');
+      throw new Error(message ?? t('errors.explain'));
     }
     yield* readSse(response.body);
+  }
+
+  preferences(): Promise<Preferences | null> {
+    return this.call('/api/preferences');
+  }
+
+  savePreferences(preferences: Preferences): Promise<Preferences | null> {
+    return this.call('/api/preferences', { method: 'PUT', body: preferences });
   }
 
   /** Upload a local PDF; the hub extracts metadata and merges duplicates. */

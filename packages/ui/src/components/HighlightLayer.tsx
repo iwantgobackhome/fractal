@@ -1,5 +1,6 @@
 import { useRef, useState, type JSX } from 'react';
 import type { Highlight } from '@fractal/shared';
+import { t } from '../i18n';
 
 const COLOR_VALUES: Record<Highlight['color'], string> = {
   yellow: 'color-mix(in srgb, var(--c-hl-yellow) 75%, transparent)',
@@ -34,7 +35,7 @@ function HighlightBox({ highlight, onOpen }: HighlightBoxProps): JSX.Element {
             height: `${rect.height * 100}%`,
             backgroundColor: COLOR_VALUES[highlight.color],
           }}
-          aria-label={`하이라이트: ${highlight.text.slice(0, 40)}`}
+          aria-label={t('reader.highlightLabel', { text: highlight.text.slice(0, 40) })}
           onPointerDown={(event) => {
             pressedAt.current = { x: event.clientX, y: event.clientY };
           }}
@@ -76,7 +77,7 @@ export function HighlightPopover({ highlight, onSave, onDelete, onClose, onAsk }
     <div
       className="highlight-popover"
       role="dialog"
-      aria-label="하이라이트 메모"
+      aria-label={t('reader.noteEditor')}
       onKeyDown={(event) => {
         if (event.key === 'Escape') {
           event.stopPropagation();
@@ -87,8 +88,8 @@ export function HighlightPopover({ highlight, onSave, onDelete, onClose, onAsk }
       <p className="highlight-excerpt">{highlight.text.slice(0, 200)}</p>
       <textarea
         ref={noteRef}
-        aria-label="메모"
-        placeholder="메모"
+        aria-label={t('reader.memo')}
+        placeholder={t('reader.memo')}
         value={note}
         onChange={(event) => setNote(event.target.value)}
         rows={3}
@@ -96,14 +97,14 @@ export function HighlightPopover({ highlight, onSave, onDelete, onClose, onAsk }
         autoFocus
       />
       <div className="highlight-popover-row">
-        <div className="highlight-colors" role="group" aria-label="색">
+        <div className="highlight-colors" role="group" aria-label={t('reader.color')}>
           {HIGHLIGHT_COLORS.map((c) => (
             <button
               key={c}
               type="button"
               className={`highlight-color-swatch${c === color ? ' selected' : ''}`}
               style={{ backgroundColor: COLOR_VALUES[c] }}
-              aria-label={`색 ${c}`}
+              aria-label={t('reader.colorOf', { color: t(`reader.${c}`) })}
               aria-pressed={c === color}
               onClick={() => setColor(c)}
             />
@@ -118,11 +119,11 @@ export function HighlightPopover({ highlight, onSave, onDelete, onClose, onAsk }
                 if (!edited) onClose();
               }}
             >
-              질문
+              {t('reader.ask')}
             </button>
           ) : null}
           <button type="button" onClick={onDelete}>
-            삭제
+            {t('reader.delete')}
           </button>
           <button
             type="button"
@@ -132,7 +133,7 @@ export function HighlightPopover({ highlight, onSave, onDelete, onClose, onAsk }
               onSave(text.trim().length === 0 ? '' : text, color);
             }}
           >
-            저장
+            {t('reader.save')}
           </button>
         </div>
       </div>

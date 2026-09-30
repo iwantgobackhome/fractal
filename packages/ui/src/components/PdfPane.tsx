@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 import { useCallback, useEffect, useMemo, useRef, useState, type JSX, type ReactNode } from 'react';
 import { TextLayer } from 'pdfjs-dist/legacy/build/pdf.mjs';
 import type { Block, Highlight, Region } from '@fractal/shared';
@@ -135,7 +136,7 @@ export function PageCanvas({
       onMouseDown={onMouseDown}
       onMouseUp={onMouseUp}
     >
-      <canvas ref={canvasRef} aria-label={ariaLabel ?? `${page}쪽 원문`} />
+      <canvas ref={canvasRef} aria-label={ariaLabel ?? t('misc.pageOriginal', { page })} />
       {children}
     </div>
   );
@@ -408,7 +409,7 @@ export function PdfPages(props: PdfPaneProps): JSX.Element {
   if (doc === null) {
     return (
       <div className="pane-body" ref={bodyRef} onScroll={onScroll}>
-        <p className="empty">원문을 불러오는 중입니다.</p>
+        <p className="empty">{t('misc.loadingOriginal')}</p>
       </div>
     );
   }
@@ -444,7 +445,7 @@ export function PdfPages(props: PdfPaneProps): JSX.Element {
             ref={(element) => registerPage(page, element)}
             style={pageRenderSize(pageIntrinsicSize(page), zoom)}
           >
-            {page}쪽
+            {t('misc.pageLabel', { page })}
           </div>
         ),
       )}

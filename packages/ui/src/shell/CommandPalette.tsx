@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type JSX } from 'react';
+import { t } from '../i18n';
 
 export interface Command {
   id: string;
@@ -64,14 +65,14 @@ export function CommandPalette({ open, commands, onClose }: Props): JSX.Element 
   let lastGroup = '';
   return (
     <div className="palette-layer">
-      <button type="button" className="palette-scrim" aria-label="명령 팔레트 닫기" tabIndex={-1} onClick={onClose} />
-      <div className="palette" role="dialog" aria-modal="true" aria-label="명령 팔레트">
+      <button type="button" className="palette-scrim" aria-label={t('palette.close')} tabIndex={-1} onClick={onClose} />
+      <div className="palette" role="dialog" aria-modal="true" aria-label={t('palette.title')}>
         <input
           ref={inputRef}
           className="palette__field"
           type="text"
           value={query}
-          placeholder="명령이나 논문 제목"
+          placeholder={t('palette.placeholder')}
           role="combobox"
           aria-expanded="true"
           aria-controls="palette-list"
@@ -93,8 +94,8 @@ export function CommandPalette({ open, commands, onClose }: Props): JSX.Element 
             }
           }}
         />
-        <ul ref={listRef} id="palette-list" className="palette__list" role="listbox" aria-label="결과">
-          {results.length === 0 ? <li className="palette__empty">일치하는 항목이 없습니다</li> : null}
+        <ul ref={listRef} id="palette-list" className="palette__list" role="listbox" aria-label={t('palette.results')}>
+          {results.length === 0 ? <li className="palette__empty">{t('palette.empty')}</li> : null}
           {results.map((command, index) => {
             const heading = command.group !== lastGroup ? command.group : null;
             lastGroup = command.group;

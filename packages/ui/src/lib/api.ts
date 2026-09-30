@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 import type {
   AppError,
   AskRequest,
@@ -52,7 +53,7 @@ function isAppError(value: unknown): value is AppError {
 /** Normalise anything thrown or returned into an AppError we can display. */
 export function extractError(value: unknown): AppError {
   if (isAppError(value)) return value;
-  return { code: 'INTERNAL', message: '요청을 처리하지 못했습니다.', retryable: false };
+  return { code: 'INTERNAL', message: t('errors.request'), retryable: false };
 }
 
 /**
@@ -100,20 +101,20 @@ export class ApiClient {
       });
     } catch {
       // The underlying message can echo the request; never let it through.
-      throw { code: 'NETWORK', message: '로컬 서비스에 연결하지 못했습니다.', retryable: true } satisfies AppError;
+      throw { code: 'NETWORK', message: t('errors.network'), retryable: true } satisfies AppError;
     }
 
     let payload: unknown;
     try {
       payload = await response.json();
     } catch {
-      throw { code: 'INTERNAL', message: '응답을 읽을 수 없습니다.', retryable: false } satisfies AppError;
+      throw { code: 'INTERNAL', message: t('errors.readResponse'), retryable: false } satisfies AppError;
     }
 
     if (payload !== null && typeof payload === 'object' && 'error' in payload) {
       throw extractError((payload as { error: unknown }).error);
     }
-    if (!response.ok) throw { code: 'INTERNAL', message: '요청이 거절되었습니다.', retryable: false } satisfies AppError;
+    if (!response.ok) throw { code: 'INTERNAL', message: t('errors.rejected'), retryable: false } satisfies AppError;
     return (payload as { data: T }).data;
   }
 

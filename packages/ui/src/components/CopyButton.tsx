@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 import { useEffect, useState, type JSX } from 'react';
 import { IconCheck, IconCopy } from './ChatIcons';
 
@@ -36,10 +37,10 @@ export function CopyButton({ text, label, className }: CopyButtonProps): JSX.Ele
         onClick={() => void copy()}
       >
         {state === 'copied' ? <IconCheck /> : <IconCopy />}
-        <span aria-hidden="true">{state === 'copied' ? '복사됨' : state === 'failed' ? '복사 실패' : '복사'}</span>
+        <span aria-hidden="true">{state === 'copied' ? t('misc.copied') : state === 'failed' ? t('misc.copyFailed') : t('misc.copy')}</span>
       </button>
       <span className="sr-only" role="status">
-        {state === 'copied' ? '복사했습니다' : state === 'failed' ? '복사하지 못했습니다' : ''}
+        {state === 'copied' ? t('misc.copiedLong') : state === 'failed' ? t('misc.copyFailedLong') : ''}
       </span>
     </>
   );

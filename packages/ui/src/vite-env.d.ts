@@ -13,3 +13,12 @@ declare module '*.css' {
   const content: string;
   export default content;
 }
+
+/** What the Electron shell exposes to the page (absent in a plain browser). */
+interface FractalDesktop {
+  savePdf(options: { suggestedName: string }): Promise<{ saved: boolean; path?: string }>;
+}
+
+interface Window {
+  fractalDesktop?: FractalDesktop;
+}

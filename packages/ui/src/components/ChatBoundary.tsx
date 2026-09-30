@@ -1,16 +1,17 @@
+import { t } from '../i18n';
 import { Component, type JSX, type ReactNode } from 'react';
 
 /** Shown in the dock when the question panel could not be loaded or drawn. */
 export function ChatUnavailable({ onClose }: { onClose(): void }): JSX.Element {
   return (
     <div className="chat-dock__failed" role="alert">
-      <p>질문 창을 불러오지 못했습니다. 새로고침해 주세요.</p>
+      <p>{t('chat.loadFailed')}</p>
       <div className="chat-dock__failed-actions">
         <button type="button" className="primary" onClick={() => window.location.reload()}>
-          새로고침
+          {t('chat.refresh')}
         </button>
         <button type="button" onClick={onClose}>
-          닫기
+          {t('errors.closeLabel')}
         </button>
       </div>
     </div>

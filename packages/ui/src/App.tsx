@@ -1,29 +1,16 @@
 import { Suspense, lazy, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type JSX, type RefObject } from 'react';
-import type {
-  AppError,
-  Block,
-  Connection,
-  InkStroke,
-  PaperStructure,
-  Highlight,
-  LoginAttempt,
-  Paper,
-  Region,
-  RestartTranslationRequest,
-  Snapshot,
-} from '@fractal/shared';
-import { AccountPanel } from './components/AccountPanel';
+import type { AppError, Block, Connection, InkStroke, PaperStructure, Highlight, Paper, Region, RestartTranslationRequest, Snapshot } from '@fractal/shared';
 import { ChatBoundary } from './components/ChatBoundary';
 import type { ChatQuote } from './components/ChatPanel';
 import { HighlightPopover } from './components/HighlightLayer';
 import { KoreanPages, type SelectVia } from './components/KoreanPane';
-import { DeleteDialog } from './components/LibraryPanel';
+import { DeleteDialog, ReplacementDialog, type ReplacementRequest } from './components/ConfirmDialog';
 import { PdfPages } from './components/PdfPane';
-import { ReplacementDialog, type ReplacementRequest } from './components/ReaderToolbar';
 import type { InkProps, PageColors, StructureProps } from './components/PdfPane';
 import { CitationCard, ExplainCard, type CitationState, type ExplainState } from './reader/Cards';
 import { DESKTOP_PEN_WIDTH } from './reader/InkLayer';
 import { NotesPanel } from './reader/NotesPanel';
+import { PrintView, type PrintMode } from './reader/PrintView';
 import { ReaderBar, type ViewMode } from './reader/ReaderBar';
 import { SelectionMenu, type PendingSelection } from './reader/SelectionMenu';
 import { SelectionQuote } from './components/SelectionQuote';
@@ -31,7 +18,10 @@ import { ApiClient, extractError, readToken } from './lib/api';
 import { blockPage, type Size } from './lib/geometry';
 import { koreanPageFallbackHeight, koreanPageHeight } from './lib/korean-page';
 import { intrinsicSize, loadPdf, type PDFDocumentProxy } from './lib/pdf';
-import { connectionShortLabel, paperStatusLabel, pickDefaultModel, translationBlockedReason } from './lib/status';
+import { paperStatusLabel, pickDefaultModel, translationBlockedReason } from './lib/status';
+import { t, useLanguage, type Language } from './i18n';
+import { usePreferences } from './shell/preferences';
+import { Welcome } from './shell/Welcome';
 import type { InputIntent } from './shell/classify';
 import { CommandPalette, type Command } from './shell/CommandPalette';
 import { HomeScreen } from './shell/HomeScreen';
@@ -68,7 +58,6 @@ const FALLBACK_INTRINSIC_SIZE: Size = { width: 640, height: 828 };
 /** Where a confirmed restart waits until its answer is confirmed. Never holds login data. */
 const PENDING_RESTART_KEY = 'paperread.pendingRestart';
 /** Shown next to the button that performs the send; opening a paper sends nothing. */
-const SEND_HINT = '번역 시작을 누르면 문단이 쪽 단위로 외부 번역 서비스(Codex)에 전송됩니다. 논문을 열기만 할 때는 전송되지 않습니다.';
 
 /** The question panel's element, for the toolbar toggle's aria-controls. */
 const CHAT_PANEL_ID = 'paper-chat';
@@ -181,8 +170,8 @@ function newRequestId(): string {
 }
 
 function leaderLabel(leader: Pane | null): string {
-  if (leader === null) return '스크롤 연동 대기';
-  return leader === 'source' ? '원본을 따라 이동 중' : '번역을 따라 이동 중';
+  if (leader === null) return t('reader.leaderWaiting');
+  return leader === 'source' ? t('reader.leaderSource') : t('reader.leaderTranslation');
 }
 
 export function App(): JSX.Element {
@@ -191,6 +180,11 @@ export function App(): JSX.Element {
   const [libraryQuery, setLibraryQuery] = useState('');
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [theme, setTheme] = useTheme();
+  // Languages and the first-run guide; the interface re-renders when its language changes.
+  const language = useLanguage();
+  const [preferences, updatePreferences] = usePreferences(hub);
+  const [welcomeOpen, setWelcomeOpen] = useState(false);
+  const showWelcome = welcomeOpen || (preferences !== null && !preferences.onboardingCompleted);
   const [dragging, setDragging] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const omniRef = useRef<HTMLInputElement | null>(null);
@@ -204,14 +198,6 @@ export function App(): JSX.Element {
   const [busy, setBusy] = useState(false);
   const [highlights, setHighlights] = useState<Highlight[]>([]);
   const [openHighlightId, setOpenHighlightId] = useState<string | null>(null);
-
-  // Account: the popover, the app-issued login attempt, and its official address.
-  const [accountOpen, setAccountOpen] = useState(false);
-  const [loginAttempt, setLoginAttempt] = useState<LoginAttempt | null>(null);
-  const [loginUrl, setLoginUrl] = useState<string | null>(null);
-  const [accountError, setAccountError] = useState<AppError | null>(null);
-  const [accountBusy, setAccountBusy] = useState(false);
-  const accountButtonRef = useRef<HTMLButtonElement | null>(null);
 
   // The question panel: open or shut, mounted from its first opening, and a passage to quote.
   const [chatOpen, setChatOpen] = useState(false);
@@ -227,24 +213,6 @@ export function App(): JSX.Element {
   const readerRef = useRef<HTMLDivElement | null>(null);
   const [readerWidth, setReaderWidth] = useState<number | null>(null);
   const onePane = onePaneBesideChat(readerWidth, chatDocked);
-
-  // Where focus goes when the account menu closes: the control that opened it, or — when that
-  // was a question-panel control that went away meanwhile (signed in) — back into the panel.
-  const accountOpener = useRef<{ element: HTMLElement | null; fromChat: boolean }>({ element: null, fromChat: false });
-  const accountReturnRef = useMemo<RefObject<HTMLElement | null>>(
-    () => ({
-      get current(): HTMLElement | null {
-        const { element, fromChat } = accountOpener.current;
-        if (element !== null && element.isConnected && !(element instanceof HTMLButtonElement && element.disabled)) return element;
-        if (fromChat) {
-          const dock = chatDockRef.current;
-          return dock?.querySelector<HTMLElement>('textarea:not(:disabled)') ?? dock?.querySelector<HTMLElement>('.chat__icon-button') ?? chatButtonRef.current;
-        }
-        return accountButtonRef.current;
-      },
-    }),
-    [],
-  );
 
   // Replacement and deletion are confirmed in dialogs, never from a primary button.
   const [replacement, setReplacement] = useState<ReplacementRequest | null>(null);
@@ -268,6 +236,8 @@ export function App(): JSX.Element {
   const [explain, setExplain] = useState<ExplainState | null>(null);
   const [citation, setCitation] = useState<CitationState | null>(null);
   const explainAbort = useRef<AbortController | null>(null);
+  // A translated PDF being laid out for saving.
+  const [printMode, setPrintMode] = useState<PrintMode | null>(null);
   // Handwriting on this paper (from the tablet, or a desktop pen).
   const [inkStrokes, setInkStrokes] = useState<InkStroke[]>([]);
   // The side panel holds the reader's notes and the questions; one of them is in front.
@@ -520,7 +490,7 @@ export function App(): JSX.Element {
   const uploadFile = useCallback(
     async (file: File) => {
       if (file.type !== 'application/pdf' && !/.pdf$/i.test(file.name)) {
-        setNotice('PDF 파일만 가져올 수 있습니다.');
+        setNotice(t('errors.pdfOnly'));
         return;
       }
       setBusy(true);
@@ -528,14 +498,14 @@ export function App(): JSX.Element {
       try {
         const result = await hub.uploadPdf(file);
         if (result === null) {
-          setNotice('이 허브 버전은 아직 PDF 올리기를 지원하지 않습니다.');
+          setNotice(t('errors.uploadUnsupported'));
           return;
         }
         enterPaper(result.paper.paperKey);
         await refresh(result.paper.paperKey);
         void loadLibrary();
       } catch (cause) {
-        setNotice(cause instanceof Error ? cause.message : 'PDF를 가져오지 못했습니다.');
+        setNotice(cause instanceof Error ? cause.message : t('errors.uploadFailed'));
       } finally {
         setBusy(false);
       }
@@ -609,91 +579,6 @@ export function App(): JSX.Element {
     },
     [act, leaveReader, loadLibrary],
   );
-
-  // ---------------------------------------------------------------- account
-
-  const startLogin = useCallback(async () => {
-    setAccountBusy(true);
-    setAccountError(null);
-    try {
-      const { attempt, loginUrl: url } = await client.startLogin();
-      setLoginAttempt(attempt);
-      setLoginUrl(url);
-      // The official page opens in its own tab; if the browser blocks this, the same
-      // address stays visible as a link in the panel.
-      window.open(url, '_blank', 'noopener,noreferrer');
-    } catch (cause) {
-      setAccountError(extractError(cause));
-      void refreshConnection();
-    } finally {
-      setAccountBusy(false);
-    }
-  }, [refreshConnection]);
-
-  const cancelLogin = useCallback(async (loginId: string) => {
-    setAccountBusy(true);
-    setAccountError(null);
-    try {
-      const { attempt } = await client.cancelLogin(loginId);
-      setLoginAttempt(attempt);
-      setLoginUrl(null);
-    } catch (cause) {
-      setAccountError(extractError(cause));
-    } finally {
-      setAccountBusy(false);
-    }
-  }, []);
-
-  const logout = useCallback(async () => {
-    setAccountBusy(true);
-    setAccountError(null);
-    try {
-      const result = await client.logout();
-      setConnection(result.connection);
-      setModelId('');
-      setLoginAttempt(null);
-      setLoginUrl(null);
-      // A running job was paused by the service; show that, not a stale "running".
-      if (paperKeyRef.current !== null) await refresh(paperKeyRef.current);
-    } catch (cause) {
-      setAccountError(extractError(cause));
-    } finally {
-      setAccountBusy(false);
-      void refreshConnection();
-    }
-  }, [refresh, refreshConnection]);
-
-  // While an attempt is pending, ask the service for its state; the official callback
-  // lands in the service, never in this page.
-  useEffect(() => {
-    if (loginAttempt === null || loginAttempt.status !== 'pending') return;
-    const loginId = loginAttempt.loginId;
-    let cancelled = false;
-    const tick = async () => {
-      try {
-        const { attempt } = await client.loginStatus(loginId);
-        if (cancelled) return;
-        setLoginAttempt(attempt);
-        if (attempt.status !== 'pending') {
-          setLoginUrl(null);
-          void refreshConnection();
-        }
-      } catch (cause) {
-        if (cancelled) return;
-        // The service restarted and no longer knows the attempt: show the real state.
-        if (extractError(cause).code === 'NOT_FOUND') {
-          setLoginAttempt(null);
-          setLoginUrl(null);
-          void refreshConnection();
-        }
-      }
-    };
-    const timer = window.setInterval(() => void tick(), LOGIN_POLL_MS);
-    return () => {
-      cancelled = true;
-      window.clearInterval(timer);
-    };
-  }, [loginAttempt, refreshConnection]);
 
   // ---------------------------------------------------------------- restart
 
@@ -1184,7 +1069,7 @@ export function App(): JSX.Element {
             setExplain((s) => (s === null || s.item.id !== item.id ? s : { ...s, done: true }));
           } catch (cause) {
             if (controller.signal.aborted) return;
-            setExplain((s) => (s === null ? s : { ...s, done: true, error: cause instanceof Error ? cause.message : '설명을 받지 못했습니다.' }));
+            setExplain((s) => (s === null ? s : { ...s, done: true, error: cause instanceof Error ? cause.message : t('reader.explainFailed') }));
           }
         })();
       },
@@ -1194,7 +1079,7 @@ export function App(): JSX.Element {
         Promise.all(marker.references.slice(0, 4).map((n) => hub.reference(paperKey, n)))
           .then((results) => setCitation((s) => (s === null ? s : { ...s, entries: results.filter((r) => r !== null) })))
           .catch((cause: unknown) =>
-            setCitation((s) => (s === null ? s : { ...s, error: cause instanceof Error ? cause.message : '참고문헌을 찾지 못했습니다.' })),
+            setCitation((s) => (s === null ? s : { ...s, error: cause instanceof Error ? cause.message : t('reader.referenceFailed') })),
           );
       },
     };
@@ -1368,15 +1253,11 @@ export function App(): JSX.Element {
   const toggleChat = useCallback(() => togglePanel('questions'), [togglePanel]);
   const toggleNotes = useCallback(() => togglePanel('notes'), [togglePanel]);
 
-  /** The account menu, opened from the top bar or from the question panel. */
-  const openAccountFrom = useCallback((element: HTMLElement | null, fromChat: boolean) => {
-    accountOpener.current = { element, fromChat };
-    setAccountOpen(true);
-  }, []);
-  const openAccount = useCallback(() => {
-    const active = document.activeElement;
-    openAccountFrom(active instanceof HTMLElement && active !== document.body ? active : null, true);
-  }, [openAccountFrom]);
+  /** AI connection lives in Settings: the top bar and the question panel both go there. */
+  const openAiSettings = useCallback(() => {
+    navigate('settings');
+    window.requestAnimationFrame(() => document.getElementById('settings-ai')?.scrollIntoView({ block: 'start' }));
+  }, [navigate]);
 
   /** Open the panel with `text` quoted into the question being written. */
   const askAbout = useCallback(
@@ -1408,21 +1289,15 @@ export function App(): JSX.Element {
       if (target !== null && typeof target.closest === 'function' && target.closest('.chat-dock') !== null) return;
       if (event.ctrlKey || event.metaKey || event.altKey) return;
       if (event.key === 'Escape') {
-        // A pending login is the panel's own Escape (it cancels); anything else just closes.
-        if (accountOpen && (loginAttempt === null || loginAttempt.status !== 'pending')) {
-          setAccountOpen(false);
-          event.preventDefault();
-          return;
-        }
         // A panel control that was used went away (or was disabled) under the focus, which fell
         // to the page: Escape still closes the panel.
-        if (!accountOpen && chatOpen && replacement === null && deleteConfirmation === null && (target === null || target === document.body)) {
+        if (chatOpen && replacement === null && deleteConfirmation === null && (target === null || target === document.body)) {
           closeChat();
           event.preventDefault();
         }
         return;
       }
-      if (accountOpen || replacement !== null || deleteConfirmation !== null) return;
+      if (replacement !== null || deleteConfirmation !== null) return;
       switch (event.key) {
         case '+':
         case '=':
@@ -1444,7 +1319,7 @@ export function App(): JSX.Element {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [changeZoom, currentPage, pageCount, goToPage, accountOpen, loginAttempt, replacement, deleteConfirmation, chatOpen, closeChat]);
+  }, [changeZoom, currentPage, pageCount, goToPage, replacement, deleteConfirmation, chatOpen, closeChat]);
 
   // ------------------------------------------------------------------ view
 
@@ -1504,61 +1379,86 @@ export function App(): JSX.Element {
   }, [notice]);
 
   const commands = useMemo<Command[]>(() => {
+    const other: Language = language === 'ko' ? 'en' : 'ko';
     const list: Command[] = [
-      { id: 'go-home', group: '이동', label: '홈', keywords: 'home', run: () => navigate('home') },
-      { id: 'go-library', group: '이동', label: '보관함', keywords: 'library', run: () => navigate('library') },
-      { id: 'go-settings', group: '이동', label: '설정', keywords: 'settings preferences', run: () => navigate('settings') },
+      { id: 'go-home', group: t('palette.groupGo'), label: t('nav.home'), keywords: 'home 홈', run: () => navigate('home') },
+      { id: 'go-library', group: t('palette.groupGo'), label: t('nav.library'), keywords: 'library 보관함', run: () => navigate('library') },
+      { id: 'go-settings', group: t('palette.groupGo'), label: t('nav.settings'), keywords: 'settings preferences 설정', run: () => navigate('settings') },
       {
         id: 'open-input',
-        group: '논문',
-        label: '주소나 번호로 논문 열기',
+        group: t('palette.groupPaper'),
+        label: t('palette.openInput'),
         keywords: 'arxiv doi url open',
-        hint: '입력창',
+        hint: t('palette.inputHint'),
         run: () => omniRef.current?.focus(),
       },
-      { id: 'upload-pdf', group: '논문', label: 'PDF 올리기', keywords: 'upload file', run: () => fileRef.current?.click() },
+      { id: 'upload-pdf', group: t('palette.groupPaper'), label: t('omni.uploadPdf'), keywords: 'upload file pdf', run: () => fileRef.current?.click() },
       {
         id: 'theme-next',
-        group: '보기',
-        label: '테마 바꾸기',
-        keywords: 'theme dark sepia',
-        hint: THEME_CHOICES.find((t) => t.value === nextTheme(theme))?.label,
+        group: t('palette.groupView'),
+        label: t('palette.themeNext'),
+        keywords: 'theme dark sepia 테마',
+        hint: t(THEME_CHOICES.find((choice) => choice.value === nextTheme(theme))?.label ?? 'theme.light'),
         run: () => setTheme(nextTheme(theme)),
       },
-      ...THEME_CHOICES.map((t) => ({
-        id: `theme-${t.value}`,
-        group: '보기',
-        label: `테마: ${t.label}`,
-        keywords: `theme ${t.value}`,
-        run: () => setTheme(t.value),
+      ...THEME_CHOICES.map((choice) => ({
+        id: `theme-${choice.value}`,
+        group: t('palette.groupView'),
+        label: t('palette.themeOne', { name: t(choice.label) }),
+        keywords: `theme ${choice.value}`,
+        run: () => setTheme(choice.value),
       })),
-      { id: 'codex-account', group: 'AI', label: 'Codex 로그인 관리', keywords: 'account login codex', run: () => openAccountFrom(null, false) },
+      {
+        id: 'language',
+        group: t('palette.groupView'),
+        label: t('palette.language', { name: other === 'ko' ? '한국어' : 'English' }),
+        keywords: 'language 언어 english korean',
+        run: () => updatePreferences({ uiLanguage: other }),
+      },
+      { id: 'ai-settings', group: t('palette.groupAi'), label: t('palette.aiSettings'), keywords: 'ai codex claude login 로그인', run: openAiSettings },
+      { id: 'welcome', group: t('palette.groupView'), label: t('palette.welcome'), keywords: 'welcome guide 가이드', run: () => setWelcomeOpen(true) },
     ];
     if (paperKey !== null) {
       list.splice(3, 0, {
         id: 'toggle-chat',
-        group: '읽기',
-        label: chatOpen ? '질문 패널 닫기' : '질문 패널 열기',
-        keywords: 'chat ask question',
+        group: t('palette.groupReading'),
+        label: chatOpen ? t('palette.chatClose') : t('palette.chatOpen'),
+        keywords: 'chat ask question 질문',
         run: toggleChat,
       });
     }
     for (const p of papers) {
       list.push({
         id: `paper-${p.paperKey}`,
-        group: '보관함',
+        group: t('palette.groupLibrary'),
         label: paperTitle(p),
         keywords: `${p.authors.join(' ')} ${p.arxivId ?? ''}`,
         run: () => void openStored(p.paperKey),
       });
     }
     return list;
-  }, [navigate, theme, setTheme, paperKey, chatOpen, toggleChat, papers, openStored, openAccountFrom]);
+  }, [navigate, theme, setTheme, paperKey, chatOpen, toggleChat, papers, openStored, openAiSettings, language, updatePreferences]);
   const activePane: Pane = viewMode === 'split' ? narrowPane : viewMode;
   const deleteTarget =
     deleteConfirmation === null
       ? undefined
       : (papers.find((p) => p.paperKey === deleteConfirmation) ?? (paper?.paperKey === deleteConfirmation ? paper : undefined));
+
+  if (showWelcome && preferences !== null && paperKey === null) {
+    return (
+      <Welcome
+        hub={hub}
+        preferences={preferences}
+        onPreferencesChange={updatePreferences}
+        onDone={() => {
+          setWelcomeOpen(false);
+          updatePreferences({ onboardingCompleted: true });
+          navigate('home');
+          void loadLibrary();
+        }}
+      />
+    );
+  }
 
   return (
     <div className="app">
@@ -1568,17 +1468,8 @@ export function App(): JSX.Element {
         onOpenPalette={() => setPaletteOpen(true)}
         input={<OmniInput ref={omniRef} busy={busy} disabled={!client.canMutate} onSubmit={submitIntent} onFile={(file) => void uploadFile(file)} />}
         account={
-          <button
-            ref={accountButtonRef}
-            type="button"
-            className="masthead__account"
-            data-state={connection?.status === 'subscription' ? 'on' : 'off'}
-            aria-haspopup="dialog"
-            aria-expanded={accountOpen}
-            disabled={connection === null}
-            onClick={() => (accountOpen ? setAccountOpen(false) : openAccountFrom(null, false))}
-          >
-            {connectionShortLabel(connection)}
+          <button type="button" className="masthead__account" data-state={connection?.status === 'subscription' ? 'on' : 'off'} onClick={openAiSettings}>
+            {connection?.status === 'subscription' ? t('ai.statusReady') : t('ai.statusNone')}
           </button>
         }
       />
@@ -1594,30 +1485,9 @@ export function App(): JSX.Element {
         }}
       />
 
-      {accountOpen && connection !== null ? (
-        <div className="popover-layer">
-          <button type="button" className="popover-scrim" aria-label="계정 메뉴 닫기" tabIndex={-1} onClick={() => setAccountOpen(false)} />
-          <div className="popover-anchor">
-            <AccountPanel
-              connection={connection}
-              loginAttempt={loginAttempt}
-              loginUrl={loginUrl}
-              error={accountError}
-              busy={accountBusy}
-              onStartLogin={() => void startLogin()}
-              onCancelLogin={(loginId) => void cancelLogin(loginId)}
-              onLogout={() => void logout()}
-              open
-              onClose={() => setAccountOpen(false)}
-              returnFocusRef={accountReturnRef}
-            />
-          </div>
-        </div>
-      ) : null}
-
       {!client.canMutate ? (
         <div className="notice warn" role="alert">
-          <span className="notice__text">이 화면은 로컬 서비스가 제공한 진입 문서가 아니어서 조작할 수 없습니다. 서비스가 알려준 주소로 다시 열어 주세요.</span>
+          <span className="notice__text">{t('reader.notServed')}</span>
         </div>
       ) : null}
 
@@ -1625,10 +1495,10 @@ export function App(): JSX.Element {
         <div className="notice error" role="alert">
           <span className="notice__text">
             {error.message}
-            {error.retryable ? ' 다시 시도할 수 있습니다.' : ''}
+            {error.retryable ? t('reader.retryable') : ''}
           </span>
-          <button type="button" onClick={() => setError(null)} aria-label="알림 닫기">
-            닫기
+          <button type="button" onClick={() => setError(null)} aria-label={t('errors.close')}>
+            {t('errors.closeLabel')}
           </button>
         </div>
       ) : null}
@@ -1652,7 +1522,14 @@ export function App(): JSX.Element {
             hub={hub}
           />
         ) : (
-          <SettingsScreen hub={hub} theme={theme} onThemeChange={setTheme} onManageCodexLogin={() => openAccountFrom(null, false)} />
+          <SettingsScreen
+            hub={hub}
+            theme={theme}
+            onThemeChange={setTheme}
+            preferences={preferences}
+            onPreferencesChange={updatePreferences}
+            onShowWelcome={() => setWelcomeOpen(true)}
+          />
         )
       ) : (
         <main className="reader-shell">
@@ -1671,8 +1548,8 @@ export function App(): JSX.Element {
             modelIds={connection?.modelIds ?? []}
             selectedModelId={modelId}
             canTranslate={canTranslate}
-            disabledReason={resetting ? '새로 번역을 준비하는 중입니다.' : blockedReason}
-            sendHint={SEND_HINT}
+            disabledReason={resetting ? t('reader.resetting') : blockedReason}
+            sendHint={t('reader.sendHint')}
             onModelChange={setModelId}
             onStart={(chosen) => {
               chooseView('split');
@@ -1684,10 +1561,25 @@ export function App(): JSX.Element {
             chat={{ open: chatOpen && panelTab === 'questions', controls: CHAT_PANEL_ID, onToggle: toggleChat, buttonRef: chatButtonRef }}
             notes={{ open: chatOpen && panelTab === 'notes', onToggle: toggleNotes }}
             exportLinks={[
-              { label: '메모와 하이라이트 (Markdown)', href: `/api/papers/${encodeURIComponent(paperKey)}/export/markdown`, download: `${paperKey}.md` },
+              { label: t('reader.exportMarkdown'), href: `/api/papers/${encodeURIComponent(paperKey)}/export/markdown`, download: `${paperKey}.md` },
               { label: 'BibTeX', href: `/api/papers/${encodeURIComponent(paperKey)}/export/bibtex`, download: `${paperKey}.bib` },
             ]}
             onRequestDelete={() => setDeleteConfirmation(paperKey)}
+            pdf={
+              translated || (snapshot?.translations ?? []).length > 0
+                ? {
+                    busy: printMode !== null,
+                    note:
+                      job !== null && job.completedBlocks < job.totalTranslatableBlocks
+                        ? t('reader.pdfPartial', { done: job.completedBlocks, total: job.totalTranslatableBlocks })
+                        : null,
+                    onSave: (mode) => {
+                      setNotice(t('reader.pdfPreparing'));
+                      setPrintMode(mode);
+                    },
+                  }
+                : undefined
+            }
           />
           {replacement !== null ? (
             <ReplacementDialog
@@ -1704,11 +1596,7 @@ export function App(): JSX.Element {
               <div className="reader-status" role="status" inert={chatOpen && chatSheet}>
                 <p className="eyebrow">{paper.paperKey}</p>
                 <h2>{paperStatusLabel(paper)}</h2>
-                {paper.status === 'fetching' || paper.status === 'extracting' ? (
-                  <p>원문을 받아 문단을 뽑는 중입니다. 끝나면 이 자리에 원문과 한국어 지면이 나타납니다.</p>
-                ) : (
-                  <p>주소를 확인한 뒤 다시 열어 보거나, 다른 개정판을 시도해 주세요.</p>
-                )}
+                {paper.status === 'fetching' || paper.status === 'extracting' ? <p>{t('reader.fetching')}</p> : <p>{t('reader.failedHint')}</p>}
               </div>
             ) : null}
 
@@ -1719,7 +1607,7 @@ export function App(): JSX.Element {
               // Covered by the panel's sheet on a narrow screen: out of reach until it closes.
               inert={chatOpen && chatSheet}
             >
-              <section className={`pane ${activePane === 'source' ? '' : 'hidden'}`} style={{ flex: `0 0 ${split * 100}%` }} aria-label="원문">
+              <section className={`pane ${activePane === 'source' ? '' : 'hidden'}`} style={{ flex: `0 0 ${split * 100}%` }} aria-label={t('reader.source')}>
                 <PdfPages
                   doc={doc}
                   pageCount={pageCount}
@@ -1755,7 +1643,7 @@ export function App(): JSX.Element {
               <button
                 type="button"
                 className="splitter"
-                aria-label="분할 폭 조절"
+                aria-label={t('reader.splitter')}
                 onKeyDown={(event) => {
                   if (event.key === 'ArrowLeft') setSplit((s) => clampSplit(s - CONTROL_LIMITS.split.step));
                   if (event.key === 'ArrowRight') setSplit((s) => clampSplit(s + CONTROL_LIMITS.split.step));
@@ -1774,7 +1662,7 @@ export function App(): JSX.Element {
                 }}
               />
 
-              <section className={`pane ${activePane === 'translation' ? '' : 'hidden'}`} style={{ flex: '1 1 0' }} aria-label="번역">
+              <section className={`pane ${activePane === 'translation' ? '' : 'hidden'}`} style={{ flex: '1 1 0' }} aria-label={t('reader.translation')}>
                 <KoreanPages
                   pageColors={pageColors}
                   doc={doc}
@@ -1795,22 +1683,22 @@ export function App(): JSX.Element {
               </section>
             </div>
 
-            {chatOpen ? <button type="button" className="chat-scrim" aria-label="질문 패널 닫기" tabIndex={-1} onClick={closeChat} /> : null}
+            {chatOpen ? <button type="button" className="chat-scrim" aria-label={t('reader.closeQuestions')} tabIndex={-1} onClick={closeChat} /> : null}
             <aside
               ref={chatDockRef}
               id={CHAT_PANEL_ID}
               className={`chat-dock${chatOpen ? ' is-open' : ''}`}
-              aria-label="논문 질문"
+              aria-label={t('reader.questionsPanel')}
               // As a sheet it covers the reader, which is inert meanwhile; the toolbar above stays
               // reachable (it holds the toggle that closes the sheet), so the dialog is not modal.
               role={chatSheet && chatOpen ? 'dialog' : undefined}
             >
-              <div className="panel-tabs" role="tablist" aria-label="옆 패널">
+              <div className="panel-tabs" role="tablist" aria-label={t('reader.sidePanel')}>
                 <button type="button" role="tab" aria-selected={panelTab === 'notes'} onClick={() => setPanelTab('notes')}>
-                  노트 <span className="panel-tabs__count">{highlights.length > 0 ? highlights.length : ''}</span>
+                  {t('reader.notes')} <span className="panel-tabs__count">{highlights.length > 0 ? highlights.length : ''}</span>
                 </button>
                 <button type="button" role="tab" aria-selected={panelTab === 'questions'} onClick={() => setPanelTab('questions')}>
-                  질문
+                  {t('reader.questions')}
                 </button>
               </div>
               {panelTab === 'notes' ? (
@@ -1826,7 +1714,7 @@ export function App(): JSX.Element {
               <div className="chat-dock__inner" hidden={panelTab !== 'questions'}>
                 {chatMounted ? (
                   <ChatBoundary key={paperKey} open={chatOpen} onClose={closeChat}>
-                    <Suspense fallback={<p className="chat-dock__loading">질문 창을 여는 중입니다.</p>}>
+                    <Suspense fallback={<p className="chat-dock__loading">{t('reader.openingQuestions')}</p>}>
                       <ChatPanel
                         key={paperKey}
                         client={client}
@@ -1838,7 +1726,7 @@ export function App(): JSX.Element {
                         open={chatOpen}
                         quote={chatQuote}
                         onClose={closeChat}
-                        onOpenAccount={openAccount}
+                        onOpenAccount={openAiSettings}
                         onConnectionStale={refreshConnection}
                       />
                     </Suspense>
@@ -1904,7 +1792,42 @@ export function App(): JSX.Element {
                 setCitation((s) => (s === null ? s : { ...s, added: new Set(s.added).add(n) }));
                 void loadLibrary();
               })
-              .catch((cause: unknown) => setNotice(cause instanceof Error ? cause.message : '보관함에 담지 못했습니다.'));
+              .catch((cause: unknown) => setNotice(cause instanceof Error ? cause.message : t('errors.addFailed')));
+          }}
+        />
+      ) : null}
+
+      {printMode !== null && doc !== null && paper !== null ? (
+        <PrintView
+          mode={printMode}
+          doc={doc}
+          pageCount={pageCount}
+          blocks={snapshot?.blocks ?? []}
+          translations={snapshot?.translations ?? []}
+          pageIntrinsicSize={pageIntrinsicSize}
+          onReady={() => {
+            const name = `${(paper.title ?? paper.paperKey).replace(/[\\/:*?"<>|]+/g, ' ').trim()} — ${printMode === 'split' ? t('reader.viewSplit') : t('reader.translation')}.pdf`;
+            // Paper is always light, whatever the screen theme.
+            const root = document.documentElement;
+            const theme = root.getAttribute('data-theme');
+            root.setAttribute('data-theme', 'light');
+            const restore = () => {
+              if (theme === null) root.removeAttribute('data-theme');
+              else root.setAttribute('data-theme', theme);
+              setPrintMode(null);
+            };
+            const desktop = window.fractalDesktop;
+            if (desktop !== undefined) {
+              desktop
+                .savePdf({ suggestedName: name })
+                .then((result) => setNotice(result.saved ? t('reader.pdfSaved') : null))
+                .catch(() => setNotice(t('reader.pdfFailed')))
+                .finally(restore);
+            } else {
+              setNotice(null);
+              window.addEventListener('afterprint', restore, { once: true });
+              window.print();
+            }
           }}
         />
       ) : null}
@@ -1913,15 +1836,15 @@ export function App(): JSX.Element {
 
       {dragging ? (
         <div className="drop-target" aria-hidden="true">
-          <p>놓으면 보관함에 추가합니다</p>
+          <p>{t('reader.dropToAdd')}</p>
         </div>
       ) : null}
 
       {notice !== null ? (
         <div className="toast" role="status">
           <span>{notice}</span>
-          <button type="button" onClick={() => setNotice(null)} aria-label="알림 닫기">
-            닫기
+          <button type="button" onClick={() => setNotice(null)} aria-label={t('errors.close')}>
+            {t('errors.closeLabel')}
           </button>
         </div>
       ) : null}

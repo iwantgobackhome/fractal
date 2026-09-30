@@ -1,4 +1,5 @@
 import { forwardRef, useMemo, useRef, useState, type JSX } from 'react';
+import { t } from '../i18n';
 import { classifyInput, intentAction, type InputIntent } from './classify';
 
 interface Props {
@@ -31,7 +32,7 @@ export const OmniInput = forwardRef<HTMLInputElement, Props>(function OmniInput(
       }}
     >
       <label htmlFor="omni-input" className="sr-only">
-        arXiv 번호, DOI, 논문 주소 또는 검색어
+        {t('omni.label')}
       </label>
       <input
         ref={ref}
@@ -39,7 +40,7 @@ export const OmniInput = forwardRef<HTMLInputElement, Props>(function OmniInput(
         className="omni__field"
         type="text"
         value={value}
-        placeholder="arXiv · DOI · 논문 주소 · 검색"
+        placeholder={t('omni.placeholder')}
         autoComplete="off"
         spellCheck={false}
         disabled={disabled}
@@ -53,12 +54,12 @@ export const OmniInput = forwardRef<HTMLInputElement, Props>(function OmniInput(
       />
       {action !== '' ? (
         <button type="submit" className="omni__action" disabled={busy || disabled}>
-          {busy ? '여는 중' : action}
+          {busy ? t('omni.opening') : action}
           <kbd aria-hidden="true">↵</kbd>
         </button>
       ) : (
         <button type="button" className="omni__action omni__action--quiet" disabled={disabled} onClick={() => fileRef.current?.click()}>
-          PDF 올리기
+          {t('omni.uploadPdf')}
         </button>
       )}
       <input

@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
+import type { MessageKey } from '../i18n';
 
 export type ThemeChoice = 'system' | 'light' | 'dark' | 'sepia';
 
-export const THEME_CHOICES: { value: ThemeChoice; label: string }[] = [
-  { value: 'system', label: '시스템' },
-  { value: 'light', label: '밝게' },
-  { value: 'sepia', label: '세피아' },
-  { value: 'dark', label: '어둡게' },
+export const THEME_CHOICES: { value: ThemeChoice; label: MessageKey }[] = [
+  { value: 'system', label: 'theme.system' },
+  { value: 'light', label: 'theme.light' },
+  { value: 'sepia', label: 'theme.sepia' },
+  { value: 'dark', label: 'theme.dark' },
 ];
 
 const KEY = 'fractal.theme';

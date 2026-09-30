@@ -1,11 +1,10 @@
+import { t } from '../i18n';
 import { memo, useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type JSX, type KeyboardEvent, type RefObject } from 'react';
 import type { AppError, ChatMessage, Connection, Conversation, Paper } from '@fractal/shared';
 import { extractError, type ApiClient } from '../lib/api';
 import {
-  CHAT_SEND_HINT,
   POLL_START,
   QUESTION_LIMIT,
-  SUGGESTIONS,
   answerAnnouncement,
   chatBlockedReason,
   chatErrorText,
@@ -79,7 +78,7 @@ function QuoteBlock({ text }: { text: string }): JSX.Element {
       </blockquote>
       {clamped || expanded ? (
         <button type="button" className="msg__quote-toggle" aria-expanded={expanded} aria-controls={id} onClick={() => setExpanded((open) => !open)}>
-          {expanded ? '인용 접기' : '인용 전체 보기'}
+          {expanded ? t('chat.collapseQuote') : t('chat.expandQuote')}
         </button>
       ) : null}
     </div>
@@ -88,7 +87,7 @@ function QuoteBlock({ text }: { text: string }): JSX.Element {
 
 function QuestionBubble({ text, pending = false }: { text: string; pending?: boolean }): JSX.Element {
   return (
-    <article className={`msg msg--question${pending ? ' is-pending' : ''}`} aria-label="내 질문">
+    <article className={`msg msg--question${pending ? ' is-pending' : ''}`} aria-label={t('chat.myQuestion')}>
       {questionParts(text).map((part, index) =>
         part.kind === 'quote' ? (
           <QuoteBlock key={index} text={part.text} />
@@ -110,7 +109,7 @@ function Preparing(): JSX.Element {
         <i />
         <i />
       </span>
-      <span>답변을 준비하는 중</span>
+      <span>{t('chat.preparing')}</span>
     </p>
   );
 }
@@ -133,32 +132,26 @@ function Answer({ message, canRetry, retryDisabled, retrying, onRetry, onOpenAcc
   const ended = message.status === 'failed' || message.status === 'canceled';
   const accountAction = needsAccount(error);
   return (
-    <article className={`msg msg--answer is-${message.status}`} aria-label="답변" aria-busy={answering || retrying}>
+    <article className={`msg msg--answer is-${message.status}`} aria-label={t('chat.answer')} aria-busy={answering || retrying}>
       {hasText ? <Markdown text={message.text} caret={answering} /> : answering ? <Preparing /> : null}
       {ended && retrying ? <Preparing /> : null}
       {ended && !retrying ? (
         <div className={`msg__notice${message.status === 'failed' ? ' msg__notice--error' : ''}`}>
           <p>
-            {message.status === 'failed'
-              ? error === null
-                ? '답변을 받지 못했습니다.'
-                : chatErrorText(error)
-              : hasText
-                ? '답변을 중간에 멈췄습니다.'
-                : '답변을 멈췄습니다.'}
+            {message.status === 'failed' ? (error === null ? t('chat.noAnswer') : chatErrorText(error)) : hasText ? t('chat.stoppedMidway') : t('chat.stopped')}
           </p>
           {/* No empty action row: a notice without actions keeps its words the full width. */}
           {accountAction || canRetry ? (
             <div className="msg__notice-actions">
               {accountAction ? (
                 <button type="button" onClick={onOpenAccount}>
-                  계정 메뉴 열기
+                  {t('chat.openAiSettings')}
                 </button>
               ) : null}
               {canRetry ? (
                 <button type="button" className="msg__retry" onClick={onRetry} disabled={retryDisabled}>
                   <IconRetry />
-                  다시 시도
+                  {t('chat.retry')}
                 </button>
               ) : null}
             </div>
@@ -168,7 +161,7 @@ function Answer({ message, canRetry, retryDisabled, retrying, onRetry, onOpenAcc
       {!answering && hasText ? (
         <footer className="msg__meta">
           {message.modelId !== null ? <span className="msg__model">{message.modelId}</span> : null}
-          <CopyButton text={message.text} label="답변 복사" />
+          <CopyButton text={message.text} label={t('chat.copyAnswer')} />
         </footer>
       ) : null}
     </article>
@@ -274,17 +267,17 @@ export function ChatView(props: ChatViewProps): JSX.Element {
   return (
     <div className="chat" onKeyDown={onKeyDown}>
       <header className="chat__header">
-        <h2 className="chat__title">질문</h2>
+        <h2 className="chat__title">{t('reader.questions')}</h2>
         <div className="chat__tools">
           <select
             className="chat__model"
-            aria-label="답변 모델"
-            title="답변 모델"
+            aria-label={t('chat.model')}
+            title={t('chat.model')}
             value={modelId}
             disabled={modelIds.length === 0}
             onChange={(event) => props.onModelChange(event.target.value)}
           >
-            {modelIds.length === 0 ? <option value="">사용 가능한 모델 없음</option> : null}
+            {modelIds.length === 0 ? <option value="">{t('chat.noModels')}</option> : null}
             {modelIds.map((id) => (
               <option key={id} value={id}>
                 {id}
@@ -299,25 +292,25 @@ export function ChatView(props: ChatViewProps): JSX.Element {
             disabled={messages.length === 0 || answering || sending !== null}
             aria-expanded={confirmingClear}
             aria-controls={confirmingClear ? confirmId : undefined}
-            title={answering ? '답변이 끝나거나 멈춘 뒤 새 대화를 시작할 수 있습니다.' : '새 대화'}
+            title={answering ? t('chat.newAfterAnswer') : t('chat.newConversation')}
           >
             <IconPlus />
-            <span className="chat__new-label">새 대화</span>
+            <span className="chat__new-label">{t('chat.newConversation')}</span>
           </button>
-          <button ref={props.closeRef} type="button" className="chat__icon-button" aria-label="질문 패널 닫기" onClick={props.onClose}>
+          <button ref={props.closeRef} type="button" className="chat__icon-button" aria-label={t('chat.close')} onClick={props.onClose}>
             <IconClose size={18} />
           </button>
         </div>
         {confirmingClear ? (
           // Floats under the header, so opening it moves nothing in the conversation.
           <div id={confirmId} className="chat__confirm" role="group" aria-labelledby={promptId}>
-            <p id={promptId}>지금까지의 대화를 지우고 새로 시작할까요?</p>
+            <p id={promptId}>{t('chat.confirmClear')}</p>
             <div className="chat__confirm-actions">
               <button type="button" className="chat__confirm-clear" onClick={props.onConfirmClear}>
-                지우기
+                {t('chat.clear')}
               </button>
               <button ref={props.cancelClearRef} type="button" onClick={props.onCancelClear}>
-                취소
+                {t('dialog.cancel')}
               </button>
             </div>
           </div>
@@ -325,22 +318,22 @@ export function ChatView(props: ChatViewProps): JSX.Element {
       </header>
 
       <div className="chat__body">
-        <div ref={props.listRef} className="chat__scroll" tabIndex={0} aria-label="대화 내용" onScroll={props.onListScroll}>
+        <div ref={props.listRef} className="chat__scroll" tabIndex={0} aria-label={t('chat.conversation')} onScroll={props.onListScroll}>
           <div ref={props.contentRef} className="chat__content">
             {loading && conversation === null ? (
               <p className="chat__loading" role="status">
-                대화를 불러오는 중입니다.
+                {t('chat.loading')}
               </p>
             ) : loadError !== null && conversation === null ? (
               <div className="chat__load-error" role="alert">
                 <p>{chatErrorText(loadError)}</p>
                 <button type="button" onClick={props.onReload}>
-                  다시 불러오기
+                  {t('chat.reload')}
                 </button>
               </div>
             ) : empty ? (
               <div className="chat-empty">
-                <p className="chat-empty__lead">원문에서 문장을 골라 묻거나, 아래에 바로 적어 보세요.</p>
+                <p className="chat-empty__lead">{t('chat.empty')}</p>
               </div>
             ) : (
               <div className="chat__messages">
@@ -362,7 +355,7 @@ export function ChatView(props: ChatViewProps): JSX.Element {
                 {sending !== null && !sending.retry ? (
                   <>
                     <QuestionBubble text={sending.question} pending />
-                    <article className="msg msg--answer is-answering" aria-label="답변" aria-busy="true">
+                    <article className="msg msg--answer is-answering" aria-label={t('chat.answer')} aria-busy="true">
                       <Preparing />
                     </article>
                   </>
@@ -373,7 +366,8 @@ export function ChatView(props: ChatViewProps): JSX.Element {
         </div>
         {!pinned ? (
           <button type="button" className="chat__jump" onClick={props.onJumpToBottom}>
-            <IconArrowDown />맨 아래로
+            <IconArrowDown />
+            {t('chat.toBottom')}
           </button>
         ) : null}
       </div>
@@ -381,14 +375,14 @@ export function ChatView(props: ChatViewProps): JSX.Element {
       <footer className="chat__footer">
         {reconnecting ? (
           <p className="chat__notice" role="status">
-            로컬 서비스에 연결하지 못했습니다. 다시 연결을 시도하는 중입니다.
+            {t('chat.reconnecting')}
           </p>
         ) : null}
         {staleError !== null ? (
           <div className="chat__error" role="alert">
             <p>{chatErrorText(staleError)}</p>
             <button type="button" onClick={props.onReload}>
-              다시 불러오기
+              {t('chat.reload')}
             </button>
           </div>
         ) : null}
@@ -397,10 +391,10 @@ export function ChatView(props: ChatViewProps): JSX.Element {
             <p>{chatErrorText(askError)}</p>
             {needsAccount(askError) ? (
               <button type="button" onClick={props.onOpenAccount}>
-                계정 메뉴 열기
+                {t('chat.openAiSettings')}
               </button>
             ) : null}
-            <button type="button" className="chat__icon-button chat__icon-button--small" aria-label="오류 알림 닫기" onClick={props.onDismissError}>
+            <button type="button" className="chat__icon-button chat__icon-button--small" aria-label={t('chat.dismissError')} onClick={props.onDismissError}>
               <IconClose size={14} />
             </button>
           </div>
@@ -413,14 +407,14 @@ export function ChatView(props: ChatViewProps): JSX.Element {
           }}
         >
           <label htmlFor={composerId} className="sr-only">
-            논문에 대한 질문
+            {t('chat.questionLabel')}
           </label>
           <textarea
             ref={props.composerRef}
             id={composerId}
             rows={1}
             value={draft}
-            placeholder={blocked === null ? '이 논문에 대해 물어보세요' : '지금은 질문할 수 없습니다'}
+            placeholder={blocked === null ? t('chat.placeholder') : t('chat.placeholderBlocked')}
             disabled={blocked !== null}
             aria-describedby={`${counter !== null ? `${counterId} ` : ''}${hintId}`}
             aria-invalid={counter?.over === true ? true : undefined}
@@ -446,11 +440,11 @@ export function ChatView(props: ChatViewProps): JSX.Element {
               </span>
             ) : null}
             {answering ? (
-              <button type="button" className="chat__send is-stop" aria-label="답변 멈추기" onClick={props.onStop} disabled={stopping}>
+              <button type="button" className="chat__send is-stop" aria-label={t('chat.stop')} onClick={props.onStop} disabled={stopping}>
                 <IconStop />
               </button>
             ) : (
-              <button type="submit" className="chat__send" aria-label="질문 보내기" disabled={!canSend}>
+              <button type="submit" className="chat__send" aria-label={t('chat.send')} disabled={!canSend}>
                 <IconSend size={17} />
               </button>
             )}
@@ -461,13 +455,13 @@ export function ChatView(props: ChatViewProps): JSX.Element {
             <span>{blocked.message}</span>
             {blocked.action === 'account' ? (
               <button type="button" onClick={props.onOpenAccount}>
-                계정 메뉴 열기
+                {t('chat.openAiSettings')}
               </button>
             ) : null}
           </p>
         ) : (
           <p id={hintId} className="sr-only">
-            {CHAT_SEND_HINT}
+            {t('chat.sendHint')}
           </p>
         )}
       </footer>
@@ -567,7 +561,7 @@ export function ChatPanel({
 
   // ------------------------------------------------------------- reading
 
-  // Read the conversation each time the panel opens (and on "다시 불러오기").
+  // Read the conversation each time the panel opens (and on "{t('chat.reload')}").
   useEffect(() => {
     if (!open) return;
     let cancelled = false;

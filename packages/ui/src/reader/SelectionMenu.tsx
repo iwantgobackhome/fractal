@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState, type JSX } from 'react';
 import type { Highlight, Region } from '@fractal/shared';
+import { t, type MessageKey } from '../i18n';
 
 /** A passage the reader swept on a PDF page, waiting for them to choose what to do with it. */
 export interface PendingSelection {
@@ -10,11 +11,11 @@ export interface PendingSelection {
   anchor: { x: number; y: number };
 }
 
-const COLORS: { value: Highlight['color']; label: string }[] = [
-  { value: 'yellow', label: '노랑' },
-  { value: 'green', label: '초록' },
-  { value: 'blue', label: '파랑' },
-  { value: 'pink', label: '분홍' },
+const COLORS: { value: Highlight['color']; label: MessageKey }[] = [
+  { value: 'yellow', label: 'reader.yellow' },
+  { value: 'green', label: 'reader.green' },
+  { value: 'blue', label: 'reader.blue' },
+  { value: 'pink', label: 'reader.pink' },
 ];
 
 interface Props {
@@ -67,26 +68,26 @@ export function SelectionMenu({ selection, onHighlight, onMemo, onAsk, onClose }
       ref={ref}
       className="selection-menu"
       role="toolbar"
-      aria-label="선택한 문장"
+      aria-label={t('reader.selection')}
       style={position === null ? { visibility: 'hidden', left: 0, top: 0 } : { left: position.left, top: position.top }}
     >
-      <div className="selection-menu__colors" role="group" aria-label="하이라이트">
+      <div className="selection-menu__colors" role="group" aria-label={t('reader.highlight')}>
         {COLORS.map((c) => (
           <button
             key={c.value}
             type="button"
             className={`selection-menu__swatch hl-${c.value}`}
-            aria-label={`${c.label} 하이라이트`}
+            aria-label={t('reader.highlightColor', { color: t(c.label) })}
             onClick={() => onHighlight(c.value)}
           />
         ))}
       </div>
       <span className="selection-menu__rule" aria-hidden="true" />
       <button type="button" onClick={onMemo}>
-        메모
+        {t('reader.memo')}
       </button>
       <button type="button" onClick={onAsk}>
-        질문
+        {t('reader.ask')}
       </button>
       <button
         type="button"
@@ -97,7 +98,7 @@ export function SelectionMenu({ selection, onHighlight, onMemo, onAsk, onClose }
           });
         }}
       >
-        {copied ? '복사됨' : '복사'}
+        {copied ? t('reader.copied') : t('reader.copy')}
       </button>
     </div>
   );

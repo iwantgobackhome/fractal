@@ -863,3 +863,94 @@
     0 0 0 1px var(--c-rule),
     0 2px 10px rgba(0, 0, 0, 0.05);
 }
+
+/* ------------------------------------------------------------------ confirm dialog */
+
+.dialog-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: var(--sp-4);
+  background: var(--c-scrim);
+}
+
+.confirm {
+  width: min(440px, 100%);
+  padding: var(--sp-5);
+  background: var(--c-surface);
+  border: 1px solid var(--c-rule-strong);
+  border-radius: var(--r-md);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
+}
+
+.confirm__title {
+  margin: 0 0 var(--sp-3);
+  font-size: var(--fs-lead);
+  font-weight: 600;
+}
+
+.confirm__body p {
+  margin: 0 0 var(--sp-2);
+  color: var(--c-ink-soft);
+  line-height: 1.55;
+}
+
+.confirm__subject {
+  color: var(--c-ink) !important;
+  font-family: var(--font-serif);
+  font-weight: 600;
+}
+
+.confirm__actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--sp-4);
+  margin-top: var(--sp-5);
+}
+
+.menu__note {
+  display: block;
+  color: var(--c-muted);
+  font-size: var(--fs-small);
+}
+
+/* ------------------------------------------------------------------ print (translated PDF) */
+
+.print-root {
+  display: none;
+}
+
+@media print {
+  body > #root {
+    display: none !important;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+  }
+
+  .print-root {
+    display: block;
+  }
+
+  .print-sheet {
+    display: flex;
+    justify-content: center;
+    gap: 6mm;
+    break-after: page;
+  }
+
+  .print-sheet:last-child {
+    break-after: auto;
+  }
+
+  .print-root .kr-page,
+  .print-root .pdf-page {
+    box-shadow: none !important;
+    background: #fff !important;
+  }
+}

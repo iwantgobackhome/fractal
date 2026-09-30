@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 import 'katex/dist/katex.min.css';
 import { Fragment, memo, useMemo, type JSX, type ReactNode } from 'react';
 import { parseMarkdown, streamingView, type MdBlock, type MdInline } from '../lib/markdown';
@@ -24,7 +25,7 @@ function Tail({ pending, spaced }: { pending: boolean; spaced: boolean }): JSX.E
   return (
     <>
       {pending && spaced ? ' ' : null}
-      {pending ? <span className="md-math-pending">수식…</span> : null}
+      {pending ? <span className="md-math-pending">{t('misc.formulaPending')}</span> : null}
       <Caret />
     </>
   );
@@ -47,7 +48,7 @@ function withPageRefs(text: string, key: string): ReactNode {
   for (let match = PAGE_REF.exec(text); match !== null; match = PAGE_REF.exec(text)) {
     if (match.index > last) parts.push(text.slice(last, match.index));
     parts.push(
-      <button key={`${key}.p${match.index}`} type="button" className="page-ref" data-page={match[1]} aria-label={`원문 ${match[1]}쪽 보기`}>
+      <button key={`${key}.p${match.index}`} type="button" className="page-ref" data-page={match[1]} aria-label={t('misc.pageRef', { page: match[1] })}>
         {match[0].slice(1, -1)}
       </button>,
     );
@@ -114,8 +115,8 @@ function renderBlock(block: MdBlock, key: string, tail: ReactNode): ReactNode {
       return (
         <div key={key} className="md-code">
           <div className="md-code__bar">
-            <span className="md-code__lang">{block.lang ?? '코드'}</span>
-            <CopyButton text={block.text} label="코드 복사" />
+            <span className="md-code__lang">{block.lang ?? t('misc.code')}</span>
+            <CopyButton text={block.text} label={t('misc.copyCode')} />
           </div>
           <pre tabIndex={0}>
             <code>
@@ -149,7 +150,7 @@ function renderBlock(block: MdBlock, key: string, tail: ReactNode): ReactNode {
       return <blockquote key={key}>{renderBlocks(block.children, key, tail)}</blockquote>;
     case 'table': {
       const table = (
-        <div key={key} className="md-table" role="region" aria-label="표" tabIndex={0}>
+        <div key={key} className="md-table" role="region" aria-label={t('misc.table')} tabIndex={0}>
           <table>
             <thead>
               <tr>

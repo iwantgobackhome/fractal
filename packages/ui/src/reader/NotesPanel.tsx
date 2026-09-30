@@ -1,5 +1,6 @@
 import type { JSX } from 'react';
 import type { Highlight } from '@fractal/shared';
+import { t } from '../i18n';
 
 interface Props {
   highlights: Highlight[];
@@ -19,7 +20,7 @@ function readingOrder(a: Highlight, b: Highlight): number {
 export function NotesPanel({ highlights, onOpen }: Props): JSX.Element {
   const ordered = [...highlights].sort(readingOrder);
   if (ordered.length === 0) {
-    return <p className="notes__empty">아직 표시한 곳이 없습니다.</p>;
+    return <p className="notes__empty">{t('reader.noNotes')}</p>;
   }
   return (
     <ol className="notes">

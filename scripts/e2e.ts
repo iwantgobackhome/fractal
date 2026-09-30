@@ -146,8 +146,30 @@ async function main(): Promise<void> {
     page.on('pageerror', (error) => console.error('Browser error:', error));
     page.setDefaultTimeout(15_000);
     await page.route('**/*', (route) => (new URL(route.request().url()).origin === url ? route.continue() : route.abort()));
+
+    // A fresh install: Korean interface, first-run guide not finished (hub and browser agree).
+    await fetch(`${url}/api/preferences`, {
+      method: 'PUT',
+      headers: { Origin: url, 'x-paperread-token': server.token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ uiLanguage: 'ko', translationLanguage: 'ko', answerLanguage: 'auto', onboardingCompleted: false }),
+    }).then((reply) => {
+      if (!reply.ok && reply.status !== 404) throw new Error(`preferences PUT failed: ${reply.status}`);
+    });
+    await page.addInitScript(() => {
+      if (sessionStorage.getItem('e2e-seeded') !== null) return;
+      sessionStorage.setItem('e2e-seeded', '1');
+      localStorage.setItem('fractal.uiLanguage', 'ko');
+      localStorage.setItem(
+        'fractal.preferences',
+        JSON.stringify({ uiLanguage: 'ko', translationLanguage: 'ko', answerLanguage: 'auto', onboardingCompleted: false }),
+      );
+    });
+
     await page.goto(url);
+    await page.locator('.welcome').waitFor();
+    await page.locator('.welcome__top button').filter({ hasText: '건너뛰기' }).click();
     await page.locator('.home-front').waitFor();
+    console.log('PASS welcome guide shows first and can be skipped');
     console.log('PASS home renders');
 
     await page.goto(`${url}/#/library`);
