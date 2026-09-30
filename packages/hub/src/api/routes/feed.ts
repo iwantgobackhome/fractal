@@ -26,15 +26,19 @@ export async function handleFeed(
       return json({ topics: ctx.feed.topics.list(field) });
     }
     if (segments.length === 3 && method === 'POST') {
-      const body = await readJson(request) as { field?: unknown; label?: unknown; query?: unknown };
-      if (!body || typeof body.field !== 'string' || typeof body.label !== 'string' || (body.query !== undefined && typeof body.query !== 'string')) throw invalidInput('Invalid topic.');
+      const body = (await readJson(request)) as { field?: unknown; label?: unknown; query?: unknown };
+      if (!body || typeof body.field !== 'string' || typeof body.label !== 'string' || (body.query !== undefined && typeof body.query !== 'string'))
+        throw invalidInput('Invalid topic.');
       return json(ctx.feed.topics.add(body.field, body.label, body.query as string | undefined), 201);
     }
     if (segments.length === 4) {
       const id = decodeURIComponent(segments[3]!);
-      if (method === 'DELETE') { ctx.feed.topics.delete(id); return json({ deleted: true }); }
+      if (method === 'DELETE') {
+        ctx.feed.topics.delete(id);
+        return json({ deleted: true });
+      }
       if (method === 'PUT') {
-        const body = await readJson(request) as { followed?: unknown };
+        const body = (await readJson(request)) as { followed?: unknown };
         if (!body || typeof body.followed !== 'boolean') throw invalidInput('Invalid followed state.');
         return json(ctx.feed.topics.follow(id, body.followed));
       }

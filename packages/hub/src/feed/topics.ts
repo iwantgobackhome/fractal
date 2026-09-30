@@ -6,7 +6,22 @@ import { invalidInput, notFound } from '../store/errors';
 
 const idFor = (origin: FieldTopic['origin'], field: string, label: string): string =>
   `${origin}:${field}:${createHash('sha256').update(label.toLocaleLowerCase()).digest('hex').slice(0, 12)}`;
-const STOP = new Set(['The', 'This', 'These', 'New', 'Scientists', 'Researchers', 'Study', 'Science', 'Technology', 'News', 'Nature', 'Google News', 'Associated Press']);
+const STOP = new Set([
+  'The',
+  'This',
+  'These',
+  'New',
+  'Scientists',
+  'Researchers',
+  'Study',
+  'Science',
+  'Technology',
+  'News',
+  'Nature',
+  'Google News',
+  'Associated Press',
+  'IPO',
+]);
 const clean = (value: string): string => value.replace(/\s+/g, ' ').trim();
 
 /** Count named terms once per story, avoiding outlet suffixes and generic headline words. */
@@ -18,22 +33,43 @@ export function extractTrending(items: Array<Pick<FeedItem, 'title'>>, field: st
       ...title.matchAll(/\b(?:[A-Z][a-zA-Z0-9]+|[A-Z]{2,}[a-z0-9]*)(?:[ -]+(?:[A-Z][a-zA-Z0-9]+|[A-Z]{2,}[a-z0-9]*|\d+(?:\.\d+)?)){0,3}\b/g),
       ...title.matchAll(/\b(?:GPT|Claude|Gemini|Llama|Qwen|DeepSeek|Codex)[ -]?\d+(?:\.\d+)?\b/gi),
     ];
-    const unique = new Set(matches.map((match) => clean(match[0])).filter((term) => term.length >= 3 && !STOP.has(term)));
+    const unique = new Set(
+      matches
+        .map((match) => clean(match[0]))
+        .filter(
+          (term) => term.length >= 3 && !STOP.has(term) && (term.includes(' ') || /\d/.test(term) || /[a-z][A-Z]/.test(term) || /^[A-Z]{2,}$/.test(term)),
+        ),
+    );
     for (const term of unique) counts.set(term, (counts.get(term) ?? 0) + 1);
   }
-  return [...counts].filter(([, score]) => score >= 3).sort((a, b) => b[1] - a[1]).slice(0, 30).map(([label, score]) => ({
-    id: idFor('trending', field, label), field, label, query: label, origin: 'trending', followed: false, score,
-  }));
+  return [...counts]
+    .filter(([, score]) => score >= 3)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 30)
+    .map(([label, score]) => ({
+      id: idFor('trending', field, label),
+      field,
+      label,
+      query: label,
+      origin: 'trending',
+      followed: false,
+      score,
+    }));
 }
 
 export class TopicService {
-  constructor(private readonly store: SqlitePaperStore, private readonly registry?: ProviderRegistry) {}
+  constructor(
+    private readonly store: SqlitePaperStore,
+    private readonly registry?: ProviderRegistry,
+  ) {}
   private stored(): FieldTopic[] {
     const row = this.store.db.prepare("SELECT data FROM feed_meta WHERE key='fieldTopics'").get() as { data: string } | undefined;
-    return row ? JSON.parse(row.data) as FieldTopic[] : [];
+    return row ? (JSON.parse(row.data) as FieldTopic[]) : [];
   }
   private save(topics: FieldTopic[]): void {
-    this.store.db.prepare("INSERT INTO feed_meta(key,data) VALUES('fieldTopics',?) ON CONFLICT(key) DO UPDATE SET data=excluded.data").run(JSON.stringify(topics));
+    this.store.db
+      .prepare("INSERT INTO feed_meta(key,data) VALUES('fieldTopics',?) ON CONFLICT(key) DO UPDATE SET data=excluded.data")
+      .run(JSON.stringify(topics));
   }
   list(field: string): FieldTopic[] {
     const saved = this.stored().filter((item) => item.field === field);
@@ -44,7 +80,9 @@ export class TopicService {
     });
     return [...curated, ...saved.filter((item) => item.origin !== 'curated')];
   }
-  followed(fields: string[]): FieldTopic[] { return fields.flatMap((field) => this.list(field).filter((topic) => topic.followed)); }
+  followed(fields: string[]): FieldTopic[] {
+    return fields.flatMap((field) => this.list(field).filter((topic) => topic.followed));
+  }
   follow(id: string, followed: boolean): FieldTopic {
     const all = this.stored();
     const topic = all.find((item) => item.id === id) ?? [...Object.keys(topicSeeds)].flatMap((field) => this.list(field)).find((item) => item.id === id);
@@ -69,10 +107,17 @@ export class TopicService {
   updateTrending(field: string, items: Array<Pick<FeedItem, 'title'>>): void {
     const all = this.stored();
     const previous = new Map(all.filter((topic) => topic.origin === 'trending' && topic.field === field).map((topic) => [topic.id, topic]));
-    const curated = new Set(this.list(field).filter((topic) => topic.origin === 'curated').map((topic) => topic.label.toLowerCase()));
-    const trending = extractTrending(items, field).filter((topic) => !curated.has(topic.label.toLowerCase())).map((topic) => ({
-      ...topic, followed: previous.get(topic.id)?.followed ?? false,
-    }));
+    const curated = new Set(
+      this.list(field)
+        .filter((topic) => topic.origin === 'curated')
+        .map((topic) => topic.label.toLowerCase()),
+    );
+    const trending = extractTrending(items, field)
+      .filter((topic) => !curated.has(topic.label.toLowerCase()))
+      .map((topic) => ({
+        ...topic,
+        followed: previous.get(topic.id)?.followed ?? false,
+      }));
     this.save([...all.filter((topic) => topic.origin !== 'trending' || topic.field !== field), ...trending]);
   }
   /** Runs after refresh without holding it open. Repeated calls in the same week are no-ops. */
@@ -88,14 +133,22 @@ export class TopicService {
       for await (const part of this.registry.complete('digest', {
         system: 'Return only a JSON array of 8 concise current research and news topic names. No markdown. No tools.',
         messages: [{ role: 'user', content: `Field ${field}. Headlines:\n${headlines.slice(0, 20).join('\n').slice(0, 3500)}` }],
-      })) if (part.type === 'text') response += part.text;
+      }))
+        if (part.type === 'text') response += part.text;
       const names = JSON.parse(response.trim()) as unknown;
       if (!Array.isArray(names)) return;
-      const topics = names.filter((name): name is string => typeof name === 'string' && name.trim().length >= 3 && name.length <= 100).slice(0, 8)
+      const topics = names
+        .filter((name): name is string => typeof name === 'string' && name.trim().length >= 3 && name.length <= 100)
+        .slice(0, 8)
         .map((label): FieldTopic => ({ id: idFor('suggested', field, label), field, label, query: label, origin: 'suggested', followed: false }));
       const all = this.stored();
-      this.save([...all.filter((item) => item.origin !== 'suggested' || item.field !== field), ...topics.map((item) => ({ ...item, followed: all.find((old) => old.id === item.id)?.followed ?? false }))]);
+      this.save([
+        ...all.filter((item) => item.origin !== 'suggested' || item.field !== field),
+        ...topics.map((item) => ({ ...item, followed: all.find((old) => old.id === item.id)?.followed ?? false })),
+      ]);
       this.store.db.prepare('INSERT INTO feed_meta(key,data) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET data=excluded.data').run(key, week);
-    } catch { /* Optional suggestions never block the feed. */ }
+    } catch {
+      /* Optional suggestions never block the feed. */
+    }
   }
 }

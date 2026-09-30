@@ -30,6 +30,14 @@ export const feedSettingsSchema = z.object({
 });
 export type FeedSettings = z.infer<typeof feedSettingsSchema>;
 
+export const feedImageSchema = z.object({
+  url: z.string().regex(/^\/api\/feed\/images\/[a-f0-9]{64}$/),
+  width: z.number().int().positive().optional(),
+  height: z.number().int().positive().optional(),
+  alt: z.string().optional(),
+});
+export type FeedImage = z.infer<typeof feedImageSchema>;
+
 export const feedItemSchema = z.object({
   id: z.string(),
   kind: z.enum(['paper', 'news']),
@@ -49,15 +57,7 @@ export const feedItemSchema = z.object({
   reasonParams: z.record(z.string(), z.string()),
   inLibrary: z.boolean(),
   popularity: z.number().nonnegative(),
-  image: z
-    .object({
-      url: z.string().regex(/^\/api\/feed\/images\/[a-f0-9]{64}$/),
-      width: z.number().int().positive().optional(),
-      height: z.number().int().positive().optional(),
-      alt: z.string().optional(),
-    })
-    .nullable()
-    .default(null),
+  image: feedImageSchema.nullable().default(null),
 });
 export type FeedItem = z.infer<typeof feedItemSchema>;
 
@@ -91,21 +91,37 @@ export const feedResponseSchema = z.object({
 export type FeedResponse = z.infer<typeof feedResponseSchema>;
 
 export const fieldTopicSchema = z.object({
-  id: z.string(), field: z.string(), label: z.string(), query: z.string(),
-  origin: z.enum(['curated', 'trending', 'suggested', 'user']), followed: z.boolean(), score: z.number().optional(),
+  id: z.string(),
+  field: z.string(),
+  label: z.string(),
+  query: z.string(),
+  origin: z.enum(['curated', 'trending', 'suggested', 'user']),
+  followed: z.boolean(),
+  score: z.number().optional(),
 });
 export type FieldTopic = z.infer<typeof fieldTopicSchema>;
 export const articleBlockSchema = z.object({
-  type: z.enum(['p', 'h2', 'h3', 'quote', 'li', 'img']), text: z.string().optional(), image: feedItemSchema.shape.image.unwrap().optional(),
+  type: z.enum(['p', 'h2', 'h3', 'quote', 'li', 'img']),
+  text: z.string().optional(),
+  image: feedImageSchema.optional(),
 });
 export type ArticleBlock = z.infer<typeof articleBlockSchema>;
 export const articleSchema = z.object({
-  url: z.string().url(), finalUrl: z.string().url(), title: z.string(), byline: z.string().optional(), siteName: z.string().optional(),
-  publishedAt: z.string().optional(), lang: z.string().optional(), leadImage: feedItemSchema.shape.image.unwrap().optional(), blocks: z.array(articleBlockSchema),
+  url: z.string().url(),
+  finalUrl: z.string().url(),
+  title: z.string(),
+  byline: z.string().optional(),
+  siteName: z.string().optional(),
+  publishedAt: z.string().optional(),
+  lang: z.string().optional(),
+  leadImage: feedImageSchema.optional(),
+  blocks: z.array(articleBlockSchema),
 });
 export type Article = z.infer<typeof articleSchema>;
 export const quickTranslateRequestSchema = z.object({
-  texts: z.array(z.string().min(1).max(10000)).min(1).max(100), target: languageSchema,
-  source: z.union([z.literal('auto'), languageSchema]).default('auto'), allowAiFallback: z.boolean().default(false),
+  texts: z.array(z.string().min(1).max(10000)).min(1).max(100),
+  target: languageSchema,
+  source: z.union([z.literal('auto'), languageSchema]).default('auto'),
+  allowAiFallback: z.boolean().default(false),
 });
 export type QuickTranslateRequest = z.infer<typeof quickTranslateRequestSchema>;

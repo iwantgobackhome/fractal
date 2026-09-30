@@ -358,7 +358,7 @@ export const newsSource: FeedSource = {
     const results = await Promise.allSettled(
       feeds.map(async ({ url, field, outlet, topic }) =>
         parseSyndication(await context.get(url), outlet ?? new URL(url).hostname)
-          .filter((item) => topic ? topicMatches(item, topic) : !field || newsMatchScore(item.title, item.abstract, context.interests, field) > 0)
+          .filter((item) => (topic ? topicMatches(item, topic) : !field || newsMatchScore(item.title, item.abstract, context.interests, field) > 0))
           .slice(0, topic ? 15 : undefined)
           .map((item) => ({ ...item, categories: field ? [field] : [], ...(topic ? { topicIds: [topic.id] } : {}) })),
       ),

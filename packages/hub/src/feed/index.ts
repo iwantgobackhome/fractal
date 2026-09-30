@@ -30,10 +30,14 @@ export function retainNewsByField(items: FeedItem[], interests: FeedInterests): 
   const news = items.filter((item) => item.kind === 'news');
   const selected = new Set<string>();
   for (const field of fields) for (const item of news.filter((candidate) => candidate.categories.includes(field)).slice(0, 30)) selected.add(item.id);
-  for (const item of news.filter((candidate) => !fields.some((field) => candidate.categories.includes(field)) && !(candidate as FeedItem & { topicIds?: string[] }).topicIds?.length).slice(0, 40)) selected.add(item.id);
+  for (const item of news
+    .filter((candidate) => !fields.some((field) => candidate.categories.includes(field)) && !(candidate as FeedItem & { topicIds?: string[] }).topicIds?.length)
+    .slice(0, 40))
+    selected.add(item.id);
   const topicIds = new Set(news.flatMap((item) => (item as FeedItem & { topicIds?: string[] }).topicIds ?? []));
   for (const topicId of topicIds)
-    for (const item of news.filter((candidate) => (candidate as FeedItem & { topicIds?: string[] }).topicIds?.includes(topicId)).slice(0, 15)) selected.add(item.id);
+    for (const item of news.filter((candidate) => (candidate as FeedItem & { topicIds?: string[] }).topicIds?.includes(topicId)).slice(0, 15))
+      selected.add(item.id);
   return news.filter((item) => selected.has(item.id));
 }
 
@@ -80,8 +84,12 @@ export class FeedService {
   async image(hash: string): Promise<{ body: Buffer; contentType: string } | null> {
     return this.images?.get(hash) ?? null;
   }
-  article(url: string) { return this.articleReader.get(url); }
-  quickTranslate(input: QuickTranslateRequest) { return this.quick.translate(input); }
+  article(url: string) {
+    return this.articleReader.get(url);
+  }
+  quickTranslate(input: QuickTranslateRequest) {
+    return this.quick.translate(input);
+  }
 
   private meta<T>(key: string, fallback: T): T {
     const row = this.store.db.prepare('SELECT data FROM feed_meta WHERE key=?').get(key) as MetaRow | undefined;
@@ -171,7 +179,9 @@ export class FeedService {
     }));
     const generalNews = items.filter((item) => item.kind === 'news' && !fields.some((field) => item.categories.includes(field.field))).slice(0, 40);
     const newsByTopic = this.topics.followed(fields.map((item) => item.field)).map((topic) => ({
-      field: topic.field, topicId: topic.id, label: topic.label,
+      field: topic.field,
+      topicId: topic.id,
+      label: topic.label,
       items: items.filter((item) => item.kind === 'news' && (item as FeedItem & { topicIds?: string[] }).topicIds?.includes(topic.id)).slice(0, 15),
     }));
     const prefs = this.store.getPreferences();
@@ -279,13 +289,25 @@ export class FeedService {
     const retainedIds = new Set(retainedNews.map((item) => item.id));
     const retained = ranked.filter((item) => item.kind !== 'news' || retainedIds.has(item.id));
     if (settings.translateNewsTitles) {
-      const candidates = retained.filter((item) => item.kind === 'news' && (context.uiLanguage === 'ko' ? /[A-Za-z]{3}/.test(item.title) && !/[가-힣]/.test(item.title) : /[가-힣]/.test(item.title)));
+      const candidates = retained.filter(
+        (item) =>
+          item.kind === 'news' && (context.uiLanguage === 'ko' ? /[A-Za-z]{3}/.test(item.title) && !/[가-힣]/.test(item.title) : /[가-힣]/.test(item.title)),
+      );
       for (let offset = 0; offset < candidates.length; offset += 100) {
         const batch = candidates.slice(offset, offset + 100);
         try {
-          const result = await this.quick.translate({ texts: batch.map((item) => item.title), target: context.uiLanguage, source: 'auto', allowAiFallback: false });
-          batch.forEach((item, index) => { if (result.translations[index] && result.translations[index] !== item.title) item.titleTranslated = result.translations[index]; });
-        } catch { break; /* Title translation is optional during a feed refresh. */ }
+          const result = await this.quick.translate({
+            texts: batch.map((item) => item.title),
+            target: context.uiLanguage,
+            source: 'auto',
+            allowAiFallback: false,
+          });
+          batch.forEach((item, index) => {
+            if (result.translations[index] && result.translations[index] !== item.title) item.titleTranslated = result.translations[index];
+          });
+        } catch {
+          break; /* Title translation is optional during a feed refresh. */
+        }
       }
     }
     if (this.images) {
@@ -350,7 +372,10 @@ export class FeedService {
     const activeFields = [...context.interests.categories, ...(context.interests.custom ?? []).map((item) => `custom:${item.id}`)];
     for (const field of activeFields) {
       const headlines = retained.filter((item) => item.categories.includes(field)).map((item) => item.title);
-      this.topics.updateTrending(field, retained.filter((item) => item.categories.includes(field)));
+      this.topics.updateTrending(
+        field,
+        retained.filter((item) => item.categories.includes(field)),
+      );
       void this.topics.suggest(field, week, headlines).catch(() => undefined);
     }
     return this.read(week);
