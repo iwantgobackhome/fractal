@@ -1,0 +1,177 @@
+--------- beginning of main
+09-30 22:21:43.582  6987  7019 D E-native-bridge: printToLog:
+09-30 22:21:43.582  6987  7019 D E-native-bridge: Printing with useUnmergedTree = 'false'
+09-30 22:21:43.582  6987  7019 D E-native-bridge: Node #1 at (l=0.0, t=63.0, r=1080.0, b=1857.0)px
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |-Node #223 at (l=0.0, t=63.0, r=1080.0, b=190.0)px
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  | Focused = 'false'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  | Role = 'Button'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  | Text = '[Show reader controls]'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  | MergeDescendants = 'true'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |-Node #156 at (l=0.0, t=190.0, r=1080.0, b=316.0)px
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  | HorizontalScrollAxisRange = 'ScrollAxisRange(value=0.0, maxValue=432.0, reverseScrolling=false)'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  | IsTraversalGroup = 'true'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  | Actions = [ScrollBy, ScrollByOffset]
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  |-Node #158 at (l=0.0, t=190.0, r=126.0, b=316.0)px
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | ContentDescription = '[Ballpoint pen]'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | Focused = 'false'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | Actions = [OnClick, RequestFocus]
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | MergeDescendants = 'true'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  |-Node #162 at (l=126.0, t=190.0, r=252.0, b=316.0)px
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | ContentDescription = '[Fountain pen]'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | Focused = 'false'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | Actions = [OnClick, RequestFocus]
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | MergeDescendants = 'true'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  |-Node #166 at (l=252.0, t=190.0, r=378.0, b=316.0)px
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | ContentDescription = '[Pencil]'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | Focused = 'false'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | Actions = [OnClick, RequestFocus]
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | MergeDescendants = 'true'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  |-Node #170 at (l=378.0, t=190.0, r=504.0, b=316.0)px
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | ContentDescription = '[Highlighter]'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | Focused = 'false'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | Actions = [OnClick, RequestFocus]
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | MergeDescendants = 'true'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  |-Node #174 at (l=504.0, t=190.0, r=630.0, b=316.0)px
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | ContentDescription = '[Eraser]'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | Focused = 'false'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | Actions = [OnClick, RequestFocus]
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | MergeDescendants = 'true'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  |-Node #178 at (l=630.0, t=190.0, r=756.0, b=316.0)px
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | ContentDescription = '[Shape]'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | Focused = 'false'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | Actions = [OnClick, RequestFocus]
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | MergeDescendants = 'true'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  |-Node #182 at (l=756.0, t=190.0, r=882.0, b=316.0)px
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | ContentDescription = '[Lasso]'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | Focused = 'false'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | Actions = [OnClick, RequestFocus]
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | MergeDescendants = 'true'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  |-Node #186 at (l=882.0, t=190.0, r=1008.0, b=316.0)px
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | ContentDescription = '[Select text]'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | Focused = 'false'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | Actions = [OnClick, RequestFocus]
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | MergeDescendants = 'true'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  |-Node #189 at (l=1008.0, t=190.0, r=1134.0, b=316.0)px
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | ContentDescription = '[Color #1C1B19]'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | Focused = 'false'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | Actions = [OnClick, RequestFocus]
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | MergeDescendants = 'true'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  |-Node #191 at (l=1134.0, t=190.0, r=1260.0, b=316.0)px
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | ContentDescription = '[Add color]'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | Focused = 'false'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | Role = 'Button'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | Text = '[+]'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | MergeDescendants = 'true'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  |-Node #194 at (l=1260.0, t=190.0, r=1386.0, b=316.0)px
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | ContentDescription = '[Undo]'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | Focused = 'false'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | Role = 'Button'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | Text = '[↶]'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  | MergeDescendants = 'true'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |  |-Node #197 at (l=1386.0, t=190.0, r=1512.0, b=316.0)px
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |    ContentDescription = '[Redo]'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |    Focused = 'false'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |    Role = 'Button'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |    Text = '[↷]'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |    Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |    MergeDescendants = 'true'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:  |-Node #201 at (l=0.0, t=316.0, r=1080.0, b=1857.0)px
+09-30 22:21:43.582  6987  7019 D E-native-bridge:    CollectionInfo = 'androidx.compose.ui.semantics.CollectionInfo@c937bc'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:    IsTraversalGroup = 'true'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:    VerticalScrollAxisRange = 'ScrollAxisRange(value=500.0, maxValue=600.0, reverseScrolling=false)'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:    Actions = [GetScrollViewportLength, IndexForKey, ScrollBy, ScrollByOffset, ScrollToIndex]
+09-30 22:21:43.582  6987  7019 D E-native-bridge:     |-Node #215 at (l=0.0, t=316.0, r=1080.0, b=1160.0)px
+09-30 22:21:43.582  6987  7019 D E-native-bridge:     | MergeDescendants = 'true'
+09-30 22:21:43.582  6987  7019 D E-native-bridge:     |-Node #222 at (l=0.0, t=1192.0, r=1080.0, b=2625.0)px
+09-30 22:21:43.582  6987  7019 D E-native-bridge:       MergeDescendants = 'true'
+09-30 22:23:25.104  7240  7264 D E-native-bridge: printToLog:
+09-30 22:23:25.104  7240  7264 D E-native-bridge: Printing with useUnmergedTree = 'false'
+09-30 22:23:25.104  7240  7264 D E-native-bridge: Node #1 at (l=0.0, t=63.0, r=1080.0, b=1857.0)px
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |-Node #223 at (l=0.0, t=63.0, r=1080.0, b=190.0)px
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  | Focused = 'false'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  | Role = 'Button'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  | Text = '[Show reader controls]'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  | MergeDescendants = 'true'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |-Node #156 at (l=0.0, t=190.0, r=1080.0, b=316.0)px
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  | HorizontalScrollAxisRange = 'ScrollAxisRange(value=0.0, maxValue=432.0, reverseScrolling=false)'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  | IsTraversalGroup = 'true'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  | Actions = [ScrollBy, ScrollByOffset]
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  |-Node #158 at (l=0.0, t=190.0, r=126.0, b=316.0)px
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | ContentDescription = '[Ballpoint pen]'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | Focused = 'false'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | Actions = [OnClick, RequestFocus]
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | MergeDescendants = 'true'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  |-Node #162 at (l=126.0, t=190.0, r=252.0, b=316.0)px
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | ContentDescription = '[Fountain pen]'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | Focused = 'false'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | Actions = [OnClick, RequestFocus]
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | MergeDescendants = 'true'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  |-Node #166 at (l=252.0, t=190.0, r=378.0, b=316.0)px
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | ContentDescription = '[Pencil]'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | Focused = 'false'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | Actions = [OnClick, RequestFocus]
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | MergeDescendants = 'true'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  |-Node #170 at (l=378.0, t=190.0, r=504.0, b=316.0)px
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | ContentDescription = '[Highlighter]'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | Focused = 'false'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | Actions = [OnClick, RequestFocus]
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | MergeDescendants = 'true'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  |-Node #174 at (l=504.0, t=190.0, r=630.0, b=316.0)px
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | ContentDescription = '[Eraser]'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | Focused = 'false'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | Actions = [OnClick, RequestFocus]
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | MergeDescendants = 'true'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  |-Node #178 at (l=630.0, t=190.0, r=756.0, b=316.0)px
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | ContentDescription = '[Shape]'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | Focused = 'false'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | Actions = [OnClick, RequestFocus]
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | MergeDescendants = 'true'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  |-Node #182 at (l=756.0, t=190.0, r=882.0, b=316.0)px
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | ContentDescription = '[Lasso]'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | Focused = 'false'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | Actions = [OnClick, RequestFocus]
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | MergeDescendants = 'true'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  |-Node #186 at (l=882.0, t=190.0, r=1008.0, b=316.0)px
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | ContentDescription = '[Select text]'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | Focused = 'false'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | Actions = [OnClick, RequestFocus]
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | MergeDescendants = 'true'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  |-Node #189 at (l=1008.0, t=190.0, r=1134.0, b=316.0)px
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | ContentDescription = '[Color #1C1B19]'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | Focused = 'false'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | Actions = [OnClick, RequestFocus]
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | MergeDescendants = 'true'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  |-Node #191 at (l=1134.0, t=190.0, r=1260.0, b=316.0)px
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | ContentDescription = '[Add color]'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | Focused = 'false'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | Role = 'Button'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | Text = '[+]'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | MergeDescendants = 'true'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  |-Node #194 at (l=1260.0, t=190.0, r=1386.0, b=316.0)px
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | ContentDescription = '[Undo]'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | Focused = 'false'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | Role = 'Button'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | Text = '[↶]'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  | MergeDescendants = 'true'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |  |-Node #197 at (l=1386.0, t=190.0, r=1512.0, b=316.0)px
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |    ContentDescription = '[Redo]'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |    Focused = 'false'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |    Role = 'Button'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |    Text = '[↷]'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |    Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |    MergeDescendants = 'true'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:  |-Node #201 at (l=0.0, t=316.0, r=1080.0, b=1857.0)px
+09-30 22:23:25.104  7240  7264 D E-native-bridge:    CollectionInfo = 'androidx.compose.ui.semantics.CollectionInfo@ee30a9a'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:    IsTraversalGroup = 'true'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:    VerticalScrollAxisRange = 'ScrollAxisRange(value=500.0, maxValue=600.0, reverseScrolling=false)'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:    Actions = [GetScrollViewportLength, IndexForKey, ScrollBy, ScrollByOffset, ScrollToIndex]
+09-30 22:23:25.104  7240  7264 D E-native-bridge:     |-Node #215 at (l=0.0, t=316.0, r=1080.0, b=1160.0)px
+09-30 22:23:25.104  7240  7264 D E-native-bridge:     | MergeDescendants = 'true'
+09-30 22:23:25.104  7240  7264 D E-native-bridge:     |-Node #222 at (l=0.0, t=1192.0, r=1080.0, b=2625.0)px
+09-30 22:23:25.104  7240  7264 D E-native-bridge:       MergeDescendants = 'true'

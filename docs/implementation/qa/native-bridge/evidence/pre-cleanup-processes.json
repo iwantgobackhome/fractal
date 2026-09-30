@@ -1,0 +1,23 @@
+[
+    {
+        "ProcessId":  40024,
+        "ParentProcessId":  46068,
+        "ExecutablePath":  "C:\\Program Files\\nodejs\\node.exe",
+        "CommandLine":  "\"C:\\Program Files\\nodejs\\node.exe\" docs/implementation/qa/native-bridge/server.bundle.mjs ",
+        "CreationDate":  "\/Date(1790806216283)\/"
+    },
+    {
+        "ProcessId":  7644,
+        "ParentProcessId":  46068,
+        "ExecutablePath":  "C:\\Users\\Home\\AppData\\Local\\Android\\Sdk\\emulator\\emulator.exe",
+        "CommandLine":  "\"C:\\Users\\Home\\AppData\\Local\\Android\\Sdk\\emulator\\emulator.exe\" -avd Pixel_2_API_34 -port 5560 -read-only -no-window -no-snapshot -gpu swiftshader_indirect -memory 1536 -cores 2 -no-audio ",
+        "CreationDate":  "\/Date(1790806216303)\/"
+    },
+    {
+        "ProcessId":  45956,
+        "ParentProcessId":  7644,
+        "ExecutablePath":  "C:\\Users\\Home\\AppData\\Local\\Android\\Sdk\\emulator\\qemu\\windows-x86_64\\qemu-system-x86_64-headless.exe",
+        "CommandLine":  "C:\\Users\\Home\\AppData\\Local\\Android\\Sdk\\emulator\\qemu\\windows-x86_64\\qemu-system-x86_64-headless.exe -avd Pixel_2_API_34 -port 5560 -read-only -no-window -no-snapshot -gpu swiftshader_indirect -memory 1536 -cores 2 -no-audio",
+        "CreationDate":  "\/Date(1790806216419)\/"
+    }
+]

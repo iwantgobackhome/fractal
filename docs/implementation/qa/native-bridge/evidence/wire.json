@@ -1,0 +1,1122 @@
+[
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [
+        {
+          "baseRev": 0,
+          "requestId": "f9302742-e096-4038-bf79-962875a9a452",
+          "id": "qa-bridge-parent",
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01",
+          "patch": {
+            "name": "Bridge parent",
+            "parentId": null
+          }
+        },
+        {
+          "baseRev": 0,
+          "requestId": "65e9a590-7499-456f-870b-2ee852a8b063",
+          "id": "qa-bridge-child",
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01",
+          "patch": {
+            "name": "Bridge child",
+            "parentId": "qa-bridge-parent"
+          }
+        }
+      ],
+      "papers": [
+        {
+          "baseRev": 2,
+          "requestId": "a1b15018-ed29-4c9b-8716-d65e9b303760",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "tags": [
+              "actual-android"
+            ],
+            "collections": [
+              "qa-bridge-child"
+            ]
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [],
+      "papers": [
+        {
+          "baseRev": 3,
+          "requestId": "a1fc11d2-e3eb-45a0-bd0e-2b0b353a2129",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "tags": [
+              "actual-android",
+              "lost-response"
+            ]
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": true
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [],
+      "papers": [
+        {
+          "baseRev": 3,
+          "requestId": "a1fc11d2-e3eb-45a0-bd0e-2b0b353a2129",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "tags": [
+              "actual-android",
+              "lost-response"
+            ]
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [
+        {
+          "baseRev": 1,
+          "requestId": "4bb3f354-d38f-4528-925a-fa7f51d5012f",
+          "id": "qa-bridge-parent",
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01",
+          "patch": {
+            "name": "Bridge parent",
+            "parentId": null
+          }
+        },
+        {
+          "baseRev": 1,
+          "requestId": "5f625ed2-88e4-4843-a2a7-6374d86c8cf6",
+          "id": "qa-bridge-child",
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01",
+          "patch": {
+            "name": "Bridge child",
+            "parentId": "qa-bridge-parent"
+          }
+        }
+      ],
+      "papers": [
+        {
+          "baseRev": 4,
+          "requestId": "e3ca852f-2fac-44f3-973e-b9e7a5e9c4ae",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "tags": [
+              "actual-android"
+            ],
+            "collections": [
+              "qa-bridge-child"
+            ]
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [],
+      "papers": [
+        {
+          "baseRev": 5,
+          "requestId": "5f1788a1-3883-4927-888c-e325d568c465",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "tags": [
+              "actual-android",
+              "lost-response"
+            ]
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": true
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [],
+      "papers": [
+        {
+          "baseRev": 5,
+          "requestId": "5f1788a1-3883-4927-888c-e325d568c465",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "tags": [
+              "actual-android",
+              "lost-response"
+            ]
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [],
+      "papers": [
+        {
+          "baseRev": 6,
+          "requestId": "199d8b40-03b9-416a-935d-3b7107f7008e",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "tags": [
+              "actual-android",
+              "lost-response",
+              "local-conflict"
+            ]
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [],
+      "papers": [
+        {
+          "baseRev": 7,
+          "requestId": "0cd540da-0394-46ad-ad89-54bbe81fd3da",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "tags": [
+              "actual-android",
+              "lost-response",
+              "remote-conflict",
+              "local-conflict"
+            ]
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [
+        {
+          "id": "E-bridge-memo",
+          "paperKey": "qa-reader-catalog",
+          "page": 2,
+          "updatedAt": "2026-09-30T22:15:13.350439Z",
+          "deleted": false,
+          "rev": 0,
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01",
+          "kind": "memo",
+          "text": "Bridge retained annotation",
+          "quote": "iii",
+          "rect": {
+            "x": 0.2,
+            "y": 0.3,
+            "width": 0.1,
+            "height": 0.05
+          }
+        }
+      ],
+      "folders": [],
+      "papers": [],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [
+        {
+          "baseRev": 2,
+          "requestId": "725248cb-7ae9-4060-accb-dfcfe92f0c9a",
+          "id": "qa-bridge-parent",
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01",
+          "patch": {
+            "name": "Bridge parent",
+            "parentId": null
+          }
+        },
+        {
+          "baseRev": 2,
+          "requestId": "7009d108-edc9-44c4-86ed-6fc7c0239ec3",
+          "id": "qa-bridge-child",
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01",
+          "patch": {
+            "name": "Bridge child",
+            "parentId": "qa-bridge-parent"
+          }
+        }
+      ],
+      "papers": [
+        {
+          "baseRev": 8,
+          "requestId": "6217ceaf-df11-4df6-8b46-34232515aee8",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "tags": [
+              "actual-android"
+            ],
+            "collections": [
+              "qa-bridge-child"
+            ]
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [],
+      "papers": [
+        {
+          "baseRev": 9,
+          "requestId": "f9a2ec1e-f43c-4c2c-81db-5a5590d2f72b",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "tags": [
+              "actual-android",
+              "lost-response"
+            ]
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": true
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [],
+      "papers": [
+        {
+          "baseRev": 9,
+          "requestId": "f9a2ec1e-f43c-4c2c-81db-5a5590d2f72b",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "tags": [
+              "actual-android",
+              "lost-response"
+            ]
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [],
+      "papers": [
+        {
+          "baseRev": 10,
+          "requestId": "8af7f929-2f33-4c38-bdcd-506726cad528",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "tags": [
+              "actual-android",
+              "lost-response",
+              "local-conflict"
+            ]
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [],
+      "papers": [
+        {
+          "baseRev": 11,
+          "requestId": "6e187e66-4bc0-4bf8-9af6-a46af4e1f821",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "tags": [
+              "actual-android",
+              "lost-response",
+              "remote-conflict",
+              "local-conflict"
+            ]
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [
+        {
+          "id": "74667b22-4de7-4fcb-8ee1-987fc3c8bedc",
+          "paperKey": "qa-reader-catalog",
+          "page": 2,
+          "updatedAt": "2026-09-30T22:17:16.733228Z",
+          "deleted": false,
+          "rev": 0,
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01",
+          "kind": "memo",
+          "text": "Bridge retained annotation",
+          "quote": "iii",
+          "rect": {
+            "x": 0.2,
+            "y": 0.3,
+            "width": 0.1,
+            "height": 0.05
+          }
+        }
+      ],
+      "folders": [],
+      "papers": [],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [
+        {
+          "baseRev": 3,
+          "requestId": "33221ea5-926b-42f2-a454-44a6f239016c",
+          "id": "qa-bridge-parent",
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01",
+          "patch": {
+            "name": "Bridge parent",
+            "parentId": null
+          }
+        },
+        {
+          "baseRev": 3,
+          "requestId": "52563f02-ef7d-475f-8a26-ef3173cece1d",
+          "id": "qa-bridge-child",
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01",
+          "patch": {
+            "name": "Bridge child",
+            "parentId": "qa-bridge-parent"
+          }
+        }
+      ],
+      "papers": [
+        {
+          "baseRev": 12,
+          "requestId": "58eaa100-903f-47ae-aadf-ec3b662112d2",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "tags": [
+              "actual-android"
+            ],
+            "collections": [
+              "qa-bridge-child"
+            ]
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [],
+      "papers": [
+        {
+          "baseRev": 13,
+          "requestId": "b8c92cb9-9bc2-4443-8698-b809ba5756e5",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "tags": [
+              "actual-android",
+              "lost-response"
+            ]
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": true
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [],
+      "papers": [
+        {
+          "baseRev": 13,
+          "requestId": "b8c92cb9-9bc2-4443-8698-b809ba5756e5",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "tags": [
+              "actual-android",
+              "lost-response"
+            ]
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [],
+      "papers": [
+        {
+          "baseRev": 14,
+          "requestId": "c1b2cd33-ddc3-4f90-90fa-8a3a7aa22ebd",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "tags": [
+              "actual-android",
+              "lost-response",
+              "local-conflict"
+            ]
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [],
+      "papers": [
+        {
+          "baseRev": 15,
+          "requestId": "720e06db-c1ba-4dc9-afde-7e0047169abb",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "tags": [
+              "actual-android",
+              "lost-response",
+              "remote-conflict",
+              "local-conflict"
+            ]
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [
+        {
+          "id": "6ad2c2e1-e531-4bbc-b6ae-d48cf84bccfe",
+          "paperKey": "qa-reader-catalog",
+          "page": 2,
+          "updatedAt": "2026-09-30T22:19:21.782200Z",
+          "deleted": false,
+          "rev": 0,
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01",
+          "kind": "memo",
+          "text": "Bridge retained annotation",
+          "quote": "iii",
+          "rect": {
+            "x": 0.2,
+            "y": 0.3,
+            "width": 0.1,
+            "height": 0.05
+          }
+        }
+      ],
+      "folders": [],
+      "papers": [],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [
+        {
+          "baseRev": 4,
+          "requestId": "23e16de7-86ec-4299-8076-c677b11af2cc",
+          "id": "qa-bridge-parent",
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01",
+          "patch": {
+            "name": "Bridge parent",
+            "parentId": null
+          }
+        },
+        {
+          "baseRev": 4,
+          "requestId": "04b820a6-dac7-4721-94a0-3660e2e6f11f",
+          "id": "qa-bridge-child",
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01",
+          "patch": {
+            "name": "Bridge child",
+            "parentId": "qa-bridge-parent"
+          }
+        }
+      ],
+      "papers": [
+        {
+          "baseRev": 16,
+          "requestId": "d53abd6f-68ac-4466-a872-1562e2cfa02a",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "tags": [
+              "actual-android"
+            ],
+            "collections": [
+              "qa-bridge-child"
+            ]
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [],
+      "papers": [
+        {
+          "baseRev": 17,
+          "requestId": "f918ea74-ab66-4a40-adba-b1db73842686",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "tags": [
+              "actual-android",
+              "lost-response"
+            ]
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": true
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [],
+      "papers": [
+        {
+          "baseRev": 17,
+          "requestId": "f918ea74-ab66-4a40-adba-b1db73842686",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "tags": [
+              "actual-android",
+              "lost-response"
+            ]
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [],
+      "papers": [
+        {
+          "baseRev": 18,
+          "requestId": "ecd75b52-970d-4a7b-bc69-026ae2f17f54",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "tags": [
+              "actual-android",
+              "lost-response",
+              "local-conflict"
+            ]
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [],
+      "papers": [
+        {
+          "baseRev": 19,
+          "requestId": "03d9285e-6ff7-401c-b46f-151a1fac6835",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "tags": [
+              "actual-android",
+              "lost-response",
+              "remote-conflict",
+              "local-conflict"
+            ]
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [
+        {
+          "id": "7f8479e5-e6d7-4e86-a7d7-256193110efd",
+          "paperKey": "qa-reader-catalog",
+          "page": 2,
+          "updatedAt": "2026-09-30T22:21:25.173392Z",
+          "deleted": false,
+          "rev": 0,
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01",
+          "kind": "memo",
+          "text": "Bridge retained annotation",
+          "quote": "iii",
+          "rect": {
+            "x": 0.2,
+            "y": 0.3,
+            "width": 0.1,
+            "height": 0.05
+          }
+        }
+      ],
+      "folders": [],
+      "papers": [],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [
+        {
+          "baseRev": 5,
+          "requestId": "6315e7be-ae88-419a-99fe-bd05691b88a5",
+          "id": "qa-bridge-parent",
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01",
+          "patch": {
+            "name": "Bridge parent",
+            "parentId": null
+          }
+        },
+        {
+          "baseRev": 5,
+          "requestId": "8587572a-22d9-4771-9bbc-1ed0c06fd130",
+          "id": "qa-bridge-child",
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01",
+          "patch": {
+            "name": "Bridge child",
+            "parentId": "qa-bridge-parent"
+          }
+        }
+      ],
+      "papers": [
+        {
+          "baseRev": 20,
+          "requestId": "ea9c094c-da66-405b-a833-faa21c86d3fe",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "tags": [
+              "actual-android"
+            ],
+            "collections": [
+              "qa-bridge-child"
+            ]
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [],
+      "papers": [
+        {
+          "baseRev": 21,
+          "requestId": "f4751d67-7903-4561-b529-a5558159083c",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "tags": [
+              "actual-android",
+              "lost-response"
+            ]
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": true
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [],
+      "papers": [
+        {
+          "baseRev": 21,
+          "requestId": "f4751d67-7903-4561-b529-a5558159083c",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "tags": [
+              "actual-android",
+              "lost-response"
+            ]
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [],
+      "papers": [
+        {
+          "baseRev": 22,
+          "requestId": "958fde2d-9fcf-4efe-9904-718baf93ce83",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "tags": [
+              "actual-android",
+              "lost-response",
+              "local-conflict"
+            ]
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [],
+      "papers": [
+        {
+          "baseRev": 23,
+          "requestId": "4f94fd8c-07cb-49e9-b02a-70e82cf1a298",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "tags": [
+              "actual-android",
+              "lost-response",
+              "remote-conflict",
+              "local-conflict"
+            ]
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [
+        {
+          "id": "644ed254-6dab-4d58-8295-426a4632146d",
+          "paperKey": "qa-reader-catalog",
+          "page": 2,
+          "updatedAt": "2026-09-30T22:23:21.046466Z",
+          "deleted": false,
+          "rev": 0,
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01",
+          "kind": "memo",
+          "text": "Bridge retained annotation",
+          "quote": "iii",
+          "rect": {
+            "x": 0.2,
+            "y": 0.3,
+            "width": 0.1,
+            "height": 0.05
+          }
+        }
+      ],
+      "folders": [],
+      "papers": [],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [],
+      "papers": [
+        {
+          "baseRev": 24,
+          "requestId": "89023473-8909-4149-97c4-cba642092914",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "saved": false
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [],
+      "papers": [
+        {
+          "baseRev": 25,
+          "requestId": "24416a8f-b0e0-4447-ae99-6119d4543816",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "saved": false
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [],
+      "papers": [
+        {
+          "baseRev": 24,
+          "requestId": "519621d3-6e15-4fea-9f00-63258e3a1f15",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "lastReadAt": "2026-09-30T22:23:21.108Z",
+            "readProgress": {
+              "page": 2,
+              "scrollOffset": 0
+            }
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [],
+      "papers": [
+        {
+          "baseRev": 26,
+          "requestId": "a7988432-369b-42c9-bcc4-d67e24535af6",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "lastReadAt": "2030-01-01T00:00:00.000Z",
+            "readProgress": {
+              "page": 4,
+              "scrollOffset": 0.75
+            }
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [],
+      "papers": [
+        {
+          "baseRev": 24,
+          "requestId": "175c6e4b-6132-49f3-90ac-e1f7178eb5c0",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "lastReadAt": "2026-09-30T22:23:24.646Z",
+            "readProgress": {
+              "page": 2,
+              "scrollOffset": 0
+            }
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [],
+      "papers": [
+        {
+          "baseRev": 27,
+          "requestId": "d3c9f1ab-078a-44a9-815f-a564daa545c8",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "lastReadAt": "2030-01-01T00:00:00.000Z",
+            "readProgress": {
+              "page": 4,
+              "scrollOffset": 0.75
+            }
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [],
+      "papers": [
+        {
+          "baseRev": 28,
+          "requestId": "1862141b-a8c8-4005-b8ee-a4c561f3be8a",
+          "paperKey": "qa-reader-catalog",
+          "patch": {
+            "collections": [
+              "qa-bridge-parent",
+              "qa-bridge-child"
+            ]
+          },
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+        }
+      ],
+      "history": []
+    },
+    "lostResponse": false
+  },
+  {
+    "path": "/api/sync/push",
+    "body": {
+      "annotations": [],
+      "folders": [
+        {
+          "baseRev": 6,
+          "requestId": "7ec6913e-83f5-4e48-8782-07b96d6141ca",
+          "id": "qa-bridge-parent",
+          "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01",
+          "patch": {},
+          "deleted": true
+        }
+      ],
+      "papers": [],
+      "history": []
+    },
+    "lostResponse": false
+  }
+]

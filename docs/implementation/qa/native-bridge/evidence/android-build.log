@@ -1,0 +1,222 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.12/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :data:preBuild UP-TO-DATE
+> Task :data:preDebugBuild UP-TO-DATE
+> Task :design:preBuild UP-TO-DATE
+> Task :design:preDebugBuild UP-TO-DATE
+> Task :design:writeDebugAarMetadata
+> Task :data:writeDebugAarMetadata
+> Task :ink:preBuild UP-TO-DATE
+> Task :ink:preDebugBuild UP-TO-DATE
+> Task :pdf:preBuild UP-TO-DATE
+> Task :pdf:preDebugBuild UP-TO-DATE
+> Task :ink:writeDebugAarMetadata
+> Task :sync:preBuild UP-TO-DATE
+> Task :sync:preDebugBuild UP-TO-DATE
+> Task :pdf:writeDebugAarMetadata
+> Task :sync:writeDebugAarMetadata
+> Task :app:generateDebugResValues
+> Task :data:generateDebugResValues
+> Task :data:generateDebugResources
+> Task :app:checkDebugAarMetadata
+> Task :data:packageDebugResources
+> Task :design:generateDebugResValues
+> Task :design:generateDebugResources
+> Task :design:packageDebugResources
+> Task :ink:generateDebugResValues
+> Task :ink:generateDebugResources
+> Task :ink:packageDebugResources
+> Task :pdf:generateDebugResValues
+> Task :pdf:generateDebugResources
+> Task :pdf:packageDebugResources
+> Task :sync:generateDebugResValues
+> Task :sync:generateDebugResources
+> Task :sync:packageDebugResources
+> Task :app:mapDebugSourceSetPaths
+> Task :app:generateDebugResources
+> Task :app:packageDebugResources
+> Task :app:mergeDebugResources
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :data:extractDeepLinksDebug
+> Task :app:parseDebugLocalResources
+> Task :design:extractDeepLinksDebug
+> Task :data:processDebugManifest
+> Task :design:processDebugManifest
+> Task :ink:extractDeepLinksDebug
+> Task :pdf:extractDeepLinksDebug
+> Task :ink:processDebugManifest
+> Task :sync:extractDeepLinksDebug
+> Task :pdf:processDebugManifest
+> Task :sync:processDebugManifest
+> Task :data:compileDebugLibraryResources
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest
+> Task :app:processDebugManifestForPackage
+> Task :data:parseDebugLocalResources
+> Task :design:compileDebugLibraryResources
+> Task :design:parseDebugLocalResources
+> Task :data:generateDebugRFile
+> Task :ink:compileDebugLibraryResources
+> Task :design:generateDebugRFile
+> Task :pdf:compileDebugLibraryResources
+> Task :ink:parseDebugLocalResources
+> Task :pdf:parseDebugLocalResources
+> Task :ink:generateDebugRFile
+> Task :sync:compileDebugLibraryResources
+> Task :pdf:generateDebugRFile
+> Task :data:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :sync:parseDebugLocalResources
+> Task :sync:generateDebugRFile
+> Task :app:processDebugResources
+> Task :data:javaPreCompileDebug
+> Task :design:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :design:copyTokens
+
+> Task :data:kaptGenerateStubsDebugKotlin
+w: Support for language version 2.0+ in kapt is in Alpha and must be enabled explicitly. Falling back to 1.9.
+
+> Task :design:compileDebugKotlin
+> Task :design:javaPreCompileDebug
+> Task :design:compileDebugJavaWithJavac NO-SOURCE
+> Task :design:bundleLibCompileToJarDebug
+> Task :ink:checkKotlinGradlePluginConfigurationErrors SKIPPED
+
+> Task :ink:compileDebugKotlin
+w: file:///C:/Users/Home/orca/workspaces/fractal/fractal-reader-qa/docs/implementation/qa/native-bridge/runtime/android-snapshot/apps/android/ink/src/main/java/app/fractal/ink/InkCanvas.kt:450:9 'fun invalidate(p0: Int, p1: Int, p2: Int, p3: Int): Unit' is deprecated. Deprecated in Java.
+w: file:///C:/Users/Home/orca/workspaces/fractal/fractal-reader-qa/docs/implementation/qa/native-bridge/runtime/android-snapshot/apps/android/ink/src/main/java/app/fractal/ink/InkModel.kt:38:13 This declaration needs opt-in. Its usage should be marked with '@kotlinx.serialization.ExperimentalSerializationApi' or '@OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)'
+
+> Task :ink:javaPreCompileDebug
+> Task :ink:compileDebugJavaWithJavac NO-SOURCE
+> Task :ink:bundleLibCompileToJarDebug
+> Task :pdf:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :data:kaptDebugKotlin
+> Task :pdf:compileDebugKotlin
+> Task :pdf:javaPreCompileDebug
+> Task :pdf:compileDebugJavaWithJavac NO-SOURCE
+> Task :pdf:bundleLibCompileToJarDebug
+> Task :sync:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :sync:javaPreCompileDebug
+> Task :app:javaPreCompileDebug
+> Task :app:mergeDebugShaders
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :data:mergeDebugShaders
+> Task :data:compileDebugShaders NO-SOURCE
+> Task :data:generateDebugAssets UP-TO-DATE
+> Task :data:mergeDebugAssets
+> Task :design:mergeDebugShaders
+> Task :design:compileDebugShaders NO-SOURCE
+> Task :design:generateDebugAssets UP-TO-DATE
+> Task :design:mergeDebugAssets
+> Task :ink:mergeDebugShaders
+> Task :ink:compileDebugShaders NO-SOURCE
+> Task :ink:generateDebugAssets UP-TO-DATE
+> Task :ink:mergeDebugAssets
+> Task :pdf:mergeDebugShaders
+> Task :pdf:compileDebugShaders NO-SOURCE
+> Task :pdf:generateDebugAssets UP-TO-DATE
+> Task :pdf:mergeDebugAssets
+> Task :sync:mergeDebugShaders
+> Task :sync:compileDebugShaders NO-SOURCE
+> Task :sync:generateDebugAssets UP-TO-DATE
+> Task :sync:mergeDebugAssets
+> Task :app:mergeDebugAssets
+> Task :app:compressDebugAssets
+> Task :ink:bundleLibRuntimeToJarDebug
+> Task :data:compileDebugKotlin
+> Task :data:compileDebugJavaWithJavac
+> Task :data:bundleLibCompileToJarDebug
+> Task :sync:compileDebugKotlin
+> Task :sync:compileDebugJavaWithJavac NO-SOURCE
+> Task :sync:bundleLibCompileToJarDebug
+> Task :design:bundleLibRuntimeToJarDebug
+> Task :sync:bundleLibRuntimeToJarDebug
+> Task :data:bundleLibRuntimeToJarDebug
+> Task :pdf:bundleLibRuntimeToJarDebug
+> Task :app:desugarDebugFileDependencies
+> Task :data:processDebugJavaRes
+> Task :design:processDebugJavaRes
+> Task :ink:processDebugJavaRes
+> Task :pdf:processDebugJavaRes
+> Task :sync:processDebugJavaRes
+> Task :app:checkDebugDuplicateClasses
+> Task :app:compileDebugKotlin
+> Task :app:compileDebugJavaWithJavac NO-SOURCE
+> Task :app:dexBuilderDebug
+> Task :app:mergeDebugGlobalSynthetics
+> Task :app:processDebugJavaRes
+> Task :app:mergeExtDexDebug
+> Task :ink:bundleLibRuntimeToDirDebug
+> Task :design:bundleLibRuntimeToDirDebug
+> Task :sync:bundleLibRuntimeToDirDebug
+> Task :app:mergeDebugJavaResource
+> Task :pdf:bundleLibRuntimeToDirDebug
+> Task :data:bundleLibRuntimeToDirDebug
+> Task :app:mergeProjectDexDebug
+> Task :app:mergeDebugJniLibFolders
+> Task :data:mergeDebugJniLibFolders
+> Task :data:mergeDebugNativeLibs NO-SOURCE
+> Task :data:copyDebugJniLibsProjectOnly
+> Task :design:mergeDebugJniLibFolders
+> Task :design:mergeDebugNativeLibs NO-SOURCE
+> Task :design:copyDebugJniLibsProjectOnly
+> Task :ink:mergeDebugJniLibFolders
+> Task :ink:mergeDebugNativeLibs NO-SOURCE
+> Task :ink:copyDebugJniLibsProjectOnly
+> Task :pdf:mergeDebugJniLibFolders
+> Task :pdf:mergeDebugNativeLibs NO-SOURCE
+> Task :pdf:copyDebugJniLibsProjectOnly
+> Task :sync:mergeDebugJniLibFolders
+> Task :sync:mergeDebugNativeLibs NO-SOURCE
+> Task :sync:copyDebugJniLibsProjectOnly
+> Task :app:mergeLibDexDebug
+> Task :app:mergeDebugNativeLibs
+> Task :app:validateSigningDebug
+> Task :app:writeDebugAppMetadata
+> Task :app:writeDebugSigningConfigVersions
+> Task :app:stripDebugDebugSymbols
+> Task :app:bundleDebugClassesToCompileJar
+> Task :app:preDebugAndroidTestBuild SKIPPED
+> Task :app:checkDebugAndroidTestAarMetadata
+> Task :app:generateDebugAndroidTestResValues
+> Task :app:mapDebugAndroidTestSourceSetPaths
+> Task :app:generateDebugAndroidTestResources
+> Task :app:packageDebug
+> Task :app:createDebugApkListingFileRedirect
+> Task :app:assembleDebug
+> Task :app:processDebugAndroidTestManifest
+> Task :app:javaPreCompileDebugAndroidTest
+> Task :app:mergeDebugAndroidTestShaders
+> Task :app:compileDebugAndroidTestShaders NO-SOURCE
+> Task :app:generateDebugAndroidTestAssets UP-TO-DATE
+> Task :app:mergeDebugAndroidTestAssets
+> Task :app:compressDebugAndroidTestAssets
+> Task :app:desugarDebugAndroidTestFileDependencies
+> Task :app:checkDebugAndroidTestDuplicateClasses
+> Task :app:mergeDebugAndroidTestResources
+> Task :app:mergeExtDexDebugAndroidTest
+> Task :app:mergeLibDexDebugAndroidTest
+> Task :app:mergeDebugAndroidTestJniLibFolders
+> Task :app:mergeDebugAndroidTestNativeLibs NO-SOURCE
+> Task :app:stripDebugAndroidTestDebugSymbols NO-SOURCE
+> Task :app:validateSigningDebugAndroidTest
+> Task :app:writeDebugAndroidTestSigningConfigVersions
+> Task :app:processDebugAndroidTestResources
+> Task :app:compileDebugAndroidTestKotlin
+> Task :app:compileDebugAndroidTestJavaWithJavac NO-SOURCE
+> Task :app:dexBuilderDebugAndroidTest
+> Task :app:mergeDebugAndroidTestGlobalSynthetics
+> Task :app:processDebugAndroidTestJavaRes
+> Task :app:mergeProjectDexDebugAndroidTest
+> Task :app:mergeDebugAndroidTestJavaResource
+> Task :app:packageDebugAndroidTest
+> Task :app:createDebugAndroidTestApkListingFileRedirect
+> Task :app:assembleDebugAndroidTest
+
+BUILD SUCCESSFUL in 58s
+161 actionable tasks: 161 executed

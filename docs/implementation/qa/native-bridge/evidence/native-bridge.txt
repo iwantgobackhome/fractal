@@ -1,0 +1,8 @@
+real HubClient Bearer pull + Room projection passed
+real snapshot + PDF download SHA + rotated page layout envelope passed
+real parent-before-child folder CAS + metadata queue settled on HTTP
+lost HTTP response replay settled; OkHttp transparent retry=true; requestId=f4751d67-7903-4561-b529-a5558159083c
+real conflict returned authority; native rebase used new requestId and retained concurrent tags
+actual MainActivity offline cached PDF read, unsaved flag + queued Recent preserved
+reconnect preserved newer remote timestamp/page pair while settling older offline read and unsave
+real reconnect settled offline edits and folder deletion promoted child without losing PDF

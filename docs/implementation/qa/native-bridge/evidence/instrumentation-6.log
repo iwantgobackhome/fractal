@@ -1,0 +1,32 @@
+INSTRUMENTATION_STATUS: class=app.fractal.reader.HubHttpBridgeTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=1
+INSTRUMENTATION_STATUS: stream=
+app.fractal.reader.HubHttpBridgeTest:
+INSTRUMENTATION_STATUS: test=actualHubClientMetadataSnapshotOfflineReconnectAndMainActivity
+INSTRUMENTATION_STATUS_CODE: 1
+adb.exe : s_glBindAttribLocation: bind attrib 0 name position
+위치 줄:2 문자:1355
++ ... tFrom-Json; & C:/Users/Home/AppData/Local/Android/Sdk/platform-tools/ ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (s_glBindAttribL...0 name position:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+s_glBindAttribLocation: bind attrib 1 name color
+s_glBindAttribLocation: bind attrib 2 name localCoord
+INSTRUMENTATION_STATUS: class=app.fractal.reader.HubHttpBridgeTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=1
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: test=actualHubClientMetadataSnapshotOfflineReconnectAndMainActivity
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_RESULT: stream=
+
+Time: 6.281
+
+OK (1 test)
+
+
+INSTRUMENTATION_CODE: -1

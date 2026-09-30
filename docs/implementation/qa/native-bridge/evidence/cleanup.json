@@ -1,0 +1,11 @@
+{
+    "DeviceState":  "adb.exe : error: device \u0027emulator-5560\u0027 not found\r\n위치 줄:2 문자:17\r\n+ ... eviceState=(\u0026 C:/Users/Home/AppData/Local/Android/Sdk/platform-tools/ ...\r\n+                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r\n    + CategoryInfo          : NotSpecified: (error: device \u0027emulator-5560\u0027 not found:String) [], RemoteException\r\n    + FullyQualifiedErrorId : NativeCommandError",
+    "OwnedProcessesRemaining":  0,
+    "OwnedPortsRemaining":  0,
+    "Cleanup":  "Removed only emulator-5560 reverse tcp6174/tcp6175 then emu kill after exact executable/start/commandline/console-port checks",
+    "PriorPidsAbsent":  [
+                            12052,
+                            6888
+                        ],
+    "HubRetainedForRoot":  "msg_be89ebafd93b"
+}

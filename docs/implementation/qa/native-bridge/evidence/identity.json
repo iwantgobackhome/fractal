@@ -1,0 +1,38 @@
+{
+  "acceptedSourceSha": "56230ad52493bff69f6905cd87caaa5a6743b8b2",
+  "acceptedSnapshotFilesByteMatched": 118,
+  "apkSha256": "bfb9d931a08e37dc7772206e7039d681b527fb76c161e3697ef8746b7c168d34",
+  "testApkSha256": "f04b45fc22ce112db8193c3ba14f8c898bf54b3712697a672be9fd07f1010f3f",
+  "hub": {
+    "pid": 40024,
+    "sourceSha": "56230ad52493bff69f6905cd87caaa5a6743b8b2",
+    "internalPort": 3288,
+    "proxyPort": 6174,
+    "controlPort": 6175,
+    "directory": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-reader-qa\\docs\\implementation\\qa\\native-bridge\\runtime\\http-YYHI5c",
+    "started": "2026-09-30T22:10:17.175Z",
+    "executable": "C:/Program Files/nodejs/node.exe",
+    "bundleSha256": "30c73b5c66d3ee4556e7aa0c7bc9abcb9fdec5962f5f4cedfab76a4130221fa4",
+    "launchIdentities": [
+      {
+        "ProcessId": 40024,
+        "ExecutablePath": "C:\\Program Files\\nodejs\\node.exe",
+        "CommandLine": "\"C:\\Program Files\\nodejs\\node.exe\" docs/implementation/qa/native-bridge/server.bundle.mjs ",
+        "CreationDate": "/Date(1790806216283)/"
+      },
+      {
+        "ProcessId": 7644,
+        "ExecutablePath": "C:\\Users\\Home\\AppData\\Local\\Android\\Sdk\\emulator\\emulator.exe",
+        "CommandLine": "\"C:\\Users\\Home\\AppData\\Local\\Android\\Sdk\\emulator\\emulator.exe\" -avd Pixel_2_API_34 -port 5560 -read-only -no-window -no-snapshot -gpu swiftshader_indirect -memory 1536 -cores 2 -no-audio ",
+        "CreationDate": "/Date(1790806216303)/"
+      }
+    ]
+  },
+  "serial": "emulator-5560",
+  "api": "34",
+  "avd": "Pixel_2_API_34\r\r\nOK",
+  "reverse": [
+    "host-18 tcp:6174 tcp:6174",
+    "host-18 tcp:6175 tcp:6175"
+  ]
+}

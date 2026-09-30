@@ -1,0 +1,34 @@
+[
+  {
+    "mode": "success",
+    "flightId": "E-FLIGHT-harness-success",
+    "waitingBeforeRelease": true,
+    "http": 200,
+    "status": "completed",
+    "errorCode": null,
+    "sseEvents": [
+      "event: delta",
+      "event: delta",
+      "event: delta",
+      "event: delta",
+      "event: done"
+    ],
+    "owner": "E",
+    "nativeExecuted": false
+  },
+  {
+    "mode": "error",
+    "flightId": "E-FLIGHT-harness-error",
+    "waitingBeforeRelease": true,
+    "http": 200,
+    "status": "failed",
+    "errorCode": "NETWORK",
+    "sseEvents": [
+      "event: delta",
+      "event: delta",
+      "event: error"
+    ],
+    "owner": "E",
+    "nativeExecuted": false
+  }
+]

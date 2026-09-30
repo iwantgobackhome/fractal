@@ -1,0 +1,107 @@
+{
+  "readOnly": true,
+  "paper": {
+    "paperKey": "qa-reader-catalog",
+    "sourceKind": "publication",
+    "catalogKey": "qa-reader-catalog",
+    "arxivId": null,
+    "version": null,
+    "title": "Reader HTTP bridge fixture",
+    "authors": [
+      "Fixture"
+    ],
+    "sourceUrl": "https://example.org/qa",
+    "pdfSha256": "f79b45a88b17b236ade1298edf4cafdceae6a9f19907eb29126332a7c9037b96",
+    "pageCount": 5,
+    "extractionVersion": "pdfjs6-lines-v4",
+    "status": "partial",
+    "coverage": {
+      "totalPages": 5,
+      "textPages": 3,
+      "unsupportedPages": [
+        3,
+        4
+      ]
+    },
+    "createdAt": "2026-09-30T22:10:17.098Z"
+  },
+  "library": {
+    "id": "qa-reader-catalog",
+    "paperKey": "qa-reader-catalog",
+    "title": "Reader HTTP bridge fixture",
+    "authors": [
+      {
+        "given": "",
+        "family": "Fixture"
+      }
+    ],
+    "year": 2026,
+    "venue": null,
+    "doi": null,
+    "arxivId": null,
+    "url": "https://example.org/qa",
+    "abstract": null,
+    "tags": [
+      "actual-android",
+      "lost-response",
+      "remote-conflict",
+      "local-conflict"
+    ],
+    "collections": [
+      "qa-bridge-child"
+    ],
+    "addedAt": "2026-09-30T22:10:16.940Z",
+    "updatedAt": "2026-09-30T22:23:27.315Z",
+    "status": "unread",
+    "bibtexKey": "qa-reader-catalog",
+    "saved": false,
+    "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01",
+    "savedAt": null,
+    "lastReadAt": "2030-01-01T00:00:00.000Z",
+    "readProgress": {
+      "page": 4,
+      "scrollOffset": 0.75
+    },
+    "rev": 30
+  },
+  "folders": [
+    {
+      "id": "qa-bridge-child",
+      "name": "Bridge child",
+      "parentId": null,
+      "updatedAt": "2026-09-30T22:23:27.315Z",
+      "deleted": false,
+      "rev": 7,
+      "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+    },
+    {
+      "id": "qa-bridge-parent",
+      "name": "Bridge parent",
+      "parentId": null,
+      "updatedAt": "2026-09-30T22:23:27.316Z",
+      "deleted": true,
+      "rev": 7,
+      "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01"
+    }
+  ],
+  "finalNativeMemo": {
+    "id": "644ed254-6dab-4d58-8295-426a4632146d",
+    "paperKey": "qa-reader-catalog",
+    "updatedAt": "2026-09-30T22:23:21.046466Z",
+    "deleted": false,
+    "rev": 1,
+    "deviceId": "53fe64a1-4888-4eaf-a4c9-3d9eec823e01",
+    "kind": "memo",
+    "page": 2,
+    "text": "Bridge retained annotation",
+    "rect": {
+      "x": 0.2,
+      "y": 0.3,
+      "width": 0.1,
+      "height": 0.05
+    },
+    "quote": "iii"
+  },
+  "pdfPresent": true,
+  "pdfSha256Matches": true
+}

@@ -1,0 +1,26 @@
+{
+    "ProcessId":  40024,
+    "Executable":  "C:\\Program Files\\nodejs\\node.exe",
+    "StartUtc":  "2026-09-30T22:10:16.2834590Z",
+    "Command":  "\"C:\\Program Files\\nodejs\\node.exe\" docs/implementation/qa/native-bridge/server.bundle.mjs ",
+    "Listeners":  [
+                      {
+                          "LocalAddress":  "127.0.0.1",
+                          "LocalPort":  6175,
+                          "OwningProcess":  40024
+                      },
+                      {
+                          "LocalAddress":  "127.0.0.1",
+                          "LocalPort":  6174,
+                          "OwningProcess":  40024
+                      },
+                      {
+                          "LocalAddress":  "127.0.0.1",
+                          "LocalPort":  3288,
+                          "OwningProcess":  40024
+                      }
+                  ],
+    "HandoffReceipt":  "msg_be89ebafd93b",
+    "NextOwner":  "root until new independent QA dispatch",
+    "StopMarker":  "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-reader-qa\\docs\\implementation\\qa\\native-bridge\\runtime\\stop"
+}
