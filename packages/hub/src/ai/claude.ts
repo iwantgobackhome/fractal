@@ -5,8 +5,8 @@ import type { ProviderModel, ProviderStatus } from '@fractal/shared';
 import type { AiProvider, CompleteInput, ProviderDelta } from './provider';
 
 const run = promisify(execFile);
-export type SpawnClaude = (args: string[]) => ChildProcessWithoutNullStreams;
-export type ProbeClaude = (args: string[]) => Promise<{ stdout: string }>;
+export type SpawnClaude = (args: string[], env?: NodeJS.ProcessEnv) => ChildProcessWithoutNullStreams;
+export type ProbeClaude = (args: string[], env?: NodeJS.ProcessEnv) => Promise<{ stdout: string }>;
 const models: ProviderModel[] = [
   ...['opus', 'sonnet', 'haiku'].map((id) => ({ id, label: `Claude ${id}` })),
   { id: 'claude-sonnet-5-5', label: 'Claude Sonnet 5.5' },
@@ -37,20 +37,23 @@ export function parseClaudeEvent(value: unknown): ProviderDelta[] {
 
 export class ClaudeProvider implements AiProvider {
   readonly id = 'claude' as const;
+  onRateLimit: ((event: unknown) => void) | null = null;
   constructor(
-    private readonly spawnProcess: SpawnClaude = (args) =>
-      spawn(process.platform === 'win32' ? 'claude.exe' : 'claude', args, { stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true, shell: false }),
-    private readonly probe: ProbeClaude = (args) => run(process.platform === 'win32' ? 'claude.exe' : 'claude', args, { windowsHide: true, timeout: 10_000 }),
+    private readonly spawnProcess: SpawnClaude = (args, env) =>
+      spawn(process.platform === 'win32' ? 'claude.exe' : 'claude', args, { stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true, shell: false, env }),
+    private readonly probe: ProbeClaude = (args, env) =>
+      run(process.platform === 'win32' ? 'claude.exe' : 'claude', args, { windowsHide: true, timeout: 10_000, env }),
+    private readonly environment: () => NodeJS.ProcessEnv = () => process.env,
   ) {}
   async status(): Promise<ProviderStatus> {
     let version: string;
     try {
-      version = (await this.probe(['--version'])).stdout.trim();
+      version = (await this.probe(['--version'], this.environment())).stdout.trim();
     } catch {
       return { id: this.id, installed: false, loggedIn: false, version: null, detail: 'Claude CLI is not installed', loginCommand: 'claude auth login' };
     }
     try {
-      const auth = record(JSON.parse((await this.probe(['auth', 'status'])).stdout));
+      const auth = record(JSON.parse((await this.probe(['auth', 'status'], this.environment())).stdout));
       return {
         id: this.id,
         installed: true,
@@ -87,7 +90,7 @@ export class ClaudeProvider implements AiProvider {
       '--strict-mcp-config',
     ];
     if (input.effort) args.push('--effort', input.effort);
-    const child = this.spawnProcess(args);
+    const child = this.spawnProcess(args, this.environment());
     const abort = () => child.kill();
     if (input.signal?.aborted) {
       abort();
@@ -114,6 +117,7 @@ export class ClaudeProvider implements AiProvider {
           continue;
         }
         const obj = record(event);
+        if (obj?.type === 'rate_limit_event') this.onRateLimit?.(event);
         if (obj?.type === 'assistant') {
           const message = record(obj.message);
           const content = Array.isArray(message?.content) ? message.content : [];

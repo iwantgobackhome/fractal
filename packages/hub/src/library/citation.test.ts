@@ -168,6 +168,6 @@ describe('citation year and key', () => {
     expect(migrated.getLibrary(first.paperKey)).toMatchObject({ year: 2017, bibtexKey: 'vaswani2017' });
     expect(migrated.getLibrary(second.paperKey)).toMatchObject({ year: 2017, bibtexKey: 'vaswani2017a' });
     expect(migrated.getLibrary(edited.paperKey)).toMatchObject({ year: 2017, bibtexKey: 'my-transformer-key' });
-    expect(migrated.db.prepare('SELECT count(*) AS count FROM migrations').get()).toMatchObject({ count: 6 });
+    expect(migrated.db.prepare('SELECT count(*) AS count FROM migrations').get()).toMatchObject({ count: 8 });
   });
 });

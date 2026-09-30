@@ -119,9 +119,9 @@ export async function resolveCodexExecutable(): Promise<string> {
   }
   throw Object.assign(new Error('Codex is not installed'), { code: 'ENOENT' });
 }
-export async function startOfficialRpc(): Promise<JsonLineRpc> {
+export async function startOfficialRpc(sourceEnv: NodeJS.ProcessEnv = process.env): Promise<JsonLineRpc> {
   const executable = await resolveCodexExecutable();
-  const env = childEnvironment(process.env);
+  const env = childEnvironment(sourceEnv);
   await assertNoCustomInstructions(env);
   const mcpArgs = await disabledMcpArgs(executable, env);
   const child = spawn(executable, [...restrictedArgs(), ...mcpArgs], { shell: false, windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'], env });

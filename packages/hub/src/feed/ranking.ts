@@ -28,6 +28,8 @@ export function deduplicate(items: RawItem[]): RawItem[] {
         categories: [...new Set([...existing.categories, ...item.categories])],
         popularity: Math.max(existing.popularity, item.popularity),
         source: [...new Set([...existing.source.split(','), ...item.source.split(',')])].join(','),
+        image: existing.image ?? item.image ?? null,
+        imageCandidate: existing.imageCandidate ?? item.imageCandidate,
       };
       output[index] = merged;
       for (const key of keys) seen.set(key, index);
@@ -66,7 +68,9 @@ function relevance(
     termScore += score;
     if (score > 0 && !bestTerm) bestTerm = term;
   }
-  const category = item.categories.find((value) => interests.categories.includes(value));
+  const category = item.categories.find(
+    (value) => interests.categories.includes(value) || (interests.custom ?? []).some((interest) => value === `custom:${interest.id}`),
+  );
   const author = item.authors.find((value) => interests.authors.some((wantedAuthor) => value.toLowerCase().includes(wantedAuthor.toLowerCase())));
   const score = termScore + (category ? 4 : 0) + (author ? 5 : 0);
   const reasonCode = author
@@ -117,6 +121,7 @@ export function rankItems(
       const popularity = Math.min(4, Math.log1p(item.popularity) / 2);
       return {
         ...item,
+        image: item.image ?? null,
         score: Math.round((match.score + recency + popularity) * 100) / 100,
         reason: match.reason,
         reasonCode: match.reasonCode,

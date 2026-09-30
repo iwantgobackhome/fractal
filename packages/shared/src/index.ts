@@ -5,6 +5,8 @@ export * from './contracts/ai';
 export * from './contracts/ink';
 export * from './contracts/sync';
 export * from './contracts/feed';
+export * from './contracts/arxiv';
+export * from './contracts/related';
 export * from './contracts/pairing';
 export * from './contracts/structure';
 export * from './contracts/preferences';

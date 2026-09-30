@@ -6,6 +6,8 @@ import { DEFAULT_SETTINGS } from './settings';
 import type { UsageStore } from './usage';
 
 export class ProviderRegistry {
+  onUsageRecorded: ((provider: ProviderId) => void) | null = null;
+  private readonly running = new Map<ProviderId, number>();
   private settings: AiSettings | null = null;
   private records: UsageRecord[] = [];
   private loaded = false;
@@ -54,6 +56,7 @@ export class ProviderRegistry {
     explicit?: ModelSelection,
   ): AsyncIterable<ProviderDelta & { provider?: ProviderId; model?: string; durationMs?: number }> {
     const { provider, selection } = await this.select(feature, explicit);
+    this.running.set(provider.id, (this.running.get(provider.id) ?? 0) + 1);
     const start = Date.now();
     let inTokens: number | null = null;
     let outTokens: number | null = null;
@@ -66,6 +69,7 @@ export class ProviderRegistry {
         yield delta;
       }
     } finally {
+      this.running.set(provider.id, Math.max(0, (this.running.get(provider.id) ?? 1) - 1));
       await this.recordUsage(provider.id, selection.model, inTokens, outTokens, Date.now() - start);
     }
   }
@@ -80,6 +84,14 @@ export class ProviderRegistry {
         await this.usageStore?.write(this.records);
       });
     await this.persist;
+    this.onUsageRecorded?.(provider);
+  }
+  async waitIdle(provider: ProviderId, timeoutMs = 30000): Promise<void> {
+    const until = Date.now() + timeoutMs;
+    while ((this.running.get(provider) ?? 0) > 0) {
+      if (Date.now() > until) throw Object.assign(new Error('Provider is still processing a request'), { code: 'BUSY' });
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
   }
   async providersInfo() {
     return Promise.all(this.providers.map(async (p) => ({ status: await p.status(), models: await p.listModels() })));

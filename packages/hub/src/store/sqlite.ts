@@ -68,6 +68,21 @@ export class SqlitePaperStore extends PaperStore {
         throw error;
       }
     }
+    if (!this.db.prepare('SELECT 1 FROM migrations WHERE version = 7').get()) {
+      this.db.exec(`SAVEPOINT ai_accounts_migration;
+        CREATE TABLE ai_accounts(id TEXT PRIMARY KEY, provider TEXT NOT NULL, label TEXT NOT NULL, kind TEXT NOT NULL, active INTEGER NOT NULL);
+        INSERT INTO ai_accounts VALUES('codex:system','codex','Codex','system',1);
+        INSERT INTO ai_accounts VALUES('claude:system','claude','Claude','system',1);
+        CREATE TABLE related_papers(paper_key TEXT PRIMARY KEY, data TEXT NOT NULL, fetched_at TEXT NOT NULL);
+        INSERT INTO migrations VALUES(7, datetime('now'));
+        RELEASE ai_accounts_migration;`);
+    }
+    if (!this.db.prepare('SELECT 1 FROM migrations WHERE version = 8').get()) {
+      this.db.exec(`SAVEPOINT feed_images_migration;
+        CREATE TABLE feed_images(hash TEXT PRIMARY KEY, source_url TEXT NOT NULL, content_type TEXT, size INTEGER, accessed_at TEXT);
+        INSERT INTO migrations VALUES(8, datetime('now'));
+        RELEASE feed_images_migration;`);
+    }
   }
 
   getPreferences(): Preferences {

@@ -13,7 +13,7 @@ import { FeedService, isStale, isoWeek } from './index';
 import { deduplicate, rankItems } from './ranking';
 import { CachedFetcher, newsSource, parseArxivAtom, parseHfDaily, parseSyndication, recommendationSource, type FeedSource, type RawItem } from './sources';
 
-const interests: FeedInterests = { categories: ['cs.CL'], topics: ['language model'], authors: [] };
+const interests: FeedInterests = { categories: ['cs.CL'], topics: ['language model'], authors: [], custom: [] };
 const now = new Date('2026-09-30T12:00:00.000Z');
 const base: RawItem = {
   id: 'arxiv:2609.12345',
@@ -70,8 +70,8 @@ describe('feed sources and ranking', () => {
 
   it('selects curated news feeds for the reader field', async () => {
     const get = vi.fn().mockResolvedValue(rss);
-    await newsSource.load({ interests: { categories: ['q-bio.MN'], topics: [], authors: [] }, libraryArxivIds: [], rssFeeds: [], get, now });
-    expect(get).toHaveBeenCalledOnce();
+    await newsSource.load({ interests: { categories: ['q-bio.MN'], topics: [], authors: [], custom: [] }, libraryArxivIds: [], rssFeeds: [], get, now });
+    expect(get).toHaveBeenCalledTimes(7);
     expect(get.mock.calls[0]?.[0]).toBe('https://www.nature.com/subjects/biological-sciences.rss');
   });
 
@@ -139,6 +139,23 @@ function service(sources: FeedSource[], registry?: ProviderRegistry) {
 }
 
 describe('feed service and route', () => {
+  it('migrates legacy interests and assigns custom IDs and fallback queries', async () => {
+    const feed = service([]);
+    stores
+      .at(-1)!
+      .db.prepare('INSERT INTO feed_meta(key,data) VALUES(?,?)')
+      .run('interests', JSON.stringify({ categories: ['cs.CL'], topics: [], authors: [] }));
+    expect(feed.interests().custom).toEqual([]);
+    const request = Readable.from([
+      JSON.stringify({ categories: ['cs.CL'], topics: [], authors: [], custom: [{ label: '확산 로봇', query: '' }] }),
+    ]) as IncomingMessage;
+    request.headers = {};
+    const result = await handleFeed('PUT', ['api', 'feed', 'interests'], request, { feed, url: new URL('http://localhost/api/feed/interests') });
+    expect(result).toMatchObject({ data: { custom: [{ label: '확산 로봇', query: '확산 로봇' }] } });
+    expect(feed.interests().custom?.[0]?.id).toMatch(/^[0-9a-f-]{36}$/);
+    expect(feed.categories('전산언어학').map((item) => item.code)).toContain('cs.CL');
+    await feed.stop();
+  });
   it('detects stale snapshots and ISO weeks', () => {
     expect(isoWeek(new Date('2026-01-01T00:00:00Z'))).toBe('2026-W01');
     expect(isStale(null, now, 6)).toBe(true);

@@ -8,6 +8,7 @@ import type { NetworkManager } from '../../net/manager';
 import type { PaperStore } from '../../store/index';
 import type { SqlitePaperStore } from '../../store/sqlite';
 import type { ProviderRegistry } from '../../ai/registry';
+import type { AccountManager } from '../../ai/accounts';
 import type { LibrarySearch } from '../../ai/library-search';
 import { HttpError } from '../errors';
 import { invalidInput } from '../../store/errors';
@@ -30,6 +31,7 @@ export interface AiRouteContext {
   store: PaperStore;
   registry: ProviderRegistry;
   librarySearch: LibrarySearch;
+  accounts?: AccountManager;
 }
 /** Services the library, annotation and sync routes need. */
 export interface LibraryRouteContext {
