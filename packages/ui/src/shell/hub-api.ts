@@ -25,6 +25,12 @@ import type {
   ReadProgress,
   HistoryEntry,
   PdfTextLayout,
+  FeedSettings,
+  PublicationBookmark,
+  PublicationBookmarkResult,
+  PublicationPdfLinkResult,
+  RelatedPaper,
+  RelatedPapersResponse,
 } from '@fractal/shared';
 import { TOKEN_HEADER } from '../lib/api';
 import { t } from '../i18n';
@@ -36,7 +42,7 @@ import { t } from '../i18n';
  * "unavailable" state instead of failing.
  */
 
-export type { AiFeature, AiSettings, Article, FieldTopic, PairedDevice, ProviderModel };
+export type { AiFeature, AiSettings, Article, FieldTopic, PairedDevice, ProviderModel, RelatedPaper };
 export type AiChoice = ModelSelection;
 
 export interface ProviderStatus extends HubProviderStatus {
@@ -157,21 +163,6 @@ export interface FeedSection {
   items: FeedEntry[];
 }
 
-export interface RelatedPaper {
-  title: string;
-  authors: string[];
-  year: number | null;
-  venue?: string;
-  abstract?: string;
-  arxivId: string | null;
-  doi: string | null;
-  url: string;
-  citationCount?: number;
-  relation: 'similar' | 'cites' | 'citedBy';
-  inLibrary: boolean;
-  image?: FeedImage | null;
-}
-
 export type Interests = Omit<FeedInterests, 'custom'> & { custom?: CustomInterest[] };
 
 export type NetworkResult = NetworkStatus;
@@ -258,6 +249,8 @@ export interface ExplainRequest {
 }
 
 export class HubApi {
+  private relatedCache = new Map<string, RelatedPapersResponse>();
+  private relatedPending = new Map<string, Promise<RelatedPapersResponse | null>>();
   constructor(
     private readonly token: string | null,
     private readonly fetchImpl: typeof fetch = (input, init) => globalThis.fetch(input, init),
@@ -279,8 +272,8 @@ export class HubApi {
     if (response.status === 404 || response.status === 405 || response.status === 501) return null;
     const payload: unknown = await response.json().catch(() => null);
     if (payload !== null && typeof payload === 'object' && 'error' in payload) {
-      const error = (payload as { error: { message?: string } }).error;
-      throw new Error(error.message ?? t('errors.request'));
+      const error = (payload as { error: { message?: string; code?: string; details?: unknown } }).error;
+      throw Object.assign(new Error(error.message ?? t('errors.request')), { code: error.code, details: error.details, httpStatus: response.status });
     }
     if (!response.ok) throw new Error(t('errors.rejected'));
     return (payload as { data: T }).data;
@@ -301,8 +294,10 @@ export class HubApi {
   libraryRecord(key: string): Promise<LibraryRecord | null> {
     return this.call(`/api/library/${encodeURIComponent(key)}`);
   }
-  patchLibrary(key: string, patch: LibraryPatch): Promise<LibraryRecord | null> {
-    return this.call(`/api/library/${encodeURIComponent(key)}`, { method: 'PATCH', body: patch });
+  async patchLibrary(key: string, patch: LibraryPatch): Promise<LibraryRecord | null> {
+    const record = await this.call<LibraryRecord>(`/api/library/${encodeURIComponent(key)}`, { method: 'PATCH', body: patch });
+    if (record && typeof window !== 'undefined') window.dispatchEvent(new Event('fractal:catalog-changed'));
+    return record;
   }
   recordRead(key: string, readProgress: ReadProgress): Promise<LibraryRecord | null> {
     return this.call(`/api/papers/${encodeURIComponent(key)}/read`, { method: 'POST', body: { readProgress } });
@@ -416,8 +411,33 @@ export class HubApi {
     return this.call('/api/feed/interests', { method: 'PUT', body: interests });
   }
 
-  saveFeedItem(id: string): Promise<{ paperKey: string } | null> {
-    return this.call(`/api/feed/items/${encodeURIComponent(id)}/save`, { method: 'POST', body: {} });
+  async saveFeedItem(id: string): Promise<PublicationBookmarkResult | null> {
+    const result = await this.call<PublicationBookmarkResult>(`/api/feed/items/${encodeURIComponent(id)}/save`, { method: 'POST', body: {} });
+    if (result && typeof window !== 'undefined') window.dispatchEvent(new Event('fractal:catalog-changed'));
+    return result;
+  }
+
+  feedSettings(): Promise<FeedSettings | null> {
+    return this.call('/api/feed/settings');
+  }
+  saveFeedSettings(settings: FeedSettings): Promise<FeedSettings | null> {
+    return this.call('/api/feed/settings', { method: 'PUT', body: settings });
+  }
+
+  async bookmark(publication: PublicationBookmark): Promise<PublicationBookmarkResult | null> {
+    const result = await this.call<PublicationBookmarkResult>('/api/library/bookmarks', { method: 'POST', body: publication });
+    if (result && typeof window !== 'undefined') window.dispatchEvent(new Event('fractal:catalog-changed'));
+    return result;
+  }
+
+  async linkPdf(key: string, file: File): Promise<PublicationPdfLinkResult | null> {
+    const result = await this.call<PublicationPdfLinkResult>(`/api/library/${encodeURIComponent(key)}/pdf`, {
+      method: 'POST',
+      body: file,
+      contentType: 'application/pdf',
+    });
+    if (result && typeof window !== 'undefined') window.dispatchEvent(new Event('fractal:catalog-changed'));
+    return result;
   }
 
   structure(paperKey: string): Promise<PaperStructure | null> {
@@ -522,8 +542,22 @@ export class HubApi {
     return raw === null ? null : raw.items;
   }
 
-  related(paperKey: string): Promise<{ items: RelatedPaper[]; source: string; fetchedAt: string | null } | null> {
-    return this.call(`/api/papers/${encodeURIComponent(paperKey)}/related`);
+  cachedRelated(paperKey: string): RelatedPapersResponse | null {
+    return this.relatedCache.get(paperKey) ?? null;
+  }
+  related(paperKey: string): Promise<RelatedPapersResponse | null> {
+    const pending = this.relatedPending.get(paperKey);
+    if (pending) return pending;
+    const request = this.call<RelatedPapersResponse>(`/api/papers/${encodeURIComponent(paperKey)}/related`)
+      .then((result) => {
+        if (result?.items.length || !this.relatedCache.has(paperKey)) {
+          if (result) this.relatedCache.set(paperKey, result);
+        }
+        return result;
+      })
+      .finally(() => this.relatedPending.delete(paperKey));
+    this.relatedPending.set(paperKey, request);
+    return request;
   }
 
   preferences(): Promise<Preferences | null> {
