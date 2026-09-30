@@ -507,6 +507,8 @@ export class SqlitePaperStore extends PaperStore {
       ])
         this.db.prepare(`DELETE FROM ${table} WHERE paper_key=?`).run(key);
       this.db.prepare('DELETE FROM paper_fts WHERE paper_key=?').run(key);
+      if (pdfHash && !this.db.prepare('SELECT 1 FROM papers WHERE pdf_hash=? LIMIT 1').get(pdfHash))
+        this.db.prepare('DELETE FROM pdf_text_pages WHERE pdf_hash=?').run(pdfHash);
       this.change('paper', key);
       this.db.exec('COMMIT');
     } catch (e) {

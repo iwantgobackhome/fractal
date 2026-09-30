@@ -63,8 +63,8 @@ export class PdfTextLayoutService {
         const data: PdfTextLayout = { status: 'ready', paperKey: key, pdfSha256: digest, extractionVersion: TEXT_LAYOUT_VERSION, ...result };
         const serialized = JSON.stringify(data);
         this.store.db
-          .prepare('INSERT OR REPLACE INTO pdf_text_pages VALUES(?,?,?,?,?,?)')
-          .run(digest, TEXT_LAYOUT_VERSION, page, serialized, Buffer.byteLength(serialized), Date.now());
+          .prepare('INSERT OR REPLACE INTO pdf_text_pages SELECT ?,?,?,?,?,? WHERE EXISTS(SELECT 1 FROM papers WHERE pdf_hash=?)')
+          .run(digest, TEXT_LAYOUT_VERSION, page, serialized, Buffer.byteLength(serialized), Date.now(), digest);
         // Bound persistent derived data to 128 MiB and 512 pages; oldest access is evicted.
         this.store.db.exec(`DELETE FROM pdf_text_pages WHERE rowid IN (
           SELECT rowid FROM (SELECT rowid,ROW_NUMBER() OVER(ORDER BY accessed_at DESC,rowid DESC) AS n,

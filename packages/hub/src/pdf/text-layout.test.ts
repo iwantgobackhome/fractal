@@ -151,6 +151,40 @@ describe('original PDF text-position extraction', () => {
 });
 
 describe('persistent text-position page cache and route', () => {
+  it('purges source-text cache only after the last PDF alias is deleted and prevents in-flight orphan reinsertion', async () => {
+    const s = open(),
+      first = paper(),
+      alias = { ...paper('2401.00002v1'), arxivId: '2401.00002' };
+    s.savePaper(first, pdf);
+    s.savePaper(alias, pdf);
+    let release!: () => void;
+    const gate = new Promise<void>((r) => {
+      release = r;
+    });
+    const service = new PdfTextLayoutService(s, async (bytes, n) => {
+      if (n === 2) await gate;
+      return extractTextPage(bytes, n);
+    });
+    await service.read(first.paperKey, 1);
+    const count = () => s.db.prepare('SELECT count(*) n FROM pdf_text_pages').get();
+    expect(count()).toMatchObject({ n: 1 });
+    s.putFolder({ id: 'folder', name: 'Folder', parentId: null });
+    s.patchLibrary(first.paperKey, { saved: true, collections: ['folder'] });
+    s.patchLibrary(first.paperKey, { saved: false });
+    s.deleteFolder('folder');
+    expect(count()).toMatchObject({ n: 1 });
+    s.deletePaper(first.paperKey);
+    expect(count()).toMatchObject({ n: 1 });
+    expect(s.getPdf(alias.paperKey)).toEqual(pdf);
+    const inFlight = service.read(alias.paperKey, 2);
+    s.deletePaper(alias.paperKey);
+    expect(count()).toMatchObject({ n: 0 });
+    expect(s.getPdf(alias.paperKey)).toBeNull();
+    release();
+    await inFlight;
+    expect(count()).toMatchObject({ n: 0 });
+    await service.close();
+  });
   it('shares identical PDF work across paper keys while isolating an in-flight PDF replacement', async () => {
     const s = open(),
       first = paper(),
