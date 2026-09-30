@@ -1,6 +1,6 @@
 # Independent accepted C implementation review
 
-Source supplied clean by root: `f5319ad85ec913ae3f19a10f6dced7fef1891eab`, including accepted C implementation `1897440/769ac81` and shutdown correction `02811cc`. E rebuilt this worktree and ran its own isolated brief flow. This closes the desktop implementation boundary reviewed here; **current final Windows package and Android D3/D4 certification remain pending**. Request 14 is excluded.
+Implementation source supplied clean by root: `f5319ad85ec913ae3f19a10f6dced7fef1891eab`, including accepted C implementation `1897440/769ac81` and shutdown correction `02811cc`. E rebuilt this worktree and ran its own isolated brief flow. Final C package evidence was subsequently supplied at `6be69e335b180cb85d55c4937b9a6a93236be285`. Desktop implementation and current Windows package evidence pass this review; **Android D3/D4 certification remains pending**. Request 14 is excluded.
 
 ## Executed independently
 
@@ -20,7 +20,19 @@ Reviewed C `stage3-report.md`, `stage3/verification.json`, reader-regression man
 
 Read current `publication-model.ts`, `RelatedPanel.tsx`, `useReaderProvenance.ts` and `ReaderSourceStatus.tsx`. Identifier aliases normalize DOI/arXiv; contradictory identifiers and incompatible author/year title matches are excluded, ambiguous title matches do not choose a record. Related responses isolate paper generations and retain useful rows through refresh/failure while displaying exact provider/cache status and cooldown. Source verification resets per-page/source checks on online/focus/explicit retry, so a transient unavailable result can recover; durable status labels are localized and remain visible separately from current source checks. This source reading supports the accepted owner execution and does not replace it.
 
-C's currently committed packaged manifest is preliminary: it predates the required accepted shutdown correction. Root reports C rebuilding from `08af7b3`; E does not certify those final bytes until root supplies accepted package evidence. Installer/executable resource proof remains distinct from installed/pinned-taskbar appearance.
+## Accepted final Windows package
+
+Root accepted C evidence commit `2632f91` as `c5a8f23`, built from exact source `08af7b3959a3816e8d54d6ea1f9886b253693d79`, and independently recomputed all three artifact hashes below. E reviewed the supplied current `stage3-report.md`, `packaged-verification.json`, `native-icons.json`, packaged discovery and 32px native icon captures, and bounded cleanup proof. No unaffected C suite was repeated, and no peer executable or installer was operated by E. Comparing source08af to supplied6be shows only the owner packaged-verification tool changed under apps/desktop/packages, not shipped product code.
+
+| Artifact under C's `dist/installer/` | SHA256 |
+| --- | --- |
+| `win-unpacked/Fractal.exe`, 246032896 bytes | `5592bd308cc6a486a6d8fda4e4d01c204ac7e0beec6e175aa115ce7d8266c891` |
+| `Fractal Setup 0.1.0.exe`, 117588458 bytes | `8662a9e659428fca7279075d6cc8cef6efb563cb0eb820dc2587d4f8b9c8b557` |
+| `win-unpacked/resources/app.asar`, 13186162 bytes | `ff789125fbeec83978dac39ec4d6e6aabbdd237cd21dc3e421128297d8082d18` |
+
+Current owner execution launches the actual packaged app from app.asar in an isolated profile and proves discovery, retained original PDF/text layer, selector keyboard and exception-free startup. Its seed Hub stops immediately while structure is still running, verifying the accepted shutdown correction in the current package path rather than waiting away the prior race. Native RT_GROUP_ICON/RT_ICON resources for executable and installer match accepted ICO bytes at 16/24/32/48/64/128/256px; window/tray images are 256/32px. Accepted ICO SHA256 is `fbe027c730fe0bee700d1d48832e3c3133a6a261e5d78bdcc658d55192ab8d8d`.
+
+Manifest confirms owned Electron close and temporary profile removal; separate cleanup proof validates the one earlier failed-preseed directory and its single known fixture before deletion. Installer installation, pinned-taskbar appearance and macOS remain unexecuted; resource and isolated packaged startup proof do not imply those observations.
 
 ## Ongoing native resource custody
 
