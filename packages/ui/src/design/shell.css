@@ -2189,3 +2189,130 @@ kbd {
     columns: 1;
   }
 }
+
+/* ------------------------------------------------------------------ AI setup (install / sign in) */
+
+.setup-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-4);
+  max-width: 760px;
+}
+
+.setup-card {
+  display: grid;
+  align-content: start;
+  gap: var(--sp-2);
+  padding: var(--sp-4);
+  border: 1px solid var(--c-rule-strong);
+  border-radius: var(--r-md);
+  background: var(--c-surface);
+}
+
+.setup-card[data-ready='true'] {
+  border-color: var(--c-rule);
+  background: none;
+}
+
+.setup-card__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-3);
+}
+
+.setup-card__name {
+  font-size: var(--fs-lead);
+  font-weight: 600;
+}
+
+.setup-card__state {
+  color: var(--c-muted);
+  font-size: var(--fs-small);
+}
+
+.setup-card__state--ok {
+  color: var(--c-ok);
+}
+
+.setup-card__state--ok::before {
+  content: '● ';
+}
+
+.setup-card__deck,
+.setup-card__detail {
+  margin: 0;
+  color: var(--c-muted);
+  font-size: var(--fs-small);
+}
+
+.setup-card__detail {
+  color: var(--c-faint);
+}
+
+.setup__action {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-3);
+  margin-top: var(--sp-1);
+}
+
+.setup__working {
+  color: var(--c-ink-soft);
+  font-size: var(--fs-small);
+}
+
+.setup__working::after {
+  content: '';
+  display: inline-block;
+  width: 1.2em;
+  text-align: left;
+  animation: setup-dots 1.2s steps(4, end) infinite;
+}
+
+@keyframes setup-dots {
+  0% {
+    content: '';
+  }
+  25% {
+    content: '.';
+  }
+  50% {
+    content: '..';
+  }
+  75% {
+    content: '...';
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .setup__working::after {
+    animation: none;
+  }
+}
+
+.setup__byhand {
+  flex-basis: 100%;
+  color: var(--c-muted);
+  font-size: var(--fs-small);
+}
+
+.setup__byhand summary {
+  cursor: pointer;
+}
+
+.setup__byhand .command {
+  display: inline-block;
+  margin-top: var(--sp-2);
+}
+
+.account__todo .setup__action {
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .setup-cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -1,9 +1,10 @@
-import { useState, type JSX } from 'react';
+import { useCallback, useState, type JSX } from 'react';
 import { t, type MessageKey } from '../i18n';
 import { FractalMark } from './FractalMark';
 import { InterestPicker } from './InterestPicker';
-import type { HubApi, Preferences } from './hub-api';
-import { AiConnection, LanguageFields, useProviders } from './settings-parts';
+import type { AiAccount, HubApi, Preferences } from './hub-api';
+import { ProviderCard } from './ProviderSetup';
+import { AiConnection, LanguageFields, useLoad, useProviders } from './settings-parts';
 import { DevicesSection } from './SettingsScreen';
 
 type Step = 'language' | 'ai' | 'fields' | 'tablet';
@@ -24,13 +25,37 @@ interface Props {
 
 function AiStep({ hub }: { hub: HubApi }): JSX.Element {
   const { data, recheck, checking } = useProviders(hub);
+  const loadAccounts = useCallback(() => hub.accounts(), [hub]);
+  const [accounts, , reloadAccounts] = useLoad<AiAccount[]>(loadAccounts);
+  const changed = useCallback(() => {
+    recheck();
+    reloadAccounts();
+  }, [recheck, reloadAccounts]);
   if (data === undefined) return <p className="settings__quiet">{t('settings.loading')}</p>;
   if (data === null) return <p className="settings__quiet">{t('settings.unavailable')}</p>;
   const ready = data.providers.some((p) => p.installed && p.loggedIn);
+  if (accounts === null) {
+    return (
+      <>
+        <AiConnection providers={data.providers} onRecheck={recheck} checking={checking} />
+        <p className="welcome__note">{ready ? t('welcome.aiReady') : t('welcome.aiLater')}</p>
+      </>
+    );
+  }
   return (
     <>
-      <AiConnection providers={data.providers} onRecheck={recheck} checking={checking} />
-      <p className="welcome__note">{ready ? t('welcome.aiReady') : t('welcome.aiLater')}</p>
+      <div className="setup-cards">
+        {data.providers.map((status) => (
+          <ProviderCard
+            key={status.id}
+            hub={hub}
+            status={status}
+            account={accounts?.find((a) => a.provider === status.id && a.kind === 'system')}
+            onChange={changed}
+          />
+        ))}
+      </div>
+      <p className="welcome__note">{ready ? t('welcome.aiReady') : t('setup.oneIsEnough')}</p>
     </>
   );
 }
