@@ -83,6 +83,12 @@ export class SqlitePaperStore extends PaperStore {
         INSERT INTO migrations VALUES(8, datetime('now'));
         RELEASE feed_images_migration;`);
     }
+    if (!this.db.prepare('SELECT 1 FROM migrations WHERE version = 9').get()) {
+      this.db.exec(`SAVEPOINT news_reader_migration;
+        CREATE TABLE news_articles(url TEXT PRIMARY KEY, data TEXT NOT NULL, fetched_at TEXT NOT NULL);
+        INSERT INTO migrations VALUES(9, datetime('now'));
+        RELEASE news_reader_migration;`);
+    }
   }
 
   getPreferences(): Preferences {

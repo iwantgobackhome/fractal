@@ -11,6 +11,7 @@ import { CachedFetcher, arxivSource, huggingFaceSource, newsSource, recommendati
 import { rankItems } from './ranking';
 import { FeedImageStore, dropSharedImages, firstFigureImage, imageDimensions, ogImage } from './images';
 import { TopicService } from './topics';
+import { ArticleReader } from './article';
 
 const DEFAULT_INTERESTS: FeedInterests = { categories: [], topics: [], authors: [], custom: [] };
 const DEFAULT_SETTINGS: FeedSettings = {
@@ -54,6 +55,7 @@ export class FeedService {
   private readonly cache: CachedFetcher;
   private readonly images: FeedImageStore | null;
   readonly topics: TopicService;
+  private readonly articleReader: ArticleReader;
   private timer: ReturnType<typeof setTimeout> | null = null;
   private running: Promise<FeedResponse> | null = null;
   private stopped = false;
@@ -70,10 +72,12 @@ export class FeedService {
     this.cache = new CachedFetcher(store, fetcher);
     this.images = imageRoot ? new FeedImageStore(store, imageRoot, fetcher) : null;
     this.topics = new TopicService(store, registry);
+    this.articleReader = new ArticleReader(store, this.images, fetcher);
   }
   async image(hash: string): Promise<{ body: Buffer; contentType: string } | null> {
     return this.images?.get(hash) ?? null;
   }
+  article(url: string) { return this.articleReader.get(url); }
 
   private meta<T>(key: string, fallback: T): T {
     const row = this.store.db.prepare('SELECT data FROM feed_meta WHERE key=?').get(key) as MetaRow | undefined;

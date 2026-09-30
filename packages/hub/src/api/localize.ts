@@ -1,6 +1,8 @@
 import type { AppError, ErrorCode } from '@fractal/shared';
 
 const messages: Record<ErrorCode, { ko: string; en: string }> = {
+  ARTICLE_UNAVAILABLE: { ko: '이 기사를 앱에서 읽을 수 없습니다. 브라우저에서 열어 주세요.', en: 'This article could not be read here. Open it in your browser.' },
+  QUICK_TRANSLATE_UNAVAILABLE: { ko: '빠른 번역을 사용할 수 없습니다. 잠시 후 다시 시도해 주세요.', en: 'Quick translation is unavailable. Try again shortly.' },
   RELATED_RATE_LIMITED: {
     ko: 'Semantic Scholar가 바쁩니다. 잠시 후 관련 논문을 다시 시도해 주세요.',
     en: 'Semantic Scholar is busy. Try related papers again shortly.',

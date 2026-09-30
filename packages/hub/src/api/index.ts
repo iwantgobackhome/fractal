@@ -465,6 +465,11 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
       }
     }
     if (options.feed) {
+      if (method === 'GET' && segments.length === 3 && segments[0] === 'api' && segments[1] === 'news' && segments[2] === 'article') {
+        const url = ctx.url.searchParams.get('url');
+        if (!url) throw invalidInput('Article URL is required.');
+        return json(await options.feed.article(url));
+      }
       const feed = await handleFeed(method, segments, request, { feed: options.feed, url: ctx.url });
       if (feed !== undefined) return feed;
     }
