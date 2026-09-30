@@ -1,0 +1,19 @@
+Original numbered user requests (faithful translation):
+1. PC UI is too bare and feels unfinished; launcher/program icon differs from the in-app icon.
+2. Asking about a figure or underlined text then closing loses the history.
+3. Simply reading adds a paper to the library. Distinguish recently viewed from explicitly saved; organize the library into folders.
+4. Model/language selection listbox controls look like system defaults; make polished custom controls.
+5. Are topic papers only arXiv? Include journals and conferences.
+6. Android app UI needs substantial detailed improvement.
+7. Android lacks features present on PC, specifically news and paper topics.
+8. Android handwriting is nearly unusable: touching with the pen causes vertical jumping.
+9. Android has no app icon.
+10. Text dragging/selection is unreliable on both Android and PC.
+11. Add sticky notes positioned anywhere, editable and collapsible/closable later.
+12. Android lacks side-by-side original/translation reading.
+13. Related papers fail because Semantic Scholar says it is busy.
+14. Mapping translated annotations to originals is explicitly EXCLUDED.
+
+Owners: A = common UI/UX design and prototypes for both platforms. B = shared/hub backend contracts/storage/sync, then discovery/reliability. C = desktop implementation after reviewed design/contracts. D = Android implementation after reviewed design/contracts. E = independent QA. Coordinator = review, coordination and integration.
+Maximum three concurrent workers; initial A/B/E. All GPT-6.1 Sol High. Workers do not merge their own changes.
+Modern workspace visual direction selected. Nested folders, multiple folder membership, tags selected. Pen draws by default, explicit selection tool allows pen selection. General questions and explanations share filtered persistent history. Journals/conferences/preprints included. Representative interactive prototypes precede full UI implementation.
