@@ -20,6 +20,16 @@ const DEFAULT_SETTINGS: FeedSettings = {
 };
 const SOURCES = [arxivSource, huggingFaceSource, newsSource, recommendationSource];
 
+/** Preserve each selected field's news allowance independently of the general pool. */
+export function retainNewsByField(items: FeedItem[], interests: FeedInterests): FeedItem[] {
+  const fields = [...interests.categories, ...(interests.custom ?? []).map((item) => `custom:${item.id}`)];
+  const news = items.filter((item) => item.kind === 'news');
+  const selected = new Set<string>();
+  for (const field of fields) for (const item of news.filter((candidate) => candidate.categories.includes(field)).slice(0, 30)) selected.add(item.id);
+  for (const item of news.filter((candidate) => !fields.some((field) => candidate.categories.includes(field))).slice(0, 40)) selected.add(item.id);
+  return news.filter((item) => selected.has(item.id));
+}
+
 export function isoWeek(now: Date): string {
   const day = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
   day.setUTCDate(day.getUTCDate() + 4 - (day.getUTCDay() || 7));
@@ -142,8 +152,9 @@ export class FeedService {
     const byField = fields.map((entry) => ({ ...entry, items: papers.filter((item) => item.categories.includes(entry.field)).slice(0, 20) }));
     const newsByField = fields.map((entry) => ({
       ...entry,
-      items: items.filter((item) => item.kind === 'news' && item.categories.includes(entry.field)).slice(0, 20),
+      items: items.filter((item) => item.kind === 'news' && item.categories.includes(entry.field)).slice(0, 30),
     }));
+    const generalNews = items.filter((item) => item.kind === 'news' && !fields.some((field) => item.categories.includes(field.field))).slice(0, 40);
     const prefs = this.store.getPreferences();
     const digestLanguage = prefs.answerLanguage === 'auto' ? prefs.uiLanguage : prefs.answerLanguage;
     const digest = this.store.db.prepare('SELECT data FROM feed_digests WHERE week=?').get(`${week}:${digestLanguage}`) as MetaRow | undefined;
@@ -159,6 +170,7 @@ export class FeedService {
           .slice(0, 30),
         news: items.filter((item) => item.kind === 'news').slice(0, 30),
         newsByField,
+        generalNews,
         recommended: papers.filter((item) => item.source.includes('recommendations') && !item.inLibrary).slice(0, 30),
       },
       sourceStatus: week === isoWeek(this.now()) ? this.status() : [],
@@ -201,6 +213,7 @@ export class FeedService {
     const statuses: FeedSourceStatus[] = [];
     const context = {
       interests: this.interests(),
+      uiLanguage: this.store.getPreferences().uiLanguage,
       libraryArxivIds: library.map((item) => item.arxivId).filter((id): id is string => !!id),
       libraryTitles: Object.fromEntries(library.filter((item) => item.arxivId && item.title).map((item) => [item.arxivId!, item.title!])),
       rssFeeds: settings.customRssFeeds,
@@ -231,9 +244,18 @@ export class FeedService {
         });
       }
     }
-    const ranked = rankItems(newItems, context.interests, library, now, this.store.getPreferences().uiLanguage);
+    const ranked = rankItems(newItems, context.interests, library, now, context.uiLanguage);
+    const retainedNews = retainNewsByField(ranked, context.interests);
+    const retainedIds = new Set(retainedNews.map((item) => item.id));
+    const retained = ranked.filter((item) => item.kind !== 'news' || retainedIds.has(item.id));
     if (this.images) {
-      const selected = [...ranked.filter((item) => item.kind === 'paper').slice(0, 30), ...ranked.filter((item) => item.kind === 'news').slice(0, 30)];
+      const fields = [...context.interests.categories, ...(context.interests.custom ?? []).map((item) => `custom:${item.id}`)];
+      const newsImages = new Set<string>();
+      for (const field of fields)
+        for (const item of retainedNews.filter((candidate) => candidate.categories.includes(field)).slice(0, 8)) newsImages.add(item.id);
+      for (const item of retainedNews.filter((candidate) => !fields.some((field) => candidate.categories.includes(field))).slice(0, 12))
+        newsImages.add(item.id);
+      const selected = [...retained.filter((item) => item.kind === 'paper').slice(0, 30), ...retainedNews.filter((item) => newsImages.has(item.id))];
       const fingerprints = new Map<string, string>();
       let cursor = 0;
       await Promise.all(
@@ -265,13 +287,13 @@ export class FeedService {
           }
         }),
       );
-      dropSharedImages(ranked, fingerprints);
+      dropSharedImages(retained, fingerprints);
     }
     this.store.db.exec('SAVEPOINT feed_refresh');
     try {
       this.store.db.prepare('DELETE FROM feed_items WHERE week=?').run(week);
       const insert = this.store.db.prepare('INSERT INTO feed_items(week,id,data) VALUES(?,?,?)');
-      for (const item of ranked) {
+      for (const item of retained) {
         const { imageCandidate: _candidate, basedOn: _basedOn, ...clean } = item as FeedItem & { imageCandidate?: string; basedOn?: string };
         if (_basedOn) clean.reasonParams = { ...clean.reasonParams, basedOn: _basedOn };
         insert.run(week, item.id, JSON.stringify(clean));
@@ -284,7 +306,7 @@ export class FeedService {
       this.store.db.exec('RELEASE feed_refresh');
       throw error;
     }
-    if (settings.digestEnabled) await this.generateDigest(week, ranked).catch(() => undefined);
+    if (settings.digestEnabled) await this.generateDigest(week, retained).catch(() => undefined);
     return this.read(week);
   }
 

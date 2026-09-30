@@ -65,3 +65,11 @@ Running the Node PTY from a newly created empty cwd reproduced Claude Code's `Ac
 `npm run desktop:dist` succeeded again. From Git Bash, Playwright Electron launched `win-unpacked/Fractal.exe` with a new temporary cwd Claude had never seen, a temporary copy of the user's Fractal data, and an isolated `--user-data-dir`. `GET /api/ai/limits` returned HTTP 200: Claude Pro `ok`, five-hour 28% resetting 2026-09-30 06:50:00 UTC, weekly 30% resetting 2026-10-03 13:00:00 UTC; Codex `ok`, weekly 17%. The probe closed only its own packaged process and removed its temporary data.
 
 After this change, `npm test` (97 tests), `npm run typecheck`, `npm run e2e`, and `npm run format:check` all passed.
+
+## Field and general news volume (2026-09-30)
+
+The live `npx tsx scripts/w5-live.ts feed` probe used `cs.AI`, `cs.CV`, and the custom interest “Graph neural networks” with a temporary data directory and Korean UI language. The refresh returned HTTP 200. `newsByField` held 30 AI stories, 10 computer-vision stories, and 6 custom-interest stories; `generalNews` held 40 other science and technology stories. The stored allowance is now 30 per field plus 40 general stories, so a busy field cannot consume another field's space. These counts are a live snapshot and depend on the source feeds.
+
+The probe fetched English and Korean Google News science and technology topic feeds and the RSS feeds from 전자신문, IT동아, and 헬로디디; all reported `ok` on this PC. Field searches used short English and Korean phrases, while general news had no interest filter. Across the 106 distinct displayed papers and news stories counted by the probe, 30 had proxied images and none repeated an image URL. The Google News outlet parser produced no `news.google.com` source label in the displayed legacy news section.
+
+`npm test` (104 tests), `npm run typecheck`, `npm run e2e`, `npm run format:check`, and `npm run desktop:dist` passed for this change.

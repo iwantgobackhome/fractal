@@ -78,6 +78,7 @@ export const feedResponseSchema = z.object({
     rankings: z.array(feedItemSchema),
     news: z.array(feedItemSchema),
     newsByField: z.array(z.object({ field: z.string(), label: z.string().optional(), items: z.array(feedItemSchema) })),
+    generalNews: z.array(feedItemSchema),
     recommended: z.array(feedItemSchema),
   }),
   sourceStatus: z.array(feedSourceStatusSchema),

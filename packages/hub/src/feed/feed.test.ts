@@ -71,8 +71,9 @@ describe('feed sources and ranking', () => {
   it('selects curated news feeds for the reader field', async () => {
     const get = vi.fn().mockResolvedValue(rss);
     await newsSource.load({ interests: { categories: ['q-bio.MN'], topics: [], authors: [], custom: [] }, libraryArxivIds: [], rssFeeds: [], get, now });
-    expect(get).toHaveBeenCalledTimes(7);
-    expect(get.mock.calls[0]?.[0]).toBe('https://www.nature.com/subjects/biological-sciences.rss');
+    expect(get).toHaveBeenCalledTimes(6);
+    expect(get.mock.calls.some(([url]) => url === 'https://www.nature.com/subjects/biological-sciences.rss')).toBe(true);
+    expect(get.mock.calls.some(([url]) => String(url).includes('/headlines/section/topic/SCIENCE'))).toBe(true);
   });
 
   it('deduplicates arXiv, DOI and title and ranks interest matches first', () => {

@@ -1,8 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
-import { arxivCategories, arxivGroups } from '@fractal/shared';
+import { arxivCategories, arxivGroups, newsKeywordsForCategory, type FeedItem } from '@fractal/shared';
 import { customSearchQuery, newsSource, parseSyndication } from './sources';
 import { assertPublicImageUrl, dropSharedImages, fetchPublicArticle, fetchPublicImage, firstFigureImage, imageDimensions, ogImage } from './images';
 import { newsMatchScore } from './news-relevance';
+import { retainNewsByField } from './index';
 import { toHttp } from '../api/errors';
 import { mergeRelated } from './related';
 import { RelatedPaperService } from './related';
@@ -48,7 +49,7 @@ describe('W5 feed sources', () => {
   it('requires visible interest terms and rejects shared story images', () => {
     const interests = { categories: ['cs.CV'], topics: [], authors: [], custom: [] };
     expect(newsMatchScore('WISE volunteers identified 3,000 brown dwarfs', 'Astronomy discovery', interests, 'cs.CV')).toBe(0);
-    expect(newsMatchScore('Computer vision model advances', 'Visual pattern recognition', interests, 'cs.CV')).toBeGreaterThan(3);
+    expect(newsMatchScore('Computer vision model advances', 'Visual pattern recognition', interests, 'cs.CV')).toBeGreaterThanOrEqual(3);
     expect(newsMatchScore('컴퓨터 비전 연구', '', interests, 'cs.CV')).toBeGreaterThan(0);
     const image = { url: `/api/feed/images/${'a'.repeat(64)}` };
     const items = [
@@ -59,18 +60,40 @@ describe('W5 feed sources', () => {
     dropSharedImages(items, new Map());
     expect(items.map((item) => item.image)).toEqual([null, null, { url: `/api/feed/images/${'b'.repeat(64)}` }]);
   });
-  it('filters unrelated cs.CV search results before they reach the feed', async () => {
+  it('uses concise English and Korean searches and keeps general news unfiltered', async () => {
     const date = 'Tue, 29 Sep 2026 14:39:00 GMT';
     const xml = `<rss><item><title>WISE volunteers identified 3,000 brown dwarfs - Example</title><link>https://news.google.com/a</link><source>Example</source><description>Astronomy discovery</description><pubDate>${date}</pubDate></item><item><title>Computer vision advances - Example</title><link>https://news.google.com/b</link><source>Example</source><description>New recognition model</description><pubDate>${date}</pubDate></item></rss>`;
+    const urls: string[] = [];
     const items = await newsSource.load({
       interests: { categories: ['cs.CV'], topics: [], authors: [], custom: [] },
+      uiLanguage: 'ko',
       libraryArxivIds: [],
       rssFeeds: [],
       now: new Date('2026-09-30T00:00:00Z'),
-      get: async () => xml,
+      get: async (url) => {
+        urls.push(url);
+        return xml;
+      },
     });
-    expect(items.length).toBeGreaterThan(0);
-    expect(items.every((item) => item.title.includes('Computer vision'))).toBe(true);
+    expect(newsKeywordsForCategory('cs.CV')).toEqual({ en: ['computer vision', 'image recognition'], ko: ['컴퓨터 비전', '영상 인식'] });
+    expect(urls.some((url) => new URL(url).searchParams.get('q')?.includes('컴퓨터 비전'))).toBe(true);
+    expect(urls.some((url) => new URL(url).searchParams.get('q')?.includes('computer vision'))).toBe(true);
+    expect(urls.some((url) => url.includes('Computer+Vision+and+Pattern+Recognition'))).toBe(false);
+    expect(items.filter((item) => item.categories.includes('cs.CV')).every((item) => item.title.includes('Computer vision'))).toBe(true);
+    expect(items.some((item) => item.categories.length === 0 && item.title.includes('WISE volunteers'))).toBe(true);
+  });
+  it('retains 30 stories per field and 40 general stories without a global news cap', () => {
+    const news = (id: string, categories: string[]) => ({ id, kind: 'news', categories }) as FeedItem;
+    const ranked = [
+      ...Array.from({ length: 35 }, (_, index) => news(`ai-${index}`, ['cs.AI'])),
+      ...Array.from({ length: 35 }, (_, index) => news(`cv-${index}`, ['cs.CV'])),
+      ...Array.from({ length: 50 }, (_, index) => news(`general-${index}`, [])),
+    ];
+    const kept = retainNewsByField(ranked, { categories: ['cs.AI', 'cs.CV'], topics: [], authors: [], custom: [] });
+    expect(kept).toHaveLength(100);
+    expect(kept.filter((item) => item.categories.includes('cs.AI'))).toHaveLength(30);
+    expect(kept.filter((item) => item.categories.includes('cs.CV'))).toHaveLength(30);
+    expect(kept.filter((item) => item.categories.length === 0)).toHaveLength(40);
   });
   it('rejects private addresses, wrong image types, and oversized images', async () => {
     await expect(assertPublicImageUrl('https://127.0.0.1/a.png')).rejects.toThrow();

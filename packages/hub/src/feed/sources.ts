@@ -1,8 +1,8 @@
 import { createHash } from 'node:crypto';
 import type { FeedItem, FeedInterests, FeedSourceStatus } from '@fractal/shared';
-import { arxivCategories, arxivGroups } from '@fractal/shared';
+import type { Preferences } from '@fractal/shared';
 import type { SqlitePaperStore } from '../store/sqlite';
-import { hasNewsInterests, newsMatchScore } from './news-relevance';
+import { newsMatchScore, newsQueriesForField } from './news-relevance';
 
 export type RawItem = Omit<FeedItem, 'score' | 'reason' | 'reasonCode' | 'reasonParams' | 'inLibrary' | 'image'> & {
   image?: FeedItem['image'];
@@ -15,6 +15,7 @@ export interface FeedSource {
 }
 export interface SourceContext {
   interests: FeedInterests;
+  uiLanguage?: Preferences['uiLanguage'];
   libraryArxivIds: string[];
   libraryTitles?: Record<string, string>;
   rssFeeds: string[];
@@ -226,6 +227,22 @@ export const FIELD_RSS_FEEDS: Record<string, string[]> = {
   physics: ['https://www.nature.com/subjects/physics.rss'],
 };
 
+/** These Korean outlet feeds returned RSS items from this PC on 2026-09-30. */
+export const KOREAN_GENERAL_RSS_FEEDS = [
+  { url: 'https://rss.etnews.com/Section901.xml', outlet: '전자신문' },
+  { url: 'https://it.donga.com/feeds/rss/news/', outlet: 'IT동아' },
+  { url: 'https://www.hellodd.com/rss/allArticle.xml', outlet: '헬로디디' },
+];
+
+function googleNewsUrl(path: string, language: 'en' | 'ko', keyword?: string): string {
+  const url = new URL(`https://news.google.com/rss/${path}`);
+  if (keyword) url.searchParams.set('q', `${keyword} when:7d`);
+  url.searchParams.set('hl', language === 'ko' ? 'ko' : 'en-US');
+  url.searchParams.set('gl', language === 'ko' ? 'KR' : 'US');
+  url.searchParams.set('ceid', language === 'ko' ? 'KR:ko' : 'US:en');
+  return url.href;
+}
+
 function curatedFeeds(categories: string[]): string[] {
   if (!categories.length) return DEFAULT_RSS_FEEDS;
   const groups = new Set<string>();
@@ -299,38 +316,35 @@ export const huggingFaceSource: FeedSource = {
 export const newsSource: FeedSource = {
   id: 'news',
   async load(context) {
-    const generalFeeds = [...new Set([...curatedFeeds(context.interests.categories), ...context.rssFeeds])];
-    const interests = [
-      ...[...new Set(context.interests.categories.map((code) => arxivCategories.find((item) => item.code === code)?.group ?? code.split('.')[0]))].map(
-        (group) => ({ field: group!, label: arxivGroups.find((item) => item.id === group)?.name.en ?? group! }),
+    const languages: Array<'en' | 'ko'> = context.uiLanguage === 'ko' ? ['ko', 'en'] : ['en'];
+    const generalFeeds = [
+      ...languages.flatMap((language) =>
+        ['SCIENCE', 'TECHNOLOGY'].map((topic) => ({ url: googleNewsUrl(`headlines/section/topic/${topic}`, language), field: '' })),
       ),
-      ...context.interests.categories.map((code) => ({ field: code, label: arxivCategories.find((item) => item.code === code)?.name.en ?? code })),
-      ...(context.interests.custom ?? []).map((item) => ({ field: `custom:${item.id}`, label: item.query })),
+      ...(context.uiLanguage === 'ko' ? KOREAN_GENERAL_RSS_FEEDS.map(({ url, outlet }) => ({ url, outlet, field: '' })) : []),
+      ...[...new Set([...curatedFeeds(context.interests.categories), ...context.rssFeeds])].map((url) => ({ url, field: '' })),
     ];
-    const searches = interests.flatMap((interest) =>
-      ['en', 'ko']
-        .map((language) => {
-          const query = new URL('https://news.google.com/rss/search');
-          query.searchParams.set('q', `${interest.label} when:7d`);
-          query.searchParams.set('hl', language === 'ko' ? 'ko' : 'en-US');
-          query.searchParams.set('gl', language === 'ko' ? 'KR' : 'US');
-          query.searchParams.set('ceid', language === 'ko' ? 'KR:ko' : 'US:en');
-          return { url: query.href, field: interest.field };
-        })
-        .concat([
-          (() => {
+    const fields = [...context.interests.categories, ...(context.interests.custom ?? []).map((item) => `custom:${item.id}`)];
+    const searches = fields.flatMap((field) => {
+      const keywords = newsQueriesForField(field, context.interests);
+      const google = (['en', 'ko'] as const).flatMap((language) =>
+        keywords[language].slice(0, 2).map((keyword) => ({ url: googleNewsUrl('search', language, keyword), field })),
+      );
+      const bing = keywords.en[0]
+        ? (() => {
             const query = new URL('https://www.bing.com/news/search');
-            query.searchParams.set('q', interest.label);
+            query.searchParams.set('q', keywords.en[0]!);
             query.searchParams.set('format', 'rss');
-            return { url: query.href, field: interest.field };
-          })(),
-        ]),
-    );
-    const feeds = [...generalFeeds.map((url) => ({ url, field: '' })), ...searches];
+            return [{ url: query.href, field }];
+          })()
+        : [];
+      return [...google, ...bing];
+    });
+    const feeds: Array<{ url: string; field: string; outlet?: string }> = [...generalFeeds, ...searches];
     const results = await Promise.allSettled(
-      feeds.map(async ({ url, field }) =>
-        parseSyndication(await context.get(url), new URL(url).hostname)
-          .filter((item) => !hasNewsInterests(context.interests) || newsMatchScore(item.title, item.abstract, context.interests, field) > 0)
+      feeds.map(async ({ url, field, outlet }) =>
+        parseSyndication(await context.get(url), outlet ?? new URL(url).hostname)
+          .filter((item) => !field || newsMatchScore(item.title, item.abstract, context.interests, field) > 0)
           .map((item) => ({ ...item, categories: field ? [field] : [] })),
       ),
     );

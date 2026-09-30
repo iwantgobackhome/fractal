@@ -218,9 +218,13 @@ export function HomeScreen({ hub, papers, onOpen, onOpenExternal, onShowLibrary,
           items: once(section.items, seen, 6),
           news: once(newsByField.get(section.field)?.items ?? [], seen, 4),
         }));
-  // Stories that belong to no field: general lab news, or everything from a hub without field news.
-  const otherNews: FeedEntry[] = sections === undefined ? [] : once(sections.news, seen, 6);
-  const empty = sections === undefined || (sections.top.length === 0 && sections.rankings.length === 0 && sections.news.length === 0);
+  const otherNews: FeedEntry[] = sections === undefined ? [] : once(sections.generalNews ?? sections.news, seen, 6);
+  const empty =
+    sections === undefined ||
+    (sections.top.length === 0 &&
+      sections.byField.every((section) => section.items.length === 0) &&
+      (sections.newsByField?.every((section) => section.items.length === 0) ?? true) &&
+      (sections.generalNews?.length ?? sections.news.length) === 0);
   const headline = (item: FeedEntry, size: 'lead' | 'normal' | 'compact') => (
     <Headline
       key={item.id}
@@ -318,7 +322,7 @@ export function HomeScreen({ hub, papers, onOpen, onOpenExternal, onShowLibrary,
               {otherNews.length > 0 ? (
                 <section aria-labelledby="home-news">
                   <h2 id="home-news" className="home-front__kicker">
-                    {newsByField.size > 0 ? t('home.moreNews') : t('home.news')}
+                    {t('home.generalNews')}
                   </h2>
                   <ul className="stories stories--column">
                     {otherNews.map((item) => (

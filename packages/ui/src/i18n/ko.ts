@@ -199,6 +199,7 @@ export const ko = {
     reasonSimilarTo: '보관한 「{title}」 기반 추천',
     similarDeck: '서재에 보관한 논문을 바탕으로 Semantic Scholar가 고른 논문입니다.',
     moreNews: '그 밖의 소식',
+    generalNews: '과학·기술 소식',
   },
   welcome: {
     skip: '건너뛰기',

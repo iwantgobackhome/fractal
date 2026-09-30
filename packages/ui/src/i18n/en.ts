@@ -194,6 +194,7 @@ export const en: Messages = {
     rankings: 'Weekly ranking',
     votes: '{count} votes',
     news: 'Field news',
+    generalNews: 'Science & technology news',
     similar: 'Similar to your library',
     gathered: 'Gathered {time}',
     refresh: 'Gather again',

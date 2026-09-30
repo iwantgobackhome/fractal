@@ -8,12 +8,13 @@ import type { PaperAcquirer } from '../packages/hub/src/api/index';
 
 const mode = process.argv[2] ?? 'limits';
 const relatedId = process.argv[3] ?? '1706.03762';
+const feedFields = process.argv.slice(3).length ? process.argv.slice(3) : ['cs.AI', 'cs.CV'];
 const root = mkdtempSync(join(tmpdir(), 'fractal-w5-live-'));
 const setup = new SqlitePaperStore(root);
 const feed = new FeedService(setup, {} as PaperAcquirer);
 if (mode === 'feed') {
   feed.putInterests({
-    categories: ['cs.LG'],
+    categories: feedFields,
     topics: [],
     authors: [],
     custom: [{ id: 'w5-custom', label: 'Graph neural networks', query: 'graph neural networks' }],
@@ -96,7 +97,15 @@ try {
       });
       const body = (await response.json()) as { data?: any; error?: unknown };
       const sections = body.data?.sections;
-      const items = sections ? ([...sections.top, ...sections.news] as Array<{ image: unknown }>) : [];
+      const items = sections
+        ? ([
+            ...new Map(
+              [...sections.top, ...sections.newsByField.flatMap((entry: any) => entry.items), ...sections.generalNews].map((item: any) => [item.id, item]),
+            ).values(),
+          ] as Array<{
+            image: unknown;
+          }>)
+        : [];
       process.stdout.write(
         JSON.stringify(
           {
@@ -106,6 +115,7 @@ try {
             counts: sections ? Object.fromEntries(Object.entries(sections).map(([key, value]) => [key, (value as unknown[]).length])) : null,
             custom: sections?.byField?.find((entry: any) => entry.field === 'custom:w5-custom')?.items.length,
             newsByField: sections?.newsByField?.map((entry: any) => ({ field: entry.field, count: entry.items.length })),
+            generalNews: sections?.generalNews?.length,
             imaged: items.filter((item) => !!item.image).length,
             displayed: items.length,
             googleNewsSources: sections?.news?.filter((item: any) => item.source === 'news.google.com').length,
