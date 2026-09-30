@@ -15,6 +15,7 @@ import { ProviderRegistry } from './registry';
 import { JsonSettingsStore } from './settings';
 import { JsonUsageStore } from './usage';
 import { RegistryLegacyAdapter } from './legacy-adapter';
+import { localizeError } from '../api/localize';
 import { decodeTranslation, decodeTranslationPage } from '../codex/index';
 import { handleAi } from '../api/routes/ai';
 import type { LibrarySearch } from './library-search';
@@ -93,6 +94,21 @@ const store = {
 } as unknown as PaperStore;
 
 describe('AI providers and routes', () => {
+  it('keeps Claude available when the Codex runtime check fails', async () => {
+    const codex = new FakeProvider('codex');
+    codex.status = async () => {
+      throw Object.assign(new Error('Codex MCP override was rejected for cua_repl.'), { code: 'UNSAFE_RUNTIME' });
+    };
+    const registry = new ProviderRegistry([codex, new FakeProvider('claude')], new MemorySettings());
+    expect(await registry.providersInfo()).toMatchObject([
+      { status: { id: 'codex', loggedIn: false, detail: 'Provider unavailable: Codex MCP override was rejected for cua_repl.' }, models: [] },
+      { status: { id: 'claude', loggedIn: true }, models: [{ id: 'sonnet' }] },
+    ]);
+    expect(await new RegistryLegacyAdapter(registry, codexSpies()).connection()).toMatchObject({ status: 'subscription', modelIds: ['sonnet'] });
+    expect(localizeError({ code: 'UNSAFE_RUNTIME', message: 'Codex MCP override was rejected for cua_repl.', retryable: false }, 'ko').message).toContain(
+      'cua_repl',
+    );
+  });
   it('parses Claude stream-json text and token usage', () => {
     expect(parseClaudeEvent({ type: 'stream_event', event: { type: 'content_block_delta', delta: { type: 'text_delta', text: 'Hi' } } })).toEqual([
       { type: 'text', text: 'Hi' },

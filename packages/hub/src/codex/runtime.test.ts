@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -47,5 +47,34 @@ describe('Codex CLI isolation', () => {
     } finally {
       rmSync(home, { recursive: true, force: true });
     }
+  });
+  it('leaves an already-disabled app server alone and verifies all three servers are disabled', async () => {
+    const servers = [
+      { name: 'codex_app', enabled: false },
+      { name: 'cua_repl', enabled: true },
+      { name: 'node_repl', enabled: true },
+    ];
+    const probe = vi.fn(async (_file: string, args: string[]) => ({
+      stdout: JSON.stringify(
+        servers.map((server) => ({
+          ...server,
+          enabled: server.enabled && !args.includes(`mcp_servers.${server.name}.enabled=false`),
+        })),
+      ),
+      stderr: '',
+    })) as unknown as Parameters<typeof disabledMcpArgs>[2];
+    const args = await disabledMcpArgs('codex.exe', {}, probe);
+    expect(args).toEqual(['-c', 'mcp_servers.cua_repl.enabled=false', '-c', 'mcp_servers.node_repl.enabled=false']);
+    expect(
+      JSON.parse((await probe!('codex.exe', ['mcp', 'list', '--json', ...args], {})).stdout).every((server: { enabled: boolean }) => !server.enabled),
+    ).toBe(true);
+    const rejected = vi.fn(async (_file: string, requested: string[]) => {
+      if (requested.includes('mcp_servers.cua_repl.enabled=false')) throw new Error('invalid transport');
+      return { stdout: JSON.stringify(servers), stderr: '' };
+    }) as unknown as Parameters<typeof disabledMcpArgs>[2];
+    await expect(disabledMcpArgs('codex.exe', {}, rejected)).rejects.toMatchObject({
+      code: 'UNSAFE_RUNTIME',
+      message: 'Codex MCP override was rejected for cua_repl.',
+    });
   });
 });

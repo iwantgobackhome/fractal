@@ -1,4 +1,4 @@
-import type { AiFeature, AiSettings, ModelSelection, ProviderId, UsageRecord } from '@fractal/shared';
+import type { AiFeature, AiSettings, ModelSelection, ProviderId, ProviderInfo, UsageRecord } from '@fractal/shared';
 import { aiSettingsSchema } from '@fractal/shared';
 import { invalidInput } from '../store/index';
 import type { AiProvider, CompleteInput, ProviderDelta, SettingsStore } from './provider';
@@ -93,8 +93,31 @@ export class ProviderRegistry {
       await new Promise((resolve) => setTimeout(resolve, 50));
     }
   }
-  async providersInfo() {
-    return Promise.all(this.providers.map(async (p) => ({ status: await p.status(), models: await p.listModels() })));
+  async providersInfo(): Promise<ProviderInfo[]> {
+    return Promise.all(
+      this.providers.map(async (provider): Promise<ProviderInfo> => {
+        try {
+          const status = await provider.status();
+          try {
+            return { status, models: await provider.listModels() };
+          } catch (error) {
+            return { status: { ...status, loggedIn: false, detail: `Model list unavailable: ${providerFailureReason(error)}` }, models: [] };
+          }
+        } catch (error) {
+          return {
+            status: {
+              id: provider.id,
+              installed: (error as { code?: unknown })?.code === 'UNSAFE_RUNTIME',
+              loggedIn: false,
+              version: null,
+              detail: `Provider unavailable: ${providerFailureReason(error)}`,
+              loginCommand: provider.id === 'codex' ? 'codex login' : 'claude auth login',
+            },
+            models: [],
+          };
+        }
+      }),
+    );
   }
   async usage() {
     await this.persist;
@@ -116,6 +139,11 @@ export class ProviderRegistry {
     for (const provider of this.providers) limits[provider.id] = await provider.usage();
     return { totals: [...byKey.values()], limits };
   }
+}
+function providerFailureReason(error: unknown): string {
+  const cause = error as { code?: unknown; message?: unknown } | null;
+  if (cause?.code === 'UNSAFE_RUNTIME' && typeof cause.message === 'string' && cause.message.trim()) return cause.message.slice(0, 180);
+  return 'status check failed';
 }
 function sum(a: number | null, b: number | null) {
   return a === null && b === null ? null : (a ?? 0) + (b ?? 0);

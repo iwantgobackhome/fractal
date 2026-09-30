@@ -52,7 +52,12 @@ export function toHttp(cause: unknown): { status: number; error: AppError } {
   if (typeof candidate?.code === 'string' && candidate.code in STATUS) {
     const error: AppError = {
       code: candidate.code as ErrorCode,
-      message: typeof candidate.message === 'string' ? candidate.message : String(candidate.code),
+      message:
+        typeof candidate.message === 'string'
+          ? candidate.message
+          : candidate.code === 'UNSAFE_RUNTIME'
+            ? 'The runtime safety check did not give a reason.'
+            : String(candidate.code),
       retryable: candidate.retryable === true,
     };
     return { status: statusFor(error.code), error };

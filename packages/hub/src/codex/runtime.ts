@@ -52,22 +52,49 @@ export function restrictedArgs(): string[] {
 }
 const run = promisify(execFile);
 /** Discover configured server names without opening credential files or exposing server settings.
- * A table-wide -c mcp_servers={} merges with config.toml, so every server needs an explicit
- * disabled override. Refuse startup if the CLI cannot prove the resulting list is disabled. */
+ * Already-disabled servers need no override; some app-managed entries reject one. */
 export async function disabledMcpArgs(executable: string, env: NodeJS.ProcessEnv, probe: typeof run = run): Promise<string[]> {
+  let first: unknown;
   try {
-    const first = JSON.parse((await probe(executable, ['mcp', 'list', '--json'], { env, windowsHide: true, timeout: 10_000 })).stdout) as unknown;
-    if (!Array.isArray(first)) throw new Error('invalid MCP list');
-    const names = first.map((entry) => (entry && typeof entry === 'object' ? (entry as { name?: unknown }).name : null));
-    if (names.some((name) => typeof name !== 'string' || !/^[A-Za-z0-9_-]{1,200}$/.test(name))) throw new Error('invalid MCP name');
-    const args = (names as string[]).flatMap((name) => ['-c', `mcp_servers.${name}.enabled=false`]);
-    const checked = JSON.parse((await probe(executable, ['mcp', 'list', '--json', ...args], { env, windowsHide: true, timeout: 10_000 })).stdout) as unknown;
-    if (!Array.isArray(checked) || checked.some((entry) => !entry || typeof entry !== 'object' || (entry as { enabled?: unknown }).enabled !== false))
-      throw new Error('MCP override did not disable every server');
-    return args;
+    first = JSON.parse((await probe(executable, ['mcp', 'list', '--json'], { env, windowsHide: true, timeout: 10_000 })).stdout) as unknown;
   } catch {
-    throw failure('UNSAFE_RUNTIME', 'Codex MCP isolation could not be verified.');
+    throw failure('UNSAFE_RUNTIME', 'Codex MCP list could not be read.');
   }
+  if (!Array.isArray(first)) throw failure('UNSAFE_RUNTIME', 'Codex MCP list has an invalid format.');
+  const entries = first as Array<{ name?: unknown; enabled?: unknown } | null>;
+  if (entries.some((entry) => !entry || typeof entry.name !== 'string' || !/^[A-Za-z0-9_-]{1,200}$/.test(entry.name) || typeof entry.enabled !== 'boolean'))
+    throw failure('UNSAFE_RUNTIME', 'Codex MCP list has an invalid server entry.');
+  const enabled = entries.filter((entry) => entry!.enabled === true).map((entry) => entry!.name as string);
+  const args: string[] = [];
+  for (const name of enabled) {
+    const override = ['-c', `mcp_servers.${name}.enabled=false`];
+    try {
+      const checked = JSON.parse(
+        (await probe(executable, ['mcp', 'list', '--json', ...override], { env, windowsHide: true, timeout: 10_000 })).stdout,
+      ) as unknown;
+      if (!Array.isArray(checked) || !checked.some((entry) => entry && typeof entry === 'object' && entry.name === name && entry.enabled === false))
+        throw new Error('override not reflected');
+    } catch {
+      throw failure('UNSAFE_RUNTIME', `Codex MCP override was rejected for ${name}.`);
+    }
+    args.push(...override);
+  }
+  let checked: unknown;
+  try {
+    checked = JSON.parse((await probe(executable, ['mcp', 'list', '--json', ...args], { env, windowsHide: true, timeout: 10_000 })).stdout) as unknown;
+  } catch {
+    throw failure('UNSAFE_RUNTIME', `Codex MCP isolation could not verify ${enabled.join(', ') || 'the server list'}.`);
+  }
+  if (!Array.isArray(checked)) throw failure('UNSAFE_RUNTIME', 'Codex MCP verification returned an invalid list.');
+  const missing = entries
+    .map((entry) => entry!.name as string)
+    .filter((name) => !checked.some((entry) => entry && typeof entry === 'object' && entry.name === name));
+  if (missing.length) throw failure('UNSAFE_RUNTIME', `Codex MCP verification omitted: ${missing.join(', ')}.`);
+  const stillEnabled = checked
+    .filter((entry) => !entry || typeof entry !== 'object' || entry.enabled !== false)
+    .map((entry) => String(entry?.name ?? 'unknown'));
+  if (stillEnabled.length) throw failure('UNSAFE_RUNTIME', `Codex MCP servers remain enabled: ${stillEnabled.join(', ')}.`);
+  return args;
 }
 /** Preserve OS startup paths and the user's CLI home selection. Credentials stay with Codex. */
 export function childEnvironment(env: NodeJS.ProcessEnv = process.env): NodeJS.ProcessEnv {
