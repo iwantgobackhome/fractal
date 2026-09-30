@@ -123,6 +123,22 @@ cannot certify API35 anchors. Software mixed-input selection/cancellation was
 not exercised by this HTTP bridge. Physical Galaxy Tab/S Pen/palm/hover/latency
 remain unverified and cannot be certified by this emulator.
 
+**D fixture correction before settlement:** root followups `msg_89ce5ed3e73e`
+and `msg_d838fe3c5405` identified empty snapshot translations. The initial QA
+seed set `uiLanguage:en` but inherited `translationLanguage:ko`, while rows used
+`paperread-v1-en`; the accepted snapshot correctly filtered them out. The
+[repair/readback](evidence/translation-repair.json), performed through accepted
+paired `PUT /api/preferences`, changed only disposable translationLanguage to en.
+Actual proxy snapshots then exposed12 D blocks/nine completed D translations,
+plus nine completed E translations; D's existing history remained byte-identical.
+No server restart, native fabrication, D device operation or production edit was
+used. Startup [harness](server.ts) now explicitly aligns both language fields and
+asserts snapshot-visible completed translations before readiness. The running
+bundle/hash remains the original unchanged artifact; its live preferences are
+fixed through the accepted API. D/root were notified in `msg_c79a6ad84b93` and
+`msg_3a8a7eceae6d`. The earlier successful native bridge used original PDF mode;
+this separate HTTP fixture repair does not claim translated native UI acceptance.
+
 ## Resource settlement and next owner
 
 Retained earlier PID12052/PID6888 were absent on inspection;5560/5561/6174 were
@@ -158,5 +174,5 @@ Followups were checked at file/test checkpoints. Root ownership guidance
 `msg_02957a77037e` and handoff `msg_be89ebafd93b` were processed and ACKed before
 settlement. D folder allowance `msg_da8210e82a5e` was added to the protocol and
 ACKed as `msg_e7eacad5457d`. Private E/D token bytes were checked absent from all
-32 owned deliverable files;
+34 owned deliverable files;
 credentials, bundles, stores and APK/runtime output remain ignored.

@@ -20,8 +20,9 @@ service. Only the separate loopback control listener supplies test controls.
 D owns device 5554 and sets its own reverse. E issues adb commands only with
 `-s emulator-5560`. D may write only its designated D fixture and release only
 its D-prefixed flights; E exclusively owns server lifecycle and E controls.
-Each fixture has extracted stable blocks plus completed translations with model
-`gpt-6-sol` and the accepted English translation prompt version. Translated text
+Each fixture's actual accepted snapshot now exposes 12 stable blocks and nine
+completed translations with model `gpt-6-sol` and English prompt version
+`paperread-v1-en`; Hub `translationLanguage` is explicitly `en`. Translated text
 is ordinary text; this harness creates no translated coordinate anchors.
 
 Root clarification `msg_da8210e82a5e` also authorizes D to create/delete uniquely
@@ -29,6 +30,16 @@ Root clarification `msg_da8210e82a5e` also authorizes D to create/delete uniquel
 on `D-reader-catalog`. D must not edit E folders, E fixture or other papers.
 The passed E bridge supplies the foundation folder matrix; D need only exercise
 remaining reader integration risks.
+
+Final pre-settlement correction: the initial harness set `uiLanguage:en` but
+inherited `translationLanguage:ko`, so the accepted snapshot correctly filtered
+out seeded English rows. [Actual HTTP repair/readback](evidence/translation-repair.json)
+used accepted `PUT /api/preferences` to align translation language without
+restarting the server, changing Android or altering durable D history. D received
+the correction as `msg_c79a6ad84b93`. The startup harness now sets both language
+fields and asserts completed translations through the accepted snapshot route
+before publishing credentials/readiness. The retained running bundle predates
+this startup-only guard; its live preferences were repaired through the real API.
 
 Normal Bearer requests use the accepted routes and envelopes:
 

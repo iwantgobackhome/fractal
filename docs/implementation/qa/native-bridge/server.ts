@@ -18,7 +18,7 @@ const sourceSha = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' 
 const fixture = readFileSync('packages/hub/test/fixtures/text-layout.pdf');
 const pdfSha256 = createHash('sha256').update(fixture).digest('hex');
 const store = new SqlitePaperStore(directory, join(directory, 'no-legacy'));
-store.ensureRoot(); store.putPreferences({ ...store.getPreferences(), uiLanguage: 'en' });
+store.ensureRoot(); store.putPreferences({ ...store.getPreferences(), uiLanguage: 'en', translationLanguage: 'en' });
 const devices = new JsonDeviceStore(directory);
 const e = devices.claim('E isolated bridge', 'android');
 const d = devices.claim('D isolated lifecycle fixture', 'android');
@@ -68,6 +68,8 @@ for (const [key, title, credentials] of [['qa-reader-catalog', 'Reader HTTP brid
     blockId: block.blockId, sourceHash: block.sourceHash, modelId: 'gpt-6-sol', promptVersion: translationPromptVersion('en'),
     status: 'completed', text: `Translated QA ${key}: ${block.sourceText}`, error: null, completedAt: now,
   });
+  const snapshot = await (await fetch(internalUrl + `/api/papers/${key}`, { headers: auth })).json() as any;
+  assert(snapshot.data.translations.length > 0 && snapshot.data.translations.every((t: any) => t.status === 'completed'), 'Seeded translations must be exposed by the accepted snapshot route');
 }
 let dropNext = false, conflictNext = false;
 const wire: any[] = [];

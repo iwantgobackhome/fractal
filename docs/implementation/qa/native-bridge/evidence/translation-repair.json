@@ -1,0 +1,39 @@
+{
+  "cause": "Harness seeded English promptVersion while inherited translationLanguage was Korean",
+  "productionDefect": false,
+  "serverRestarted": false,
+  "androidFabrication": false,
+  "method": "PUT /api/preferences through accepted paired HTTP",
+  "beforePreferences": {
+    "uiLanguage": "en",
+    "translationLanguage": "ko",
+    "answerLanguage": "auto",
+    "onboardingCompleted": false
+  },
+  "afterPreferences": {
+    "uiLanguage": "en",
+    "translationLanguage": "en",
+    "answerLanguage": "auto",
+    "onboardingCompleted": false
+  },
+  "beforeDTranslationCount": 0,
+  "afterDTranslationCount": 9,
+  "dBlockCount": 12,
+  "completedPromptVersions": [
+    "paperread-v1-en"
+  ],
+  "dHistoryCount": 1,
+  "dHistoryByteIdentical": true,
+  "afterETranslationCount": 9,
+  "exampleDTranslation": {
+    "blockId": "105d9b2d0fdac2bcc75f31173f4bce43",
+    "sourceHash": "6dceef5e4b029ac03fd4170d94eb30d5424ce2a2ac9a41414ed1b1740c34c2b4",
+    "modelId": "gpt-6-sol",
+    "promptVersion": "paperread-v1-en",
+    "status": "completed",
+    "text": "Translated QA D-reader-catalog: Right 1 beta prose words",
+    "error": null,
+    "completedAt": "2026-09-30T22:10:17.114Z"
+  },
+  "captured": "2026-09-30T22:35:37.677Z"
+}
