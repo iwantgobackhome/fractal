@@ -17,7 +17,11 @@ import java.io.IOException
 import java.net.URLEncoder
 import java.util.concurrent.TimeUnit
 
-class HubClient(private val credentials: HubCredentialStore) {
+interface HubDataClient {
+    suspend fun data(path: String, method: String = "GET", body: JsonElement? = null): JsonElement
+}
+
+class HubClient(private val credentials: HubCredentialStore) : HubDataClient {
     private val http = OkHttpClient.Builder()
         .connectTimeout(3, TimeUnit.SECONDS)
         .readTimeout(40, TimeUnit.SECONDS)
@@ -54,7 +58,7 @@ class HubClient(private val credentials: HubCredentialStore) {
         return http.newCall(request(paired.url, path, method, body, paired.token, headers)).execute()
     }
 
-    suspend fun data(path: String, method: String = "GET", body: JsonElement? = null): JsonElement =
+    override suspend fun data(path: String, method: String, body: JsonElement?): JsonElement =
         withContext(Dispatchers.IO) {
             execute(path, method, body).use { response ->
                 if (!response.isSuccessful) throw IOException("Hub HTTP ${response.code}")

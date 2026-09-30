@@ -1,0 +1,5 @@
+app.fractal.reader.ReaderContextTest: tests=3 failures=0
+app.fractal.data.MergeRulesTest: tests=2 failures=0
+app.fractal.data.MetadataMergeTest: tests=4 failures=0
+app.fractal.sync.WireTest: tests=3 failures=0
+app.fractal.ink.InkEngineTest: tests=6 failures=0

@@ -1,0 +1,5 @@
+<resources>
+    <string name="selector_close">Close</string>
+    <string name="selector_unavailable">Unavailable</string>
+    <string name="selector_loading">Loading choices…</string>
+</resources>

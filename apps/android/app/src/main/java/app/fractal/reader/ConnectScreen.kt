@@ -46,6 +46,7 @@ fun ConnectScreen(
     cameraGranted: Boolean,
     requestCamera: () -> Unit,
     onConnected: () -> Unit,
+    onBrowseCached: (() -> Unit)? = null,
 ) {
     val colors = LocalFractalColors.current
     val scope = rememberCoroutineScope()
@@ -108,6 +109,7 @@ fun ConnectScreen(
                 scanning = false
             }) { Text(stringResource(R.string.enter_address_code)) }
         }
+        onBrowseCached?.let { TextButton(onClick = it) { Text(stringResource(R.string.saved_offline)) } }
         if (error.isNotEmpty()) Text(error, color = colors.accent)
     }
 }

@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import app.fractal.data.AnnotationEntity
 import app.fractal.data.WireJson
 import app.fractal.design.LocalFractalColors
+import app.fractal.design.ResearchSelector
 import app.fractal.pdf.PdfPages
 import app.fractal.pdf.PdfTextSelection
 import app.fractal.sync.HubClient
@@ -136,13 +137,9 @@ fun SidePanel(
                         TextButton(onClick = onClearQuestionSelection) { Text(stringResource(R.string.clear_quote)) }
                     }
                 }
-                Row(Modifier.fillMaxWidth()) {
-                    models.forEach { (provider, name) ->
-                        TextButton(onClick = { model = name }) {
-                            Text(name, color = if (name == model) colors.accent else colors.inkSoft, fontSize = 12.sp)
-                        }
-                    }
-                }
+                ResearchSelector(libraryText("Model", "모델"), model,
+                    models.map { it.second to "${it.first} · ${it.second}" }, { model = it }, Modifier.padding(horizontal = 16.dp),
+                    emptyLabel = libraryText("No models available", "사용 가능한 모델 없음"))
                 Row(Modifier.fillMaxWidth()) {
                     OutlinedTextField(question, { question = it }, label = { Text(stringResource(R.string.questions)) },
                         modifier = Modifier.weight(1f), maxLines = 3)

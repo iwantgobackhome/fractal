@@ -1,0 +1,5 @@
+<resources>
+    <string name="selector_close">닫기</string>
+    <string name="selector_unavailable">사용 가능한 항목 없음</string>
+    <string name="selector_loading">항목 불러오는 중…</string>
+</resources>

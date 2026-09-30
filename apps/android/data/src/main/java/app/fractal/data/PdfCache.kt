@@ -22,6 +22,9 @@ class PdfCache(context: Context) {
         return found
     }
 
+    /** Shelf rendering must not turn every displayed paper into a recent cache access. */
+    fun contains(sha256: String): Boolean = file(sha256).isFile
+
     fun commit(sha256: String): File {
         val source = partial(sha256)
         val digest = MessageDigest.getInstance("SHA-256")

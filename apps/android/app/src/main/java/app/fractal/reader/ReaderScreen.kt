@@ -56,6 +56,9 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.foundation.Image
 import app.fractal.data.AnnotationEntity
 import app.fractal.data.LibraryEntity
+import app.fractal.data.TranslatedBlock
+import app.fractal.data.translatedBlocks
+import app.fractal.data.ReadProgress
 import app.fractal.data.WireJson
 import app.fractal.design.LocalFractalColors
 import app.fractal.ink.InkCanvas
@@ -115,24 +118,14 @@ fun ReaderScreen(app: ReaderApplication, paper: LibraryEntity, onBack: () -> Uni
         translatedBlocks.getOrNull(translatedList.firstVisibleItemIndex)?.page ?: 1
     } else (list.firstVisibleItemIndex + 1).coerceAtMost(pages?.pageCount ?: 1)
     LaunchedEffect(paper.paperKey) {
-        translatedBlocks = runCatching {
-            val snapshot = app.client.data("/api/papers/${HubClient.keyPath(paper.paperKey)}").jsonObject
-            val translations = snapshot["translations"]?.jsonArray.orEmpty().mapNotNull { item ->
-                val value = item.jsonObject
-                val id = value["blockId"]?.jsonPrimitive?.content ?: return@mapNotNull null
-                val text = value["text"]?.jsonPrimitive?.content?.takeUnless { it == "null" }
-                if (value["status"]?.jsonPrimitive?.content == "completed" && !text.isNullOrBlank()) id to text else null
-            }.toMap()
-            if (translations.isEmpty()) emptyList() else snapshot["blocks"]?.jsonArray.orEmpty().mapNotNull { item ->
-                val block = item.jsonObject
-                val text = translations[block["blockId"]?.jsonPrimitive?.content]
-                    ?: block["sourceText"]?.jsonPrimitive?.content
-                if (text.isNullOrBlank()) null else TranslatedBlock(
-                    page = (block["pageOrdinal"]?.jsonPrimitive?.content?.toIntOrNull() ?: 1).coerceAtLeast(1),
-                    kind = block["kind"]?.jsonPrimitive?.content.orEmpty(), text = text,
-                )
+        app.database.metadata().snapshot(paper.paperKey)?.let {
+            translatedBlocks = translatedBlocks(WireJson.format.parseToJsonElement(it.json).jsonObject)
+        }
+        runCatching { app.sync.refreshPaperMetadata(paper.paperKey) }.onSuccess {
+            app.database.metadata().snapshot(paper.paperKey)?.let { cached ->
+                translatedBlocks = translatedBlocks(WireJson.format.parseToJsonElement(cached.json).jsonObject)
             }
-        }.getOrDefault(emptyList())
+        }
     }
     LaunchedEffect(list, translatedList, viewMode) {
         var previous = 0
@@ -161,6 +154,28 @@ fun ReaderScreen(app: ReaderApplication, paper: LibraryEntity, onBack: () -> Uni
             pages = it
             status = ""
         }.onFailure { status = app.getString(R.string.offline_unavailable) }
+    }
+    LaunchedEffect(pages, paper.paperKey) {
+        val opened = pages ?: return@LaunchedEffect
+        val progress = paper.readProgressJson?.let {
+            runCatching { WireJson.format.decodeFromString<ReadProgress>(it) }.getOrNull()
+        }
+        if (progress != null) list.scrollToItem((progress.page - 1).coerceIn(0, opened.pageCount - 1))
+        app.metadata.read(paper.paperKey, (list.firstVisibleItemIndex + 1).coerceAtMost(opened.pageCount))
+        SyncScheduler.now(app, app.settings.getBoolean("wifiOnly", false))
+    }
+    LaunchedEffect(pages, viewMode) {
+        if (pages == null) return@LaunchedEffect
+        snapshotFlow {
+            if (viewMode == "translation") translatedBlocks.getOrNull(translatedList.firstVisibleItemIndex)?.page
+            else list.firstVisibleItemIndex + 1
+        }.collectLatest { page ->
+            if (page != null) {
+                kotlinx.coroutines.delay(750)
+                app.metadata.read(paper.paperKey, page)
+                SyncScheduler.now(app, app.settings.getBoolean("wifiOnly", false))
+            }
+        }
     }
     val openedPages = pages
     DisposableEffect(openedPages) { onDispose { openedPages?.close() } }
@@ -356,7 +371,6 @@ fun ReaderScreen(app: ReaderApplication, paper: LibraryEntity, onBack: () -> Uni
     }
 }
 
-private data class TranslatedBlock(val page: Int, val kind: String, val text: String)
 
 private suspend fun saveMemo(
     app: ReaderApplication,

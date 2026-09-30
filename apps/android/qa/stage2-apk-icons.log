@@ -1,0 +1,18 @@
+package: name='app.fractal.reader' versionCode='1' versionName='0.1' platformBuildVersionName='15' platformBuildVersionCode='35' compileSdkVersion='35' compileSdkVersionCodename='15'
+application-icon-160:'res/mipmap-anydpi-v26/ic_launcher.xml'
+application-icon-240:'res/mipmap-anydpi-v26/ic_launcher.xml'
+application-icon-320:'res/mipmap-anydpi-v26/ic_launcher.xml'
+application-icon-480:'res/mipmap-anydpi-v26/ic_launcher.xml'
+application-icon-640:'res/mipmap-anydpi-v26/ic_launcher.xml'
+application-icon-65534:'res/mipmap-anydpi-v26/ic_launcher.xml'
+application-icon-65535:'res/mipmap-anydpi-v26/ic_launcher.xml'
+application: label='Fractal' icon='res/mipmap-anydpi-v26/ic_launcher.xml'
+launchable-activity: name='app.fractal.reader.MainActivity'  label='' icon=''
+res/drawable/branch_mark.xml
+res/drawable/ic_launcher_background.xml
+res/drawable/ic_launcher_foreground.xml
+res/font/pretendard_variable.ttf
+res/font/source_serif_four.ttf
+res/mipmap-anydpi-v26/ic_launcher.xml
+res/drawable/ic_launcher_legacy.xml
+SHA256=D719B01BFF51F640A51288D70AD0825B7854371298F0F3E458F85B40A1E03687

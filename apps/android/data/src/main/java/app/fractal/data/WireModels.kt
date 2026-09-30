@@ -30,7 +30,17 @@ data class LibraryRecord(
     val updatedAt: String,
     val status: String = "unread",
     val bibtexKey: String,
+    val saved: Boolean = true,
+    val savedAt: String? = null,
+    val lastReadAt: String? = null,
+    val readProgress: ReadProgress? = null,
+    val rev: Int = 0,
+    val deviceId: String = "",
 )
+
+@Serializable
+data class ReadProgress(val page: Int, val fraction: Double? = null,
+    val blockId: String? = null, val scrollOffset: Double? = null)
 
 @Serializable
 data class NormalizedRect(

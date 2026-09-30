@@ -19,11 +19,11 @@ class SyncWorker(context: Context, params: WorkerParameters) : CoroutineWorker(c
         val credentials = HubCredentialStore(applicationContext)
         if (credentials.load() == null) return Result.success()
         return try {
-            SyncEngine(
-                FractalDatabase.get(applicationContext),
-                HubClient(credentials),
-            ).syncOnce()
-            Result.success()
+            val database = FractalDatabase.get(applicationContext)
+            val engine = SyncEngine(database, HubClient(credentials))
+            engine.syncOnce()
+            repeat(8) { if (database.metadata().pending().isNotEmpty()) engine.syncOnce() }
+            if (database.metadata().pending().isEmpty()) Result.success() else Result.retry()
         } catch (_: Exception) {
             Result.retry()
         }
@@ -55,7 +55,7 @@ object SyncScheduler {
             .build()
         WorkManager.getInstance(context).enqueueUniqueWork(
             "fractal-sync-now",
-            ExistingWorkPolicy.REPLACE,
+            ExistingWorkPolicy.APPEND_OR_REPLACE,
             work,
         )
     }

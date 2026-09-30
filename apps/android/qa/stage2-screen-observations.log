@@ -1,0 +1,30 @@
+--------- beginning of main
+09-30 20:54:36.789 17749 17794 I FractalLibraryQA: headerTitle=Rect.fromLTRB(58.0, 12.0, 267.0, 84.0) settingsLabel=Rect.fromLTRB(267.0, 28.0, 344.0, 68.0)
+09-30 20:54:37.386 17749 17794 I FractalLibraryQA: capture=library-360x752 pixels=360x800 dp=360x752 fontScale=1.0
+09-30 20:54:41.705 17881 17903 I FractalLibraryQA: headerTitle=Rect.fromLTRB(66.0, 15.0, 699.0, 57.0) settingsLabel=Rect.fromLTRB(699.0, 16.0, 776.0, 56.0)
+09-30 20:54:42.260 17881 17903 I FractalLibraryQA: capture=library-800x312 pixels=800x360 dp=800x312 fontScale=1.0
+09-30 20:54:47.175 17969 17993 I FractalLibraryQA: headerTitle=Rect.fromLTRB(66.0, 15.0, 699.0, 57.0) settingsLabel=Rect.fromLTRB(699.0, 16.0, 776.0, 56.0)
+09-30 20:54:47.803 17969 17993 I FractalLibraryQA: capture=library-800x1224 pixels=800x1280 dp=800x1224 fontScale=1.0
+09-30 20:54:51.940 18054 18076 I FractalLibraryQA: headerTitle=Rect.fromLTRB(66.0, 15.0, 1179.0, 57.0) settingsLabel=Rect.fromLTRB(1179.0, 16.0, 1256.0, 56.0)
+09-30 20:54:52.529 18054 18076 I FractalLibraryQA: capture=library-1280x744 pixels=1280x800 dp=1280x744 fontScale=1.0
+09-30 20:54:53.297 18054 18076 I FractalLibraryQA: capture=library-details-1280x744 pixels=1280x800 dp=1280x744 fontScale=1.0
+09-30 20:54:57.540 18139 18161 I FractalLibraryQA: headerTitle=Rect.fromLTRB(66.0, 15.0, 1179.0, 57.0) settingsLabel=Rect.fromLTRB(1179.0, 16.0, 1256.0, 56.0)
+09-30 20:54:58.175 18139 18161 I FractalLibraryQA: capture=library-1280x1744 pixels=1280x1800 dp=1280x1744 fontScale=1.0
+09-30 20:54:59.026 18139 18161 I FractalLibraryQA: capture=library-details-1280x1744 pixels=1280x1800 dp=1280x1744 fontScale=1.0
+09-30 20:55:03.706 18225 18249 I FractalLibraryQA: headerTitle=Rect.fromLTRB(66.0, 15.0, 1699.0, 57.0) settingsLabel=Rect.fromLTRB(1699.0, 16.0, 1776.0, 56.0)
+09-30 20:55:04.388 18225 18249 I FractalLibraryQA: capture=library-1800x1224 pixels=1800x1280 dp=1800x1224 fontScale=1.0
+09-30 20:55:05.287 18225 18249 I FractalLibraryQA: capture=library-details-1800x1224 pixels=1800x1280 dp=1800x1224 fontScale=1.0
+09-30 20:55:10.701 18321 18356 I FractalLibraryQA: capture=selector-long-list-end-focus-font-1.5 pixels=800x1280 dp=800x1224 fontScale=1.5
+09-30 20:55:13.455 18321 18356 I FractalLibraryQA: headerTitle=Rect.fromLTRB(66.0, 15.0, 672.0, 57.0) settingsLabel=Rect.fromLTRB(672.0, 12.0, 776.0, 60.0)
+09-30 20:55:13.922 18321 18356 I FractalLibraryQA: capture=library-800x1224-font-1.5 pixels=800x1280 dp=800x1224 fontScale=1.5
+09-30 20:55:15.785 18321 18356 I FractalLibraryQA: capture=selector-close-keyboard-focus-font-1.5 pixels=800x1280 dp=800x1224 fontScale=1.5
+09-30 20:55:21.220 18459 18490 I FractalLibraryQA: headerTitle=Rect.fromLTRB(58.0, 12.0, 344.0, 110.0) settingsLabel=Rect.fromLTRB(224.0, 122.0, 344.0, 176.0)
+09-30 20:55:21.781 18459 18490 I FractalLibraryQA: capture=library-360x752-font-2.0 pixels=360x800 dp=360x752 fontScale=2.0
+09-30 20:55:27.088 18569 18605 I FractalLibraryQA: headerTitle=Rect.fromLTRB(66.0, 15.0, 1179.0, 57.0) settingsLabel=Rect.fromLTRB(1179.0, 16.0, 1256.0, 56.0)
+09-30 20:55:27.668 18569 18605 I FractalLibraryQA: capture=library-1280x744-dark pixels=1280x800 dp=1280x744 fontScale=1.0
+09-30 20:55:28.443 18569 18605 I FractalLibraryQA: capture=library-details-1280x744-dark pixels=1280x800 dp=1280x744 fontScale=1.0
+09-30 20:55:32.255 18659 18681 I FractalLibraryQA: headerTitle=Rect.fromLTRB(66.0, 15.0, 1179.0, 57.0) settingsLabel=Rect.fromLTRB(1179.0, 16.0, 1256.0, 56.0)
+09-30 20:55:32.869 18659 18681 I FractalLibraryQA: capture=library-1280x744-sepia pixels=1280x800 dp=1280x744 fontScale=1.0
+09-30 20:55:33.596 18659 18681 I FractalLibraryQA: capture=library-details-1280x744-sepia pixels=1280x800 dp=1280x744 fontScale=1.0
+09-30 20:55:38.347 18734 18756 I FractalLibraryQA: capture=settings-dark pixels=1280x800 dp=1280x744 fontScale=1.0
+09-30 20:55:39.293 18734 18756 I FractalLibraryQA: capture=settings-selector-dark pixels=1280x800 dp=1280x744 fontScale=1.0
