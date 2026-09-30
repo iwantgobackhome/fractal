@@ -1,0 +1,24 @@
+{
+  "status": "Coordinator-reviewed scholarly iteration 02; common palette aligned under explicit token ownership extension",
+  "units": { "prototype": "CSS px", "compose": "dp for layout and sp for typography; validate actual device scaling" },
+  "themes": {
+    "light": { "background": "#f9f7f2", "surface": "#fcfaf6", "raised": "#fffdf9", "sunken": "#eeeae2", "ink": "#282724", "muted": "#6b665e", "rule": "#d8d2c8", "accent": "#93433b", "accentWash": "#f1e7e0", "focus": "#356776", "paper": "#fffdf8", "paperInk": "#2c2925", "sticky": "#f7efc9", "stickyInk": "#554a24" },
+    "dark": { "background": "#1f201e", "surface": "#242521", "raised": "#2b2d27", "sunken": "#191b17", "ink": "#edeae0", "muted": "#b9b5a9", "rule": "#44473b", "accent": "#e9a194", "accentWash": "#3c2e27", "focus": "#8cc8d8", "paper": "#2b2b24", "paperInk": "#e8e4d5", "sticky": "#4b472d", "stickyInk": "#f7edbe" },
+    "sepia": { "background": "#eee5d3", "surface": "#f5eddc", "raised": "#fbf2df", "sunken": "#e6ddc8", "ink": "#383127", "muted": "#6f624d", "rule": "#cec1a7", "accent": "#8a4937", "accentWash": "#eadac4", "focus": "#346a76", "paper": "#fff4da", "paperInk": "#3a3124", "sticky": "#f0e1af", "stickyInk": "#554a24" }
+  },
+  "type": {
+    "productionSerif": "Source Serif 4 with a readable Korean serif fallback, following existing design direction",
+    "productionUi": "Pretendard Variable with system fallback, following existing design direction",
+    "prototypeSerifStack": "Georgia, Noto Serif KR, Batang, serif",
+    "prototypeUiStack": "Pretendard Variable, Pretendard, Segoe UI, Malgun Gothic, system-ui, sans-serif",
+    "desktop": { "screenTitle": 34, "paperTitle": 22, "readerHeading": 26, "readerBody": 15, "translationBody": 16, "metadata": 12, "ui": 14, "readingLineHeight": 1.85 },
+    "tablet": { "screenTitle": 30, "paperTitle": 20, "readerBody": 15, "translationBody": 16, "metadata": 12, "ui": 14 },
+    "phone": { "screenTitle": 28, "paperTitle": 21, "readerBody": 14, "translationBody": 15, "metadataMinimum": 12, "summary": 13, "panelBody": 14, "ui": 14, "readingLineHeight": 1.85 }
+  },
+  "layout": { "compactBoundary": 600, "splitBoundary": 840, "desktopLibrarySidebar": 244, "tabletLibraryRail": 78, "tabletDetailPanel": 292, "desktopReaderPanel": 306, "tabletReaderPenRail": 60, "desktopReaderHeader": 54, "desktopReaderToolbar": 48, "phoneReaderHeader": 68, "phoneReaderToolbarMinimum": 52, "paneLabel": 30, "phoneToolStrip": 56, "phoneBottomNavigation": 66, "contentMaxPaperWidth": 680 },
+  "spacing": [4, 8, 12, 16, 24, 32, 48],
+  "rules": { "hairline": 1, "section": 2, "focusOutline": 3, "focusOffset": 3 },
+  "radius": { "contentRows": 0, "buttons": 4, "popover": 5, "dialog": 5, "phoneSheet": 6, "sticky": 2 },
+  "interaction": { "androidTouchTargetMinimumDp": 48, "desktopControlTarget": 36, "touchTargetNote": "Some compact reader chrome in the HTML is 40px; shipping Compose must use 48dp semantics/hit areas and may move linked scroll/zoom to overflow.", "annotationCoordinates": "Normalized original physical page only", "penDefault": "draw", "explicitTextTool": true, "fingerDefault": "pan and zoom", "scrollAnchorGoal": "page/block and relative offset", "prototypeScrollAnchor": "page and normalized scroll fraction" },
+  "icon": { "master": "assets/branch-master.svg", "viewBox": [0, 0, 40, 40], "strokeWidths": [2.4, 1.9, 1.4], "desktopInAppDisplay": 31, "phoneDisplay": 30, "adaptiveExport": "Center the same geometry within native safe zones; foreground uses theme ink, background uses paper; do not redraw independent icons" }
+}

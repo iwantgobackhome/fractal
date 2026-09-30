@@ -1,0 +1,389 @@
+{
+  "generatedAt": "2026-09-30T18:44:48.720Z",
+  "browser": "Microsoft Edge headless, CDP",
+  "base": "http://127.0.0.1:47831/",
+  "status": "Scholarly iteration 02 accepted by coordinator for implementation handoff",
+  "results": [
+    {
+      "file": "desktop-library.png",
+      "width": 1440,
+      "height": 1000,
+      "query": "?view=desktop-library",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "title": "Fractal · Workspace review",
+      "horizontalOverflow": false,
+      "sourceVisible": false,
+      "translationVisible": false,
+      "stickyCount": 0,
+      "heading": "저장한 논문"
+    },
+    {
+      "file": "desktop-reader.png",
+      "width": 1600,
+      "height": 1000,
+      "query": "?view=desktop-reader",
+      "viewport": [
+        1600,
+        1000
+      ],
+      "title": "Fractal · Workspace review",
+      "horizontalOverflow": false,
+      "sourceVisible": true,
+      "translationVisible": true,
+      "stickyCount": 1,
+      "heading": "Attention Is All You Need",
+      "toolbarHeight": 48,
+      "headerHeight": 54
+    },
+    {
+      "file": "tablet-library.png",
+      "width": 1280,
+      "height": 900,
+      "query": "?view=tablet-library",
+      "viewport": [
+        1280,
+        900
+      ],
+      "title": "Fractal · Workspace review",
+      "horizontalOverflow": false,
+      "sourceVisible": false,
+      "translationVisible": false,
+      "stickyCount": 0,
+      "heading": "저장한 논문"
+    },
+    {
+      "file": "tablet-reader.png",
+      "width": 1280,
+      "height": 900,
+      "query": "?view=tablet-reader",
+      "viewport": [
+        1280,
+        900
+      ],
+      "title": "Fractal · Workspace review",
+      "horizontalOverflow": false,
+      "sourceVisible": true,
+      "translationVisible": true,
+      "stickyCount": 1,
+      "heading": "Attention Is All You Need",
+      "toolbarHeight": 59,
+      "headerHeight": 54
+    },
+    {
+      "file": "tablet-portrait-reader.png",
+      "width": 800,
+      "height": 1280,
+      "query": "?view=tablet-reader",
+      "viewport": [
+        800,
+        1280
+      ],
+      "title": "Fractal · Workspace review",
+      "horizontalOverflow": false,
+      "sourceVisible": true,
+      "translationVisible": false,
+      "stickyCount": 1,
+      "heading": "Attention Is All You Need",
+      "toolbarHeight": 59,
+      "headerHeight": 58
+    },
+    {
+      "file": "phone-library.png",
+      "width": 390,
+      "height": 844,
+      "query": "?view=phone",
+      "viewport": [
+        390,
+        844
+      ],
+      "title": "Fractal · Workspace review",
+      "horizontalOverflow": false,
+      "sourceVisible": false,
+      "translationVisible": false,
+      "stickyCount": 0,
+      "heading": "저장한 논문"
+    },
+    {
+      "file": "phone-library-compact.png",
+      "width": 360,
+      "height": 800,
+      "query": "?view=phone",
+      "viewport": [
+        360,
+        800
+      ],
+      "title": "Fractal · Workspace review",
+      "horizontalOverflow": false,
+      "sourceVisible": false,
+      "translationVisible": false,
+      "stickyCount": 0,
+      "heading": "저장한 논문"
+    },
+    {
+      "file": "phone-reader.png",
+      "width": 390,
+      "height": 844,
+      "query": "?view=phone&screen=reader",
+      "viewport": [
+        390,
+        844
+      ],
+      "title": "Fractal · Workspace review",
+      "horizontalOverflow": false,
+      "sourceVisible": true,
+      "translationVisible": false,
+      "stickyCount": 1,
+      "heading": "Attention Is All You Need",
+      "toolbarHeight": 53,
+      "headerHeight": 68
+    },
+    {
+      "file": "phone-reader-dark.png",
+      "width": 360,
+      "height": 800,
+      "query": "?view=phone&screen=reader&theme=dark",
+      "viewport": [
+        360,
+        800
+      ],
+      "title": "Fractal · Workspace review",
+      "horizontalOverflow": false,
+      "sourceVisible": true,
+      "translationVisible": false,
+      "stickyCount": 1,
+      "heading": "Attention Is All You Need",
+      "toolbarHeight": 53,
+      "headerHeight": 68
+    },
+    {
+      "file": "tablet-reader-sepia.png",
+      "width": 1280,
+      "height": 900,
+      "query": "?view=tablet-reader&theme=sepia",
+      "viewport": [
+        1280,
+        900
+      ],
+      "title": "Fractal · Workspace review",
+      "horizontalOverflow": false,
+      "sourceVisible": true,
+      "translationVisible": true,
+      "stickyCount": 1,
+      "heading": "Attention Is All You Need",
+      "toolbarHeight": 59,
+      "headerHeight": 54
+    },
+    {
+      "file": "phone-library-offline.png",
+      "width": 390,
+      "height": 844,
+      "query": "?view=phone&state=offline",
+      "viewport": [
+        390,
+        844
+      ],
+      "title": "Fractal · Workspace review",
+      "horizontalOverflow": false,
+      "sourceVisible": false,
+      "translationVisible": false,
+      "stickyCount": 0,
+      "heading": "저장한 논문"
+    },
+    {
+      "file": "desktop-library-empty.png",
+      "width": 1440,
+      "height": 1000,
+      "query": "?view=desktop-library&state=empty",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "title": "Fractal · Workspace review",
+      "horizontalOverflow": false,
+      "sourceVisible": false,
+      "translationVisible": false,
+      "stickyCount": 0,
+      "heading": "저장한 논문"
+    },
+    {
+      "file": "desktop-library-loading.png",
+      "width": 1440,
+      "height": 1000,
+      "query": "?view=desktop-library&state=loading",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "title": "Fractal · Workspace review",
+      "horizontalOverflow": false,
+      "sourceVisible": false,
+      "translationVisible": false,
+      "stickyCount": 0,
+      "heading": "저장한 논문"
+    },
+    {
+      "file": "desktop-reader-error.png",
+      "width": 1600,
+      "height": 1000,
+      "query": "?view=desktop-reader&state=error",
+      "viewport": [
+        1600,
+        1000
+      ],
+      "title": "Fractal · Workspace review",
+      "horizontalOverflow": false,
+      "sourceVisible": true,
+      "translationVisible": true,
+      "stickyCount": 0,
+      "heading": "Attention Is All You Need",
+      "toolbarHeight": 48,
+      "headerHeight": 54
+    },
+    {
+      "file": "tablet-discovery.png",
+      "width": 1280,
+      "height": 900,
+      "query": "?view=tablet-library&screen=discover",
+      "viewport": [
+        1280,
+        900
+      ],
+      "title": "Fractal · Workspace review",
+      "horizontalOverflow": false,
+      "sourceVisible": false,
+      "translationVisible": false,
+      "stickyCount": 0,
+      "heading": "오늘, 더 깊이 읽기"
+    },
+    {
+      "file": "phone-news.png",
+      "width": 390,
+      "height": 844,
+      "query": "?view=phone&screen=news",
+      "viewport": [
+        390,
+        844
+      ],
+      "title": "Fractal · Workspace review",
+      "horizontalOverflow": false,
+      "sourceVisible": false,
+      "translationVisible": false,
+      "stickyCount": 0,
+      "heading": "분야 뉴스"
+    },
+    {
+      "file": "phone-topics.png",
+      "width": 390,
+      "height": 844,
+      "query": "?view=phone&screen=topics",
+      "viewport": [
+        390,
+        844
+      ],
+      "title": "Fractal · Workspace review",
+      "horizontalOverflow": false,
+      "sourceVisible": false,
+      "translationVisible": false,
+      "stickyCount": 0,
+      "heading": "관심 주제"
+    }
+  ],
+  "assertions": [
+    {
+      "label": "paper in two folders",
+      "passed": true
+    },
+    {
+      "label": "reading an unsaved paper keeps it unsaved",
+      "passed": true
+    },
+    {
+      "label": "folder removal explains retention and promotion",
+      "passed": true
+    },
+    {
+      "label": "folder removal retains papers and promotes children",
+      "passed": true
+    },
+    {
+      "label": "folder creation uses entered name",
+      "passed": true
+    },
+    {
+      "label": "sending a new question archives old question",
+      "passed": true
+    },
+    {
+      "label": "closing and reopening retains answer",
+      "passed": true
+    },
+    {
+      "label": "question history survives changing paper",
+      "passed": true
+    },
+    {
+      "label": "figure question displays selected context",
+      "passed": true
+    },
+    {
+      "label": "explanations and general questions share retained history",
+      "passed": true
+    },
+    {
+      "label": "history kind filter excludes general questions",
+      "passed": true
+    },
+    {
+      "label": "sticky note collapses without deleting content",
+      "passed": true
+    },
+    {
+      "label": "positioned annotations only anchor to original",
+      "passed": true
+    },
+    {
+      "label": "translation does not imply copied original highlights",
+      "passed": true
+    },
+    {
+      "label": "related busy state preserves cached results and retry",
+      "passed": true
+    },
+    {
+      "label": "compact translation switch retains reading position",
+      "passed": true
+    },
+    {
+      "label": "compact source switch restores reading position",
+      "passed": true
+    },
+    {
+      "label": "finger input leaves ink empty and viewport stable",
+      "passed": true
+    },
+    {
+      "label": "phone navigation stays visible",
+      "passed": true
+    },
+    {
+      "label": "phone secondary metadata is at least 12px",
+      "passed": true
+    },
+    {
+      "label": "custom selector has listbox options and focus",
+      "passed": true
+    },
+    {
+      "label": "Escape closes selector and restores focus",
+      "passed": true
+    },
+    {
+      "label": "dialog exposes modality and labelled input",
+      "passed": true
+    }
+  ],
+  "diagnostics": []
+}

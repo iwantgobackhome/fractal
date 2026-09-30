@@ -1,0 +1,181 @@
+{
+  "generatedAt": "2026-09-30T17:58:45.065Z",
+  "browser": "Microsoft Edge headless, CDP",
+  "base": "http://127.0.0.1:47831/",
+  "status": "Rejected iteration 01 baseline; not design approval",
+  "results": [
+    {
+      "file": "desktop-library.png",
+      "width": 1440,
+      "height": 1000,
+      "query": "?view=desktop-library",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "title": "Fractal · Workspace review",
+      "horizontalOverflow": false,
+      "sourceVisible": false,
+      "translationVisible": false,
+      "stickyCount": 0,
+      "heading": "저장한 논문"
+    },
+    {
+      "file": "desktop-reader.png",
+      "width": 1600,
+      "height": 1000,
+      "query": "?view=desktop-reader",
+      "viewport": [
+        1600,
+        1000
+      ],
+      "title": "Fractal · Workspace review",
+      "horizontalOverflow": false,
+      "sourceVisible": true,
+      "translationVisible": true,
+      "stickyCount": 1,
+      "heading": "Attention Is All You Need",
+      "toolbarHeight": 60,
+      "headerHeight": 76
+    },
+    {
+      "file": "tablet-library.png",
+      "width": 1280,
+      "height": 900,
+      "query": "?view=tablet-library",
+      "viewport": [
+        1280,
+        900
+      ],
+      "title": "Fractal · Workspace review",
+      "horizontalOverflow": false,
+      "sourceVisible": false,
+      "translationVisible": false,
+      "stickyCount": 0,
+      "heading": "저장한 논문"
+    },
+    {
+      "file": "tablet-reader.png",
+      "width": 1280,
+      "height": 900,
+      "query": "?view=tablet-reader",
+      "viewport": [
+        1280,
+        900
+      ],
+      "title": "Fractal · Workspace review",
+      "horizontalOverflow": false,
+      "sourceVisible": true,
+      "translationVisible": true,
+      "stickyCount": 1,
+      "heading": "Attention Is All You Need",
+      "toolbarHeight": 63,
+      "headerHeight": 76
+    },
+    {
+      "file": "tablet-portrait-reader.png",
+      "width": 800,
+      "height": 1280,
+      "query": "?view=tablet-reader",
+      "viewport": [
+        800,
+        1280
+      ],
+      "title": "Fractal · Workspace review",
+      "horizontalOverflow": false,
+      "sourceVisible": true,
+      "translationVisible": false,
+      "stickyCount": 1,
+      "heading": "Attention Is All You Need",
+      "toolbarHeight": 63,
+      "headerHeight": 76
+    },
+    {
+      "file": "phone-library.png",
+      "width": 390,
+      "height": 844,
+      "query": "?view=phone",
+      "viewport": [
+        390,
+        844
+      ],
+      "title": "Fractal · Workspace review",
+      "horizontalOverflow": false,
+      "sourceVisible": false,
+      "translationVisible": false,
+      "stickyCount": 0,
+      "heading": "저장한 논문"
+    },
+    {
+      "file": "phone-reader.png",
+      "width": 390,
+      "height": 844,
+      "query": "?view=phone&screen=reader",
+      "viewport": [
+        390,
+        844
+      ],
+      "title": "Fractal · Workspace review",
+      "horizontalOverflow": false,
+      "sourceVisible": true,
+      "translationVisible": false,
+      "stickyCount": 1,
+      "heading": "Attention Is All You Need",
+      "toolbarHeight": 59,
+      "headerHeight": 70
+    },
+    {
+      "file": "phone-reader-dark.png",
+      "width": 360,
+      "height": 800,
+      "query": "?view=phone&screen=reader&theme=dark",
+      "viewport": [
+        360,
+        800
+      ],
+      "title": "Fractal · Workspace review",
+      "horizontalOverflow": false,
+      "sourceVisible": true,
+      "translationVisible": false,
+      "stickyCount": 1,
+      "heading": "Attention Is All You Need",
+      "toolbarHeight": 101,
+      "headerHeight": 70
+    },
+    {
+      "file": "tablet-reader-sepia.png",
+      "width": 1280,
+      "height": 900,
+      "query": "?view=tablet-reader&theme=sepia",
+      "viewport": [
+        1280,
+        900
+      ],
+      "title": "Fractal · Workspace review",
+      "horizontalOverflow": false,
+      "sourceVisible": true,
+      "translationVisible": true,
+      "stickyCount": 1,
+      "heading": "Attention Is All You Need",
+      "toolbarHeight": 63,
+      "headerHeight": 76
+    },
+    {
+      "file": "phone-library-offline.png",
+      "width": 390,
+      "height": 844,
+      "query": "?view=phone&state=offline",
+      "viewport": [
+        390,
+        844
+      ],
+      "title": "Fractal · Workspace review",
+      "horizontalOverflow": false,
+      "sourceVisible": false,
+      "translationVisible": false,
+      "stickyCount": 0,
+      "heading": "저장한 논문"
+    }
+  ],
+  "diagnostics": []
+}
