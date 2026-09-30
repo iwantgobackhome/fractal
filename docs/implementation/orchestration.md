@@ -5,7 +5,7 @@ Run: `run_7b1cfd9aece2`. All implementation workers: `gpt-6.1-sol`, reasoning `h
 ## Scope and decisions
 
 Implement user requests 1–13. Request 14 (mapping annotations between translated and original text) is excluded.
-Use a modern workspace design for desktop and Android. Present representative interactive designs before broad UI implementation.
+Use the original scholarly newspaper/journal identity for desktop and Android, enriched with meaningful information density and polished interactions. The user clarified this after rejecting the first modern dashboard prototype. Present representative interactive designs before broad UI implementation.
 Distinguish recently read papers from explicitly saved papers. Support nested folders, multiple folder membership and tags.
 Persist general questions and figure/equation explanations. Closing a panel must retain history.
 Pen draws by default; an explicit selection tool enables pen text selection. Fingers navigate.
@@ -37,3 +37,19 @@ Report actual Galaxy Tab/S Pen verification as outstanding until tested on physi
 - B foundation: task `task_aa0dad1fb29c`, dispatch `ctx_59b21e98aac0`, worktree `C:/Users/Home/orca/workspaces/fractal/fractal-backend`.
 - E baseline: task `task_8501694b184f`, dispatch `ctx_20d799b6acd9`, worktree `C:/Users/Home/orca/workspaces/fractal/fractal-qa`.
 - All three launch receipts show requested and effective `codex / gpt-6.1-sol / high`, state `ready`, turn start observed. No repository setup hook configured.
+
+## Baseline accepted and interaction stage started
+
+- E baseline succeeded; inspected report and owned-file diff. Accepted source commit `e83ed460781405dd4853d179db055c08e3d33c22`, integrated as `5278c39`.
+- Baseline evidence: 124 JavaScript tests, 11 Android tests, workspace build/typecheck, desktop asset build and isolated Edge smoke pass. No connected adb device; native Electron shell and physical stylus not verified.
+- E terminal release receipt retains it as `user_takeover`, with no process action. Runtime-owned protection is respected.
+- D interaction prerequisite: task `task_2ac8d14edf1e`, dispatch `ctx_af54d3b0f34b`, worktree `C:/Users/Home/orca/workspaces/fractal/fractal-android`; requested/effective `codex / gpt-6.1-sol / high`, ready and turn start observed.
+- A design and B foundation remain active. D fixes existing reader/ink stability before broad UI implementation; prototype review still gates broad redesign.
+
+## Design feedback
+
+- First prototype rendered in isolated Edge at representative desktop/tablet/phone sizes; no script errors or body horizontal overflow observed.
+- User rejected its visual feeling. Direction is not approved and broad product UI implementation is held. A received revision guidance; feedback question pending asynchronously.
+- Coordinator visual diagnosis and prototype scope correction are recorded in `review/first-prototype.md`.
+- Backend and existing Android interaction corrections continue under existing authorization.
+- User clarified: prefer the original research/newspaper/paper feeling; the original issue was excessive emptiness. A received the updated direction for scholarly iteration2 with refined typography, rules, richer research metadata and useful history/progress density. No additional style question is needed.

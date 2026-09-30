@@ -1,0 +1,1234 @@
+{
+  "errors": [],
+  "reports": [
+    {
+      "name": "desktop-library",
+      "width": 1440,
+      "height": 900,
+      "title": "Fractal · Workspace review",
+      "bodyWidth": 1440,
+      "viewportWidth": 1440,
+      "text": "본문으로 이동\nFRACTAL\nDESIGN REVIEW · 01\n데스크톱 · 보관함\n데스크톱 · 리더\n태블릿 · 보관함\n태블릿 · 리더\n폰\n 라이트\n기본 \nFractal\nRESEARCH WORKSPACE\n발견\n보관함\n6\n뉴스\n관심 주제\n내 라이브러리\n최근 열어본\n4\n저장한 논문\n6\n오프라인 저장\n5\n폴더\n언어 모델\n4\n트랜스포머 기초\n1\n검색 증강 생성\n1\n컴퓨터 비전\n2\n10월 세미나\n1\nPC와 마지막 동기화 · 방금\nJW\n지우의 작업 공간\n읽고, 연결하고, 발견하기\n지우의 작업 공간\n보관함\nCtrl K\n\n나의 연구를 이어가는 곳\n\n저장한 논문\n\n6편의 논문 · 읽은 위치와 메모를 함께 보관해요.\n\n논문 추가\n이어서 읽기\n최근 활동\nAttention Is All You Need\n오늘 오전 10:42 · 저장한 논문\nAttention Is All You Need\n3 · Attention\n3 / 15쪽 · 23% 읽음\n이어 읽기 \nRetrieval-Augmented Generation for Knowledge-Intensive NLP Tasks\n어제 오후 4:20 · 저장한 논문\nRetrieval-Augmented Generation for Knowledge-Intensive NLP Tasks\n2 · Related Work\n7 / 19쪽 · 38% 읽음\n이어 읽기 \n나의 논문\n최근 추가한 순\n저장한 논문\n최근 열어본\n오프라인\n최근순\nNeurIPS · 2017\nAttention Is All You Need\n\nVaswani, Shazeer, Parmar 외 5명\n\nTransformer\n기초 논문\n 번역 완료\n저장됨\nNeurIPS · 2020\nRetrieval-Augmented Generation for Knowledge-Intensive NLP Tasks\n\nLewis, Perez, Piktus 외 9명\n\nRAG\n언어 모델\n 번역 완료\n저장됨\nICLR · 2022\nLoRA: Low-Rank Adaptation of Large Language Models\n\nHu, Shen, Wallis 외 5명\n\n효율적 학습\nLLM\n 번역 8 / 26쪽\n저장됨\n연구 노트 · 2026\n긴 문맥을 읽는 언어 모델의 근거 추적과 신뢰도 평가: 검색, 인용, 질문 응답을 함께 살펴보는 연구 노트\n\n김지우, 이서연, 박민준\n\n긴 문맥\n평가\n원문\n저장됨\nNeurIPS · 2020\nDenoising Diffusion Probabilistic Models\n\nHo, Jain, Abbeel\n\n생성 모델\n확산\n 원문\n저장됨\nICML · 2021\nLearning Transferable Visual Models From Natural Language Supervision\n\nRadford, Kim, Hallacy 외 9명\n\n멀티모달\nCLIP\n원문\n저장됨",
+      "buttons": [
+        {
+          "text": "데스크톱 · 보관함",
+          "label": null,
+          "action": "preset"
+        },
+        {
+          "text": "데스크톱 · 리더",
+          "label": null,
+          "action": "preset"
+        },
+        {
+          "text": "태블릿 · 보관함",
+          "label": null,
+          "action": "preset"
+        },
+        {
+          "text": "태블릿 · 리더",
+          "label": null,
+          "action": "preset"
+        },
+        {
+          "text": "폰",
+          "label": null,
+          "action": "preset"
+        },
+        {
+          "text": " 라이트",
+          "label": null,
+          "action": "theme-menu"
+        },
+        {
+          "text": "기본 ",
+          "label": null,
+          "action": "state-menu"
+        },
+        {
+          "text": "발견",
+          "label": null,
+          "action": "discover"
+        },
+        {
+          "text": "보관함\n6",
+          "label": null,
+          "action": "library"
+        },
+        {
+          "text": "뉴스",
+          "label": null,
+          "action": "news"
+        },
+        {
+          "text": "관심 주제",
+          "label": null,
+          "action": "topics"
+        },
+        {
+          "text": "최근 열어본\n4",
+          "label": null,
+          "action": "shelf-recent"
+        },
+        {
+          "text": "저장한 논문\n6",
+          "label": null,
+          "action": "shelf-saved"
+        },
+        {
+          "text": "오프라인 저장\n5",
+          "label": null,
+          "action": "shelf-offline"
+        },
+        {
+          "text": "",
+          "label": "폴더 추가",
+          "action": "folder-create"
+        },
+        {
+          "text": "",
+          "label": "언어 모델 접기",
+          "action": "folder-toggle"
+        },
+        {
+          "text": "언어 모델\n4",
+          "label": null,
+          "action": "folder-select"
+        },
+        {
+          "text": "",
+          "label": "언어 모델 폴더 메뉴",
+          "action": "folder-menu"
+        },
+        {
+          "text": "",
+          "label": "트랜스포머 기초 펼치기",
+          "action": "folder-toggle"
+        },
+        {
+          "text": "트랜스포머 기초\n1",
+          "label": null,
+          "action": "folder-select"
+        },
+        {
+          "text": "",
+          "label": "트랜스포머 기초 폴더 메뉴",
+          "action": "folder-menu"
+        },
+        {
+          "text": "",
+          "label": "검색 증강 생성 펼치기",
+          "action": "folder-toggle"
+        },
+        {
+          "text": "검색 증강 생성\n1",
+          "label": null,
+          "action": "folder-select"
+        },
+        {
+          "text": "",
+          "label": "검색 증강 생성 폴더 메뉴",
+          "action": "folder-menu"
+        },
+        {
+          "text": "",
+          "label": "컴퓨터 비전 펼치기",
+          "action": "folder-toggle"
+        },
+        {
+          "text": "컴퓨터 비전\n2",
+          "label": null,
+          "action": "folder-select"
+        },
+        {
+          "text": "",
+          "label": "컴퓨터 비전 폴더 메뉴",
+          "action": "folder-menu"
+        },
+        {
+          "text": "",
+          "label": "10월 세미나 펼치기",
+          "action": "folder-toggle"
+        },
+        {
+          "text": "10월 세미나\n1",
+          "label": null,
+          "action": "folder-select"
+        },
+        {
+          "text": "",
+          "label": "10월 세미나 폴더 메뉴",
+          "action": "folder-menu"
+        },
+        {
+          "text": "JW\n지우의 작업 공간\n읽고, 연결하고, 발견하기",
+          "label": null,
+          "action": "settings"
+        },
+        {
+          "text": "",
+          "label": "검색 열기",
+          "action": "search-mobile"
+        },
+        {
+          "text": "",
+          "label": "보기 및 연결 설정",
+          "action": "settings"
+        },
+        {
+          "text": "논문 추가",
+          "label": null,
+          "action": "add-paper"
+        },
+        {
+          "text": "Attention Is All You Need",
+          "label": null,
+          "action": "open-paper"
+        },
+        {
+          "text": "이어 읽기 ",
+          "label": "Attention Is All You Need 이어 읽기",
+          "action": "open-paper"
+        },
+        {
+          "text": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+          "label": null,
+          "action": "open-paper"
+        },
+        {
+          "text": "이어 읽기 ",
+          "label": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks 이어 읽기",
+          "action": "open-paper"
+        },
+        {
+          "text": "저장한 논문",
+          "label": null,
+          "action": "shelf"
+        },
+        {
+          "text": "최근 열어본",
+          "label": null,
+          "action": "shelf"
+        },
+        {
+          "text": "오프라인",
+          "label": null,
+          "action": "shelf"
+        },
+        {
+          "text": "최근순",
+          "label": null,
+          "action": "sort-menu"
+        },
+        {
+          "text": "",
+          "label": "카드 보기",
+          "action": "grid"
+        },
+        {
+          "text": "",
+          "label": "목록 보기",
+          "action": "grid"
+        },
+        {
+          "text": "",
+          "label": "Attention Is All You Need 메뉴",
+          "action": "paper-menu"
+        },
+        {
+          "text": "Attention Is All You Need",
+          "label": null,
+          "action": "open-paper"
+        },
+        {
+          "text": "저장됨",
+          "label": "Attention Is All You Need 저장 해제",
+          "action": "save-paper"
+        },
+        {
+          "text": "",
+          "label": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks 메뉴",
+          "action": "paper-menu"
+        },
+        {
+          "text": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+          "label": null,
+          "action": "open-paper"
+        },
+        {
+          "text": "저장됨",
+          "label": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks 저장 해제",
+          "action": "save-paper"
+        },
+        {
+          "text": "",
+          "label": "LoRA: Low-Rank Adaptation of Large Language Models 메뉴",
+          "action": "paper-menu"
+        },
+        {
+          "text": "LoRA: Low-Rank Adaptation of Large Language Models",
+          "label": null,
+          "action": "open-paper"
+        },
+        {
+          "text": "저장됨",
+          "label": "LoRA: Low-Rank Adaptation of Large Language Models 저장 해제",
+          "action": "save-paper"
+        },
+        {
+          "text": "",
+          "label": "긴 문맥을 읽는 언어 모델의 근거 추적과 신뢰도 평가: 검색, 인용, 질문 응답을 함께 살펴보는 연구 노트 메뉴",
+          "action": "paper-menu"
+        },
+        {
+          "text": "긴 문맥을 읽는 언어 모델의 근거 추적과 신뢰도 평가: 검색, 인용, 질문 응답을 함께 살펴보는 연구 노트",
+          "label": null,
+          "action": "open-paper"
+        },
+        {
+          "text": "저장됨",
+          "label": "긴 문맥을 읽는 언어 모델의 근거 추적과 신뢰도 평가: 검색, 인용, 질문 응답을 함께 살펴보는 연구 노트 저장 해제",
+          "action": "save-paper"
+        },
+        {
+          "text": "",
+          "label": "Denoising Diffusion Probabilistic Models 메뉴",
+          "action": "paper-menu"
+        },
+        {
+          "text": "Denoising Diffusion Probabilistic Models",
+          "label": null,
+          "action": "open-paper"
+        },
+        {
+          "text": "저장됨",
+          "label": "Denoising Diffusion Probabilistic Models 저장 해제",
+          "action": "save-paper"
+        },
+        {
+          "text": "",
+          "label": "Learning Transferable Visual Models From Natural Language Supervision 메뉴",
+          "action": "paper-menu"
+        },
+        {
+          "text": "Learning Transferable Visual Models From Natural Language Supervision",
+          "label": null,
+          "action": "open-paper"
+        },
+        {
+          "text": "저장됨",
+          "label": "Learning Transferable Visual Models From Natural Language Supervision 저장 해제",
+          "action": "save-paper"
+        }
+      ]
+    },
+    {
+      "name": "desktop-reader",
+      "width": 1440,
+      "height": 900,
+      "title": "Fractal · Workspace review",
+      "bodyWidth": 1440,
+      "viewportWidth": 1440,
+      "text": "본문으로 이동\nFRACTAL\nDESIGN REVIEW · 01\n데스크톱 · 보관함\n데스크톱 · 리더\n태블릿 · 보관함\n태블릿 · 리더\n폰\n 라이트\n기본 \n발견\n보관함\n뉴스\n관심 주제\nAttention Is All You Need\nNeurIPS · 2017\n·\n읽은 위치 저장됨\n저장됨\n/ 15\n100%\nCodex · 기본 모델\n번역 완료\n원문\n나란히\n번역\n연구 노트\n원문 PDF\n필기 · 3쪽\nATTENTION IS ALL YOU NEED\nNeurIPS 2017\n3. Model Architecture\n\nAshish Vaswani · Noam Shazeer · Niki Parmar et al.\n\nThis review page summarizes the Transformer architecture. Attention connects representations across a sequence. Queries identify information to retrieve, keys describe available information, and values supply the content of the weighted result.\n\n3.1 Scaled Dot-Product Attention\n\nAn attention function maps a query and a set of key–value pairs to an output. Each key describes an available item; the matching value holds its content. The output combines values according to their relevance to the query.\n\nFor a key dimension dₖ, the query–key dot products are divided by √dₖ before softmax. This scaling moderates the magnitude of the scores and helps avoid very small gradients when the dimensionality grows.\n\nAttention(Q, K, V) = softmax(QKᵀ / √dₖ)V\nLinear\nLinear\nLinear\nQKᵀ / √dₖ\nSoftmax\n×\nQuery (Q)\nKey (K)\nValue (V)\nFigure 1. A simplified attention flow, redrawn for this review. Scores from queries and keys determine the weighted combination of values.\n3.2 Multi-Head Attention\n\nMultiple heads work in different representation subspaces. Their outputs are concatenated and projected into the next layer. This lets a position incorporate several types of relationship instead of relying on a single attention pattern.\n\nA question to carry forward\n\nIf attention replaces recurrence, where does sequence order enter the model? Continue to positional encoding and consider how order information interacts with parallel computation.\n\n3\n 메모\n한국어 번역\n한국어 \n한국어 번역 · 원문 3절\nNeurIPS 2017\n3. 어텐션과 트랜스포머의 구조\n\nAshish Vaswani · Noam Shazeer · Niki Parmar 외\n\n트랜스포머는 순환이나 합성곱 대신 어텐션을 기반으로 입력과 출력 사이의 전역적인 의존성을 표현합니다. 이 페이지에서는 쿼리, 키, 값이 어떤 역할을 하는지 살펴봅니다.\n\n3.1 스케일 내적 어텐션\n\n어텐션은 하나의 쿼리와 여러 키–값 쌍을 입력받아 출력으로 매핑합니다. 출력은 값의 가중합이며, 각 가중치는 쿼리와 해당 키 사이의 적합도에 따라 결정됩니다.\n\n쿼리와 키의 차원이 dₖ일 때, 내적 결과를 √dₖ로 나눈 뒤 softmax를 적용합니다. 이 스케일 조정은 차원이 커질수록 내적의 크기가 증가하여 기울기가 작아지는 현상을 완화합니다.\n\nAttention(Q, K, V) = softmax(QKᵀ / √dₖ)V\nLinear\nLinear\nLinear\nQKᵀ / √dₖ\nSoftmax\n×\nQuery (Q)\nKey (K)\nValue (V)\n그림 1. 스케일 내적 어텐션의 흐름. 쿼리와 키로 구한 가중치를 값에 적용합니다.\n3.2 여러 관점으로 읽는 멀티 헤드 어텐션\n\n여러 어텐션 헤드는 서로 다른 표현 부분공간에서 정보를 모읍니다. 각 헤드의 출력을 연결한 뒤 한 번 더 선형 변환하여 다음 층에 전달합니다. 한 위치에서 여러 관계를 함께 살펴볼 수 있습니다.\n\n읽으면서 생각해 볼 질문\n\n어텐션이 순환 구조를 대신한다면 토큰 순서는 어디에서 전달될까요? 다음 절의 위치 인코딩을 함께 읽으며, 병렬화와 문맥 표현의 관계를 확인해 보세요.\n\n3\n 메모\n연구 노트\n노트 2\n질문\n기록\n관련\n2개의 질문\n새 질문\n트랜스포머가 순환 신경망 없이 문맥을 이해할 수 있는 이유는 무엇인가요?\nFractal · 논문에 근거한 답변\n\n어텐션은 각 단어가 다른 단어와 어떤 관계를 맺는지 직접 비교합니다. 순서대로 상태를 전달하는 대신, 문장 전체의 표현을 함께 살펴볼 수 있어요.p.3\n\n문맥은 어텐션으로. 쿼리와 키의 적합도로 가중치를 정하고, 값의 가중합으로 필요한 정보를 모읍니다.\n순서는 위치 인코딩으로. 토큰의 순서 정보는 입력 표현에 더해집니다.p.5\n계산은 병렬로. 순환 계산 없이 여러 위치의 표현을 동시에 처리할 수 있습니다.\n\n인용된 페이지에서 원문의 근거를 확인하세요.\n\n답변 설정\nCodex · 기본 모델\n한국어\n질문 보내기\n새 질문은 이전 답변을 기록에 보관합니다.",
+      "buttons": [
+        {
+          "text": "데스크톱 · 보관함",
+          "label": null,
+          "action": "preset"
+        },
+        {
+          "text": "데스크톱 · 리더",
+          "label": null,
+          "action": "preset"
+        },
+        {
+          "text": "태블릿 · 보관함",
+          "label": null,
+          "action": "preset"
+        },
+        {
+          "text": "태블릿 · 리더",
+          "label": null,
+          "action": "preset"
+        },
+        {
+          "text": "폰",
+          "label": null,
+          "action": "preset"
+        },
+        {
+          "text": " 라이트",
+          "label": null,
+          "action": "theme-menu"
+        },
+        {
+          "text": "기본 ",
+          "label": null,
+          "action": "state-menu"
+        },
+        {
+          "text": "발견",
+          "label": null,
+          "action": "discover"
+        },
+        {
+          "text": "보관함",
+          "label": null,
+          "action": "library"
+        },
+        {
+          "text": "뉴스",
+          "label": null,
+          "action": "news"
+        },
+        {
+          "text": "관심 주제",
+          "label": null,
+          "action": "topics"
+        },
+        {
+          "text": "",
+          "label": "보관함으로 돌아가기",
+          "action": "reader-back"
+        },
+        {
+          "text": "저장됨",
+          "label": null,
+          "action": "save-paper"
+        },
+        {
+          "text": "",
+          "label": "논문 내보내기",
+          "action": "export-menu"
+        },
+        {
+          "text": "",
+          "label": "리더 더 보기",
+          "action": "reader-menu"
+        },
+        {
+          "text": "",
+          "label": "이전 페이지",
+          "action": "prev-page"
+        },
+        {
+          "text": "",
+          "label": "다음 페이지",
+          "action": "next-page"
+        },
+        {
+          "text": "",
+          "label": "축소",
+          "action": "zoom-out"
+        },
+        {
+          "text": "100%",
+          "label": null,
+          "action": "zoom-menu"
+        },
+        {
+          "text": "",
+          "label": "확대",
+          "action": "zoom-in"
+        },
+        {
+          "text": "Codex · 기본 모델",
+          "label": null,
+          "action": "model-menu"
+        },
+        {
+          "text": "번역 완료",
+          "label": null,
+          "action": "translate"
+        },
+        {
+          "text": "원문",
+          "label": null,
+          "action": "mode"
+        },
+        {
+          "text": "나란히",
+          "label": null,
+          "action": "mode"
+        },
+        {
+          "text": "번역",
+          "label": null,
+          "action": "mode"
+        },
+        {
+          "text": "",
+          "label": "연결 스크롤 끄기",
+          "action": "linked"
+        },
+        {
+          "text": "연구 노트",
+          "label": null,
+          "action": "panel-toggle"
+        },
+        {
+          "text": "",
+          "label": "볼펜",
+          "action": "tool"
+        },
+        {
+          "text": "",
+          "label": "형광펜",
+          "action": "tool"
+        },
+        {
+          "text": "",
+          "label": "텍스트 선택",
+          "action": "tool"
+        },
+        {
+          "text": "",
+          "label": "지우개",
+          "action": "tool"
+        },
+        {
+          "text": "",
+          "label": "펜 색과 굵기",
+          "action": "ink-options"
+        },
+        {
+          "text": "",
+          "label": "현재 페이지에 메모 추가",
+          "action": "new-note"
+        },
+        {
+          "text": "",
+          "label": "필기 실행 취소",
+          "action": "undo"
+        },
+        {
+          "text": "",
+          "label": "필기 다시 실행",
+          "action": "redo"
+        },
+        {
+          "text": " 메모",
+          "label": "메모 이동, 방향키로 위치 조정",
+          "action": "drag-note"
+        },
+        {
+          "text": "",
+          "label": "메모 접기",
+          "action": "collapse-note"
+        },
+        {
+          "text": "한국어 ",
+          "label": null,
+          "action": "language-menu"
+        },
+        {
+          "text": " 메모",
+          "label": "메모 이동, 방향키로 위치 조정",
+          "action": "drag-note"
+        },
+        {
+          "text": "",
+          "label": "메모 펼치기",
+          "action": "collapse-note"
+        },
+        {
+          "text": "",
+          "label": "연구 노트 닫기, 내용은 보관됩니다",
+          "action": "panel-close"
+        },
+        {
+          "text": "노트 2",
+          "label": null,
+          "action": "panel-tab"
+        },
+        {
+          "text": "질문",
+          "label": null,
+          "action": "panel-tab"
+        },
+        {
+          "text": "기록",
+          "label": null,
+          "action": "panel-tab"
+        },
+        {
+          "text": "관련",
+          "label": null,
+          "action": "panel-tab"
+        },
+        {
+          "text": "새 질문",
+          "label": null,
+          "action": "new-question"
+        },
+        {
+          "text": "p.3",
+          "label": null,
+          "action": "citation"
+        },
+        {
+          "text": "p.5",
+          "label": null,
+          "action": "citation"
+        },
+        {
+          "text": "Codex · 기본 모델",
+          "label": null,
+          "action": "model-menu"
+        },
+        {
+          "text": "한국어",
+          "label": null,
+          "action": "language-menu"
+        },
+        {
+          "text": "질문 보내기",
+          "label": null
+        }
+      ]
+    },
+    {
+      "name": "tablet-library",
+      "width": 1280,
+      "height": 800,
+      "title": "Fractal · Workspace review",
+      "bodyWidth": 1280,
+      "viewportWidth": 1280,
+      "text": "본문으로 이동\nFRACTAL\nDESIGN REVIEW · 01\n데스크톱 · 보관함\n데스크톱 · 리더\n태블릿 · 보관함\n태블릿 · 리더\n폰\n 라이트\n기본 \n발견\n보관함\n뉴스\n관심 주제\nPC와 마지막 동기화 · 방금\nJW\n지우의 작업 공간\n보관함\nCtrl K\n\n나의 연구를 이어가는 곳\n\n저장한 논문\n\n6편의 논문 · 읽은 위치와 메모를 함께 보관해요.\n\n논문 추가\n이어서 읽기\n최근 활동\nAttention Is All You Need\n오늘 오전 10:42 · 저장한 논문\nAttention Is All You Need\n3 · Attention\n3 / 15쪽 · 23% 읽음\n이어 읽기 \n나의 논문\n최근 추가한 순\n저장한 논문\n최근 열어본\n오프라인\n최근순\nNeurIPS · 2017\nAttention Is All You Need\n\nVaswani, Shazeer, Parmar 외 5명\n\nTransformer\n기초 논문\n 번역 완료\n저장됨\nNeurIPS · 2020\nRetrieval-Augmented Generation for Knowledge-Intensive NLP Tasks\n\nLewis, Perez, Piktus 외 9명\n\nRAG\n언어 모델\n 번역 완료\n저장됨\nICLR · 2022\nLoRA: Low-Rank Adaptation of Large Language Models\n\nHu, Shen, Wallis 외 5명\n\n효율적 학습\nLLM\n 번역 8 / 26쪽\n저장됨\n연구 노트 · 2026\n긴 문맥을 읽는 언어 모델의 근거 추적과 신뢰도 평가: 검색, 인용, 질문 응답을 함께 살펴보는 연구 노트\n\n김지우, 이서연, 박민준\n\n긴 문맥\n평가\n원문\n저장됨\nNeurIPS · 2020\nDenoising Diffusion Probabilistic Models\n\nHo, Jain, Abbeel\n\n생성 모델\n확산\n 원문\n저장됨\nICML · 2021\nLearning Transferable Visual Models From Natural Language Supervision\n\nRadford, Kim, Hallacy 외 9명\n\n멀티모달\nCLIP\n원문\n저장됨\n논문 상세\nAttention Is All You Need\n\nVaswani, Shazeer, Parmar 외 5명\n\nNeurIPS · 2017 · 15쪽\nLinear\nLinear\nLinear\nQKᵀ / √dₖ\nSoftmax\n×\nQuery (Q)\nKey (K)\nValue (V)\n어텐션 기반의 새로운 구조\n\n순환과 합성곱을 사용하지 않고 어텐션만으로 시퀀스 변환을 수행합니다. 병렬 학습과 장거리 의존성 모델링을 함께 살펴볼 수 있는 기초 논문입니다.\n\nTransformer\n기초 논문\n읽은 위치\n3 / 15쪽\n번역\n번역 완료\n오프라인\n이 기기에 저장됨\n이어 읽기\n오프라인 저장됨",
+      "buttons": [
+        {
+          "text": "데스크톱 · 보관함",
+          "label": null,
+          "action": "preset"
+        },
+        {
+          "text": "데스크톱 · 리더",
+          "label": null,
+          "action": "preset"
+        },
+        {
+          "text": "태블릿 · 보관함",
+          "label": null,
+          "action": "preset"
+        },
+        {
+          "text": "태블릿 · 리더",
+          "label": null,
+          "action": "preset"
+        },
+        {
+          "text": "폰",
+          "label": null,
+          "action": "preset"
+        },
+        {
+          "text": " 라이트",
+          "label": null,
+          "action": "theme-menu"
+        },
+        {
+          "text": "기본 ",
+          "label": null,
+          "action": "state-menu"
+        },
+        {
+          "text": "발견",
+          "label": null,
+          "action": "discover"
+        },
+        {
+          "text": "보관함",
+          "label": null,
+          "action": "library"
+        },
+        {
+          "text": "뉴스",
+          "label": null,
+          "action": "news"
+        },
+        {
+          "text": "관심 주제",
+          "label": null,
+          "action": "topics"
+        },
+        {
+          "text": "JW",
+          "label": null,
+          "action": "settings"
+        },
+        {
+          "text": "",
+          "label": "검색 열기",
+          "action": "search-mobile"
+        },
+        {
+          "text": "",
+          "label": "보기 및 연결 설정",
+          "action": "settings"
+        },
+        {
+          "text": "논문 추가",
+          "label": null,
+          "action": "add-paper"
+        },
+        {
+          "text": "Attention Is All You Need",
+          "label": null,
+          "action": "open-paper"
+        },
+        {
+          "text": "이어 읽기 ",
+          "label": "Attention Is All You Need 이어 읽기",
+          "action": "open-paper"
+        },
+        {
+          "text": "저장한 논문",
+          "label": null,
+          "action": "shelf"
+        },
+        {
+          "text": "최근 열어본",
+          "label": null,
+          "action": "shelf"
+        },
+        {
+          "text": "오프라인",
+          "label": null,
+          "action": "shelf"
+        },
+        {
+          "text": "최근순",
+          "label": null,
+          "action": "sort-menu"
+        },
+        {
+          "text": "",
+          "label": "카드 보기",
+          "action": "grid"
+        },
+        {
+          "text": "",
+          "label": "목록 보기",
+          "action": "grid"
+        },
+        {
+          "text": "",
+          "label": "Attention Is All You Need 메뉴",
+          "action": "paper-menu"
+        },
+        {
+          "text": "Attention Is All You Need",
+          "label": null,
+          "action": "select-paper"
+        },
+        {
+          "text": "저장됨",
+          "label": "Attention Is All You Need 저장 해제",
+          "action": "save-paper"
+        },
+        {
+          "text": "",
+          "label": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks 메뉴",
+          "action": "paper-menu"
+        },
+        {
+          "text": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+          "label": null,
+          "action": "select-paper"
+        },
+        {
+          "text": "저장됨",
+          "label": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks 저장 해제",
+          "action": "save-paper"
+        },
+        {
+          "text": "",
+          "label": "LoRA: Low-Rank Adaptation of Large Language Models 메뉴",
+          "action": "paper-menu"
+        },
+        {
+          "text": "LoRA: Low-Rank Adaptation of Large Language Models",
+          "label": null,
+          "action": "select-paper"
+        },
+        {
+          "text": "저장됨",
+          "label": "LoRA: Low-Rank Adaptation of Large Language Models 저장 해제",
+          "action": "save-paper"
+        },
+        {
+          "text": "",
+          "label": "긴 문맥을 읽는 언어 모델의 근거 추적과 신뢰도 평가: 검색, 인용, 질문 응답을 함께 살펴보는 연구 노트 메뉴",
+          "action": "paper-menu"
+        },
+        {
+          "text": "긴 문맥을 읽는 언어 모델의 근거 추적과 신뢰도 평가: 검색, 인용, 질문 응답을 함께 살펴보는 연구 노트",
+          "label": null,
+          "action": "select-paper"
+        },
+        {
+          "text": "저장됨",
+          "label": "긴 문맥을 읽는 언어 모델의 근거 추적과 신뢰도 평가: 검색, 인용, 질문 응답을 함께 살펴보는 연구 노트 저장 해제",
+          "action": "save-paper"
+        },
+        {
+          "text": "",
+          "label": "Denoising Diffusion Probabilistic Models 메뉴",
+          "action": "paper-menu"
+        },
+        {
+          "text": "Denoising Diffusion Probabilistic Models",
+          "label": null,
+          "action": "select-paper"
+        },
+        {
+          "text": "저장됨",
+          "label": "Denoising Diffusion Probabilistic Models 저장 해제",
+          "action": "save-paper"
+        },
+        {
+          "text": "",
+          "label": "Learning Transferable Visual Models From Natural Language Supervision 메뉴",
+          "action": "paper-menu"
+        },
+        {
+          "text": "Learning Transferable Visual Models From Natural Language Supervision",
+          "label": null,
+          "action": "select-paper"
+        },
+        {
+          "text": "저장됨",
+          "label": "Learning Transferable Visual Models From Natural Language Supervision 저장 해제",
+          "action": "save-paper"
+        },
+        {
+          "text": "",
+          "label": "선택한 논문 메뉴",
+          "action": "paper-menu"
+        },
+        {
+          "text": "이어 읽기",
+          "label": null,
+          "action": "open-paper"
+        },
+        {
+          "text": "오프라인 저장됨",
+          "label": null,
+          "action": "cache-paper"
+        }
+      ]
+    },
+    {
+      "name": "tablet-reader",
+      "width": 1280,
+      "height": 800,
+      "title": "Fractal · Workspace review",
+      "bodyWidth": 1280,
+      "viewportWidth": 1280,
+      "text": "본문으로 이동\nFRACTAL\nDESIGN REVIEW · 01\n데스크톱 · 보관함\n데스크톱 · 리더\n태블릿 · 보관함\n태블릿 · 리더\n폰\n 라이트\n기본 \n발견\n보관함\n뉴스\n관심 주제\nAttention Is All You Need\nNeurIPS · 2017\n·\n읽은 위치 저장됨\n저장됨\n/ 15\n100%\nCodex · 기본 모델\n번역 완료\n원문\n나란히\n번역\n연구 노트\n원문 PDF\n필기 · 3쪽\nATTENTION IS ALL YOU NEED\nNeurIPS 2017\n3. Model Architecture\n\nAshish Vaswani · Noam Shazeer · Niki Parmar et al.\n\nThis review page summarizes the Transformer architecture. Attention connects representations across a sequence. Queries identify information to retrieve, keys describe available information, and values supply the content of the weighted result.\n\n3.1 Scaled Dot-Product Attention\n\nAn attention function maps a query and a set of key–value pairs to an output. Each key describes an available item; the matching value holds its content. The output combines values according to their relevance to the query.\n\nFor a key dimension dₖ, the query–key dot products are divided by √dₖ before softmax. This scaling moderates the magnitude of the scores and helps avoid very small gradients when the dimensionality grows.\n\nAttention(Q, K, V) = softmax(QKᵀ / √dₖ)V\nLinear\nLinear\nLinear\nQKᵀ / √dₖ\nSoftmax\n×\nQuery (Q)\nKey (K)\nValue (V)\nFigure 1. A simplified attention flow, redrawn for this review. Scores from queries and keys determine the weighted combination of values.\n3.2 Multi-Head Attention\n\nMultiple heads work in different representation subspaces. Their outputs are concatenated and projected into the next layer. This lets a position incorporate several types of relationship instead of relying on a single attention pattern.\n\nA question to carry forward\n\nIf attention replaces recurrence, where does sequence order enter the model? Continue to positional encoding and consider how order information interacts with parallel computation.\n\n3\n 메모\n한국어 번역\n한국어 \n한국어 번역 · 원문 3절\nNeurIPS 2017\n3. 어텐션과 트랜스포머의 구조\n\nAshish Vaswani · Noam Shazeer · Niki Parmar 외\n\n트랜스포머는 순환이나 합성곱 대신 어텐션을 기반으로 입력과 출력 사이의 전역적인 의존성을 표현합니다. 이 페이지에서는 쿼리, 키, 값이 어떤 역할을 하는지 살펴봅니다.\n\n3.1 스케일 내적 어텐션\n\n어텐션은 하나의 쿼리와 여러 키–값 쌍을 입력받아 출력으로 매핑합니다. 출력은 값의 가중합이며, 각 가중치는 쿼리와 해당 키 사이의 적합도에 따라 결정됩니다.\n\n쿼리와 키의 차원이 dₖ일 때, 내적 결과를 √dₖ로 나눈 뒤 softmax를 적용합니다. 이 스케일 조정은 차원이 커질수록 내적의 크기가 증가하여 기울기가 작아지는 현상을 완화합니다.\n\nAttention(Q, K, V) = softmax(QKᵀ / √dₖ)V\nLinear\nLinear\nLinear\nQKᵀ / √dₖ\nSoftmax\n×\nQuery (Q)\nKey (K)\nValue (V)\n그림 1. 스케일 내적 어텐션의 흐름. 쿼리와 키로 구한 가중치를 값에 적용합니다.\n3.2 여러 관점으로 읽는 멀티 헤드 어텐션\n\n여러 어텐션 헤드는 서로 다른 표현 부분공간에서 정보를 모읍니다. 각 헤드의 출력을 연결한 뒤 한 번 더 선형 변환하여 다음 층에 전달합니다. 한 위치에서 여러 관계를 함께 살펴볼 수 있습니다.\n\n읽으면서 생각해 볼 질문\n\n어텐션이 순환 구조를 대신한다면 토큰 순서는 어디에서 전달될까요? 다음 절의 위치 인코딩을 함께 읽으며, 병렬화와 문맥 표현의 관계를 확인해 보세요.\n\n3\n 메모",
+      "buttons": [
+        {
+          "text": "데스크톱 · 보관함",
+          "label": null,
+          "action": "preset"
+        },
+        {
+          "text": "데스크톱 · 리더",
+          "label": null,
+          "action": "preset"
+        },
+        {
+          "text": "태블릿 · 보관함",
+          "label": null,
+          "action": "preset"
+        },
+        {
+          "text": "태블릿 · 리더",
+          "label": null,
+          "action": "preset"
+        },
+        {
+          "text": "폰",
+          "label": null,
+          "action": "preset"
+        },
+        {
+          "text": " 라이트",
+          "label": null,
+          "action": "theme-menu"
+        },
+        {
+          "text": "기본 ",
+          "label": null,
+          "action": "state-menu"
+        },
+        {
+          "text": "발견",
+          "label": null,
+          "action": "discover"
+        },
+        {
+          "text": "보관함",
+          "label": null,
+          "action": "library"
+        },
+        {
+          "text": "뉴스",
+          "label": null,
+          "action": "news"
+        },
+        {
+          "text": "관심 주제",
+          "label": null,
+          "action": "topics"
+        },
+        {
+          "text": "",
+          "label": "보관함으로 돌아가기",
+          "action": "reader-back"
+        },
+        {
+          "text": "저장됨",
+          "label": null,
+          "action": "save-paper"
+        },
+        {
+          "text": "",
+          "label": "논문 내보내기",
+          "action": "export-menu"
+        },
+        {
+          "text": "",
+          "label": "리더 더 보기",
+          "action": "reader-menu"
+        },
+        {
+          "text": "",
+          "label": "이전 페이지",
+          "action": "prev-page"
+        },
+        {
+          "text": "",
+          "label": "다음 페이지",
+          "action": "next-page"
+        },
+        {
+          "text": "",
+          "label": "축소",
+          "action": "zoom-out"
+        },
+        {
+          "text": "100%",
+          "label": null,
+          "action": "zoom-menu"
+        },
+        {
+          "text": "",
+          "label": "확대",
+          "action": "zoom-in"
+        },
+        {
+          "text": "Codex · 기본 모델",
+          "label": null,
+          "action": "model-menu"
+        },
+        {
+          "text": "번역 완료",
+          "label": null,
+          "action": "translate"
+        },
+        {
+          "text": "원문",
+          "label": null,
+          "action": "mode"
+        },
+        {
+          "text": "나란히",
+          "label": null,
+          "action": "mode"
+        },
+        {
+          "text": "번역",
+          "label": null,
+          "action": "mode"
+        },
+        {
+          "text": "",
+          "label": "연결 스크롤 끄기",
+          "action": "linked"
+        },
+        {
+          "text": "연구 노트",
+          "label": null,
+          "action": "panel-toggle"
+        },
+        {
+          "text": "",
+          "label": "볼펜",
+          "action": "tool"
+        },
+        {
+          "text": "",
+          "label": "형광펜",
+          "action": "tool"
+        },
+        {
+          "text": "",
+          "label": "텍스트 선택",
+          "action": "tool"
+        },
+        {
+          "text": "",
+          "label": "지우개",
+          "action": "tool"
+        },
+        {
+          "text": "",
+          "label": "펜 색과 굵기",
+          "action": "ink-options"
+        },
+        {
+          "text": "",
+          "label": "현재 페이지에 메모 추가",
+          "action": "new-note"
+        },
+        {
+          "text": "",
+          "label": "필기 실행 취소",
+          "action": "undo"
+        },
+        {
+          "text": "",
+          "label": "필기 다시 실행",
+          "action": "redo"
+        },
+        {
+          "text": " 메모",
+          "label": "메모 이동, 방향키로 위치 조정",
+          "action": "drag-note"
+        },
+        {
+          "text": "",
+          "label": "메모 접기",
+          "action": "collapse-note"
+        },
+        {
+          "text": "한국어 ",
+          "label": null,
+          "action": "language-menu"
+        },
+        {
+          "text": " 메모",
+          "label": "메모 이동, 방향키로 위치 조정",
+          "action": "drag-note"
+        },
+        {
+          "text": "",
+          "label": "메모 펼치기",
+          "action": "collapse-note"
+        }
+      ]
+    },
+    {
+      "name": "phone",
+      "width": 360,
+      "height": 800,
+      "title": "Fractal · Workspace review",
+      "bodyWidth": 360,
+      "viewportWidth": 360,
+      "text": "본문으로 이동\nFRACTAL\n데스크톱 · 보관함\n데스크톱 · 리더\n태블릿 · 보관함\n태블릿 · 리더\n폰\n 라이트\n기본 \n보관함\n\n나의 연구를 이어가는 곳\n\n저장한 논문\n\n6편의 논문 · 읽은 위치와 메모를 함께 보관해요.\n\n논문 추가\n이어서 읽기\n최근 활동\nAttention Is All You Need\n오늘 오전 10:42 · 저장한 논문\nAttention Is All You Need\n3 · Attention\n3 / 15쪽 · 23% 읽음\n이어 읽기 \n나의 논문\n폴더\n최근 추가한 순\n저장한 논문\n최근 열어본\n오프라인\n최근순\nNeurIPS · 2017\nAttention Is All You Need\n\nVaswani, Shazeer, Parmar 외 5명\n\nTransformer\n기초 논문\n 번역 완료\n저장됨\nNeurIPS · 2020\nRetrieval-Augmented Generation for Knowledge-Intensive NLP Tasks\n\nLewis, Perez, Piktus 외 9명\n\nRAG\n언어 모델\n 번역 완료\n저장됨\nICLR · 2022\nLoRA: Low-Rank Adaptation of Large Language Models\n\nHu, Shen, Wallis 외 5명\n\n효율적 학습\nLLM\n 번역 8 / 26쪽\n저장됨\n연구 노트 · 2026\n긴 문맥을 읽는 언어 모델의 근거 추적과 신뢰도 평가: 검색, 인용, 질문 응답을 함께 살펴보는 연구 노트\n\n김지우, 이서연, 박민준\n\n긴 문맥\n평가\n원문\n저장됨\nNeurIPS · 2020\nDenoising Diffusion Probabilistic Models\n\nHo, Jain, Abbeel\n\n생성 모델\n확산\n 원문\n저장됨\nICML · 2021\nLearning Transferable Visual Models From Natural Language Supervision\n\nRadford, Kim, Hallacy 외 9명\n\n멀티모달\nCLIP\n원문\n저장됨\n발견\n보관함\n뉴스\n주제",
+      "buttons": [
+        {
+          "text": "데스크톱 · 보관함",
+          "label": null,
+          "action": "preset"
+        },
+        {
+          "text": "데스크톱 · 리더",
+          "label": null,
+          "action": "preset"
+        },
+        {
+          "text": "태블릿 · 보관함",
+          "label": null,
+          "action": "preset"
+        },
+        {
+          "text": "태블릿 · 리더",
+          "label": null,
+          "action": "preset"
+        },
+        {
+          "text": "폰",
+          "label": null,
+          "action": "preset"
+        },
+        {
+          "text": " 라이트",
+          "label": null,
+          "action": "theme-menu"
+        },
+        {
+          "text": "기본 ",
+          "label": null,
+          "action": "state-menu"
+        },
+        {
+          "text": "",
+          "label": "검색 열기",
+          "action": "search-mobile"
+        },
+        {
+          "text": "논문 추가",
+          "label": null,
+          "action": "add-paper"
+        },
+        {
+          "text": "Attention Is All You Need",
+          "label": null,
+          "action": "open-paper"
+        },
+        {
+          "text": "이어 읽기 ",
+          "label": "Attention Is All You Need 이어 읽기",
+          "action": "open-paper"
+        },
+        {
+          "text": "폴더",
+          "label": null,
+          "action": "folders-sheet"
+        },
+        {
+          "text": "저장한 논문",
+          "label": null,
+          "action": "shelf"
+        },
+        {
+          "text": "최근 열어본",
+          "label": null,
+          "action": "shelf"
+        },
+        {
+          "text": "오프라인",
+          "label": null,
+          "action": "shelf"
+        },
+        {
+          "text": "최근순",
+          "label": null,
+          "action": "sort-menu"
+        },
+        {
+          "text": "",
+          "label": "Attention Is All You Need 메뉴",
+          "action": "paper-menu"
+        },
+        {
+          "text": "Attention Is All You Need",
+          "label": null,
+          "action": "open-paper"
+        },
+        {
+          "text": "저장됨",
+          "label": "Attention Is All You Need 저장 해제",
+          "action": "save-paper"
+        },
+        {
+          "text": "",
+          "label": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks 메뉴",
+          "action": "paper-menu"
+        },
+        {
+          "text": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+          "label": null,
+          "action": "open-paper"
+        },
+        {
+          "text": "저장됨",
+          "label": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks 저장 해제",
+          "action": "save-paper"
+        },
+        {
+          "text": "",
+          "label": "LoRA: Low-Rank Adaptation of Large Language Models 메뉴",
+          "action": "paper-menu"
+        },
+        {
+          "text": "LoRA: Low-Rank Adaptation of Large Language Models",
+          "label": null,
+          "action": "open-paper"
+        },
+        {
+          "text": "저장됨",
+          "label": "LoRA: Low-Rank Adaptation of Large Language Models 저장 해제",
+          "action": "save-paper"
+        },
+        {
+          "text": "",
+          "label": "긴 문맥을 읽는 언어 모델의 근거 추적과 신뢰도 평가: 검색, 인용, 질문 응답을 함께 살펴보는 연구 노트 메뉴",
+          "action": "paper-menu"
+        },
+        {
+          "text": "긴 문맥을 읽는 언어 모델의 근거 추적과 신뢰도 평가: 검색, 인용, 질문 응답을 함께 살펴보는 연구 노트",
+          "label": null,
+          "action": "open-paper"
+        },
+        {
+          "text": "저장됨",
+          "label": "긴 문맥을 읽는 언어 모델의 근거 추적과 신뢰도 평가: 검색, 인용, 질문 응답을 함께 살펴보는 연구 노트 저장 해제",
+          "action": "save-paper"
+        },
+        {
+          "text": "",
+          "label": "Denoising Diffusion Probabilistic Models 메뉴",
+          "action": "paper-menu"
+        },
+        {
+          "text": "Denoising Diffusion Probabilistic Models",
+          "label": null,
+          "action": "open-paper"
+        },
+        {
+          "text": "저장됨",
+          "label": "Denoising Diffusion Probabilistic Models 저장 해제",
+          "action": "save-paper"
+        },
+        {
+          "text": "",
+          "label": "Learning Transferable Visual Models From Natural Language Supervision 메뉴",
+          "action": "paper-menu"
+        },
+        {
+          "text": "Learning Transferable Visual Models From Natural Language Supervision",
+          "label": null,
+          "action": "open-paper"
+        },
+        {
+          "text": "저장됨",
+          "label": "Learning Transferable Visual Models From Natural Language Supervision 저장 해제",
+          "action": "save-paper"
+        },
+        {
+          "text": "발견",
+          "label": null,
+          "action": "discover"
+        },
+        {
+          "text": "보관함",
+          "label": null,
+          "action": "library"
+        },
+        {
+          "text": "뉴스",
+          "label": null,
+          "action": "news"
+        },
+        {
+          "text": "주제",
+          "label": null,
+          "action": "topics"
+        }
+      ]
+    }
+  ]
+}
