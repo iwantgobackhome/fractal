@@ -1,0 +1,15 @@
+
+> fractal@0.1.0 typecheck
+> npm run typecheck -w @fractal/shared && npm run typecheck -w @fractal/hub && npm run typecheck -w @fractal/ui
+
+
+> @fractal/shared@0.1.0 typecheck
+> tsc --noEmit -p tsconfig.json
+
+
+> @fractal/hub@0.1.0 typecheck
+> tsc --noEmit -p tsconfig.json
+
+
+> @fractal/ui@0.1.0 typecheck
+> tsc --noEmit -p tsconfig.json

@@ -1,0 +1,110 @@
+
+> fractal@0.1.0 test
+> npm run test -w @fractal/shared && npm run test -w @fractal/hub && npm run test -w @fractal/ui
+
+
+> @fractal/shared@0.1.0 test
+> vitest run
+
+
+ RUN  v3.2.7 C:/Users/Home/orca/workspaces/fractal/fractal-qa/packages/shared
+
+ ✓ src/contracts/library.test.ts (1 test) 5ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  02:20:04
+   Duration  823ms (transform 79ms, setup 0ms, collect 157ms, tests 5ms, environment 0ms, prepare 176ms)
+
+
+> @fractal/hub@0.1.0 test
+> vitest run
+
+
+ RUN  v3.2.7 C:/Users/Home/orca/workspaces/fractal/fractal-qa/packages/hub
+
+node.exe : (node:4012) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+위치 줄:1 문자:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:4012) Exp...nge at any time:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ src/arxiv/index.test.ts (2 tests) 8ms
+(node:11796) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:3768) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:37960) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:26524) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:39340) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:6524) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:18816) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ src/ai/claude-usage.test.ts (5 tests) 58ms
+(node:42056) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ src/api/guard.test.ts (2 tests) 9ms
+ ✓ src/pairing/pairing.test.ts (1 test) 45ms
+ ✓ src/ai/install.test.ts (4 tests) 51ms
+ ✓ src/codex/runtime.test.ts (5 tests) 36ms
+(node:6088) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ src/net/index.test.ts (2 tests) 17ms
+(node:38984) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ src/ai/fts-search.test.ts (2 tests) 90ms
+(node:684) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ src/ai/ai.test.ts (11 tests) 93ms
+ ✓ src/feed/quick-translate.test.ts (3 tests) 332ms
+ ✓ src/ai/accounts.test.ts (5 tests) 299ms
+ ✓ src/feed/article.test.ts (4 tests) 267ms
+ ✓ src/library/citation.test.ts (6 tests) 175ms
+(node:16120) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:41240) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ src/feed/topics.test.ts (3 tests) 69ms
+ ✓ src/feed/w5.test.ts (9 tests) 138ms
+ ✓ src/api/preferences.test.ts (5 tests) 244ms
+ ✓ src/feed/feed.test.ts (13 tests) 349ms
+ ✓ src/library/core.test.ts (10 tests) 769ms
+ ✓ src/api/shutdown.test.ts (2 tests) 445ms
+ ✓ src/api/pairing-routes.test.ts (1 test) 492ms
+   ✓ pairing routes > starts, renders, claims once, and revokes through the local API  482ms
+ ✓ src/structure/structure.test.ts (9 tests) 5745ms
+   ✓ paper structure > uses Semantic Scholar, then OpenAlex when the first service fails  1012ms
+   ✓ paper structure > rejects wrong titles and years from mocked reference providers  2498ms
+   ✓ paper structure > ignores enrichment cache rows written before candidate validation  507ms
+   ✓ paper structure > stores detection and serves pending and ready route responses  1491ms
+
+ Test Files  21 passed (21)
+      Tests  104 passed (104)
+   Start at  02:20:06
+   Duration  9.01s (transform 5.13s, setup 0ms, collect 35.09s, tests 9.73s, environment 6ms, prepare 10.73s)
+
+
+> @fractal/ui@0.1.0 test
+> vitest run
+
+
+ RUN  v3.2.7 C:/Users/Home/orca/workspaces/fractal/fractal-qa/packages/ui
+
+ ✓ src/reader/ink.test.ts (3 tests) 4ms
+ ✓ src/lib/geometry.test.ts (2 tests) 3ms
+ ✓ src/shell/classify.test.ts (3 tests) 5ms
+ ✓ src/shell/sse.test.ts (1 test) 6ms
+ ✓ src/i18n/i18n.test.ts (2 tests) 18ms
+ ✓ src/shell/fields.test.ts (2 tests) 19ms
+ ✓ src/shell/shell.test.ts (6 tests) 7ms
+
+ Test Files  7 passed (7)
+      Tests  19 passed (19)
+   Start at  02:20:16
+   Duration  935ms (transform 463ms, setup 0ms, collect 1.14s, tests 63ms, environment 2ms, prepare 1.38s)

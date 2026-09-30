@@ -1,0 +1,21 @@
+
+> fractal@0.1.0 e2e
+> tsx scripts/e2e.ts
+
+node.exe : (node:38012) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+위치 줄:1 문자:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:38012) Ex...nge at any time:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS welcome guide shows first and can be skipped
+PASS home renders
+PASS library lists uploaded paper
+PASS reader draws page 1
+PASS drag opens selection menu
+PASS highlight is visible and persisted through API
+PASS memo saves and appears in notes
+PASS question renders stub answer and page reference
+PASS settings providers and dark theme

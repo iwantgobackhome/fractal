@@ -1,0 +1,172 @@
+
+> fractal@0.1.0 test
+> npm run test -w @fractal/shared && npm run test -w @fractal/hub && npm run test -w @fractal/ui
+
+
+> @fractal/shared@0.1.0 test
+> vitest run
+
+
+ RUN  v3.2.7 C:/Users/Home/orca/workspaces/fractal/fractal-qa/packages/shared
+
+ ✓ src/contracts/library.test.ts (1 test) 6ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  02:17:53
+   Duration  1.54s (transform 106ms, setup 0ms, collect 753ms, tests 6ms, environment 0ms, prepare 360ms)
+
+
+> @fractal/hub@0.1.0 test
+> vitest run
+
+
+ RUN  v3.2.7 C:/Users/Home/orca/workspaces/fractal/fractal-qa/packages/hub
+
+node.exe : (node:22760) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+위치 줄:1 문자:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:22760) Ex...nge at any time:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ src/arxiv/index.test.ts (2 tests) 6ms
+ ✓ src/ai/claude-usage.test.ts (5 tests) 41ms
+ ✓ src/api/guard.test.ts (2 tests) 7ms
+ ✓ src/pairing/pairing.test.ts (1 test) 19ms
+ ✓ src/ai/install.test.ts (4 tests) 27ms
+ ✓ src/codex/runtime.test.ts (5 tests) 24ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 15 ⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/ai/accounts.test.ts [ src/ai/accounts.test.ts ]
+ FAIL  src/ai/fts-search.test.ts [ src/ai/fts-search.test.ts ]
+ FAIL  src/api/pairing-routes.test.ts [ src/api/pairing-routes.test.ts ]
+ FAIL  src/api/shutdown.test.ts [ src/api/shutdown.test.ts ]
+ FAIL  src/feed/article.test.ts [ src/feed/article.test.ts ]
+ FAIL  src/feed/feed.test.ts [ src/feed/feed.test.ts ]
+ FAIL  src/feed/quick-translate.test.ts [ src/feed/quick-translate.test.ts ]
+ FAIL  src/library/citation.test.ts [ src/library/citation.test.ts ]
+ FAIL  src/library/core.test.ts [ src/library/core.test.ts ]
+ FAIL  src/structure/structure.test.ts [ src/structure/structure.test.ts ]
+Error: Failed to resolve entry for package "@fractal/shared". The package may have incorrect main/module/exports specif
+ied in its package.json.
+  Plugin: vite:import-analysis
+  File: C:/Users/Home/orca/workspaces/fractal/fractal-qa/packages/hub/src/store/sqlite.ts:6:110
+  3  |  import { join } from "node:path";
+  4  |  import { DatabaseSync } from "node:sqlite";
+  5  |  import { annotationSchema, defaultPreferences, libraryPatchSchema, preferencesSchema } from "@fractal/shared";
+     |                                                                                               ^
+  6  |  import { PaperStore, appError, busy, invalidInput, notFound } from "./index";
+  7  |  import { readRecord } from "./atomic";
+ ❯ packageEntryFailure ../../node_modules/vite/dist/node/chunks/config.js:32896:32
+ ❯ resolvePackageEntry ../../node_modules/vite/dist/node/chunks/config.js:32893:2
+ ❯ tryNodeResolve ../../node_modules/vite/dist/node/chunks/config.js:32796:70
+ ❯ ResolveIdContext.handler ../../node_modules/vite/dist/node/chunks/config.js:32635:16
+ ❯ EnvironmentPluginContainer.resolveId ../../node_modules/vite/dist/node/chunks/config.js:28797:56
+ ❯ TransformPluginContext.resolve ../../node_modules/vite/dist/node/chunks/config.js:29009:13
+ ❯ normalizeUrl ../../node_modules/vite/dist/node/chunks/config.js:27191:22
+ ❯ ../../node_modules/vite/dist/node/chunks/config.js:27257:32
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/15]⎯
+
+ FAIL  src/ai/ai.test.ts [ src/ai/ai.test.ts ]
+Error: Failed to resolve entry for package "@fractal/shared". The package may have incorrect main/module/exports specif
+ied in its package.json.
+  Plugin: vite:import-analysis
+  File: C:/Users/Home/orca/workspaces/fractal/fractal-qa/packages/hub/src/ai/registry.ts:2:33
+  1  |  import { aiSettingsSchema } from "@fractal/shared";
+     |                                    ^
+  2  |  import { invalidInput } from "../store/index";
+  3  |  import { DEFAULT_SETTINGS } from "./settings";
+ ❯ packageEntryFailure ../../node_modules/vite/dist/node/chunks/config.js:32896:32
+ ❯ resolvePackageEntry ../../node_modules/vite/dist/node/chunks/config.js:32893:2
+ ❯ tryNodeResolve ../../node_modules/vite/dist/node/chunks/config.js:32796:70
+ ❯ ResolveIdContext.handler ../../node_modules/vite/dist/node/chunks/config.js:32635:16
+ ❯ EnvironmentPluginContainer.resolveId ../../node_modules/vite/dist/node/chunks/config.js:28797:56
+ ❯ TransformPluginContext.resolve ../../node_modules/vite/dist/node/chunks/config.js:29009:13
+ ❯ normalizeUrl ../../node_modules/vite/dist/node/chunks/config.js:27191:22
+ ❯ ../../node_modules/vite/dist/node/chunks/config.js:27257:32
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/15]⎯
+
+ FAIL  src/api/preferences.test.ts [ src/api/preferences.test.ts ]
+Error: Failed to resolve entry for package "@fractal/shared". The package may have incorrect main/module/exports specif
+ied in its package.json.
+  Plugin: vite:import-analysis
+  File: C:/Users/Home/orca/workspaces/fractal/fractal-qa/packages/hub/src/api/preferences.test.ts:6:35
+  4  |  import { join } from "node:path";
+  5  |  import { createHash, randomUUID } from "node:crypto";
+  6  |  import { defaultPreferences } from "@fractal/shared";
+     |                                      ^
+  7  |  import { SqlitePaperStore } from "../store/sqlite";
+  8  |  import { localizeError } from "./localize";
+ ❯ packageEntryFailure ../../node_modules/vite/dist/node/chunks/config.js:32896:32
+ ❯ resolvePackageEntry ../../node_modules/vite/dist/node/chunks/config.js:32893:2
+ ❯ tryNodeResolve ../../node_modules/vite/dist/node/chunks/config.js:32796:70
+ ❯ ResolveIdContext.handler ../../node_modules/vite/dist/node/chunks/config.js:32635:16
+ ❯ EnvironmentPluginContainer.resolveId ../../node_modules/vite/dist/node/chunks/config.js:28797:56
+ ❯ TransformPluginContext.resolve ../../node_modules/vite/dist/node/chunks/config.js:29009:13
+ ❯ normalizeUrl ../../node_modules/vite/dist/node/chunks/config.js:27191:22
+ ❯ ../../node_modules/vite/dist/node/chunks/config.js:27257:32
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/15]⎯
+
+ FAIL  src/feed/topics.test.ts [ src/feed/topics.test.ts ]
+ FAIL  src/feed/w5.test.ts [ src/feed/w5.test.ts ]
+Error: Failed to resolve entry for package "@fractal/shared". The package may have incorrect main/module/exports specif
+ied in its package.json.
+  Plugin: vite:import-analysis
+  File: C:/Users/Home/orca/workspaces/fractal/fractal-qa/packages/hub/src/feed/topics.test.ts:2:42
+  1  |  import { describe, expect, it } from "vitest";
+  2  |  import { topicSeeds } from "@fractal/shared";
+     |                              ^
+  3  |  import { extractTrending, TopicService } from "./topics";
+  4  |  import { retainNewsByField } from "./index";
+ ❯ packageEntryFailure ../../node_modules/vite/dist/node/chunks/config.js:32896:32
+ ❯ resolvePackageEntry ../../node_modules/vite/dist/node/chunks/config.js:32893:2
+ ❯ tryNodeResolve ../../node_modules/vite/dist/node/chunks/config.js:32796:70
+ ❯ ResolveIdContext.handler ../../node_modules/vite/dist/node/chunks/config.js:32635:16
+ ❯ EnvironmentPluginContainer.resolveId ../../node_modules/vite/dist/node/chunks/config.js:28797:56
+ ❯ TransformPluginContext.resolve ../../node_modules/vite/dist/node/chunks/config.js:29009:13
+ ❯ normalizeUrl ../../node_modules/vite/dist/node/chunks/config.js:27191:22
+ ❯ ../../node_modules/vite/dist/node/chunks/config.js:27257:32
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/15]⎯
+
+ FAIL  src/net/index.test.ts [ src/net/index.test.ts ]
+Error: Failed to resolve entry for package "@fractal/shared". The package may have incorrect main/module/exports specif
+ied in its package.json.
+  Plugin: vite:import-analysis
+  File: C:/Users/Home/orca/workspaces/fractal/fractal-qa/packages/hub/src/net/manager.ts:3:80
+  1  |  import { existsSync, readFileSync, renameSync, writeFileSync } from "node:fs";
+  2  |  import { join } from "node:path";
+  3  |  import { networkSettingsSchema } from "@fractal/shared";
+     |                                         ^
+  4  |  import { LOOPBACK_ADDRESS, isLanIPv4, isTailscaleIPv4, networkStatus, systemAddresses } from "./index";
+  5  |  export class NetworkManager {
+ ❯ packageEntryFailure ../../node_modules/vite/dist/node/chunks/config.js:32896:32
+ ❯ resolvePackageEntry ../../node_modules/vite/dist/node/chunks/config.js:32893:2
+ ❯ tryNodeResolve ../../node_modules/vite/dist/node/chunks/config.js:32796:70
+ ❯ ResolveIdContext.handler ../../node_modules/vite/dist/node/chunks/config.js:32635:16
+ ❯ EnvironmentPluginContainer.resolveId ../../node_modules/vite/dist/node/chunks/config.js:28797:56
+ ❯ TransformPluginContext.resolve ../../node_modules/vite/dist/node/chunks/config.js:29009:13
+ ❯ normalizeUrl ../../node_modules/vite/dist/node/chunks/config.js:27191:22
+ ❯ ../../node_modules/vite/dist/node/chunks/config.js:27257:32
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/15]⎯
+
+
+ Test Files  15 failed | 6 passed (21)
+      Tests  19 passed (19)
+   Start at  02:17:55
+   Duration  2.71s (transform 2.88s, setup 0ms, collect 2.15s, tests 124ms, environment 5ms, prepare 8.42s)
+
+npm error Lifecycle script `test` failed with error:
+npm error code 1
+npm error path C:\Users\Home\orca\workspaces\fractal\fractal-qa\packages\hub
+npm error workspace @fractal/hub@0.1.0
+npm error location C:\Users\Home\orca\workspaces\fractal\fractal-qa\packages\hub
+npm error command failed
+npm error command C:\WINDOWS\system32\cmd.exe /d /s /c vitest run

@@ -1,0 +1,14 @@
+node.exe : (node:27088) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+위치 줄:1 문자:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:27088) Ex...nge at any time:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+{"route":"ask","status":200,"events":[{"type":"delta","text":"Fixture explanation [p.1]."},{"type":"done","answer":{"text":"Fixture explanation [p.1].","provider":"codex","model":"gpt-6-sol","inputTokens":null,"outputTokens":null,"durationMs":0}}],"persistedConversation":null,"conversationRows":{"n":0}}
+{"route":"explain","status":200,"events":[{"type":"delta","text":"Fixture explanation [p.1]."},{"type":"done","answer":{"text":"Fixture explanation [p.1].","provider":"codex","model":"gpt-6-sol","inputTokens":null,"outputTokens":null,"durationMs":0}}],"persistedConversation":null,"conversationRows":{"n":0}}
+{"afterStoreReopen":null,"papers":1}
+{"implicitLibraryRecord":{"id":"163331b3-134c-4f76-98da-7dd3684a589e","paperKey":"0000.00000v1","title":"QA fixture","authors":[],"year":null,"venue":null,"doi":null,"arxivId":"0000.00000","url":"https://example.invalid/fixture","abstract":null,"tags":[],"collections":[],"addedAt":"2026-09-30T17:28:14.870Z","updatedAt":"2026-09-30T17:28:14.872Z","status":"unread","bibtexKey":"paperundated"}}
+{"ordinaryChatAfterStoreReopen":{"conversationId":"e754c0fe-6c4e-4d2f-b2e4-79c795c762f8","messages":[{"messageId":"fa898aa1-9092-428b-b885-67fa2bb69153","role":"user","text":"Ordinary chat persistence control","status":"completed","modelId":null,"error":null,"usage":null,"createdAt":"2026-09-30T17:28:14.894Z"},{"messageId":"1f27d779-f34b-4621-91fc-ca5e4487d354","role":"assistant","text":"Persisted ordinary chat [p.1].","status":"completed","modelId":"gpt-6-sol","error":null,"usage":{"inputTokens":1,"cachedInputTokens":null,"outputTokens":1},"createdAt":"2026-09-30T17:28:14.894Z"}]}}
+{"partialSpanDrag":{"from":{"x":15,"y":15},"to":{"x":35,"y":15}},"selected":{"rects":[{"left":10,"top":10,"width":300,"height":10}],"text":"A readable line for highlighting and notes."}}

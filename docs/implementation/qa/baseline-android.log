@@ -1,0 +1,213 @@
+Starting a Gradle Daemon, 1 incompatible Daemon could not be reused, use --status for details
+> Task :design:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :design:copyTokens
+> Task :design:preBuild UP-TO-DATE
+> Task :design:preDebugBuild UP-TO-DATE
+> Task :design:generateDebugResValues
+> Task :design:generateDebugResources
+> Task :design:packageDebugResources
+> Task :ink:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :ink:preBuild UP-TO-DATE
+> Task :ink:preDebugBuild UP-TO-DATE
+> Task :ink:generateDebugResValues
+> Task :design:javaPreCompileDebug
+> Task :ink:generateDebugResources
+> Task :design:parseDebugLocalResources
+> Task :ink:packageDebugResources
+> Task :ink:preDebugUnitTestBuild UP-TO-DATE
+> Task :ink:javaPreCompileDebug
+> Task :data:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :data:preBuild UP-TO-DATE
+> Task :data:preDebugBuild UP-TO-DATE
+> Task :ink:javaPreCompileDebugUnitTest
+> Task :data:generateDebugResValues
+> Task :ink:parseDebugLocalResources
+> Task :data:generateDebugResources
+> Task :design:generateDebugRFile
+> Task :ink:generateDebugRFile
+> Task :data:packageDebugResources
+> Task :data:parseDebugLocalResources
+> Task :ink:generateDebugUnitTestStubRFile
+> Task :data:preDebugUnitTestBuild UP-TO-DATE
+> Task :data:generateDebugRFile
+> Task :data:javaPreCompileDebug
+> Task :data:javaPreCompileDebugUnitTest
+> Task :sync:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :sync:preBuild UP-TO-DATE
+> Task :sync:preDebugBuild UP-TO-DATE
+> Task :sync:generateDebugResValues
+> Task :data:generateDebugUnitTestStubRFile
+> Task :sync:generateDebugResources
+> Task :sync:packageDebugResources
+> Task :sync:parseDebugLocalResources
+> Task :sync:javaPreCompileDebug
+> Task :sync:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :sync:generateDebugRFile
+> Task :sync:javaPreCompileDebugUnitTest
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :data:writeDebugAarMetadata
+> Task :design:writeDebugAarMetadata
+> Task :sync:generateDebugUnitTestStubRFile
+> Task :pdf:preBuild UP-TO-DATE
+> Task :pdf:preDebugBuild UP-TO-DATE
+> Task :ink:writeDebugAarMetadata
+> Task :pdf:writeDebugAarMetadata
+> Task :sync:writeDebugAarMetadata
+> Task :app:generateDebugResValues
+> Task :pdf:generateDebugResValues
+> Task :pdf:generateDebugResources
+> Task :app:checkDebugAarMetadata
+> Task :pdf:packageDebugResources
+> Task :app:mapDebugSourceSetPaths
+> Task :app:generateDebugResources
+> Task :app:packageDebugResources
+> Task :app:parseDebugLocalResources
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :data:extractDeepLinksDebug
+> Task :design:extractDeepLinksDebug
+> Task :ink:extractDeepLinksDebug
+> Task :pdf:extractDeepLinksDebug
+> Task :sync:extractDeepLinksDebug
+> Task :design:compileDebugLibraryResources
+> Task :data:compileDebugLibraryResources
+> Task :app:mergeDebugResources
+> Task :ink:compileDebugLibraryResources
+> Task :sync:processDebugManifest
+> Task :design:processDebugManifest
+> Task :pdf:processDebugManifest
+> Task :data:processDebugManifest
+> Task :ink:processDebugManifest
+> Task :pdf:compileDebugLibraryResources
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest
+> Task :pdf:parseDebugLocalResources
+> Task :sync:compileDebugLibraryResources
+> Task :pdf:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :pdf:javaPreCompileDebug
+> Task :pdf:generateDebugRFile
+> Task :app:javaPreCompileDebug
+> Task :app:mergeDebugShaders
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :data:mergeDebugShaders
+> Task :data:compileDebugShaders NO-SOURCE
+> Task :data:generateDebugAssets UP-TO-DATE
+> Task :data:mergeDebugAssets
+> Task :design:mergeDebugShaders
+> Task :design:compileDebugShaders NO-SOURCE
+> Task :design:generateDebugAssets UP-TO-DATE
+> Task :design:mergeDebugAssets
+> Task :ink:mergeDebugShaders
+> Task :ink:compileDebugShaders NO-SOURCE
+> Task :ink:generateDebugAssets UP-TO-DATE
+> Task :ink:mergeDebugAssets
+> Task :pdf:mergeDebugShaders
+> Task :pdf:compileDebugShaders NO-SOURCE
+> Task :pdf:generateDebugAssets UP-TO-DATE
+> Task :pdf:mergeDebugAssets
+> Task :sync:mergeDebugShaders
+> Task :sync:compileDebugShaders NO-SOURCE
+> Task :sync:generateDebugAssets UP-TO-DATE
+> Task :sync:mergeDebugAssets
+> Task :app:mergeDebugAssets
+> Task :app:desugarDebugFileDependencies
+> Task :app:compressDebugAssets
+> Task :app:mergeDebugJniLibFolders
+> Task :data:mergeDebugJniLibFolders
+> Task :data:mergeDebugNativeLibs NO-SOURCE
+> Task :data:copyDebugJniLibsProjectOnly
+> Task :design:mergeDebugJniLibFolders
+> Task :design:mergeDebugNativeLibs NO-SOURCE
+> Task :design:copyDebugJniLibsProjectOnly
+> Task :ink:mergeDebugJniLibFolders
+> Task :ink:mergeDebugNativeLibs NO-SOURCE
+> Task :ink:copyDebugJniLibsProjectOnly
+> Task :pdf:mergeDebugJniLibFolders
+> Task :app:processDebugManifestForPackage
+> Task :app:checkDebugDuplicateClasses
+> Task :pdf:mergeDebugNativeLibs NO-SOURCE
+> Task :pdf:copyDebugJniLibsProjectOnly
+> Task :sync:mergeDebugJniLibFolders
+> Task :sync:mergeDebugNativeLibs NO-SOURCE
+> Task :sync:copyDebugJniLibsProjectOnly
+> Task :app:validateSigningDebug
+> Task :app:writeDebugAppMetadata
+> Task :app:writeDebugSigningConfigVersions
+> Task :app:mergeDebugNativeLibs
+> Task :app:processDebugResources
+> Task :app:stripDebugDebugSymbols
+> Task :pdf:compileDebugKotlin
+> Task :pdf:compileDebugJavaWithJavac NO-SOURCE
+> Task :design:compileDebugKotlin
+> Task :design:compileDebugJavaWithJavac NO-SOURCE
+> Task :design:processDebugJavaRes
+> Task :design:bundleLibRuntimeToJarDebug
+> Task :pdf:bundleLibRuntimeToJarDebug
+> Task :pdf:bundleLibCompileToJarDebug
+> Task :design:bundleLibCompileToJarDebug
+> Task :pdf:processDebugJavaRes
+
+> Task :data:kaptGenerateStubsDebugKotlin
+w: Support for language version 2.0+ in kapt is in Alpha and must be enabled explicitly. Falling back to 1.9.
+
+> Task :pdf:bundleLibRuntimeToDirDebug
+> Task :design:bundleLibRuntimeToDirDebug
+> Task :app:mergeExtDexDebug
+> Task :data:kaptDebugKotlin
+> Task :data:compileDebugKotlin
+
+> Task :ink:compileDebugKotlin
+w: file:///C:/Users/Home/orca/workspaces/fractal/fractal-qa/apps/android/ink/src/main/java/app/fractal/ink/InkCanvas.kt:360:9 'fun invalidate(p0: Int, p1: Int, p2: Int, p3: Int): Unit' is deprecated. Deprecated in Java.
+w: file:///C:/Users/Home/orca/workspaces/fractal/fractal-qa/apps/android/ink/src/main/java/app/fractal/ink/InkModel.kt:38:13 This declaration needs opt-in. Its usage should be marked with '@kotlinx.serialization.ExperimentalSerializationApi' or '@OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)'
+
+> Task :data:compileDebugJavaWithJavac
+> Task :ink:compileDebugJavaWithJavac NO-SOURCE
+> Task :ink:processDebugJavaRes
+> Task :ink:bundleLibRuntimeToJarDebug
+> Task :ink:bundleLibCompileToJarDebug
+> Task :data:bundleLibRuntimeToJarDebug
+> Task :data:processDebugJavaRes
+> Task :data:bundleLibCompileToJarDebug
+> Task :data:bundleLibRuntimeToDirDebug
+> Task :ink:bundleLibRuntimeToDirDebug
+
+> Task :data:kaptGenerateStubsDebugUnitTestKotlin
+w: Support for language version 2.0+ in kapt is in Alpha and must be enabled explicitly. Falling back to 1.9.
+
+> Task :ink:compileDebugUnitTestKotlin
+> Task :ink:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :ink:processDebugUnitTestJavaRes
+> Task :data:kaptDebugUnitTestKotlin
+> Task :sync:compileDebugKotlin
+> Task :ink:testDebugUnitTest
+> Task :sync:compileDebugJavaWithJavac NO-SOURCE
+> Task :sync:bundleLibRuntimeToJarDebug
+> Task :sync:processDebugJavaRes
+> Task :sync:bundleLibCompileToJarDebug
+> Task :sync:bundleLibRuntimeToDirDebug
+> Task :app:mergeLibDexDebug
+> Task :data:compileDebugUnitTestKotlin
+> Task :data:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :data:processDebugUnitTestJavaRes
+> Task :sync:compileDebugUnitTestKotlin
+> Task :data:testDebugUnitTest
+> Task :sync:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :sync:processDebugUnitTestJavaRes
+> Task :sync:testDebugUnitTest
+> Task :app:compileDebugKotlin
+> Task :app:compileDebugJavaWithJavac NO-SOURCE
+> Task :app:dexBuilderDebug
+> Task :app:processDebugJavaRes
+> Task :app:mergeDebugGlobalSynthetics
+> Task :app:mergeProjectDexDebug
+> Task :app:mergeDebugJavaResource
+> Task :app:packageDebug
+> Task :app:createDebugApkListingFileRedirect
+> Task :app:assembleDebug
+
+BUILD SUCCESSFUL in 53s
+151 actionable tasks: 151 executed

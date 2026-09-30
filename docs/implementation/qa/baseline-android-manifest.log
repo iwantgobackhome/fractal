@@ -1,0 +1,3 @@
+application: label='Fractal' icon=''
+application-debuggable
+launchable-activity: name='app.fractal.reader.MainActivity'  label='' icon=''
