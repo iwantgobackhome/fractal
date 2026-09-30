@@ -27,6 +27,8 @@ import { CommandPalette, type Command } from './shell/CommandPalette';
 import { HomeScreen } from './shell/HomeScreen';
 import { HubApi } from './shell/hub-api';
 import { LibraryScreen } from './shell/LibraryScreen';
+import { UsageBar } from './shell/UsageBar';
+import { RelatedPanel } from './reader/RelatedPanel';
 import { Masthead, type ShellView } from './shell/Masthead';
 import { OmniInput } from './shell/OmniInput';
 import { paperTitle } from './shell/paper-format';
@@ -241,7 +243,7 @@ export function App(): JSX.Element {
   // Handwriting on this paper (from the tablet, or a desktop pen).
   const [inkStrokes, setInkStrokes] = useState<InkStroke[]>([]);
   // The side panel holds the reader's notes and the questions; one of them is in front.
-  const [panelTab, setPanelTab] = useState<'notes' | 'questions'>('questions');
+  const [panelTab, setPanelTab] = useState<'notes' | 'questions' | 'related'>('questions');
 
   const pdfBody = useRef<HTMLDivElement | null>(null);
   const textBody = useRef<HTMLDivElement | null>(null);
@@ -1254,10 +1256,14 @@ export function App(): JSX.Element {
   const toggleNotes = useCallback(() => togglePanel('notes'), [togglePanel]);
 
   /** AI connection lives in Settings: the top bar and the question panel both go there. */
-  const openAiSettings = useCallback(() => {
-    navigate('settings');
-    window.requestAnimationFrame(() => document.getElementById('settings-ai')?.scrollIntoView({ block: 'start' }));
-  }, [navigate]);
+  const openSettingsAt = useCallback(
+    (section: 'ai' | 'interests') => {
+      navigate('settings');
+      window.requestAnimationFrame(() => document.getElementById(`settings-${section}`)?.scrollIntoView({ block: 'start' }));
+    },
+    [navigate],
+  );
+  const openAiSettings = useCallback(() => openSettingsAt('ai'), [openSettingsAt]);
 
   /** Open the panel with `text` quoted into the question being written. */
   const askAbout = useCallback(
@@ -1504,33 +1510,36 @@ export function App(): JSX.Element {
       ) : null}
 
       {paperKey === null ? (
-        view === 'home' ? (
-          <HomeScreen
-            hub={hub}
-            papers={papers}
-            onOpen={(key) => void openStored(key)}
-            onOpenExternal={(value) => void openValue(value)}
-            onShowLibrary={() => navigate('library')}
-          />
-        ) : view === 'library' ? (
-          <LibraryScreen
-            papers={papers}
-            query={libraryQuery}
-            onQueryChange={setLibraryQuery}
-            onOpen={(key) => void openStored(key)}
-            onRequestDelete={setDeleteConfirmation}
-            hub={hub}
-          />
-        ) : (
-          <SettingsScreen
-            hub={hub}
-            theme={theme}
-            onThemeChange={setTheme}
-            preferences={preferences}
-            onPreferencesChange={updatePreferences}
-            onShowWelcome={() => setWelcomeOpen(true)}
-          />
-        )
+        <div className="app__page">
+          {view === 'home' ? (
+            <HomeScreen
+              hub={hub}
+              papers={papers}
+              onOpen={(key) => void openStored(key)}
+              onOpenExternal={(value) => void openValue(value)}
+              onShowLibrary={() => navigate('library')}
+              onEditInterests={() => openSettingsAt('interests')}
+            />
+          ) : view === 'library' ? (
+            <LibraryScreen
+              papers={papers}
+              query={libraryQuery}
+              onQueryChange={setLibraryQuery}
+              onOpen={(key) => void openStored(key)}
+              onRequestDelete={setDeleteConfirmation}
+              hub={hub}
+            />
+          ) : (
+            <SettingsScreen
+              hub={hub}
+              theme={theme}
+              onThemeChange={setTheme}
+              preferences={preferences}
+              onPreferencesChange={updatePreferences}
+              onShowWelcome={() => setWelcomeOpen(true)}
+            />
+          )}
+        </div>
       ) : (
         <main className="reader-shell">
           <ReaderBar
@@ -1700,7 +1709,11 @@ export function App(): JSX.Element {
                 <button type="button" role="tab" aria-selected={panelTab === 'questions'} onClick={() => setPanelTab('questions')}>
                   {t('reader.questions')}
                 </button>
+                <button type="button" role="tab" aria-selected={panelTab === 'related'} onClick={() => setPanelTab('related')}>
+                  {t('related.tab')}
+                </button>
               </div>
+              {panelTab === 'related' ? <RelatedPanel hub={hub} paperKey={paperKey} onOpen={(value) => void openValue(value)} /> : null}
               {panelTab === 'notes' ? (
                 <NotesPanel
                   highlights={highlights}
@@ -1737,6 +1750,8 @@ export function App(): JSX.Element {
           </div>
         </main>
       )}
+
+      <UsageBar hub={hub} onOpenSettings={openAiSettings} />
 
       {deleteConfirmation !== null ? (
         <DeleteDialog

@@ -1,6 +1,20 @@
 import { useCallback, useEffect, useState, type JSX } from 'react';
 import { locale, t, type MessageKey } from '../i18n';
-import type { AiChoice, AiFeature, AiSettings, HubApi, NetworkResult, PairedDevice, PairingSession, Preferences, ProviderStatus, UsageResult } from './hub-api';
+import type {
+  AiAccount,
+  AiChoice,
+  AiFeature,
+  AiSettings,
+  HubApi,
+  NetworkResult,
+  PairedDevice,
+  PairingSession,
+  Preferences,
+  ProviderStatus,
+  UsageResult,
+} from './hub-api';
+import { AccountsPanel } from './AccountsPanel';
+import { InterestPicker } from './InterestPicker';
 import { AiConnection, LanguageFields, PROVIDER_NAME, useLoad, useProviders } from './settings-parts';
 import { THEME_CHOICES, type ThemeChoice } from './theme';
 
@@ -16,6 +30,7 @@ interface Props {
 const SECTIONS: { id: string; label: MessageKey }[] = [
   { id: 'language', label: 'settings.language' },
   { id: 'appearance', label: 'settings.appearance' },
+  { id: 'interests', label: 'settings.interests' },
   { id: 'ai', label: 'settings.ai' },
   { id: 'devices', label: 'settings.devices' },
   { id: 'data', label: 'settings.data' },
@@ -79,7 +94,13 @@ function AiSection({ hub }: { hub: HubApi }): JSX.Element {
   const { data, setData, recheck, checking } = useProviders(hub);
   const loadUsage = useCallback(() => hub.usage(), [hub]);
   const [usage] = useLoad<UsageResult>(loadUsage);
+  const loadAccounts = useCallback(() => hub.accounts(), [hub]);
+  const [accounts, , reloadAccounts] = useLoad<AiAccount[]>(loadAccounts);
   const [saving, setSaving] = useState(false);
+  const accountsChanged = useCallback(() => {
+    reloadAccounts();
+    recheck();
+  }, [reloadAccounts, recheck]);
 
   if (data === undefined) return <p className="settings__quiet">{t('settings.loading')}</p>;
   if (data === null) return <Unavailable />;
@@ -99,7 +120,11 @@ function AiSection({ hub }: { hub: HubApi }): JSX.Element {
 
   return (
     <>
-      <AiConnection providers={data.providers} onRecheck={recheck} checking={checking} />
+      {accounts === undefined ? null : accounts === null ? (
+        <AiConnection providers={data.providers} onRecheck={recheck} checking={checking} />
+      ) : (
+        <AccountsPanel hub={hub} accounts={accounts} providers={data.providers} onChange={accountsChanged} />
+      )}
 
       <div className="field-row">
         <span className="field-row__label">{t('ai.defaultModel')}</span>
@@ -158,12 +183,13 @@ function AiSection({ hub }: { hub: HubApi }): JSX.Element {
       </table>
 
       <h3 className="settings__sub">{t('ai.usage')}</h3>
-      {usage === undefined ? null : usage === null ? <Unavailable /> : <UsageTable usage={usage} />}
+      {usage === undefined ? null : usage === null ? <Unavailable /> : <UsageTable usage={usage} showLimits={accounts === null} />}
     </>
   );
 }
 
-function UsageTable({ usage }: { usage: UsageResult }): JSX.Element {
+/** Requests and tokens per model; quota windows appear here only for hubs without accounts. */
+function UsageTable({ usage, showLimits }: { usage: UsageResult; showLimits: boolean }): JSX.Element {
   const totals = new Map<string, { requests: number; tokens: number }>();
   for (const row of usage.rows) {
     const key = `${row.provider} · ${row.model}`;
@@ -175,7 +201,7 @@ function UsageTable({ usage }: { usage: UsageResult }): JSX.Element {
   const number = new Intl.NumberFormat(locale());
   return (
     <>
-      {usage.limits.length > 0 ? (
+      {showLimits && usage.limits.length > 0 ? (
         <ul className="limit-list">
           {usage.limits.map((l) => (
             <li key={`${l.provider}-${l.label}`}>
@@ -375,6 +401,12 @@ export function SettingsScreen({ hub, theme, onThemeChange, preferences, onPrefe
               </label>
             ))}
           </div>
+        </section>
+
+        <section id="settings-interests" className="settings__section" aria-labelledby="settings-interests-h">
+          <h2 id="settings-interests-h">{t('settings.interests')}</h2>
+          <p className="settings__quiet">{t('interests.settingsDeck')}</p>
+          <InterestPicker hub={hub} onSaved={() => undefined} heading={false} saveLabel={t('interests.save')} />
         </section>
 
         <section id="settings-ai" className="settings__section" aria-labelledby="settings-ai-h">

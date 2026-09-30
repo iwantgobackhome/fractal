@@ -216,7 +216,7 @@ async function main(): Promise<void> {
     await page.locator('.note__text').filter({ hasText: 'Browser smoke note' }).waitFor();
     console.log('PASS memo saves and appears in notes');
 
-    await page.locator('.panel-tabs [role="tab"]').last().click();
+    await page.locator('.panel-tabs [role="tab"]').filter({ hasText: '질문' }).click();
     await page.locator('.chat__composer textarea').fill('What is the result?');
     await page.locator('.chat__send').click();
     await page.locator('.page-ref').first().waitFor();

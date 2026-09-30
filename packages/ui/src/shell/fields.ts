@@ -1,4 +1,5 @@
 import { getLanguage } from '../i18n';
+import type { ArxivCategory } from './hub-api';
 
 /** Names for the arXiv categories researchers pick most often, per interface language. */
 const FIELD_NAMES: Record<string, { ko: string; en: string }> = {
@@ -29,6 +30,46 @@ const FIELD_NAMES: Record<string, { ko: string; en: string }> = {
 
 export const COMMON_FIELDS = ['cs.LG', 'cs.CL', 'cs.CV', 'cs.AI', 'cs.RO', 'stat.ML', 'eess.IV', 'cs.IR', 'cs.HC', 'q-bio.NC', 'quant-ph', 'cond-mat.mtrl-sci'];
 
+/** The full arXiv list once the hub has sent it; until then, the common fields above. */
+const registry = new Map<string, ArxivCategory>();
+
+export function registerCategories(categories: ArxivCategory[]): void {
+  for (const category of categories) registry.set(category.code, category);
+}
+
+/** Every category this client knows, the hub's full list when it has arrived. */
+export function knownCategories(): ArxivCategory[] {
+  if (registry.size > 0) return [...registry.values()];
+  return Object.entries(FIELD_NAMES).map(([code, name]) => ({ code, group: code.split('.')[0] ?? code, name }));
+}
+
 export function fieldName(category: string): string {
-  return FIELD_NAMES[category]?.[getLanguage()] ?? category;
+  return registry.get(category)?.name[getLanguage()] ?? FIELD_NAMES[category]?.[getLanguage()] ?? category;
+}
+
+function fold(value: string): string {
+  return value.toLocaleLowerCase().normalize('NFKC').replace(/\s+/g, ' ').trim();
+}
+
+/** Categories matching what the reader typed, best first: code, then name starts, then contains. */
+export function searchCategories(query: string, limit = 8): ArxivCategory[] {
+  const q = fold(query);
+  if (q === '') return [];
+  const scored: { category: ArxivCategory; score: number }[] = [];
+  for (const category of knownCategories()) {
+    const code = fold(category.code);
+    const names = [fold(category.name.ko), fold(category.name.en)];
+    let score = 0;
+    if (code === q) score = 100;
+    else if (code.startsWith(q)) score = 80;
+    else if (names.some((n) => n === q)) score = 90;
+    else if (names.some((n) => n.startsWith(q))) score = 70;
+    else if (names.some((n) => n.split(/[\s·,-]+/).some((word) => word.startsWith(q)))) score = 50;
+    else if (names.some((n) => n.includes(q)) || code.includes(q)) score = 30;
+    if (score > 0) scored.push({ category, score });
+  }
+  return scored
+    .sort((a, b) => b.score - a.score || a.category.code.localeCompare(b.category.code))
+    .slice(0, limit)
+    .map((s) => s.category);
 }

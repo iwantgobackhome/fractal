@@ -1,7 +1,7 @@
 import { useState, type JSX } from 'react';
 import { t, type MessageKey } from '../i18n';
 import { FractalMark } from './FractalMark';
-import { InterestPicker } from './HomeScreen';
+import { InterestPicker } from './InterestPicker';
 import type { HubApi, Preferences } from './hub-api';
 import { AiConnection, LanguageFields, useProviders } from './settings-parts';
 import { DevicesSection } from './SettingsScreen';

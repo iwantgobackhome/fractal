@@ -4,6 +4,7 @@ import type {
   AiSseEvent,
   Annotation,
   FeedInterests,
+  FeedItem,
   FeedResponse,
   PaperStructure,
   ReferenceEnrichment,
@@ -69,6 +70,94 @@ export interface UsageResult {
   rows: UsageRow[];
   limits: UsageLimit[];
 }
+
+/** One quota window of a subscription: how much is used and when it starts over. */
+export interface LimitWindow {
+  usedPercent: number;
+  resetsAt: string | null;
+}
+
+/** The 5-hour and weekly windows of one signed-in account, as /api/ai/limits reports them. */
+export interface AccountLimits {
+  provider: HubProviderStatus['id'];
+  accountId: string;
+  label: string;
+  /** The reader's own terminal login, or one Fractal keeps. */
+  kind?: 'system' | 'managed';
+  /** Whether this is the account the provider runs on; older hubs have one account each. */
+  active?: boolean;
+  windows: { fiveHour: LimitWindow | null; weekly: LimitWindow | null };
+  plan?: string;
+  observedAt: string | null;
+  state: 'ok' | 'unavailable' | 'notLoggedIn';
+  message?: string;
+}
+
+/** A Codex or Claude sign-in: the reader's own terminal login, or one Fractal keeps for them. */
+export interface AiAccount {
+  id: string;
+  provider: HubProviderStatus['id'];
+  label: string;
+  kind: 'system' | 'managed';
+  loggedIn: boolean;
+  active: boolean;
+  email?: string;
+  plan?: string;
+}
+
+export interface AccountLogin {
+  state: 'pending' | 'done' | 'failed';
+  verificationUrl?: string;
+  userCode?: string;
+  message?: string;
+}
+
+/** An arXiv category with its names in both interface languages. */
+export interface ArxivCategory {
+  code: string;
+  group: string;
+  name: { en: string; ko: string };
+}
+
+/** A field the reader named themselves; `query` is what the hub searches for. */
+export interface CustomInterest {
+  id?: string;
+  label: string;
+  query: string;
+}
+
+export interface FeedImage {
+  url: string;
+  width?: number;
+  height?: number;
+  alt?: string;
+}
+
+/** Feed items as this client reads them; older hubs send no image. */
+export type FeedEntry = FeedItem & { image?: FeedImage | null };
+
+export interface FeedSection {
+  field: string;
+  label?: string;
+  items: FeedEntry[];
+}
+
+export interface RelatedPaper {
+  title: string;
+  authors: string[];
+  year: number | null;
+  venue?: string;
+  abstract?: string;
+  arxivId: string | null;
+  doi: string | null;
+  url: string;
+  citationCount?: number;
+  relation: 'similar' | 'cites' | 'citedBy';
+  inLibrary: boolean;
+  image?: FeedImage | null;
+}
+
+export type Interests = Omit<FeedInterests, 'custom'> & { custom?: CustomInterest[] };
 
 export type NetworkResult = NetworkStatus;
 
@@ -241,11 +330,11 @@ export class HubApi {
     return this.call('/api/feed/refresh', { method: 'POST', body: {} });
   }
 
-  interests(): Promise<{ interests: FeedInterests; suggestions: { category: string; count: number }[] } | null> {
+  interests(): Promise<{ interests: Interests; suggestions: { category: string; count: number }[] } | null> {
     return this.call('/api/feed/interests');
   }
 
-  saveInterests(interests: FeedInterests): Promise<unknown> {
+  saveInterests(interests: Interests): Promise<unknown> {
     return this.call('/api/feed/interests', { method: 'PUT', body: interests });
   }
 
@@ -283,6 +372,45 @@ export class HubApi {
       throw new Error(message ?? t('errors.explain'));
     }
     yield* readSse(response.body);
+  }
+
+  async limits(): Promise<AccountLimits[] | null> {
+    const raw = await this.call<{ accounts: AccountLimits[] }>('/api/ai/limits');
+    return raw === null ? null : raw.accounts;
+  }
+
+  async accounts(): Promise<AiAccount[] | null> {
+    const raw = await this.call<{ accounts: AiAccount[] }>('/api/ai/accounts');
+    return raw === null ? null : raw.accounts;
+  }
+
+  addAccount(provider: AiAccount['provider'], label: string): Promise<AiAccount | null> {
+    return this.call('/api/ai/accounts', { method: 'POST', body: { provider, label } });
+  }
+
+  accountLogin(id: string): Promise<AccountLogin | null> {
+    return this.call(`/api/ai/accounts/${encodeURIComponent(id)}/login`);
+  }
+
+  retryAccountLogin(id: string): Promise<AccountLogin | null> {
+    return this.call(`/api/ai/accounts/${encodeURIComponent(id)}/login`, { method: 'POST', body: {} });
+  }
+
+  updateAccount(id: string, change: { label?: string; active?: boolean }): Promise<AiAccount | null> {
+    return this.call(`/api/ai/accounts/${encodeURIComponent(id)}`, { method: 'PATCH', body: change });
+  }
+
+  removeAccount(id: string): Promise<unknown> {
+    return this.call(`/api/ai/accounts/${encodeURIComponent(id)}`, { method: 'DELETE' });
+  }
+
+  async categories(): Promise<ArxivCategory[] | null> {
+    const raw = await this.call<{ items: ArxivCategory[] }>('/api/feed/categories');
+    return raw === null ? null : raw.items;
+  }
+
+  related(paperKey: string): Promise<{ items: RelatedPaper[]; source: string; fetchedAt: string | null } | null> {
+    return this.call(`/api/papers/${encodeURIComponent(paperKey)}/related`);
   }
 
   preferences(): Promise<Preferences | null> {
