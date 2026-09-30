@@ -13,7 +13,7 @@ Installed CLIs: `codex-cli 0.159.0` and Claude Code `2.1.285`. `codex login --he
 | Codex | unavailable (`null`) | `null` | 15% | 2026-10-06 15:57:33 | `ok` |
 | Claude Pro | 20% | 2026-09-30 06:50:00 | 28% | 2026-10-03 13:00:00 | `ok` |
 
-Codex's `account/rateLimits/read` provided a weekly window but no 300-minute window at the time of the observation, so the API retained `fiveHour: null`. Its `resetsAt` epoch seconds were converted to ISO UTC. A Fractal Claude call completed with `delta`, `delta`, `done` SSE events and did not emit a `rate_limit_event` in the CLI stream. The official interactive `/usage` screen, driven through a Windows PTY, showed “Current session” 20% used and “Current week (all models)” 28% used, with the reset times above. The screen reported 0 input and 0 output for that PTY session, so the quota read itself did not spend a model turn. The Hub first accepts passive `rate_limit_info` events when present and falls back to this screen; if Python/pywinpty or the screen is unavailable, the API reports `unavailable` rather than inventing numbers.
+Codex's `account/rateLimits/read` provided a weekly window but no 300-minute window at the time of the observation, so the API retained `fiveHour: null`. Its `resetsAt` epoch seconds were converted to ISO UTC. A Fractal Claude call completed with `delta`, `delta`, `done` SSE events and did not emit a `rate_limit_event` in the CLI stream. The official interactive `/usage` screen, driven through a Windows PTY, showed “Current session” 20% used and “Current week (all models)” 28% used, with the reset times above. The screen reported 0 input and 0 output for that PTY session, so the quota read itself did not spend a model turn. The Hub first accepts passive `rate_limit_info` events when present and falls back to this screen; if the Node PTY or the screen is unavailable, the API reports `unavailable` rather than inventing numbers.
 
 ## Feed evidence
 
@@ -32,3 +32,18 @@ Custom labels with an empty search query fall back to the label itself; users ca
 ## Verification
 
 `npm ci`, `npm run build`, `npm test`, `npm run typecheck`, `npm run e2e`, and `npm run format:check` all passed. Tests cover quota window mapping and absent windows, fake CLI account lifecycle and environment selection, legacy interests and custom query building, news image formats, public image proxy guards, and related-paper merge and cache behavior. The unchanged desktop e2e stubs passed.
+
+## PTY packaging review (2026-09-30)
+
+The Claude `/usage` reader now uses `@lydell/node-pty` with its Windows prebuilt native binary. It sends only `/usage` to the interactive CLI and parses the two subscription windows; it does not send a model prompt. The Hub preserves the `unavailable` state when the PTY or screen fails. Codex maps primary and secondary windows by duration ranges: 240–360 minutes for five hours and 9000–11000 minutes for weekly.
+
+`npm run desktop:dist` produced the NSIS installer and `win-unpacked` app. The archive contains the PTY JavaScript package and the Windows native binary is in `app.asar.unpacked`. I launched only `win-unpacked/Fractal.exe --headless` with a temporary `FRACTAL_DATA` and a separate `--user-data-dir`; the existing Fractal process was left running. `GET /api/ai/limits` returned HTTP 200:
+
+| Runtime | Provider | 5-hour used | 5-hour reset (UTC) | Weekly used | Weekly reset (UTC) | State |
+| --- | --- | ---: | --- | ---: | --- | --- |
+| `npm run hub` | Claude Pro | 23% | 2026-09-30 06:50:00 | 28% | 2026-10-03 13:00:00 | `ok` |
+| `npm run hub` | Codex | `null` | `null` | 16% | 2026-10-06 15:57:33 | `ok` |
+| Unpacked Electron | Claude Pro | 21% | 2026-09-30 06:49:00 | 29% | 2026-10-03 12:59:00 | `ok` |
+| Unpacked Electron | Codex | `null` | `null` | 16% | 2026-10-06 15:57:33 | `ok` |
+
+The values are live CLI snapshots and can differ between launches. Each account entry also carried `active: true` and `kind: "system"`. No five-hour Codex window was reported by the CLI. The isolated Electron test process was stopped after the read.

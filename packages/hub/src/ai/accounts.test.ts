@@ -16,6 +16,12 @@ describe('AI accounts and quota windows', () => {
         secondary: { windowDurationMins: 300, usedPercent: 10, resetsAt: 1800000001 },
       }),
     ).toMatchObject({ fiveHour: { usedPercent: 10, resetsAt: '2027-01-15T08:00:01.000Z' }, weekly: { usedPercent: 41 } });
+    expect(
+      mapCodexWindows({
+        primary: { windowDurationMins: 10000, usedPercent: 33 },
+        secondary: { windowDurationMins: 290, usedPercent: 12 },
+      }),
+    ).toMatchObject({ fiveHour: { usedPercent: 12 }, weekly: { usedPercent: 33 } });
     expect(mapCodexWindows({ primary: { usedPercent: 20 }, secondary: null })).toEqual({ fiveHour: null, weekly: null });
     expect(
       mapClaudeWindows({ rate_limit_info: { rateLimitType: 'five_hour', utilization: 0.42, resetsAt: '2026-10-01T00:00:00Z' } }).fiveHour?.usedPercent,

@@ -24,7 +24,7 @@ export function mapCodexWindows(value: unknown): AiAccountLimits['windows'] {
   for (const raw of [source?.primary, source?.secondary]) {
     const window = object(raw);
     const duration = Number(window?.windowDurationMins);
-    const key = duration === 300 ? 'fiveHour' : duration === 10080 ? 'weekly' : null;
+    const key = duration >= 240 && duration <= 360 ? 'fiveHour' : duration >= 9000 && duration <= 11000 ? 'weekly' : null;
     if (!key || typeof window?.usedPercent !== 'number' || !Number.isFinite(window.usedPercent)) continue;
     windows[key] = {
       usedPercent: Math.max(0, Math.min(100, window.usedPercent)),

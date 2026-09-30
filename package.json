@@ -47,9 +47,14 @@
       "apps/desktop/preload.cjs",
       "apps/desktop/dist/**",
       "packages/ui/dist/**",
+      "node_modules/@lydell/node-pty/**",
+      "node_modules/@lydell/node-pty-win32-*/**",
       "package.json"
     ],
     "asar": true,
+    "asarUnpack": [
+      "node_modules/@lydell/node-pty-win32-*/prebuilds/**"
+    ],
     "win": {
       "target": "nsis"
     },
@@ -61,5 +66,8 @@
       "target": "dmg",
       "category": "public.app-category.productivity"
     }
+  },
+  "dependencies": {
+    "@lydell/node-pty": "^1.2.0-beta.15"
   }
 }
