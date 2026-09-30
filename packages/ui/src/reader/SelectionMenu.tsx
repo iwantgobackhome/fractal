@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState, type JSX } from 'react';
-import type { Highlight, Region } from '@fractal/shared';
+import type { Highlight, Region, OriginalProvenance } from '@fractal/shared';
 import { t, type MessageKey } from '../i18n';
 
 /** A passage the reader swept on a PDF page, waiting for them to choose what to do with it. */
@@ -8,6 +8,7 @@ export interface PendingSelection {
   regions: Region[];
   text: string;
   pageTexts?: Record<number, string>;
+  provenance?: OriginalProvenance;
   /** Viewport point just above the end of the selection. */
   anchor: { x: number; y: number };
 }

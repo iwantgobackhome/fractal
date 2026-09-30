@@ -9,6 +9,7 @@ import { Sidebar } from './Sidebar';
 import type { ShellView } from './Masthead';
 import { indexCopy } from './index-copy';
 import { cachedPaper, folderPath, folderSubtree, matchesRecord } from './library-model';
+import { PublicationActions, PublicationMeta } from './PublicationControls';
 
 type Shelf = 'saved' | 'recent' | 'cached';
 interface Props {
@@ -60,6 +61,11 @@ export function LibraryScreen({ papers, query, onQueryChange, onOpen, onRequestD
   useEffect(() => {
     void load();
   }, [load, papers]);
+  useEffect(() => {
+    const changed = () => void load();
+    window.addEventListener('fractal:catalog-changed', changed);
+    return () => window.removeEventListener('fractal:catalog-changed', changed);
+  }, [load]);
   useEffect(() => {
     const timer = window.setInterval(() => {
       if (document.visibilityState === 'visible' && !pending && !editing && !folderEdit && !folderDelete) void load();
@@ -410,6 +416,7 @@ export function LibraryScreen({ papers, query, onQueryChange, onOpen, onRequestD
                       {paper?.pageCount ? <span>{t('paper.pages', { count: paper.pageCount })}</span> : null}
                       {record.doi ? <span>DOI {record.doi}</span> : null}
                     </div>
+                    {record.publication ? <PublicationMeta publication={record.publication} source={record.publication.sources?.join(',')} /> : null}
                     {paper ? (
                       <button type="button" className="research-title" onClick={open}>
                         {title}
@@ -473,10 +480,23 @@ export function LibraryScreen({ papers, query, onQueryChange, onOpen, onRequestD
                       <button type="button" className="entry-read" onClick={open}>
                         {progress ? copy.resume : copy.read}
                       </button>
-                    ) : record.url && /^https?:\/\//i.test(record.url) ? (
-                      <a href={record.url} target="_blank" rel="noreferrer noopener">
-                        {copy.openSource}
-                      </a>
+                    ) : record.url && /^https:\/\//i.test(record.url) ? (
+                      <PublicationActions
+                        hub={hub}
+                        record={record}
+                        showSave={false}
+                        hasPdf={false}
+                        onOpen={onOpen}
+                        item={{
+                          title,
+                          authors: record.authors.map((a) => `${a.given} ${a.family}`.trim()),
+                          url: record.url,
+                          doi: record.doi,
+                          arxivId: record.arxivId,
+                          abstract: record.abstract,
+                          publication: record.publication,
+                        }}
+                      />
                     ) : null}
                     <button type="button" className="entry-organize" onClick={() => editRecord(record)}>
                       {copy.organize}

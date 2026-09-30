@@ -1,0 +1,49 @@
+{
+  "isolatedProfile": true,
+  "installerInstalled": false,
+  "taskbarPinOrMacOSInspected": false,
+  "name": "Fractal",
+  "packaged": true,
+  "appPath": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\dist\\installer\\win-unpacked\\resources\\app.asar",
+  "windowIcon": {
+    "width": 256,
+    "height": 256
+  },
+  "trayIcon": {
+    "width": 32,
+    "height": 32
+  },
+  "discoveryRoute": true,
+  "cachedOriginalReader": true,
+  "physicalPdfTextLayer": true,
+  "selectorKeyboard": true,
+  "exceptions": [],
+  "artifacts": [
+    {
+      "path": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\dist\\installer\\win-unpacked\\Fractal.exe",
+      "size": 246032896,
+      "sha256": "9d9084b04518b60760f2f3061a4064a240829637afa25559a5eff55da74d3aa1"
+    },
+    {
+      "path": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\dist\\installer\\Fractal Setup 0.1.0.exe",
+      "size": 117587597,
+      "sha256": "bcf95f41f3aba5849291d2f306000401606af2189f4a47d8cd304f18c1afa8d7"
+    },
+    {
+      "path": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\dist\\installer\\win-unpacked\\resources\\app.asar",
+      "size": 13185036,
+      "sha256": "c560dd6a2029ac4984db372677a5e5174b4f0022e78060e82e1241ea9c9234eb"
+    },
+    {
+      "path": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\apps\\desktop\\assets\\fractal.ico",
+      "size": 15480,
+      "sha256": "fbe027c730fe0bee700d1d48832e3c3133a6a261e5d78bdcc658d55192ab8d8d"
+    },
+    {
+      "path": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\docs\\implementation\\design\\assets\\branch-master.svg",
+      "size": 452,
+      "sha256": "ed1047a4eca5dcc9ad6dd16fd27a541ac392dcf2842d881e2dac0e160230543d"
+    }
+  ],
+  "status": "passed"
+}

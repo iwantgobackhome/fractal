@@ -15,7 +15,7 @@ import type { AiProvider, CompleteInput } from '../../../packages/hub/src/ai/pro
 import type { Paper, ModelSelection } from '@fractal/shared';
 
 const root = resolve(import.meta.dirname, '../../..'),
-  output = join(root, 'docs/implementation/desktop/stage2');
+  output = join(root, process.env.FRACTAL_VERIFICATION_OUTPUT ?? 'docs/implementation/desktop/stage2');
 const directory = await mkdtemp(join(tmpdir(), 'fractal-desktop-stage2-'));
 process.env.FRACTAL_DATA = directory;
 process.env.PAPERREAD_DATA = join(directory, 'empty-legacy');

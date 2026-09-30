@@ -7,13 +7,18 @@ export function useRetryTime(statuses: { retryAt?: string }[]): number {
   const [now, setNow] = useState(Date.now());
   const until = Math.max(0, ...statuses.map((s) => (s.retryAt ? Date.parse(s.retryAt) : 0)).filter(Number.isFinite));
   useEffect(() => {
+    setNow(Date.now());
     if (until <= Date.now()) return;
-    const timer = setInterval(() => setNow(Date.now()), 1000);
+    const timer = setInterval(() => {
+      const value = Date.now();
+      setNow(value);
+      if (value >= until) clearInterval(timer);
+    }, 1000);
     return () => clearInterval(timer);
   }, [until]);
   return Math.max(0, Math.ceil((until - now) / 1000));
 }
-export function SourceStatus({ statuses }: { statuses: (PublicationProviderStatus | FeedSourceStatus)[] }): JSX.Element {
+export function SourceStatus({ statuses, compact = false }: { statuses: (PublicationProviderStatus | FeedSourceStatus)[]; compact?: boolean }): JSX.Element {
   const ko = useLanguage() === 'ko';
   const labels: Record<string, string> = ko
     ? {
@@ -38,14 +43,35 @@ export function SourceStatus({ statuses }: { statuses: (PublicationProviderStatu
         auth_required: 'Source authentication required',
         budget_exhausted: 'Source budget exhausted',
       };
-  return (
+  const grouped = new Map<string, { status: PublicationProviderStatus | FeedSourceStatus; count: number }>();
+  for (const status of statuses) {
+    const provider = providerName('provider' in status ? status.provider : status.source),
+      state = 'errorCode' in status && status.errorCode ? status.errorCode : status.state;
+    const key = JSON.stringify([provider, state, status.message, status.retryAt]);
+    const existing = grouped.get(key);
+    if (existing) {
+      existing.count++;
+      if ('fetchedAt' in status && status.fetchedAt && 'fetchedAt' in existing.status && (existing.status.fetchedAt ?? '') < status.fetchedAt)
+        existing.status = status;
+    } else grouped.set(key, { status, count: 1 });
+  }
+  const rows = [...grouped.values()];
+  const failures = rows.filter(
+    ({ status }) => !['ok', 'cached', 'disabled'].includes('errorCode' in status && status.errorCode ? status.errorCode : status.state),
+  );
+  const content = (
     <ul className="source-status" aria-label={ko ? '소스 상태' : 'Source status'}>
-      {statuses.map((status, i) => {
+      {rows.map(({ status, count }, i) => {
         const provider = 'provider' in status ? status.provider : status.source;
         const state = 'errorCode' in status && status.errorCode ? status.errorCode : status.state;
         return (
           <li key={`${provider}:${i}`} data-state={state}>
             <strong>{providerName(provider)}</strong> <span>{labels[state] ?? state}</span>
+            {count > 1 ? (
+              <span>
+                · {count} {ko ? '개 소스 확인' : 'source reports'}
+              </span>
+            ) : null}
             {status.message ? <span>{status.message}</span> : null}
             {'fetchedAt' in status && status.fetchedAt ? (
               <span>
@@ -61,5 +87,20 @@ export function SourceStatus({ statuses }: { statuses: (PublicationProviderStatu
         );
       })}
     </ul>
+  );
+  return compact ? (
+    <details className="source-report">
+      <summary>
+        {ko ? '소스 상태' : 'Source status'} ·{' '}
+        {failures.length
+          ? `${failures.length} ${ko ? '개 소스 문제 · 상세 보기' : 'source issues · view details'}`
+          : ko
+            ? '보고된 소스 확인 결과 보기'
+            : 'View reported source checks'}
+      </summary>
+      {content}
+    </details>
+  ) : (
+    content
   );
 }

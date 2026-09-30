@@ -202,7 +202,10 @@ export class ApiClient {
     return this.request<Highlight[]>(apiPath('/api/papers/:key/highlights', { key: paperKey }));
   }
 
-  createHighlight(paperKey: string, input: { page: number; rects: Region[]; text: string; color?: Highlight['color'] }): Promise<Highlight> {
+  createHighlight(
+    paperKey: string,
+    input: { page: number; rects: Region[]; text: string; color?: Highlight['color']; provenance?: Highlight['provenance'] },
+  ): Promise<Highlight> {
     return this.request<Highlight>(apiPath('/api/papers/:key/highlights', { key: paperKey }), { method: 'POST', body: input });
   }
 

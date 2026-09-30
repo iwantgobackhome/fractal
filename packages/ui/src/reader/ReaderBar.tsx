@@ -44,6 +44,7 @@ export interface ReaderBarProps {
   onRequestDelete(): void;
   language: string;
   onLanguage(language: string): void;
+  saved?: { value: boolean; busy: boolean; onToggle(): void };
 }
 
 function progressText(job: Job | null): string | null {
@@ -171,6 +172,11 @@ export function ReaderBar(props: ReaderBarProps): JSX.Element {
         </div>
 
         <div className="reader-bar__end">
+          {props.saved ? (
+            <button type="button" className="reader-bar__action" aria-pressed={props.saved.value} disabled={props.saved.busy} onClick={props.saved.onToggle}>
+              {props.saved.value ? (ko ? '저장됨 · 해제' : 'Saved · remove') : ko ? '논문 저장' : 'Save paper'}
+            </button>
+          ) : null}
           <Selector
             label={t('reader.model')}
             value={props.selectedModelId}

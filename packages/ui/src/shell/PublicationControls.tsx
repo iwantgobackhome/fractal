@@ -8,9 +8,13 @@ export function useCatalog(hub: HubApi): LibraryRecord[] {
   const [records, setRecords] = useState<LibraryRecord[]>([]);
   useEffect(() => {
     let alive = true,
-      pending = false;
+      pending = false,
+      again = false;
     const load = async () => {
-      if (pending) return;
+      if (pending) {
+        again = true;
+        return;
+      }
       pending = true;
       try {
         const next = await hub.library();
@@ -19,6 +23,10 @@ export function useCatalog(hub: HubApi): LibraryRecord[] {
         /* row actions still expose their own failure */
       } finally {
         pending = false;
+        if (alive && again) {
+          again = false;
+          void load();
+        }
       }
     };
     void load();
@@ -86,6 +94,7 @@ export function PublicationActions({
   feedId,
   hasPdf,
   onOpen,
+  showSave = true,
 }: {
   hub: HubApi;
   item: PublicationItem;
@@ -93,6 +102,7 @@ export function PublicationActions({
   feedId?: string;
   hasPdf: boolean;
   onOpen(key: string): void;
+  showSave?: boolean;
 }): JSX.Element {
   const ko = useLanguage() === 'ko';
   const say = (en: string, kr: string) => (ko ? kr : en);
@@ -122,14 +132,16 @@ export function PublicationActions({
     void run(() => (record ? hub.patchLibrary(record.paperKey, { saved: record.saved === false }) : feedId ? hub.saveFeedItem(feedId) : hub.bookmark(item)));
   return (
     <div className="publication-actions">
-      <button
-        type="button"
-        disabled={pending}
-        onClick={save}
-        aria-label={`${record && record.saved !== false ? say('Remove saved', '저장 해제') : say('Save metadata', '서지 정보 저장')}: ${item.title}`}
-      >
-        {pending ? say('Working…', '처리 중…') : record && record.saved !== false ? say('Remove saved', '저장 해제') : say('Save metadata', '서지 정보 저장')}
-      </button>
+      {showSave ? (
+        <button
+          type="button"
+          disabled={pending}
+          onClick={save}
+          aria-label={`${record && record.saved !== false ? say('Remove saved', '저장 해제') : say('Save metadata', '서지 정보 저장')}: ${item.title}`}
+        >
+          {pending ? say('Working…', '처리 중…') : record && record.saved !== false ? say('Remove saved', '저장 해제') : say('Save metadata', '서지 정보 저장')}
+        </button>
+      ) : null}
       {record && hasPdf ? (
         <button type="button" onClick={() => onOpen(record.paperKey)}>
           {say('Read PDF', 'PDF 읽기')}

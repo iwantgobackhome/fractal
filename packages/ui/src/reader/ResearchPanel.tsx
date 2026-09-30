@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useRef, useState, type JSX } from 'react';
-import type { HistoryEntry, ModelSelection, StructureBox } from '@fractal/shared';
+import { languageSchema, type ContextSourceStatus, type HistoryEntry, type ModelSelection, type OriginalProvenance, type StructureBox } from '@fractal/shared';
 import { Markdown } from '../components/Markdown';
 import { Selector } from '../components/Selector';
 import { useLanguage } from '../i18n';
 import { HubApi, type ProvidersResult } from '../shell/hub-api';
+import { TRANSLATION_LANGUAGES } from '../shell/preferences';
+import { ReaderSourceStatus } from './ReaderSourceStatus';
 
 export interface ResearchIntent {
   id: number;
@@ -12,6 +14,7 @@ export interface ResearchIntent {
   from: 'source' | 'translation';
   rect?: StructureBox;
   kind?: 'figure' | 'equation' | 'table' | 'text';
+  provenance?: OriginalProvenance;
 }
 interface Draft {
   text: string;
@@ -19,6 +22,7 @@ interface Draft {
   requestId: string;
   activeId: string | null;
   model: string;
+  answerLanguage?: string;
 }
 function readDraft(key: string): Draft {
   try {
@@ -39,6 +43,7 @@ export function ResearchPanel({
   onPage,
   onSettings,
   onQuestion,
+  checkSource,
 }: {
   hub: HubApi;
   paperKey: string;
@@ -49,6 +54,7 @@ export function ResearchPanel({
   onPage(page: number): void;
   onSettings(): void;
   onQuestion(): void;
+  checkSource(provenance?: OriginalProvenance): Promise<ContextSourceStatus>;
 }): JSX.Element {
   const ko = useLanguage() === 'ko';
   const say = (en: string, kr: string) => (ko ? kr : en);
@@ -64,6 +70,8 @@ export function ResearchPanel({
   const [kind, setKind] = useState('all');
   const [status, setStatus] = useState('all');
   const [search, setSearch] = useState('');
+  const [customLanguage, setCustomLanguage] = useState('');
+  const [languageError, setLanguageError] = useState<string | null>(null);
   const alive = useRef(true),
     seenIntent = useRef<number | null>(null);
   const textarea = useRef<HTMLTextAreaElement>(null);
@@ -156,11 +164,14 @@ export function ResearchPanel({
               surroundingText: context.text,
               requestId: current.requestId,
               selection,
+              ...(context.provenance ? { provenance: context.provenance } : {}),
+              ...(current.answerLanguage ? { answerLanguage: current.answerLanguage } : {}),
             })
           : hub.ask(paperKey, {
               question: current.text.trim(),
               requestId: current.requestId,
               selection,
+              ...(current.answerLanguage ? { answerLanguage: current.answerLanguage } : {}),
               ...(context
                 ? {
                     page: context.page,
@@ -169,6 +180,7 @@ export function ResearchPanel({
                         ? `[Translated text; physical page ${context.page}; no original position mapping]\n${context.text}`
                         : context.text,
                     ...(context.from === 'source' && context.rect ? { rect: context.rect } : {}),
+                    ...(context.provenance ? { provenance: context.provenance } : {}),
                   }
                 : {}),
             });
@@ -217,6 +229,25 @@ export function ResearchPanel({
         </p>
       ) : null}
       {entry.context.selectedText ? <blockquote>{entry.context.selectedText}</blockquote> : null}
+      {entry.context.page ? (
+        <ReaderSourceStatus provenance={entry.context.provenance} durable={entry.answer?.contextSourceStatus} checkSource={checkSource} />
+      ) : null}
+      {entry.context.answerLanguage ? (
+        <p className="research-coordinates">
+          {say('Answer language', '답변 언어')}: {entry.context.answerLanguage}
+        </p>
+      ) : null}
+      {entry.answer?.citations?.length ? (
+        <div className="research-citations" aria-label={say('Recorded passage citations', '기록된 인용 출처')}>
+          <span>{say('Selected-passage source', '선택 인용 출처')}</span>
+          {entry.answer.citations.map((citation, index) => (
+            <button key={index} onClick={() => onPage(citation.page)} disabled={citation.paperKey !== paperKey}>
+              {say('Original physical page', '원본 실제 페이지')} {citation.page}
+              {citation.region ? ` · ${say('passage envelope', '인용 영역')}` : ''}
+            </button>
+          ))}
+        </div>
+      ) : null}
       {entry.conversation ? (
         entry.conversation.messages.map((m) => (
           <div key={m.messageId}>
@@ -277,6 +308,7 @@ export function ResearchPanel({
             activeId: entry.id,
             text: entry.kind === 'explanation' ? '' : entry.question,
             requestId: entry.requestId ?? crypto.randomUUID(),
+            answerLanguage: entry.context.answerLanguage,
             context: entry.context.page
               ? {
                   id: Date.now(),
@@ -285,6 +317,7 @@ export function ResearchPanel({
                   from: entry.context.selectedText?.startsWith('[Translated text') ? 'translation' : 'source',
                   rect: entry.context.rect,
                   kind: entry.context.explanationKind,
+                  provenance: entry.context.provenance,
                 }
               : null,
           }));
@@ -392,6 +425,43 @@ export function ResearchPanel({
               options={options}
               onChange={(model) => setDraft((d) => ({ ...d, model, requestId: crypto.randomUUID(), activeId: null }))}
             />
+            <Selector
+              label={say('Answer language', '답변 언어')}
+              value={draft.answerLanguage ?? ''}
+              options={[
+                { value: '', label: say('Hub default', '허브 기본값') },
+                { value: 'auto', label: say('Automatic', '자동') },
+                ...TRANSLATION_LANGUAGES.map((l) => ({ value: l.code, label: l.name })),
+                ...(draft.answerLanguage && draft.answerLanguage !== 'auto' && !TRANSLATION_LANGUAGES.some((l) => l.code === draft.answerLanguage)
+                  ? [{ value: draft.answerLanguage, label: draft.answerLanguage }]
+                  : []),
+              ]}
+              onChange={(answerLanguage) =>
+                setDraft((d) => ({ ...d, answerLanguage: answerLanguage || undefined, requestId: crypto.randomUUID(), activeId: null }))
+              }
+            />
+            <details className="research-language">
+              <summary>{say('Custom language tag', '사용자 지정 언어 코드')}</summary>
+              <label>
+                {say('BCP47 language tag', 'BCP47 언어 코드')}
+                <input value={customLanguage} placeholder="zh-Hant" onChange={(e) => setCustomLanguage(e.target.value)} />
+              </label>
+              <button
+                type="button"
+                onClick={() => {
+                  const parsed = languageSchema.safeParse(customLanguage.trim());
+                  if (!parsed.success) {
+                    setLanguageError(say('Enter a valid BCP47 language tag.', '유효한 BCP47 언어 코드를 입력하세요.'));
+                    return;
+                  }
+                  setLanguageError(null);
+                  setDraft((d) => ({ ...d, answerLanguage: parsed.data, requestId: crypto.randomUUID(), activeId: null }));
+                }}
+              >
+                {say('Use language', '언어 적용')}
+              </button>
+              {languageError ? <p role="alert">{languageError}</p> : null}
+            </details>
             {draft.context ? (
               <div className="research-context">
                 <p>
@@ -400,6 +470,7 @@ export function ResearchPanel({
                   {draft.context.kind ? ` · ${draft.context.kind}` : ''}
                 </p>
                 <blockquote>{draft.context.text || say('Selected region has no extracted text.', '선택한 영역에 추출된 텍스트가 없습니다.')}</blockquote>
+                <ReaderSourceStatus provenance={draft.context.provenance} checkSource={checkSource} />
                 <button type="button" onClick={() => setDraft((d) => ({ ...d, context: null, requestId: crypto.randomUUID(), activeId: null }))}>
                   {say('Remove context', '인용 제거')}
                 </button>
@@ -413,6 +484,7 @@ export function ResearchPanel({
             <label>
               {say('Question', '질문')}
               <textarea
+                aria-label={say('Question', '질문')}
                 ref={textarea}
                 value={draft.text}
                 maxLength={4000}

@@ -12,7 +12,10 @@ import type {
   Region,
   RestartTranslationRequest,
   Snapshot,
+  OriginalProvenance,
 } from '@fractal/shared';
+import { useReaderProvenance } from './reader/useReaderProvenance';
+import { useCatalog } from './shell/PublicationControls';
 import { ResearchPanel, type ResearchIntent } from './reader/ResearchPanel';
 import { HighlightPopover } from './components/HighlightLayer';
 import { KoreanPages, type SelectVia } from './components/KoreanPane';
@@ -305,6 +308,10 @@ export function App(): JSX.Element {
     },
     [paperKey, documentHash],
   );
+  const provenanceReader = useReaderProvenance(doc, documentHash, paper?.extractionVersion ?? null, getTextLayout, highlights, memos);
+  const catalog = useCatalog(hub),
+    readerRecord = catalog.find((r) => r.paperKey === paperKey);
+  const [savingReader, setSavingReader] = useState(false);
   const translated = (snapshot?.translations ?? []).some((t) => t.status === 'completed') || job?.state === 'running';
 
   // Once a translation exists it goes beside the original, unless the reader picked a view.
@@ -360,6 +367,11 @@ export function App(): JSX.Element {
     void refreshConnection();
     void loadLibrary();
   }, [refreshConnection, loadLibrary]);
+  useEffect(() => {
+    const changed = () => void loadLibrary();
+    window.addEventListener('fractal:catalog-changed', changed);
+    return () => window.removeEventListener('fractal:catalog-changed', changed);
+  }, [loadLibrary]);
 
   // Bibliography and cached reader files can arrive from another paired device.
   useEffect(() => {
@@ -724,10 +736,25 @@ export function App(): JSX.Element {
   }, [paperKey, fail]);
 
   const createHighlight = useCallback(
-    async (page: number, rects: Region[], text: string, color: Highlight['color'] = 'yellow'): Promise<Highlight | null> => {
+    async (
+      page: number,
+      rects: Region[],
+      text: string,
+      color: Highlight['color'] = 'yellow',
+      selectedProvenance?: OriginalProvenance,
+    ): Promise<Highlight | null> => {
       if (paperKey === null) return null;
       try {
-        const created = await client.createHighlight(paperKey, { page, rects, text, color });
+        const hash = await documentHash;
+        if (!hash) throw new Error('Original PDF identity unavailable');
+        const provenance: OriginalProvenance = {
+          ...selectedProvenance,
+          coordinateSpace: 'rendered-page-normalized-v1',
+          textSource: 'original',
+          pdfSha256: hash,
+        };
+        if (provenance.layoutRange?.page !== page) delete provenance.layoutRange;
+        const created = await client.createHighlight(paperKey, { page, rects, text, color, provenance });
         setHighlights((list) => [...list, created]);
         return created;
       } catch (cause) {
@@ -735,7 +762,7 @@ export function App(): JSX.Element {
         return null;
       }
     },
-    [paperKey, fail],
+    [paperKey, fail, documentHash],
   );
 
   const openHighlight = useCallback((highlight: Highlight) => setOpenHighlightId(highlight.highlightId), []);
@@ -1228,8 +1255,13 @@ export function App(): JSX.Element {
       clearInterval(timer);
     };
   }, [saveMemo]);
-  const createMemo = (page: number, position: Region | null, quote: string) => {
+  const createMemo = async (page: number, position: Region | null, quote: string) => {
     if (!paperKey) return;
+    const hash = await documentHash?.catch(() => null);
+    if (!hash) {
+      setNotice(language === 'ko' ? '원본 PDF를 확인한 후 다시 시도하세요.' : 'Wait for the original PDF to load, then retry.');
+      return;
+    }
     const width = 0.32,
       height = 0.25;
     const memo: Memo = {
@@ -1246,10 +1278,13 @@ export function App(): JSX.Element {
       rev: 0,
       deviceId: 'desktop',
       deleted: false,
+      provenance: { coordinateSpace: 'rendered-page-normalized-v1', textSource: 'original', pdfSha256: hash },
     };
     saveMemo(memo);
-    chooseView('source');
-    goToPage(page);
+    if (paperKeyRef.current === paperKey) {
+      chooseView('source');
+      goToPage(page);
+    }
   };
   const structureProps = useMemo<StructureProps | undefined>(() => {
     if (paperKey === null || structure === null) return undefined;
@@ -1257,6 +1292,16 @@ export function App(): JSX.Element {
       items: structure.items,
       markers: structure.markers,
       onExplain: (item, anchor) => {
+        const renderedPage = pageNodes.current.get(item.page)?.querySelector('canvas')?.getBoundingClientRect();
+        const renderedBox =
+          renderedPage && renderedPage.width > 0 && renderedPage.height > 0
+            ? {
+                x: Math.max(0, (anchor.left - renderedPage.left) / renderedPage.width),
+                y: Math.max(0, (anchor.top - renderedPage.top) / renderedPage.height),
+                width: Math.min(1, anchor.width / renderedPage.width),
+                height: Math.min(1, anchor.height / renderedPage.height),
+              }
+            : null;
         quoteCount.current += 1;
         const surrounding = (snapshotRef.current?.blocks ?? [])
           .filter((b) => b.regions.some((r) => r.page === item.page))
@@ -1268,8 +1313,18 @@ export function App(): JSX.Element {
           text: [item.label, item.caption, item.latex, surrounding].filter(Boolean).join('\n'),
           page: item.page,
           from: 'source',
-          rect: item.bbox,
+          rect: renderedBox ?? item.bbox,
           kind: item.kind,
+          ...(provenanceReader.pdfSha256
+            ? {
+                provenance: {
+                  ...(renderedBox ? { coordinateSpace: 'rendered-page-normalized-v1' as const } : {}),
+                  textSource: 'original',
+                  pdfSha256: provenanceReader.pdfSha256,
+                  blockExtractionVersion: paper?.extractionVersion ?? undefined,
+                },
+              }
+            : {}),
         });
         setPanelTab('questions');
         setChatMounted(true);
@@ -1285,7 +1340,7 @@ export function App(): JSX.Element {
           );
       },
     };
-  }, [paperKey, structure]);
+  }, [paperKey, structure, provenanceReader.pdfSha256, paper?.extractionVersion]);
 
   const ink = useMemo<InkProps | undefined>(() => {
     if (paperKey === null) return undefined;
@@ -1469,7 +1524,7 @@ export function App(): JSX.Element {
   const askAbout = useCallback(
     (text: string, from: Pane, page = currentPage) => {
       quoteCount.current += 1;
-      setChatQuote({ id: quoteCount.current, text, page, from });
+      setChatQuote({ id: quoteCount.current, text, page, from, ...(from === 'translation' ? { provenance: { textSource: 'translated' } } : {}) });
       setPanelTab('questions');
       if (!chatOpen) showChat(true, from);
     },
@@ -1747,6 +1802,18 @@ export function App(): JSX.Element {
       ) : (
         <main className="reader-shell">
           <ReaderBar
+            saved={{
+              value: readerRecord?.saved ?? false,
+              busy: savingReader,
+              onToggle: () => {
+                if (savingReader) return;
+                setSavingReader(true);
+                void hub
+                  .patchLibrary(paperKey, { saved: !(readerRecord?.saved ?? false) })
+                  .catch(fail)
+                  .finally(() => setSavingReader(false));
+              },
+            }}
             language={preferences?.translationLanguage ?? 'ko'}
             onLanguage={(translationLanguage) => updatePreferences({ translationLanguage })}
             paper={paper}
@@ -1837,7 +1904,7 @@ export function App(): JSX.Element {
                   currentPage={currentPage}
                   zoom={zoom}
                   blocks={snapshot?.blocks ?? []}
-                  highlights={highlights}
+                  highlights={provenanceReader.displayHighlights}
                   pageIntrinsicSize={pageIntrinsicSize}
                   onSize={recordSize}
                   registerPage={registerPage}
@@ -1850,8 +1917,8 @@ export function App(): JSX.Element {
                   ink={ink}
                   structure={structureProps}
                   getLayout={getTextLayout}
-                  memos={memos}
-                  onSaveMemo={saveMemo}
+                  memos={provenanceReader.displayMemos}
+                  onSaveMemo={(memo) => saveMemo(provenanceReader.storedMemo(memo))}
                   onOpenHighlight={openHighlight}
                 />
                 {openHighlightRecord !== null ? (
@@ -1861,7 +1928,19 @@ export function App(): JSX.Element {
                     onSave={saveHighlight}
                     onDelete={removeHighlight}
                     onClose={() => setOpenHighlightId(null)}
-                    onAsk={askAboutSource}
+                    onAsk={(text) => {
+                      quoteCount.current += 1;
+                      setChatQuote({
+                        id: quoteCount.current,
+                        text,
+                        page: openHighlightRecord.page,
+                        from: 'source',
+                        rect: openHighlightRecord.rects[0],
+                        provenance: openHighlightRecord.provenance,
+                      });
+                      setPanelTab('questions');
+                      showChat(true, 'source');
+                    }}
                   />
                 ) : null}
               </section>
@@ -1976,9 +2055,10 @@ export function App(): JSX.Element {
                   {t('related.tab')}
                 </button>
               </div>
-              {panelTab === 'related' ? <RelatedPanel hub={hub} paperKey={paperKey} onOpen={(value) => void openValue(value)} /> : null}
+              {panelTab === 'related' ? <RelatedPanel hub={hub} paperKey={paperKey} papers={papers} onOpen={(key) => void openStored(key)} /> : null}
               {panelTab === 'notes' ? (
                 <NotesPanel
+                  checkSource={provenanceReader.checkSource}
                   highlights={highlights}
                   memos={memos}
                   onCreate={() => createMemo(currentPage, null, '')}
@@ -2002,6 +2082,7 @@ export function App(): JSX.Element {
               <div className="chat-dock__inner" hidden={panelTab !== 'questions' && panelTab !== 'history'}>
                 {chatMounted && paperKey ? (
                   <ResearchPanel
+                    checkSource={provenanceReader.checkSource}
                     key={paperKey}
                     hub={hub}
                     paperKey={paperKey}
@@ -2047,6 +2128,7 @@ export function App(): JSX.Element {
                 regions.filter((r) => r.page === page),
                 pageTexts?.[page] ?? text,
                 color,
+                pendingSelection.provenance,
               );
           }}
           onMemo={() => {
@@ -2058,7 +2140,19 @@ export function App(): JSX.Element {
             const selection = pendingSelection;
             setPendingSelection(null);
             quoteCount.current += 1;
-            setChatQuote({ id: quoteCount.current, text: selection.text, page: selection.page, from: 'source', rect: selection.regions[0], kind: 'text' });
+            setChatQuote({
+              id: quoteCount.current,
+              text: selection.text,
+              page: selection.page,
+              from: 'source',
+              rect: selection.regions[0],
+              kind: 'text',
+              provenance:
+                selection.provenance ??
+                (provenanceReader.pdfSha256
+                  ? { coordinateSpace: 'rendered-page-normalized-v1', textSource: 'original', pdfSha256: provenanceReader.pdfSha256 }
+                  : undefined),
+            });
             setPanelTab('questions');
             showChat(true, 'source');
           }}

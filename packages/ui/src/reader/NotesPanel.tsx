@@ -1,5 +1,6 @@
 import type { JSX } from 'react';
-import type { Highlight, Memo } from '@fractal/shared';
+import type { ContextSourceStatus, Highlight, Memo, OriginalProvenance } from '@fractal/shared';
+import { ReaderSourceStatus } from './ReaderSourceStatus';
 import { t, useLanguage } from '../i18n';
 
 interface Props {
@@ -8,6 +9,7 @@ interface Props {
   memos?: Memo[];
   onMemo?(memo: Memo): void;
   onCreate?(): void;
+  checkSource?(provenance?: OriginalProvenance): Promise<ContextSourceStatus>;
 }
 
 /** Page order, then top to bottom on the page. */
@@ -20,7 +22,7 @@ function readingOrder(a: Highlight, b: Highlight): number {
  * Everything the reader marked in this paper, in reading order: the quoted passage
  * in the serif, the note under it. Choosing one goes to the spot and opens it.
  */
-export function NotesPanel({ highlights, onOpen, memos = [], onMemo, onCreate }: Props): JSX.Element {
+export function NotesPanel({ highlights, onOpen, memos = [], onMemo, onCreate, checkSource }: Props): JSX.Element {
   const ko = useLanguage() === 'ko';
   const ordered = [...highlights].sort(readingOrder);
   return (
@@ -39,6 +41,7 @@ export function NotesPanel({ highlights, onOpen, memos = [], onMemo, onCreate }:
               {memo.quote ? <span className="note__quote">{memo.quote}</span> : null}
               <span className="note__text">{memo.text || (ko ? '빈 메모 · 열어서 작성' : 'Empty note · open to write')}</span>
             </button>
+            {checkSource ? <ReaderSourceStatus provenance={memo.provenance} checkSource={checkSource} /> : null}
           </li>
         ))}
       {!ordered.length && !memos.length ? <li className="notes__empty">{t('reader.noNotes')}</li> : null}
@@ -49,6 +52,7 @@ export function NotesPanel({ highlights, onOpen, memos = [], onMemo, onCreate }:
             <span className={`note__quote hl-rule-${h.color}`}>{h.text}</span>
             {h.note !== null && h.note.trim() !== '' ? <span className="note__text">{h.note}</span> : null}
           </button>
+          {checkSource ? <ReaderSourceStatus provenance={h.provenance} checkSource={checkSource} /> : null}
         </li>
       ))}
     </ol>

@@ -1,4 +1,4 @@
-import type { PdfTextLayout, PdfTextPage, Region } from '@fractal/shared';
+import type { OriginalProvenance, PdfTextLayout, PdfTextPage, Region } from '@fractal/shared';
 import type { PendingSelection } from '../reader/SelectionMenu';
 
 /** Native ranges measure the actual PDF.js font advances, including transforms. */
@@ -43,6 +43,7 @@ export function orderTextSpans(container: HTMLElement, layout?: PdfTextPage): vo
     if (run && layout) {
       unused.delete(run);
       s.dataset.boundaries = JSON.stringify(layout.boundaries.filter((n) => n >= run.start && n <= run.end).map((n) => n - run.start));
+      if (layout.runs.filter((r) => layout.text.slice(r.start, r.end) === s.textContent).length === 1) s.dataset.layoutStart = String(run.start);
     }
     container.append(s);
   }
@@ -137,12 +138,39 @@ export async function nativeSelection(root: HTMLElement, getLayout?: (page: numb
     .replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '')
     .trim();
   if (!text || !regions.length) return null;
+  let provenance: OriginalProvenance | undefined;
+  if (getLayout && startPage === endPage) {
+    const layout = await getLayout(Number(startPage)).catch(() => null);
+    if (layout?.status === 'ready') {
+      provenance = { coordinateSpace: 'rendered-page-normalized-v1', textSource: 'original', pdfSha256: layout.pdfSha256 };
+      const startRun = range.startContainer.parentElement?.dataset.layoutStart,
+        endRun = range.endContainer.parentElement?.dataset.layoutStart;
+      if (
+        range.startContainer.nodeType === Node.TEXT_NODE &&
+        range.endContainer.nodeType === Node.TEXT_NODE &&
+        startRun !== undefined &&
+        endRun !== undefined
+      ) {
+        const start = Number(startRun) + range.startOffset,
+          end = Number(endRun) + range.endOffset;
+        // Unique native runs identify offsets; legal boundaries and the entire selected stream must agree.
+        if (
+          start < end &&
+          layout.page.boundaries.includes(start) &&
+          layout.page.boundaries.includes(end) &&
+          layout.page.text.slice(start, end).replace(/\s+/g, ' ').trim() === text.replace(/\s+/g, ' ').trim()
+        )
+          provenance.layoutRange = { page: Number(startPage), extractionVersion: layout.extractionVersion, start, end };
+      }
+    }
+  }
   const rect = range.getBoundingClientRect();
   return {
     page: Number(startPage),
     regions,
     text,
     pageTexts,
+    ...(provenance ? { provenance } : {}),
     anchor: { x: Math.min(innerWidth - 130, Math.max(130, rect.left + rect.width / 2)), y: Math.max(48, rect.top) },
   };
 }

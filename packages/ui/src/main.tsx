@@ -7,6 +7,7 @@ import './styles.css';
 import './design/shell.css';
 import './design/reader.css';
 import './design/index.css';
+import './design/discovery.css';
 import App from './App';
 
 const root = document.getElementById('root');
