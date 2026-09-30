@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState, type JSX } from 'react';
-import type { FeedInterests, FeedItem, FeedResponse, Paper } from '@fractal/shared';
+import type { FeedItem, FeedResponse, Paper } from '@fractal/shared';
 import { locale, t } from '../i18n';
-import { COMMON_FIELDS, fieldName } from './fields';
-import type { HubApi } from './hub-api';
+import { fieldName } from './fields';
+import type { FeedEntry, FeedSection, HubApi } from './hub-api';
+import { InterestPicker } from './InterestPicker';
 import { authorsLine, paperTitle, sourceLabel } from './paper-format';
 
 interface Props {
@@ -12,6 +13,7 @@ interface Props {
   /** Open an item that is not in the library yet (arXiv id, DOI or URL). */
   onOpenExternal(value: string): void;
   onShowLibrary(): void;
+  onEditInterests(): void;
 }
 
 function weekLabel(week: string): string {
@@ -43,16 +45,16 @@ function readableReason(item: FeedItem): string {
       if (params.topic !== undefined) return t('home.reasonTopic', { topic: params.topic });
       break;
     case 'similar_library':
-      return t('home.reasonSimilar');
+      return params.basedOn !== undefined ? t('home.reasonSimilarTo', { title: params.basedOn }) : t('home.reasonSimilar');
     case 'new_this_week':
       return t('home.reasonNew');
   }
   return item.reason;
 }
 
-/** Each paper appears once on the page: the first section that carries it keeps it. */
-function once(items: FeedItem[], seen: Set<string>, limit: number): FeedItem[] {
-  const kept: FeedItem[] = [];
+/** Each item appears once on the page: the first section that carries it keeps it. */
+function once<T extends FeedItem>(items: T[], seen: Set<string>, limit: number): T[] {
+  const kept: T[] = [];
   for (const item of items) {
     if (seen.has(item.id) || kept.length >= limit) continue;
     seen.add(item.id);
@@ -71,7 +73,21 @@ function relative(iso: string | null): string {
   return t('home.daysAgo', { count: Math.round(hours / 24) });
 }
 
-/** One paper as a headline: title, byline, why it is here, and a quiet save action. */
+/** A paper's first figure or a story's picture, if the hub found one; nothing otherwise. */
+function Picture({ item, kind }: { item: FeedEntry; kind: 'figure' | 'photo' }): JSX.Element | null {
+  const [failed, setFailed] = useState(false);
+  const image = item.image;
+  if (image === undefined || image === null || failed) return null;
+  return (
+    <span className={`picture picture--${kind}`}>
+      <img src={image.url} alt={image.alt ?? ''} width={image.width} height={image.height} loading="lazy" decoding="async" onError={() => setFailed(true)} />
+    </span>
+  );
+}
+
+const hasImage = (item: FeedEntry): boolean => item.image !== undefined && item.image !== null;
+
+/** One paper as a headline: its first figure, title, byline, why it is here, and a quiet save action. */
 function Headline({
   item,
   size,
@@ -79,109 +95,69 @@ function Headline({
   onSave,
   saving,
 }: {
-  item: FeedItem;
+  item: FeedEntry;
   size: 'lead' | 'normal' | 'compact';
   onOpen(): void;
   onSave(): void;
   saving: boolean;
 }): JSX.Element {
   return (
-    <article className={`headline headline--${size}`}>
-      <button type="button" className="headline__title" onClick={onOpen}>
-        {item.title}
-      </button>
-      {size !== 'compact' && item.abstract !== '' ? <p className="headline__abstract">{item.abstract}</p> : null}
-      <p className="headline__meta">
-        <span>{byline(item)}</span>
-        {item.kind === 'paper' ? <span className="headline__reason">{readableReason(item)}</span> : null}
-        {item.kind === 'paper' ? (
-          item.inLibrary ? (
-            <span className="headline__saved">{t('home.inLibrary')}</span>
-          ) : (
-            <button type="button" className="text-link" onClick={onSave} disabled={saving}>
-              {saving ? t('home.saving') : t('home.save')}
-            </button>
-          )
-        ) : null}
-      </p>
+    <article className={`headline headline--${size}`} data-picture={hasImage(item)}>
+      {hasImage(item) ? (
+        <button type="button" className="headline__figure" onClick={onOpen} tabIndex={-1} aria-hidden="true">
+          <Picture item={item} kind="figure" />
+        </button>
+      ) : null}
+      <div className="headline__body">
+        <button type="button" className="headline__title" onClick={onOpen}>
+          {item.title}
+        </button>
+        {size !== 'compact' && item.abstract !== '' ? <p className="headline__abstract">{item.abstract}</p> : null}
+        <p className="headline__meta">
+          <span>{byline(item)}</span>
+          {item.kind === 'paper' ? <span className="headline__reason">{readableReason(item)}</span> : null}
+          {item.kind === 'paper' ? (
+            item.inLibrary ? (
+              <span className="headline__saved">{t('home.inLibrary')}</span>
+            ) : (
+              <button type="button" className="text-link" onClick={onSave} disabled={saving}>
+                {saving ? t('home.saving') : t('home.save')}
+              </button>
+            )
+          ) : null}
+        </p>
+      </div>
     </article>
   );
 }
 
-export function InterestPicker({ hub, onSaved, heading = true }: { hub: HubApi; onSaved(): void; heading?: boolean }): JSX.Element {
-  const [suggested, setSuggested] = useState<string[]>([]);
-  const [chosen, setChosen] = useState<Set<string>>(new Set());
-  const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    hub
-      .interests()
-      .then((result) => {
-        if (result === null) return;
-        // Fields the library already leans to are chosen to begin with.
-        const saved = result.interests.categories;
-        setChosen(new Set(saved.length > 0 ? saved : result.suggestions.slice(0, 3).map((s) => s.category)));
-        setSuggested(result.suggestions.map((s) => s.category));
-      })
-      .catch(() => undefined);
-  }, [hub]);
-
-  const options = [...new Set([...suggested, ...COMMON_FIELDS])];
-  const toggle = (category: string) =>
-    setChosen((current) => {
-      const next = new Set(current);
-      if (next.has(category)) {
-        next.delete(category);
-      } else {
-        next.add(category);
-      }
-      return next;
-    });
-
+/** A news story: picture, headline, outlet and age. Opens the article in the browser. */
+function Story({ item, withPicture }: { item: FeedEntry; withPicture: boolean }): JSX.Element {
   return (
-    <section className="interests" aria-labelledby="interests-title">
-      {heading ? (
-        <>
-          <h1 id="interests-title" className="home-front__headline">
-            {t('home.pickTitle')}
-          </h1>
-          <p className="home-front__deck">{t('home.pickDeck')}</p>
-        </>
-      ) : null}
-      <div className="interests__options" role="group" aria-label={t('home.fields')}>
-        {options.map((category) => (
-          <button key={category} type="button" className="field-toggle" aria-pressed={chosen.has(category)} onClick={() => toggle(category)}>
-            <span>{fieldName(category)}</span>
-            <span className="field-toggle__code">{category}</span>
-          </button>
-        ))}
-      </div>
-      <button
-        type="button"
-        className="button"
-        disabled={chosen.size === 0 || saving}
-        onClick={() => {
-          setSaving(true);
-          const interests: FeedInterests = { categories: [...chosen], topics: [], authors: [] };
-          hub
-            .saveInterests(interests)
-            .then(() => hub.refreshFeed())
-            .then(onSaved)
-            .catch(() => undefined)
-            .finally(() => setSaving(false));
-        }}
-      >
-        {saving ? t('home.gathering') : t('home.start')}
-      </button>
-    </section>
+    <li className="story" data-picture={withPicture && hasImage(item)}>
+      <a href={item.url} target="_blank" rel="noreferrer noopener" className="story__link">
+        {withPicture ? <Picture item={item} kind="photo" /> : null}
+        <span className="story__title">{item.title}</span>
+      </a>
+      <span className="story__meta">
+        {item.source.replace(/^news:/, '')}
+        {' · '}
+        {relative(item.publishedAt)}
+      </span>
+    </li>
   );
+}
+
+function sectionTitle(section: FeedSection): { name: string; code: string | null } {
+  if (section.field.startsWith('custom:')) return { name: section.label ?? section.field.slice(7), code: null };
+  return { name: section.label ?? fieldName(section.field), code: section.field };
 }
 
 /**
  * The front page: this week's papers and news in the reader's fields, set like a
  * journal's first page, with the reader's own shelf alongside.
  */
-export function HomeScreen({ hub, papers, onOpen, onOpenExternal, onShowLibrary }: Props): JSX.Element {
+export function HomeScreen({ hub, papers, onOpen, onOpenExternal, onShowLibrary, onEditInterests }: Props): JSX.Element {
   const [feed, setFeed] = useState<FeedResponse | null | undefined>(undefined);
   const [hasInterests, setHasInterests] = useState<boolean | null>(null);
   const [saving, setSaving] = useState<Set<string>>(new Set());
@@ -190,7 +166,11 @@ export function HomeScreen({ hub, papers, onOpen, onOpenExternal, onShowLibrary 
   const load = useCallback(() => {
     hub
       .interests()
-      .then((result) => setHasInterests(result === null ? false : result.interests.categories.length + result.interests.topics.length > 0))
+      .then((result) =>
+        setHasInterests(
+          result === null ? false : result.interests.categories.length + result.interests.topics.length + (result.interests.custom?.length ?? 0) > 0,
+        ),
+      )
       .catch(() => setHasInterests(false));
     hub
       .feed()
@@ -199,6 +179,15 @@ export function HomeScreen({ hub, papers, onOpen, onOpenExternal, onShowLibrary 
   }, [hub]);
 
   useEffect(load, [load]);
+
+  const refresh = () => {
+    setRefreshing(true);
+    hub
+      .refreshFeed()
+      .then(setFeed)
+      .catch(() => undefined)
+      .finally(() => setRefreshing(false));
+  };
 
   const save = (item: FeedItem) => {
     setSaving((s) => new Set(s).add(item.id));
@@ -216,13 +205,23 @@ export function HomeScreen({ hub, papers, onOpen, onOpenExternal, onShowLibrary 
   };
 
   const recent = [...papers].filter((p) => p.status === 'ready' || p.status === 'partial').sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  const sections = feed?.sections;
+  const sections = feed?.sections as (FeedResponse['sections'] & { newsByField?: FeedSection[] }) | undefined;
   const seen = new Set<string>();
-  const lead = sections === undefined ? [] : once(sections.top, seen, 7);
-  const fields = sections === undefined ? [] : sections.byField.map((f) => ({ field: f.field, items: once(f.items, seen, 6) }));
-  const recommended = sections === undefined ? [] : once(sections.recommended, seen, 6);
+  const lead: FeedEntry[] = sections === undefined ? [] : once(sections.top, seen, 7);
+  const recommended: FeedEntry[] = sections === undefined ? [] : once(sections.recommended, seen, 6);
+  const newsByField = new Map((sections?.newsByField ?? []).map((s) => [s.field, s]));
+  const fields =
+    sections === undefined
+      ? []
+      : (sections.byField as FeedSection[]).map((section) => ({
+          section,
+          items: once(section.items, seen, 6),
+          news: once(newsByField.get(section.field)?.items ?? [], seen, 4),
+        }));
+  // Stories that belong to no field: general lab news, or everything from a hub without field news.
+  const otherNews: FeedEntry[] = sections === undefined ? [] : once(sections.news, seen, 6);
   const empty = sections === undefined || (sections.top.length === 0 && sections.rankings.length === 0 && sections.news.length === 0);
-  const headline = (item: FeedItem, size: 'lead' | 'normal' | 'compact') => (
+  const headline = (item: FeedEntry, size: 'lead' | 'normal' | 'compact') => (
     <Headline
       key={item.id}
       item={item}
@@ -240,6 +239,11 @@ export function HomeScreen({ hub, papers, onOpen, onOpenExternal, onShowLibrary 
           {new Intl.DateTimeFormat(locale(), { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }).format(new Date())}
         </p>
         {feed !== null && feed !== undefined ? <p className="home-front__week">{weekLabel(feed.week)}</p> : null}
+        {hasInterests === true ? (
+          <button type="button" className="text-link text-link--quiet home-front__edit" onClick={onEditInterests}>
+            {t('interests.edit')}
+          </button>
+        ) : null}
       </div>
 
       {hasInterests === false ? (
@@ -247,19 +251,7 @@ export function HomeScreen({ hub, papers, onOpen, onOpenExternal, onShowLibrary 
       ) : feed === undefined ? null : empty || sections === undefined ? (
         <section className="home-front__blank">
           <p className="home-front__deck">{t('home.empty')}</p>
-          <button
-            type="button"
-            className="text-link"
-            disabled={refreshing}
-            onClick={() => {
-              setRefreshing(true);
-              hub
-                .refreshFeed()
-                .then(setFeed)
-                .catch(() => undefined)
-                .finally(() => setRefreshing(false));
-            }}
-          >
+          <button type="button" className="text-link" disabled={refreshing} onClick={refresh}>
             {refreshing ? t('home.refreshing') : t('home.gatherNow')}
           </button>
         </section>
@@ -323,19 +315,14 @@ export function HomeScreen({ hub, papers, onOpen, onOpenExternal, onShowLibrary 
                 </section>
               ) : null}
 
-              {sections.news.length > 0 ? (
+              {otherNews.length > 0 ? (
                 <section aria-labelledby="home-news">
                   <h2 id="home-news" className="home-front__kicker">
-                    {t('home.news')}
+                    {newsByField.size > 0 ? t('home.moreNews') : t('home.news')}
                   </h2>
-                  <ul className="news">
-                    {sections.news.slice(0, 6).map((item) => (
-                      <li key={item.id}>
-                        <a href={item.url} target="_blank" rel="noreferrer noopener">
-                          {item.title}
-                        </a>
-                        <span className="news__source">{item.source}</span>
-                      </li>
+                  <ul className="stories stories--column">
+                    {otherNews.map((item) => (
+                      <Story key={item.id} item={item} withPicture={false} />
                     ))}
                   </ul>
                 </section>
@@ -343,40 +330,45 @@ export function HomeScreen({ hub, papers, onOpen, onOpenExternal, onShowLibrary 
             </aside>
           </div>
 
-          {fields.map((section) =>
-            section.items.length === 0 ? null : (
-              <section key={section.field} className="field-section" aria-label={fieldName(section.field)}>
-                <h2 className="field-section__title">
-                  {fieldName(section.field)} <span className="field-toggle__code">{section.field}</span>
-                </h2>
-                <div className="field-section__grid">{section.items.map((item) => headline(item, 'compact'))}</div>
-              </section>
-            ),
-          )}
-
           {recommended.length > 0 ? (
-            <section className="field-section" aria-label={t('home.similar')}>
-              <h2 className="field-section__title">{t('home.similar')}</h2>
+            <section className="field-section field-section--recommended" aria-labelledby="home-similar">
+              <h2 id="home-similar" className="field-section__title">
+                {t('home.similar')}
+              </h2>
+              <p className="field-section__deck">{t('home.similarDeck')}</p>
               <div className="field-section__grid">{recommended.map((item) => headline(item, 'compact'))}</div>
             </section>
           ) : null}
 
+          {fields.map(({ section, items, news }) => {
+            if (items.length === 0 && news.length === 0) return null;
+            const title = sectionTitle(section);
+            return (
+              <section key={section.field} className="field-section" data-news={news.length > 0} aria-label={title.name}>
+                <h2 className="field-section__title">
+                  {title.name} {title.code !== null ? <span className="field-toggle__code">{title.code}</span> : null}
+                </h2>
+                <div className="field-section__body">
+                  {items.length > 0 ? <div className="field-section__grid">{items.map((item) => headline(item, 'compact'))}</div> : null}
+                  {news.length > 0 ? (
+                    <div className="field-section__news">
+                      <h3 className="home-front__kicker">{t('home.fieldNews')}</h3>
+                      <ul className="stories">
+                        {news.map((item) => (
+                          <Story key={item.id} item={item} withPicture />
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+                </div>
+              </section>
+            );
+          })}
+
           <p className="home-front__colophon">
             {feed?.generatedAt !== null && feed?.generatedAt !== undefined ? t('home.gathered', { time: relative(feed.generatedAt) }) : ''}
             {' · '}
-            <button
-              type="button"
-              className="text-link"
-              disabled={refreshing}
-              onClick={() => {
-                setRefreshing(true);
-                hub
-                  .refreshFeed()
-                  .then(setFeed)
-                  .catch(() => undefined)
-                  .finally(() => setRefreshing(false));
-              }}
-            >
+            <button type="button" className="text-link" disabled={refreshing} onClick={refresh}>
               {refreshing ? t('home.refreshing') : t('home.refresh')}
             </button>
           </p>

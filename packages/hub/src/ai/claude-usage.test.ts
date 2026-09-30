@@ -14,6 +14,15 @@ describe('Claude /usage screen', () => {
     expect(classifyClaudeUsageScreen(prompt, cwd)).toEqual({ kind: 'ready' });
     expect(classifyClaudeUsageScreen('Select a theme for Claude Code', cwd)).toEqual({ kind: 'other', title: 'Select a theme for Claude Code' });
   });
+  it('reads the ❯ selection marker Claude Code 2.1 draws (captured on Windows)', () => {
+    const cwd = 'C:\\Users\\Home\\AppData\\Local\\Temp\\ptycwd3';
+    const trust = `Accessing workspace:\n${cwd}\nQuick safety check: Is this a project you created or one you trust? (Like your own code, a well-known open source\nproject, or work from your team). If not, take a moment to review what's in this folder first.\nClaude Code'll be able to read, edit, and execute files here.\nSecurity guide\n❯ No, exit\nYes, I trust this folder\nEnter to confirm · Esc to cancel`;
+    expect(classifyClaudeUsageScreen(trust, cwd)).toEqual({ kind: 'trust', selection: 'no' });
+    expect(classifyClaudeUsageScreen(trust.replace('❯ No, exit\nYes', 'No, exit\n❯ Yes'), cwd)).toEqual({ kind: 'trust', selection: 'yes' });
+    expect(classifyClaudeUsageScreen(trust.replace('❯ ', ''), cwd)).toEqual({ kind: 'trust', selection: 'unknown' });
+    const prompt = `▐▛███▛█ Claude Code v2.1.285\n❯ Try "write a test for <filepath>"\n⏵⏵ auto mode on · ◐ medium · /effort`;
+    expect(classifyClaudeUsageScreen(prompt, cwd)).toEqual({ kind: 'ready' });
+  });
   it('reads both subscription windows and their local reset times', () => {
     const screen = '\x1b[2JCurrent session████20%usedResets3:50pm(Asia/Seoul)\nCurrent week (all models)████28%usedResetsOct 3, 10pm(Asia/Seoul)';
     expect(parseClaudeUsageScreen(screen, new Date('2026-09-30T00:00:00Z'))).toEqual({
