@@ -12,6 +12,10 @@ import {
   type AiSseEvent,
   type ModelSelection,
   type HistoryEntry,
+  checkOriginalProvenance,
+  type OriginalProvenance,
+  type Paper,
+  type Region,
 } from '@fractal/shared';
 import { ZodError } from 'zod';
 import { invalidInput, notFound } from '../../store/index';
@@ -19,19 +23,92 @@ import { paperInstructions } from '../../chat/paper-text';
 import type { AiRouteContext as RouteContext, Result } from './types';
 import { SqlitePaperStore } from '../../store/sqlite';
 import { persistentGeneration } from '../../ai/history';
+import { sha256 } from '../../pdf/index';
+import { TEXT_LAYOUT_VERSION } from '../../pdf/text-layout';
+import { HttpError } from '../errors';
+
+function validatePhysicalPage(paper: Paper, page: number | undefined): void {
+  if (page !== undefined && paper.pageCount !== null && page > paper.pageCount) {
+    const error = {
+      code: 'INVALID_INPUT' as const,
+      message: 'Page exceeds known physical page count',
+      retryable: false,
+      details: { reason: 'page_out_of_range' as const, page, pageCount: paper.pageCount },
+    };
+    throw new HttpError(400, error);
+  }
+}
+
+async function sourceContext(
+  ctx: RouteContext,
+  paper: Paper,
+  page: number | undefined,
+  provenance?: OriginalProvenance,
+): Promise<{
+  contextSourceStatus: NonNullable<AiAnswer['contextSourceStatus']>;
+  citations: NonNullable<AiAnswer['citations']>;
+}> {
+  const bytes = ctx.store.getPdf(paper.paperKey);
+  const pdfSha256 = bytes ? sha256(bytes) : null;
+  let contextSourceStatus = checkOriginalProvenance(provenance, {
+    pdfSha256,
+    blockExtractionVersion: pdfSha256 === paper.pdfSha256 ? paper.extractionVersion : null,
+  });
+  let region: Region | undefined;
+  if (provenance?.layoutRange && contextSourceStatus === 'unavailable' && pdfSha256 === provenance.pdfSha256) {
+    if (provenance.layoutRange.extractionVersion !== TEXT_LAYOUT_VERSION) contextSourceStatus = 'layout_changed';
+    else if (page && ctx.pdfText) {
+      // Geometry admission/cache failure must not discard a user's question/quote.
+      const layout = await ctx.pdfText.read(paper.paperKey, page).catch(() => undefined);
+      if (layout?.pageCount) validatePhysicalPage({ ...paper, pageCount: layout.pageCount }, page);
+      if (layout?.status === 'ready') {
+        contextSourceStatus = checkOriginalProvenance(provenance, {
+          pdfSha256: layout.pdfSha256,
+          blockExtractionVersion: pdfSha256 === paper.pdfSha256 ? paper.extractionVersion : null,
+          layout: { page: layout.page.page, extractionVersion: layout.extractionVersion, boundaries: layout.page.boundaries },
+        });
+        if (contextSourceStatus === 'current') {
+          const range = provenance.layoutRange;
+          const units = layout.page.runs.flatMap((run) => run.units).filter((unit) => unit.start >= range.start && unit.end <= range.end);
+          // A precise range identity establishes which source passage these approximate envelopes describe.
+          if (units.length && units.every((unit) => unit.quad !== null)) {
+            const points = units.flatMap((unit) => unit.quad!);
+            const xs = points.map(([x]) => x),
+              ys = points.map(([, y]) => y);
+            const x = Math.min(...xs),
+              y = Math.min(...ys);
+            region = {
+              page,
+              x,
+              y,
+              width: Math.max(...xs) - x,
+              height: Math.max(...ys) - y,
+              provenance: {
+                coordinateSpace: 'unrotated-crop-normalized-v1',
+                textSource: 'original',
+                pdfSha256: layout.pdfSha256,
+                layoutRange: { ...range, extractionVersion: layout.extractionVersion },
+              },
+            };
+          }
+        }
+      }
+    }
+  }
+  // Page markers alone do not establish a particular paragraph/figure region.
+  const citations = page === undefined ? [] : [{ paperKey: paper.paperKey, page, ...(region ? { region } : {}) }];
+  return { contextSourceStatus, citations };
+}
 
 const json = (data: unknown): Result => ({ kind: 'json', status: 200, data });
 const explainKorean =
   '반드시 간결한 한국어로 답하세요. 수식은 LaTeX로 유지하고 전문 용어는 처음 나올 때 한국어(English)로 쓰세요. 무엇인지, 각 기호의 뜻(해당하는 경우), 이 논문에서 왜 중요한지 설명하고 근거를 [p.N]으로 인용하세요.';
 const glossaryKorean =
   'JSON 배열만 반환하세요. 각 definition은 간결한 한국어로 쓰고 전문 용어는 처음 나올 때 한국어(English)로 쓰세요. 정의마다 [p.N] 근거를 포함하세요.';
-function answerLanguage(ctx: RouteContext, question?: string): string {
+function answerLanguage(ctx: RouteContext, question?: string, override?: string): string {
   const prefs = ctx.store instanceof SqlitePaperStore ? ctx.store.getPreferences() : { answerLanguage: 'auto', uiLanguage: 'ko' };
-  return prefs.answerLanguage === 'auto'
-    ? question
-      ? 'the same language as the user question. Answer Korean questions in Korean'
-      : prefs.uiLanguage
-    : prefs.answerLanguage;
+  const language = override ?? prefs.answerLanguage;
+  return language === 'auto' ? (question ? 'the same language as the user question. Answer Korean questions in Korean' : prefs.uiLanguage) : language;
 }
 async function body(request: IncomingMessage): Promise<unknown> {
   const parts: Buffer[] = [];
@@ -83,6 +160,7 @@ function glossaryTerms(text: string): { term: string; page: number; definition: 
 }
 const glossaryCache = new Map<string, { text: string; terms: ReturnType<typeof glossaryTerms>; answer: AiAnswer }>();
 interface GenerateOptions {
+  sourceContext?: Pick<AiAnswer, 'citations' | 'contextSourceStatus'>;
   page?: number;
   equation?: boolean;
   glossaryKey?: string;
@@ -139,7 +217,15 @@ async function* generateEvents(
     text += citation;
     yield { type: 'delta', text: citation };
   }
-  const answer: AiAnswer = { text, provider: chosen.provider.id, model: chosen.selection.model, inputTokens, outputTokens, durationMs: Date.now() - start };
+  const answer: AiAnswer = {
+    text,
+    provider: chosen.provider.id,
+    model: chosen.selection.model,
+    inputTokens,
+    outputTokens,
+    durationMs: Date.now() - start,
+    ...options?.sourceContext,
+  };
   const terms = options?.glossaryKey ? glossaryTerms(text) : undefined;
   if (options?.glossaryKey) glossaryCache.set(options.glossaryKey, { text, terms: terms ?? [], answer });
   yield { type: 'done', answer, ...(options?.equation ? { latex: extractLatex(text) ?? '' } : {}), ...(terms ? { terms } : {}) };
@@ -224,24 +310,37 @@ export async function handleAi(method: string, segments: string[], request: Inco
   const blocks = ctx.store.listBlocks(key);
   if (segments[3] === 'ask') {
     const input = parse(askPaperSchema, await body(request));
-    const question = `${input.question}${input.selectedText ? `\nSelected text: ${input.selectedText}` : ''}${input.page ? `\nCurrent page: ${input.page}` : ''}${input.rect ? `\nSelected box: ${JSON.stringify(input.rect)}` : ''}`;
+    validatePhysicalPage(paper, input.page);
+    const page = input.page ?? blocks[0]?.regions[0]?.page;
+    validatePhysicalPage(paper, page);
+    const source = await sourceContext(ctx, paper, page, input.provenance);
+    const usable = source.contextSourceStatus === 'current' || source.contextSourceStatus === 'unknown';
+    const question = `${input.question}${input.selectedText ? `\nSelected text${input.provenance?.textSource ? ` (${input.provenance.textSource})` : ''}: ${input.selectedText}` : ''}${input.page ? `\nCurrent page: ${input.page}` : ''}${input.rect && usable ? `\nSelected box: ${JSON.stringify(input.rect)}; coordinate space: ${input.provenance?.coordinateSpace ?? 'unspecified'}` : ''}${!usable ? `\nStored selection source is ${source.contextSourceStatus}; its geometry and offsets are not evidence. The quoted text remains user context.` : ''}`;
     return {
       kind: 'sse',
       status: 200,
       events: generate(
         ctx,
         'chat',
-        `${paperInstructions(paper, blocks)}\n\nAnswer in ${answerLanguage(ctx, input.question)}.\nCite evidence using [p.N] page markers.`,
+        `${paperInstructions(paper, blocks)}\n\nAnswer in ${answerLanguage(ctx, input.question, input.answerLanguage)}.\nCite evidence using [p.N] page markers.`,
         question,
         input.selection,
         {
-          page: input.page ?? blocks[0]?.regions[0]?.page,
+          page,
+          sourceContext: source,
           history: {
             paperKey: key,
             kind: 'question',
             question: input.question,
             requestId: input.requestId,
-            context: { page: input.page, rect: input.rect, selectedText: input.selectedText, selection: input.selection },
+            context: {
+              page: input.page,
+              rect: input.rect,
+              selectedText: input.selectedText,
+              selection: input.selection,
+              ...(input.answerLanguage === undefined ? {} : { answerLanguage: input.answerLanguage }),
+              ...(input.provenance ? { provenance: input.provenance } : {}),
+            },
           },
         },
       ),
@@ -249,12 +348,16 @@ export async function handleAi(method: string, segments: string[], request: Inco
   }
   if (segments[3] === 'explain') {
     const input = parse(explainSchema, await body(request));
+    validatePhysicalPage(paper, input.page);
+    const source = await sourceContext(ctx, paper, input.page, input.provenance);
+    const usable = source.contextSourceStatus === 'current' || source.contextSourceStatus === 'unknown';
     const pageText = blocks
       .filter((b) => b.regions.some((r) => r.page === input.page))
       .map((b) => b.sourceText)
       .join('\n')
       .slice(0, 30000);
     const question = `이 ${input.kind}을 설명하세요. 페이지 ${input.page}, 영역 ${JSON.stringify(input.bbox)}. ${input.kind === 'equation' ? '수식을 $$...$$ 형태의 LaTeX로 포함하세요.' : ''}\n주변 텍스트: ${input.surroundingText ?? ''}`;
+    const generationQuestion = `${usable ? question : question.replace(JSON.stringify(input.bbox), 'unavailable: stored source mismatch; geometry is not evidence')}${input.provenance?.coordinateSpace ? `\nCoordinate space: ${input.provenance.coordinateSpace}` : ''}${input.provenance?.textSource ? `\nContext text source: ${input.provenance.textSource}` : ''}`;
     // The CLI adapters currently accept text only. The crop is validated but surrounding page text is used.
     return {
       kind: 'sse',
@@ -262,18 +365,27 @@ export async function handleAi(method: string, segments: string[], request: Inco
       events: generate(
         ctx,
         'explain',
-        `${answerLanguage(ctx) === 'ko' ? explainKorean : `Explain concisely in ${answerLanguage(ctx)}. Keep equations in LaTeX. Explain what this is, the symbols where relevant, and why it matters in this paper. Cite [p.N].`}\nPaper: ${paper.title ?? key}\n[page ${input.page}]\n${pageText}\nCite [p.${input.page}].`,
-        question,
+        `${answerLanguage(ctx, undefined, input.answerLanguage) === 'ko' ? explainKorean : `Explain concisely in ${answerLanguage(ctx, undefined, input.answerLanguage)}. Keep equations in LaTeX. Explain what this is, the symbols where relevant, and why it matters in this paper. Cite [p.N].`}\nPaper: ${paper.title ?? key}\n[page ${input.page}]\n${pageText}\nCite [p.${input.page}].`,
+        generationQuestion,
         input.selection,
         {
           page: input.page,
+          sourceContext: source,
           equation: input.kind === 'equation',
           history: {
             paperKey: key,
             kind: 'explanation',
             question,
             requestId: input.requestId,
-            context: { page: input.page, rect: input.bbox, selectedText: input.surroundingText, explanationKind: input.kind, selection: input.selection },
+            context: {
+              page: input.page,
+              rect: input.bbox,
+              selectedText: input.surroundingText,
+              explanationKind: input.kind,
+              selection: input.selection,
+              ...(input.answerLanguage === undefined ? {} : { answerLanguage: input.answerLanguage }),
+              ...(input.provenance ? { provenance: input.provenance } : {}),
+            },
           },
         },
       ),

@@ -1,6 +1,7 @@
 import { publicationMetadataSchema } from './publication';
 import { z } from 'zod';
 import type { Job, Translation } from './ai';
+import { originalProvenanceSchema, provenanceMatchesPage, type OriginalProvenance } from './provenance';
 
 export interface Coverage {
   totalPages: number;
@@ -25,6 +26,7 @@ export interface Paper {
   createdAt: string;
 }
 export interface Region {
+  provenance?: OriginalProvenance;
   page: number;
   x: number;
   y: number;
@@ -56,13 +58,16 @@ export interface Snapshot {
   job: Job | null;
 }
 
-export const regionSchema = z.object({
-  page: z.number().int().positive(),
-  x: z.number().finite(),
-  y: z.number().finite(),
-  width: z.number().finite(),
-  height: z.number().finite(),
-});
+export const regionSchema = z
+  .object({
+    provenance: originalProvenanceSchema.optional(),
+    page: z.number().int().positive(),
+    x: z.number().finite(),
+    y: z.number().finite(),
+    width: z.number().finite(),
+    height: z.number().finite(),
+  })
+  .refine(provenanceMatchesPage, 'layoutRange must match the physical page');
 /** Editable bibliography record. The legacy Paper remains the reader snapshot wire shape. */
 export const authorSchema = z.object({ given: z.string().default(''), family: z.string().min(1), orcid: z.string().optional() });
 export const readingStatusSchema = z.enum(['unread', 'reading', 'read']);

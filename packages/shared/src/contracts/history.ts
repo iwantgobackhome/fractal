@@ -1,5 +1,7 @@
 import { z } from 'zod';
 import { aiAnswerSchema, bboxSchema, modelSelectionSchema } from './ai';
+import { originalProvenanceSchema, provenanceMatchesPage } from './provenance';
+import { languageSchema } from './preferences';
 
 const historyErrorSchema = z.object({
   code: z.enum([
@@ -48,13 +50,17 @@ export const historyEntrySchema = z.object({
   updatedAt: z.string().datetime(),
   completedAt: z.string().datetime().nullable(),
   requestId: z.string().nullable(),
-  context: z.object({
-    page: z.number().int().positive().optional(),
-    rect: bboxSchema.optional(),
-    selectedText: z.string().optional(),
-    explanationKind: z.enum(['figure', 'equation', 'table', 'text']).optional(),
-    selection: modelSelectionSchema.optional(),
-  }),
+  context: z
+    .object({
+      provenance: originalProvenanceSchema.optional(),
+      answerLanguage: z.union([z.literal('auto'), languageSchema]).optional(),
+      page: z.number().int().positive().optional(),
+      rect: bboxSchema.optional(),
+      selectedText: z.string().optional(),
+      explanationKind: z.enum(['figure', 'equation', 'table', 'text']).optional(),
+      selection: modelSelectionSchema.optional(),
+    })
+    .refine(provenanceMatchesPage, 'layoutRange must match the physical page'),
   answer: aiAnswerSchema.nullable(),
   latex: z.string().optional(),
   error: historyErrorSchema.nullable(),

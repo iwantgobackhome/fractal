@@ -29,6 +29,7 @@ export interface RouteContext {
 }
 /** Services the AI routes need. */
 export interface AiRouteContext {
+  pdfText?: import('../../pdf/text-layout-service').PdfTextLayoutService;
   store: PaperStore;
   registry: ProviderRegistry;
   librarySearch: LibrarySearch;

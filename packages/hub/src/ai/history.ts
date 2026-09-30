@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { AiSseEvent, HistoryEntry } from '@fractal/shared';
+import { historyEntrySchema } from '@fractal/shared';
 import { SqlitePaperStore } from '../store/sqlite';
 import { invalidInput, notFound } from '../store/errors';
 import { toHttp } from '../api/errors';
@@ -70,12 +71,13 @@ export function persistentGeneration(
   input: { paperKey: string | null; kind: 'question' | 'explanation'; question: string; requestId?: string; context: HistoryEntry['context'] },
   generate: (signal: AbortSignal) => AsyncIterable<AiSseEvent>,
 ): AsyncIterable<AiSseEvent> {
+  const context = historyEntrySchema.shape.context.parse(input.context);
   const previous = input.requestId
     ? store.listHistory(undefined, true).find((entry) => entry.paperKey === input.paperKey && entry.kind === input.kind && entry.requestId === input.requestId)
     : undefined;
   if (previous) {
     if (previous.deleted) throw invalidInput('Request history was deleted; use a new requestId');
-    if (previous.question !== input.question || JSON.stringify(previous.context) !== JSON.stringify(input.context))
+    if (previous.question !== input.question || JSON.stringify(historyEntrySchema.shape.context.parse(previous.context)) !== JSON.stringify(context))
       throw invalidInput('requestId was already used for a different request');
     const flight = active(store).get(previous.id);
     return flight ? observe(flight) : replay(previous);
@@ -86,7 +88,7 @@ export function persistentGeneration(
     paperKey: input.paperKey,
     kind: input.kind,
     question: input.question,
-    context: input.context,
+    context,
     text: '',
     status: 'pending',
     createdAt: now,

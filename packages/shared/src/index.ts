@@ -13,5 +13,6 @@ export * from './contracts/related';
 export * from './contracts/pairing';
 export * from './contracts/structure';
 export * from './contracts/pdf-text';
+export * from './contracts/provenance';
 export * from './contracts/publication';
 export * from './contracts/preferences';

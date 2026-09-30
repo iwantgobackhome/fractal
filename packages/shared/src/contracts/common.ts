@@ -18,6 +18,8 @@ export type ErrorCode =
   | 'UNSAFE_RUNTIME'
   | 'INTERNAL';
 export interface AppError {
+  /** Present only for a question/explanation page beyond a known physical PDF count. */
+  details?: { reason: 'page_out_of_range'; page: number; pageCount: number };
   code: ErrorCode;
   message: string;
   retryable: boolean;

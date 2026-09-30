@@ -1,7 +1,8 @@
 import { z } from 'zod';
 import type { AppError } from './common';
-import type { Block } from './library';
-import type { Language } from './preferences';
+import { regionSchema, type Block, type Region } from './library';
+import { originalProvenanceSchema, provenanceMatchesPage, contextSourceStatusSchema, type ContextSourceStatus } from './provenance';
+import { languageSchema, type Language } from './preferences';
 
 export interface Translation {
   blockId: string;
@@ -301,6 +302,8 @@ export const bboxSchema = z
   .refine((v) => v.x + v.width <= 1 && v.y + v.height <= 1, 'box must fit the page');
 export const askPaperSchema = z
   .object({
+    provenance: originalProvenanceSchema.optional(),
+    answerLanguage: z.union([z.literal('auto'), languageSchema]).optional(),
     question: z.string().trim().min(1).max(4000),
     selectedText: z.string().max(20000).optional(),
     page: z.number().int().positive().optional(),
@@ -308,16 +311,21 @@ export const askPaperSchema = z
     selection: modelSelectionSchema.optional(),
     requestId: z.string().min(1).max(100).optional(),
   })
-  .refine((v) => !v.rect || v.page !== undefined, 'rect requires page');
-export const explainSchema = z.object({
-  kind: z.enum(['equation', 'figure', 'table', 'text']),
-  page: z.number().int().positive(),
-  bbox: bboxSchema,
-  croppedPngBase64: z.string().max(4_000_000).optional(),
-  surroundingText: z.string().max(30000).optional(),
-  selection: modelSelectionSchema.optional(),
-  requestId: z.string().min(1).max(100).optional(),
-});
+  .refine((v) => !v.rect || v.page !== undefined, 'rect requires page')
+  .refine(provenanceMatchesPage, 'layoutRange must match the physical page');
+export const explainSchema = z
+  .object({
+    provenance: originalProvenanceSchema.optional(),
+    answerLanguage: z.union([z.literal('auto'), languageSchema]).optional(),
+    kind: z.enum(['equation', 'figure', 'table', 'text']),
+    page: z.number().int().positive(),
+    bbox: bboxSchema,
+    croppedPngBase64: z.string().max(4_000_000).optional(),
+    surroundingText: z.string().max(30000).optional(),
+    selection: modelSelectionSchema.optional(),
+    requestId: z.string().min(1).max(100).optional(),
+  })
+  .refine(provenanceMatchesPage, 'layoutRange must match the physical page');
 export const libraryAskSchema = z.object({
   question: z.string().trim().min(1).max(4000),
   selection: modelSelectionSchema.optional(),
@@ -330,6 +338,8 @@ export interface GlossaryTerm {
   definition: string;
 }
 export interface AiAnswer {
+  citations?: { paperKey: string; page: number; region?: Region }[];
+  contextSourceStatus?: ContextSourceStatus;
   text: string;
   provider: ProviderId;
   model: string;
@@ -342,6 +352,14 @@ export type AiSseEvent = (
 ) & { historyId?: string };
 export const glossaryTermSchema = z.object({ term: z.string().min(1), page: z.number().int().positive(), definition: z.string() });
 export const aiAnswerSchema = z.object({
+  citations: z
+    .array(
+      z
+        .object({ paperKey: z.string().min(1), page: z.number().int().positive(), region: regionSchema.optional() })
+        .refine((value) => !value.region || value.region.page === value.page, 'Citation region must match physical page'),
+    )
+    .optional(),
+  contextSourceStatus: contextSourceStatusSchema.optional(),
   text: z.string(),
   provider: providerIdSchema,
   model: z.string(),

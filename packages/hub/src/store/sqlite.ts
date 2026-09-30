@@ -410,6 +410,7 @@ export class SqlitePaperStore extends PaperStore {
       this.db.prepare('INSERT INTO highlights VALUES(?,?,?) ON CONFLICT(id) DO UPDATE SET data=excluded.data').run(v.highlightId, key, JSON.stringify(v));
       this.upsertAnnotation({
         kind: 'highlight',
+        ...(v.provenance ? { provenance: v.provenance } : {}),
         id,
         paperKey: key,
         page: v.page,
@@ -446,6 +447,7 @@ export class SqlitePaperStore extends PaperStore {
       this.upsertAnnotation({
         kind: 'highlight',
         id: this.highlightUuid(id),
+        ...(old.provenance ? { provenance: old.provenance } : {}),
         paperKey: key,
         page: old.page,
         text: old.text,
@@ -773,6 +775,7 @@ export class SqlitePaperStore extends PaperStore {
         } else {
           const prior = this.getHighlight(a.paperKey, a.id);
           const h: Highlight = {
+            ...(a.provenance ? { provenance: a.provenance } : {}),
             highlightId: a.id,
             paperKey: a.paperKey,
             page: a.page,

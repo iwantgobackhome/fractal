@@ -89,7 +89,8 @@ function codexSpies() {
 }
 const req = (value: unknown): IncomingMessage => Readable.from([Buffer.from(JSON.stringify(value))]) as IncomingMessage;
 const store = {
-  getPaper: () => ({ title: 'Example', arxivId: null, version: null, extractionVersion: 'v1' }),
+  getPaper: () => ({ paperKey: 'paper1', title: 'Example', arxivId: null, version: null, extractionVersion: 'v1', pdfSha256: null, pageCount: null }),
+  getPdf: () => null,
   listBlocks: () => [{ sourceText: 'The answer is 42.', order: 1, blockId: 'a', regions: [{ page: 2 }] }],
 } as unknown as PaperStore;
 

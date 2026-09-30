@@ -15,6 +15,7 @@ import type {
   Translation,
   Usage,
 } from '@fractal/shared';
+import { originalProvenanceSchema, provenanceMatchesPage } from '@fractal/shared';
 import { invalidInput } from './errors';
 
 const PAPER_STATUSES = ['fetching', 'extracting', 'ready', 'partial', 'unsupported', 'failed'] as const;
@@ -298,7 +299,10 @@ export function validateHighlight(highlight: unknown, paperKey: string): Highlig
   if (!isNonEmptyString(h.createdAt)) throw invalidInput(`highlight ${h.highlightId}: createdAt must be an ISO 8601 string`);
   if (!isNonEmptyString(h.updatedAt)) throw invalidInput(`highlight ${h.highlightId}: updatedAt must be an ISO 8601 string`);
 
+  const provenance = h.provenance === undefined ? undefined : originalProvenanceSchema.safeParse(h.provenance);
+  if (provenance && (!provenance.success || !provenanceMatchesPage(h))) throw invalidInput('Invalid highlight provenance page');
   return {
+    ...(provenance?.success ? { provenance: provenance.data } : {}),
     highlightId: h.highlightId,
     paperKey: h.paperKey,
     page: h.page,

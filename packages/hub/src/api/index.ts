@@ -15,7 +15,7 @@ import type {
   Translation,
   Translator,
 } from '@fractal/shared';
-import { preferencesSchema, quickTranslateRequestSchema } from '@fractal/shared';
+import { preferencesSchema, quickTranslateRequestSchema, originalProvenanceSchema } from '@fractal/shared';
 import { PaperStore, appError, invalidInput, notFound } from '../store/index';
 import { assertSafeKey } from '../store/validate';
 import { handleHistory } from './routes/history';
@@ -400,7 +400,11 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
       const mutating = method !== 'GET' && method !== 'HEAD';
       // The upload route accepts PDF and multipart bytes. Reuse the same host,
       // origin and token gate while exempting only its media-type check.
-      const upload = method === 'POST' && segments[0] === 'api' && segments[1] === 'papers' && segments[2] === 'upload';
+      const upload =
+        method === 'POST' &&
+        segments[0] === 'api' &&
+        ((segments.length === 3 && segments[1] === 'papers' && segments[2] === 'upload') ||
+          (segments.length === 4 && segments[1] === 'library' && segments[3] === 'pdf'));
       const gated = upload
         ? (Object.assign(Object.create(request), { headers: { ...request.headers, 'content-type': 'application/json' } }) as IncomingMessage)
         : request;
@@ -498,6 +502,7 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
         librarySearch: options.librarySearch,
         accounts: options.accounts,
         installer: options.installer,
+        pdfText,
       });
       if (ai) return ai;
     }
@@ -820,6 +825,15 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
     }
     const now = new Date().toISOString();
     const highlight: Highlight = {
+      ...(body.provenance === undefined
+        ? {}
+        : {
+            provenance: (() => {
+              const parsed = originalProvenanceSchema.safeParse(body.provenance);
+              if (!parsed.success) throw invalidInput('Invalid highlight provenance');
+              return parsed.data;
+            })(),
+          }),
       highlightId: randomUUID(),
       paperKey,
       page,
