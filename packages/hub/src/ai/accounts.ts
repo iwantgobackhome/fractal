@@ -113,9 +113,12 @@ export class AccountManager {
     return join(this.root, 'accounts', row.provider, row.id);
   }
   environment(row: Row): NodeJS.ProcessEnv {
-    return row.kind === 'system'
-      ? { ...process.env }
-      : { ...process.env, [row.provider === 'codex' ? 'CODEX_HOME' : 'CLAUDE_CONFIG_DIR']: this.directory(row) };
+    if (row.kind === 'system') {
+      const env = { ...process.env };
+      for (const key of Object.keys(env)) if (key.toUpperCase() === 'CODEX_HOME' || key.toUpperCase() === 'CLAUDE_CONFIG_DIR') delete env[key];
+      return env;
+    }
+    return { ...process.env, [row.provider === 'codex' ? 'CODEX_HOME' : 'CLAUDE_CONFIG_DIR']: this.directory(row) };
   }
   activeEnvironment(provider: ProviderId): NodeJS.ProcessEnv {
     return this.environment(this.active(provider));
@@ -159,9 +162,20 @@ export class AccountManager {
   }
   async login(id: string): Promise<AiLoginProgress> {
     const row = this.row(id);
-    if (row.kind !== 'managed') throw invalidInput('System account uses the existing CLI login');
     if (this.loginProcesses.has(id)) return this.progress.get(id)!;
-    const args = row.provider === 'codex' ? ['login', '--device-auth'] : ['auth', 'login', '--claudeai'];
+    if (row.kind === 'system' && (await this.status(row)).loggedIn) {
+      const done: AiLoginProgress = { state: 'done' };
+      this.progress.set(id, done);
+      return done;
+    }
+    const args =
+      row.kind === 'system'
+        ? row.provider === 'codex'
+          ? ['login']
+          : ['auth', 'login']
+        : row.provider === 'codex'
+          ? ['login', '--device-auth']
+          : ['auth', 'login', '--claudeai'];
     let child: ChildProcess;
     try {
       child = await this.cli.login(row.provider, args, this.environment(row));
@@ -188,6 +202,7 @@ export class AccountManager {
       this.loginProcesses.delete(id);
     });
     child.once('close', () => {
+      if (!this.loginProcesses.has(id)) return;
       void this.status(row).then((status) => {
         this.progress.set(
           id,

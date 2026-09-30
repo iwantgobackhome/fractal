@@ -108,4 +108,56 @@ describe('AI accounts and quota windows', () => {
       rmSync(root, { recursive: true, force: true });
     }
   });
+
+  it('starts system login in the default CLI home and reports browser-flow progress', async () => {
+    const root = mkdtempSync(join(tmpdir(), 'fractal-system-login-'));
+    const store = new SqlitePaperStore(root);
+    const previousCodexHome = process.env.CODEX_HOME;
+    const previousClaudeHome = process.env.CLAUDE_CONFIG_DIR;
+    process.env.CODEX_HOME = join(root, 'wrong-codex-home');
+    process.env.CLAUDE_CONFIG_DIR = join(root, 'wrong-claude-home');
+    const signedIn = new Set<string>();
+    const calls: Array<{ provider: string; args: string[]; codexHome?: string; claudeHome?: string }> = [];
+    const children = new Map<string, EventEmitter & { stdout: PassThrough; stderr: PassThrough; kill: () => void }>();
+    const cli: AccountCli = {
+      async probe(provider) {
+        return provider === 'codex'
+          ? signedIn.has(provider)
+            ? 'Logged in using ChatGPT'
+            : 'Not logged in'
+          : JSON.stringify({ loggedIn: signedIn.has(provider) });
+      },
+      login(provider, args, env) {
+        calls.push({ provider, args, codexHome: env.CODEX_HOME, claudeHome: env.CLAUDE_CONFIG_DIR });
+        const child = Object.assign(new EventEmitter(), { stdout: new PassThrough(), stderr: new PassThrough(), kill: () => {} });
+        children.set(provider, child);
+        return child as unknown as ChildProcess;
+      },
+    };
+    try {
+      const manager = new AccountManager(store, root, async () => {}, cli);
+      for (const provider of ['codex', 'claude'] as const) {
+        const id = `${provider}:system`;
+        expect(await manager.login(id)).toEqual({ state: 'pending' });
+        expect(calls.at(-1)).toMatchObject({ provider, args: provider === 'codex' ? ['login'] : ['auth', 'login'] });
+        expect(calls.at(-1)?.codexHome).toBeUndefined();
+        expect(calls.at(-1)?.claudeHome).toBeUndefined();
+        children.get(provider)!.stdout.write('Open https://example.com and enter code ABCD-1234');
+        expect(await manager.loginProgress(id)).toMatchObject({ state: 'pending', verificationUrl: 'https://example.com', userCode: 'ABCD-1234' });
+        signedIn.add(provider);
+        children.get(provider)!.emit('close', 0);
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        expect(await manager.loginProgress(id)).toEqual({ state: 'done' });
+        expect(await manager.login(id)).toEqual({ state: 'done' });
+      }
+      expect(calls).toHaveLength(2);
+    } finally {
+      if (previousCodexHome === undefined) delete process.env.CODEX_HOME;
+      else process.env.CODEX_HOME = previousCodexHome;
+      if (previousClaudeHome === undefined) delete process.env.CLAUDE_CONFIG_DIR;
+      else process.env.CLAUDE_CONFIG_DIR = previousClaudeHome;
+      store.db.close();
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
 });
