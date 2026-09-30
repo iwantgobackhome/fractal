@@ -28,11 +28,14 @@ function screenTitle(screen: string): string {
 export function classifyClaudeUsageScreen(output: string, cwd: string): ScreenState {
   const screen = output.replace(ansi, '');
   const banner = /Claude\s*Code\s*v\d/i.exec(screen);
-  if (banner && /\/effort/.test(screen.slice(banner.index)) && /(?:^|[\r\n])>\s*(?:Try|\/|$)/im.test(screen.slice(banner.index))) return { kind: 'ready' };
+  if (banner && /\/effort/.test(screen.slice(banner.index)) && /(?:^|[\r\n])\s*[>❯›]\s*(?:Try|\/|$)/im.test(screen.slice(banner.index)))
+    return { kind: 'ready' };
   const compact = screen.toLowerCase().replace(/\s+/g, '');
   if (compact.includes('quicksafetycheck:isthisaprojectyoucreatedoroneyoutrust?')) {
     if (!compact.includes(cwd.toLowerCase().replace(/\s+/g, ''))) return { kind: 'other', title: 'Workspace safety check for another folder' };
-    return { kind: 'trust', selection: compact.includes('>no,exit') ? 'no' : compact.includes('>yes,itrustthisfolder') ? 'yes' : 'unknown' };
+    // Claude draws the selected option with ❯ (U+276F); older builds and recordings use >.
+    const selected = (option: string) => /[>❯›]/.test(compact.charAt(compact.indexOf(option) - 1));
+    return { kind: 'trust', selection: selected('no,exit') ? 'no' : selected('yes,itrustthisfolder') ? 'yes' : 'unknown' };
   }
   return { kind: 'other', title: screenTitle(screen) };
 }
