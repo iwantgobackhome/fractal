@@ -1,11 +1,52 @@
-import { existsSync } from 'node:fs';
-import { delimiter, join } from 'node:path';
+import { existsSync, lstatSync, mkdirSync, readdirSync } from 'node:fs';
+import { delimiter, join, resolve, sep } from 'node:path';
 import type { IPty } from '@lydell/node-pty';
 import type { AiAccountLimits } from '@fractal/shared';
 
 type Windows = AiAccountLimits['windows'];
 const empty = (): Windows => ({ fiveHour: null, weekly: null });
 const ansi = /\x1b(?:\[[0-?]*[ -/]*[@-~]|\][^\x07]*(?:\x07|\x1b\\))/g;
+
+type ScreenState = { kind: 'ready' } | { kind: 'trust'; selection: 'no' | 'yes' | 'unknown' } | { kind: 'other'; title: string };
+
+function screenTitle(screen: string): string {
+  const heading = screen
+    .replace(/[─━═▐▛▜▝██▀]/g, ' ')
+    .split(/[\r\n]+/)
+    .map((line) => line.trim())
+    .find((line) => line.length >= 4 && line.length <= 72 && /^[\p{L}\p{N}]/u.test(line) && !/[\\/@]/.test(line));
+  if (heading) return heading;
+  const compact = screen.toLowerCase().replace(/\s+/g, '');
+  if (/select.*theme|choose.*theme|appearance/.test(compact)) return 'Theme selection';
+  if (/signin|login|authentication|choosehowtologin/.test(compact)) return 'Sign-in';
+  if (/welcometoclaudecode/.test(compact)) return 'Welcome to Claude Code';
+  if (/quicksafetycheck/.test(compact)) return 'Workspace safety check';
+  return 'Unrecognized Claude setup screen';
+}
+
+/** Recognize the command bar separately from the workspace safety dialog. */
+export function classifyClaudeUsageScreen(output: string, cwd: string): ScreenState {
+  const screen = output.replace(ansi, '');
+  const banner = /Claude\s*Code\s*v\d/i.exec(screen);
+  if (banner && /\/effort/.test(screen.slice(banner.index)) && /(?:^|[\r\n])>\s*(?:Try|\/|$)/im.test(screen.slice(banner.index))) return { kind: 'ready' };
+  const compact = screen.toLowerCase().replace(/\s+/g, '');
+  if (compact.includes('quicksafetycheck:isthisaprojectyoucreatedoroneyoutrust?')) {
+    if (!compact.includes(cwd.toLowerCase().replace(/\s+/g, ''))) return { kind: 'other', title: 'Workspace safety check for another folder' };
+    return { kind: 'trust', selection: compact.includes('>no,exit') ? 'no' : compact.includes('>yes,itrustthisfolder') ? 'yes' : 'unknown' };
+  }
+  return { kind: 'other', title: screenTitle(screen) };
+}
+
+function usageDirectory(dataDirectory: string, accountId: string): string {
+  const base = resolve(dataDirectory, 'claude-usage');
+  const cwd = resolve(base, encodeURIComponent(accountId));
+  if (!cwd.startsWith(base + sep)) throw new Error('Claude usage workspace path is invalid');
+  mkdirSync(cwd, { recursive: true });
+  if (lstatSync(base).isSymbolicLink() || lstatSync(cwd).isSymbolicLink() || readdirSync(cwd).length) {
+    throw new Error('Claude usage workspace is not empty or app-owned');
+  }
+  return cwd;
+}
 
 /** Give ConPTY an absolute CLI path rather than relying on the inherited PATH. */
 export function resolveClaudePtyCommand(env: NodeJS.ProcessEnv): { file: string; args: string[] } {
@@ -90,8 +131,9 @@ export function parseClaudeUsageScreen(output: string, now = new Date()): Window
 }
 
 /** Drive /usage in a PTY. This command reads quota status and never sends a model prompt. */
-export async function readClaudeUsageViaPty(env: NodeJS.ProcessEnv): Promise<Windows> {
+export async function readClaudeUsageViaPty(env: NodeJS.ProcessEnv, dataDirectory: string, accountId: string): Promise<Windows> {
   if (process.platform !== 'win32') return empty();
+  const cwd = usageDirectory(dataDirectory, accountId);
   let pty: typeof import('@lydell/node-pty');
   try {
     pty = await import('@lydell/node-pty');
@@ -109,7 +151,7 @@ export async function readClaudeUsageViaPty(env: NodeJS.ProcessEnv): Promise<Win
         name: 'xterm-256color',
         cols: 120,
         rows: 40,
-        cwd: process.cwd(),
+        cwd,
         env: childEnv as Record<string, string>,
       });
     } catch {
@@ -118,6 +160,7 @@ export async function readClaudeUsageViaPty(env: NodeJS.ProcessEnv): Promise<Win
     }
     let output = '';
     let sent = false;
+    let trustConfirmed = false;
     let settled = false;
     let poll: ReturnType<typeof setInterval> | undefined;
     let deadline: ReturnType<typeof setTimeout> | undefined;
@@ -138,10 +181,41 @@ export async function readClaudeUsageViaPty(env: NodeJS.ProcessEnv): Promise<Win
     terminal.onData((data) => {
       output = (output + data).slice(-40000);
     });
-    terminal.onExit(() => finish('Claude CLI exited before showing usage'));
+    terminal.onExit(() => {
+      const state = classifyClaudeUsageScreen(output, cwd);
+      finish(state.kind === 'other' && output ? `Claude first-run screen: ${state.title}` : 'Claude CLI exited before showing usage');
+    });
     poll = setInterval(() => {
       const screen = output.replace(ansi, '');
-      if (!sent && /Claude\s*Code|ClaudeCode|\/effort/i.test(screen)) {
+      const state = classifyClaudeUsageScreen(output, cwd);
+      if (!sent && state.kind === 'trust' && !trustConfirmed) {
+        if (state.selection === 'unknown') {
+          finish('Claude workspace trust choice was not recognized');
+          return;
+        }
+        trustConfirmed = true;
+        setTimeout(() => {
+          if (settled) return;
+          try {
+            if (state.selection === 'no') terminal.write('\x1b[B');
+            setTimeout(
+              () => {
+                if (settled) return;
+                try {
+                  terminal.write('\r');
+                } catch {
+                  finish('Claude workspace trust confirmation failed');
+                }
+              },
+              state.selection === 'no' ? 350 : 0,
+            );
+          } catch {
+            finish('Claude workspace trust confirmation failed');
+          }
+        }, 800);
+        return;
+      }
+      if (!sent && state.kind === 'ready') {
         sent = true;
         try {
           terminal.write('/usage\r');
@@ -155,6 +229,13 @@ export async function readClaudeUsageViaPty(env: NodeJS.ProcessEnv): Promise<Win
         if (windows.fiveHour && windows.weekly) finish();
       }
     }, 200);
-    deadline = setTimeout(() => finish(), 30000);
+    deadline = setTimeout(() => {
+      const state = classifyClaudeUsageScreen(output, cwd);
+      finish(
+        sent
+          ? 'Claude /usage did not show subscription windows'
+          : `Claude first-run screen: ${state.kind === 'other' ? state.title : state.kind === 'trust' ? 'Workspace safety check' : 'Command prompt'}`,
+      );
+    }, 30000);
   });
 }

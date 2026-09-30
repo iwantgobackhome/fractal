@@ -292,7 +292,7 @@ export class AccountManager {
     const row = this.row(id);
     if (row.provider === 'claude') {
       try {
-        const windows = await this.claudeUsage(this.environment(row));
+        const windows = await this.claudeUsage(this.environment(row), this.root, row.id);
         const previous = this.observations.get(id);
         this.observations.set(id, {
           provider: 'claude',
