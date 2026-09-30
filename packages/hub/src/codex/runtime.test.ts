@@ -77,4 +77,24 @@ describe('Codex CLI isolation', () => {
       message: 'Codex MCP override was rejected for cua_repl.',
     });
   });
+
+  it('lists servers under the runtime overrides, so plugin-provided servers never need an override (Codex desktop app, measured)', async () => {
+    // codex-cli 0.159.0 with the Codex desktop app: codex_app and cua_repl come from plugins, disappear
+    // with features.plugins/computer_use off, and fail with "invalid transport" if overridden by name.
+    const probe = vi.fn(async (_file: string, args: string[]) => {
+      if (args.some((arg) => /^mcp_servers\.(codex_app|cua_repl)\./.test(arg))) throw new Error('invalid transport in `mcp_servers.cua_repl`');
+      const pluginsOff = args.includes('features.plugins=false') && args.includes('features.computer_use=false');
+      const servers = [
+        ...(pluginsOff
+          ? []
+          : [
+              { name: 'codex_app', enabled: false },
+              { name: 'cua_repl', enabled: true },
+            ]),
+        { name: 'node_repl', enabled: !args.includes('mcp_servers.node_repl.enabled=false') },
+      ];
+      return { stdout: JSON.stringify(servers), stderr: '' };
+    }) as unknown as Parameters<typeof disabledMcpArgs>[2];
+    await expect(disabledMcpArgs('codex.exe', {}, probe)).resolves.toEqual(['-c', 'mcp_servers.node_repl.enabled=false']);
+  });
 });
