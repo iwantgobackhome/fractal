@@ -12,4 +12,5 @@ export * from './contracts/news-keywords';
 export * from './contracts/related';
 export * from './contracts/pairing';
 export * from './contracts/structure';
+export * from './contracts/pdf-text';
 export * from './contracts/preferences';

@@ -1,6 +1,6 @@
 # PDF text geometry follow-up for Android API 29–34
 
-This is a concrete follow-up task for coordinator dispatch after the data foundation. The proposed route and types below are not implemented by the foundation commit. Desktop and Android should continue using GET `/api/papers/:key` for the existing snapshot until this extraction contract is published. Whole-block `regions` and `sourceText` are insufficient to guarantee word/character selection in older Android PdfRenderer APIs.
+This was the follow-up proposal after the data foundation. The backend implementation now publishes the authoritative per-page route and types in [pdf-text-layout.md](pdf-text-layout.md); use that contract rather than the historical proposal below. Existing GET `/api/papers/:key` remains compatible. Whole-block `regions` and `sourceText` are insufficient to guarantee word/character selection in older Android PdfRenderer APIs.
 
 Backend owner B should implement persistent, versioned positional source-PDF text for every downloadable paper, without requiring Android API 35 or fetching text while dragging. Android owner D should download and cache it alongside the PDF and use the same local hit-testing/selection implementation on API 29 through 34. Selecting the translated reader remains a separate native text interaction; translated-to-original annotation mapping is excluded.
 

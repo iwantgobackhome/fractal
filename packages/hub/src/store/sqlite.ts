@@ -104,6 +104,13 @@ export class SqlitePaperStore extends PaperStore {
         RELEASE quick_translation_migration;`);
     }
     foundation.migrateFoundation(this);
+    if (!this.db.prepare('SELECT 1 FROM migrations WHERE version=12').get()) {
+      this.db.exec(`SAVEPOINT pdf_text_migration;
+        CREATE TABLE pdf_text_pages(pdf_hash TEXT NOT NULL, version TEXT NOT NULL, page INTEGER NOT NULL,
+          data TEXT NOT NULL, size INTEGER NOT NULL, accessed_at INTEGER NOT NULL, PRIMARY KEY(pdf_hash,version,page));
+        INSERT INTO migrations VALUES(12,datetime('now'));
+        RELEASE pdf_text_migration;`);
+    }
   }
 
   getPreferences(): Preferences {

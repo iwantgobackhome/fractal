@@ -20,6 +20,7 @@ import { ProviderRegistry } from '../ai/registry';
 import { FtsLibrarySearch } from '../ai/library-search';
 import { JobManager } from '../jobs/state';
 import { TranslationPipeline } from '../translation/index';
+import { PdfTextLayoutService } from '../pdf/text-layout-service';
 
 const date = '2026-01-01T00:00:00.000Z';
 const sha = (text: string | Buffer) => createHash('sha256').update(text).digest('hex');
@@ -231,6 +232,28 @@ async function collect(events: AsyncIterable<AiSseEvent>) {
 }
 
 describe('data foundation migration and library', () => {
+  it('backfills original positions on demand from a real v10 PDF without changing user data', async () => {
+    const root = directory(),
+      old = oldFixture(root);
+    const store = open(root),
+      service = new PdfTextLayoutService(store);
+    const tables = ['papers', 'bibliography', 'blocks', 'translations', 'jobs', 'highlights', 'annotations', 'conversations', 'history', 'collections'];
+    const dump = () => tables.map((table) => store.db.prepare(`SELECT * FROM ${table} ORDER BY rowid`).all());
+    const before = dump(),
+      cursor = store.pull(0).cursor;
+    expect(store.db.prepare('SELECT count(*) n FROM pdf_text_pages').get()).toMatchObject({ n: 0 });
+    const layout = await service.read(old.p.paperKey, 1);
+    expect(layout).toMatchObject({ status: 'ready', pdfSha256: sha(old.bytes), page: { page: 1 } });
+    expect(dump()).toEqual(before);
+    expect(store.getPdf(old.p.paperKey)).toEqual(old.bytes);
+    expect(store.pull(0).cursor).toBe(cursor); // geometry is derived, not annotation/metadata sync
+    expect(store.db.prepare('SELECT count(*) n FROM migrations WHERE version=12').get()).toMatchObject({ n: 1 });
+    await service.close();
+    close(store);
+    const reopened = open(root);
+    expect(reopened.db.prepare('SELECT count(*) n FROM pdf_text_pages').get()).toMatchObject({ n: 1 });
+    expect(await new PdfTextLayoutService(reopened).read(old.p.paperKey, 1)).toEqual(layout);
+  });
   it('migrates a real v10 SQLite fixture, preserving all old data and PDF bytes, and runs once', () => {
     const root = directory();
     const old = oldFixture(root);

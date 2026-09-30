@@ -48,6 +48,8 @@ import { handleFeed } from './routes/feed';
 import type { FeedService } from '../feed/index';
 import { handleStructure } from './routes/structure';
 import { StructureService } from '../structure/service';
+import { PdfTextLayoutService } from '../pdf/text-layout-service';
+import { handlePdfText } from './routes/pdf-text';
 
 export { TOKEN_HEADER, assertLocalRequest, isLoopbackHost, isLoopbackOrigin } from './guard';
 export { HttpError, statusFor, toHttp } from './errors';
@@ -342,6 +344,7 @@ export function injectToken(html: string, token: string): string {
 export function createApiServer(options: ApiServerOptions): ApiServer {
   const { store, jobs, translator, pipeline, acquirer } = options;
   const structure = store instanceof SqlitePaperStore ? new StructureService(store) : undefined;
+  const pdfText = store instanceof SqlitePaperStore ? new PdfTextLayoutService(store) : undefined;
   const related = store instanceof SqlitePaperStore ? new RelatedPaperService(store) : undefined;
   const log = options.log ?? (() => {});
   const token = options.token ?? randomBytes(32).toString('hex');
@@ -500,6 +503,8 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
     }
     if (store instanceof SqlitePaperStore) {
       const libraryCtx = { store, acquirer };
+      const textResult = pdfText ? await handlePdfText(method, segments, request, pdfText) : undefined;
+      if (textResult !== undefined) return textResult;
       const structureResult = structure ? await handleStructure(method, segments, request, { ...libraryCtx, structure }) : undefined;
       if (structureResult !== undefined) return structureResult;
       const domain =
@@ -1067,6 +1072,7 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
       listeners.clear();
       server.closeAllConnections();
       await new Promise<void>((resolve) => server.close(() => resolve()));
+      await pdfText?.close();
     },
     address(): AddressInfo | null {
       return (server.address() as AddressInfo | null) ?? null;

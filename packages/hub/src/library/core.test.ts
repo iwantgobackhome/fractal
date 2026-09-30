@@ -172,7 +172,7 @@ describe('SQLite library', () => {
     expect(store.getPaper(p.paperKey)?.title).toBe(p.title);
     expect(store.listBlocks(p.paperKey)).toHaveLength(1);
     expect(store.listAnnotations(p.paperKey)[0]).toMatchObject({ id, kind: 'highlight' });
-    expect(store.db.prepare('SELECT count(*) n FROM migrations').get()).toMatchObject({ n: 11 });
+    expect(store.db.prepare('SELECT count(*) n FROM migrations').get()).toMatchObject({ n: 12 });
     store.db.close();
     const again = new SqlitePaperStore(next, old);
     expect(again.listPapers()).toHaveLength(1);
