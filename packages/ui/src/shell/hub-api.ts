@@ -1,5 +1,7 @@
 import type {
   AiFeature,
+  Article,
+  FieldTopic,
   AiSettings,
   AiSseEvent,
   Annotation,
@@ -28,7 +30,7 @@ import { t } from '../i18n';
  * "unavailable" state instead of failing.
  */
 
-export type { AiFeature, AiSettings, PairedDevice, ProviderModel };
+export type { AiFeature, AiSettings, Article, FieldTopic, PairedDevice, ProviderModel };
 export type AiChoice = ModelSelection;
 
 export interface ProviderStatus extends HubProviderStatus {
@@ -417,6 +419,33 @@ export class HubApi {
 
   installStatus(provider: HubProviderStatus['id']): Promise<InstallJob | null> {
     return this.call(`/api/ai/providers/${provider}/install`);
+  }
+
+  async topics(field: string): Promise<FieldTopic[] | null> {
+    const raw = await this.call<{ topics: FieldTopic[] }>(`/api/feed/topics?field=${encodeURIComponent(field)}`);
+    return raw === null ? null : raw.topics;
+  }
+
+  followTopic(id: string, followed: boolean): Promise<FieldTopic | null> {
+    return this.call(`/api/feed/topics/${encodeURIComponent(id)}`, { method: 'PUT', body: { followed } });
+  }
+
+  addTopic(field: string, label: string): Promise<FieldTopic | null> {
+    return this.call('/api/feed/topics', { method: 'POST', body: { field, label } });
+  }
+
+  removeTopic(id: string): Promise<unknown> {
+    return this.call(`/api/feed/topics/${encodeURIComponent(id)}`, { method: 'DELETE' });
+  }
+
+  article(url: string): Promise<Article | null> {
+    return this.call(`/api/news/article?url=${encodeURIComponent(url)}`);
+  }
+
+  /** Machine translation for news text (not an AI model); `null` when the hub has no such route. */
+  async quickTranslate(texts: string[], target: string): Promise<string[] | null> {
+    const raw = await this.call<{ translations: string[] }>('/api/translate/quick', { method: 'POST', body: { texts, target } });
+    return raw === null ? null : raw.translations;
   }
 
   async categories(): Promise<ArxivCategory[] | null> {

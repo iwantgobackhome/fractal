@@ -1,9 +1,11 @@
-import { useCallback, useEffect, useState, type JSX } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState, type JSX, type MouseEvent } from 'react';
 import type { FeedItem, FeedResponse, Paper } from '@fractal/shared';
 import { locale, t } from '../i18n';
 import { fieldName } from './fields';
 import type { FeedEntry, FeedSection, HubApi } from './hub-api';
+import { ArticleView } from './ArticleView';
 import { InterestPicker } from './InterestPicker';
+import { TopicManager } from './TopicManager';
 import { authorsLine, paperTitle, sourceLabel } from './paper-format';
 
 interface Props {
@@ -131,13 +133,42 @@ function Headline({
   );
 }
 
-/** A news story: picture, headline, outlet and age. Opens the article in the browser. */
+/** Opens a story in the reading sheet; a modified click (new tab, window) still goes to the site. */
+const ReadContext = createContext<(item: FeedEntry) => void>(() => undefined);
+
+function useReader(item: FeedEntry): (event: MouseEvent<HTMLAnchorElement>) => void {
+  const open = useContext(ReadContext);
+  return (event) => {
+    if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    open(item);
+  };
+}
+
+/** A headline in the reader's language when the hub translated it, the original a hover away. */
+function NewsTitle({ item, className }: { item: FeedEntry; className: string }): JSX.Element {
+  // Some feeds leave markup such as <br> in headlines.
+  const clean = (value: string) =>
+    value
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  const translated = item.titleTranslated !== undefined && item.titleTranslated !== item.title;
+  return (
+    <span className={className} title={translated ? item.title : undefined}>
+      {clean(translated ? (item.titleTranslated ?? item.title) : item.title)}
+    </span>
+  );
+}
+
+/** A news story: picture, headline, outlet and age. Opens inside Fractal. */
 function Story({ item, withPicture }: { item: FeedEntry; withPicture: boolean }): JSX.Element {
+  const read = useReader(item);
   return (
     <li className="story" data-picture={withPicture && hasImage(item)}>
-      <a href={item.url} target="_blank" rel="noreferrer noopener" className="story__link">
+      <a href={item.url} target="_blank" rel="noreferrer noopener" className="story__link" onClick={read}>
         {withPicture ? <Picture item={item} kind="photo" /> : null}
-        <span className="story__title">{item.title}</span>
+        <NewsTitle item={item} className="story__title" />
       </a>
       <span className="story__meta">
         {item.source.replace(/^news:/, '')}
@@ -152,20 +183,40 @@ const FIELD_NEWS_SHOWN = 6;
 const BOARD_SHOWN = 8;
 
 /** A field's stories: the first few, and the rest a click away. */
-function FieldNews({ items }: { items: FeedEntry[] }): JSX.Element {
+function FieldNews({ items, topics, onManage }: { items: FeedEntry[]; topics: TopicNews[]; onManage(): void }): JSX.Element {
   const [open, setOpen] = useState(false);
-  const shown = open ? items : items.slice(0, FIELD_NEWS_SHOWN);
+  const [topic, setTopic] = useState<string | null>(null);
+  const chosen = topic === null ? undefined : topics.find((entry) => entry.topicId === topic);
+  const list = chosen !== undefined ? chosen.items : items;
+  const shown = open ? list : list.slice(0, FIELD_NEWS_SHOWN);
   return (
     <div className="field-section__news">
-      <h3 className="home-front__kicker">{t('home.fieldNews')}</h3>
+      <div className="field-news__head">
+        <h3 className="home-front__kicker">{t('home.fieldNews')}</h3>
+        <button type="button" className="text-link text-link--quiet field-news__manage" onClick={onManage}>
+          {t('topics.manage')}
+        </button>
+      </div>
+      {topics.length > 0 ? (
+        <div className="topic-filter" role="group" aria-label={t('topics.filter')}>
+          <button type="button" aria-pressed={topic === null} onClick={() => setTopic(null)}>
+            {t('topics.all')}
+          </button>
+          {topics.map((entry) => (
+            <button key={entry.topicId} type="button" aria-pressed={topic === entry.topicId} onClick={() => setTopic(entry.topicId)}>
+              {entry.label}
+            </button>
+          ))}
+        </div>
+      ) : null}
       <ul className="stories">
         {shown.map((item) => (
           <Story key={item.id} item={item} withPicture />
         ))}
       </ul>
-      {items.length > FIELD_NEWS_SHOWN ? (
+      {list.length > FIELD_NEWS_SHOWN ? (
         <button type="button" className="text-link stories__more" onClick={() => setOpen(!open)}>
-          {open ? t('home.fewerNews') : t('home.moreNewsCount', { count: items.length - FIELD_NEWS_SHOWN })}
+          {open ? t('home.fewerNews') : t('home.moreNewsCount', { count: list.length - FIELD_NEWS_SHOWN })}
         </button>
       ) : null}
     </div>
@@ -174,11 +225,12 @@ function FieldNews({ items }: { items: FeedEntry[] }): JSX.Element {
 
 /** One story on the news board: picture on top when there is one. */
 function NewsCard({ item }: { item: FeedEntry }): JSX.Element {
+  const read = useReader(item);
   return (
     <article className="news-card" data-picture={hasImage(item)}>
-      <a href={item.url} target="_blank" rel="noreferrer noopener" className="news-card__link">
+      <a href={item.url} target="_blank" rel="noreferrer noopener" className="news-card__link" onClick={read}>
         <Picture item={item} kind="photo" />
-        <span className="news-card__title">{item.title}</span>
+        <NewsTitle item={item} className="news-card__title" />
       </a>
       <span className="story__meta">
         {item.source.replace(/^news:/, '')}
@@ -222,6 +274,8 @@ function NewsBoard({ items }: { items: FeedEntry[] }): JSX.Element {
   );
 }
 
+type TopicNews = { field: string; topicId: string; label: string; items: FeedEntry[] };
+
 function sectionTitle(section: FeedSection): { name: string; code: string | null } {
   if (section.field.startsWith('custom:')) return { name: section.label ?? section.field.slice(7), code: null };
   return { name: section.label ?? fieldName(section.field), code: section.field };
@@ -236,6 +290,8 @@ export function HomeScreen({ hub, papers, onOpen, onOpenExternal, onShowLibrary,
   const [hasInterests, setHasInterests] = useState<boolean | null>(null);
   const [saving, setSaving] = useState<Set<string>>(new Set());
   const [refreshing, setRefreshing] = useState(false);
+  const [reading, setReading] = useState<FeedEntry | null>(null);
+  const [managing, setManaging] = useState<{ field: string; name: string } | null>(null);
 
   const load = useCallback(() => {
     hub
@@ -279,7 +335,8 @@ export function HomeScreen({ hub, papers, onOpen, onOpenExternal, onShowLibrary,
   };
 
   const recent = [...papers].filter((p) => p.status === 'ready' || p.status === 'partial').sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  const sections = feed?.sections as (FeedResponse['sections'] & { newsByField?: FeedSection[]; generalNews?: FeedEntry[] }) | undefined;
+  const sections = feed?.sections as
+    (FeedResponse['sections'] & { newsByField?: FeedSection[]; generalNews?: FeedEntry[]; newsByTopic?: TopicNews[] }) | undefined;
   const seen = new Set<string>();
   const lead: FeedEntry[] = sections === undefined ? [] : once(sections.top, seen, 7);
   const recommended: FeedEntry[] = sections === undefined ? [] : once(sections.recommended, seen, 6);
@@ -291,6 +348,7 @@ export function HomeScreen({ hub, papers, onOpen, onOpenExternal, onShowLibrary,
           section,
           items: once(section.items, seen, 6),
           news: once(newsByField.get(section.field)?.items ?? [], seen, 30),
+          topics: (sections.newsByTopic ?? []).filter((entry) => entry.field === section.field && entry.items.length > 0),
         }));
   // Stories that belong to no field: general lab news, or everything from a hub without field news.
   const otherNews: FeedEntry[] = sections === undefined ? [] : once(sections.news, seen, 6);
@@ -314,140 +372,156 @@ export function HomeScreen({ hub, papers, onOpen, onOpenExternal, onShowLibrary,
   );
 
   return (
-    <main className="screen home-front" aria-labelledby="home-date">
-      <div className="home-front__masthead">
-        <p id="home-date" className="home-front__date">
-          {new Intl.DateTimeFormat(locale(), { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }).format(new Date())}
-        </p>
-        {feed !== null && feed !== undefined ? <p className="home-front__week">{weekLabel(feed.week)}</p> : null}
-        {hasInterests === true ? (
-          <button type="button" className="text-link text-link--quiet home-front__edit" onClick={onEditInterests}>
-            {t('interests.edit')}
-          </button>
-        ) : null}
-      </div>
-
-      {hasInterests === false ? (
-        <InterestPicker hub={hub} onSaved={load} />
-      ) : feed === undefined ? null : empty || sections === undefined ? (
-        <section className="home-front__blank">
-          <p className="home-front__deck">{t('home.empty')}</p>
-          <button type="button" className="text-link" disabled={refreshing} onClick={refresh}>
-            {refreshing ? t('home.refreshing') : t('home.gatherNow')}
-          </button>
-        </section>
-      ) : (
-        <>
-          {feed?.digest !== undefined ? (
-            <section className="digest" aria-label={t('home.digest')}>
-              <h2 className="home-front__kicker">{t('home.digest')}</h2>
-              <p className="digest__text">{feed.digest.text}</p>
-            </section>
-          ) : null}
-
-          <div className="home-front__grid">
-            <section className="home-front__lead-column" aria-label={t('home.papers')}>
-              {lead[0] !== undefined ? headline(lead[0], 'lead') : null}
-              <div className="home-front__secondary">{lead.slice(1).map((item) => headline(item, 'normal'))}</div>
-            </section>
-
-            <aside className="home-front__column" aria-label={t('home.aside')}>
-              {recent.length > 0 ? (
-                <section aria-labelledby="home-shelf">
-                  <h2 id="home-shelf" className="home-front__kicker">
-                    {t('home.continue')}
-                  </h2>
-                  <ol className="home-front__list">
-                    {recent.slice(0, 3).map((paper) => (
-                      <li key={paper.paperKey}>
-                        <button type="button" onClick={() => onOpen(paper.paperKey)}>
-                          <span className="home-front__item-title">{paperTitle(paper)}</span>
-                          <span className="home-front__item-meta">{sourceLabel(paper)}</span>
-                        </button>
-                      </li>
-                    ))}
-                  </ol>
-                  {papers.length > 3 ? (
-                    <button type="button" className="text-link" onClick={onShowLibrary}>
-                      {t('home.allLibrary')}
-                    </button>
-                  ) : null}
-                </section>
-              ) : null}
-
-              {sections.rankings.length > 0 ? (
-                <section aria-labelledby="home-rankings">
-                  <h2 id="home-rankings" className="home-front__kicker">
-                    {t('home.rankings')}
-                  </h2>
-                  <ol className="ranking">
-                    {sections.rankings.slice(0, 10).map((item, index) => (
-                      <li key={item.id}>
-                        <span className="ranking__n">{index + 1}</span>
-                        <button type="button" onClick={() => onOpenExternal(openTarget(item))}>
-                          {item.title}
-                        </button>
-                        <span className="ranking__votes" aria-label={t('home.votes', { count: item.popularity })}>
-                          {item.popularity}
-                        </span>
-                      </li>
-                    ))}
-                  </ol>
-                </section>
-              ) : null}
-
-              {otherNews.length > 0 ? (
-                <section aria-labelledby="home-news">
-                  <h2 id="home-news" className="home-front__kicker">
-                    {t('home.generalNews')}
-                  </h2>
-                  <ul className="stories stories--column">
-                    {otherNews.map((item) => (
-                      <Story key={item.id} item={item} withPicture={false} />
-                    ))}
-                  </ul>
-                </section>
-              ) : null}
-            </aside>
-          </div>
-
-          {recommended.length > 0 ? (
-            <section className="field-section field-section--recommended" aria-labelledby="home-similar">
-              <h2 id="home-similar" className="field-section__title">
-                {t('home.similar')}
-              </h2>
-              <p className="field-section__deck">{t('home.similarDeck')}</p>
-              <div className="field-section__grid">{recommended.map((item) => headline(item, 'compact'))}</div>
-            </section>
-          ) : null}
-
-          {generalNews.length > 0 ? <NewsBoard items={generalNews} /> : null}
-
-          {fields.map(({ section, items, news }) => {
-            if (items.length === 0 && news.length === 0) return null;
-            const title = sectionTitle(section);
-            return (
-              <section key={section.field} className="field-section" data-news={news.length > 0} aria-label={title.name}>
-                <h2 className="field-section__title">
-                  {title.name} {title.code !== null ? <span className="field-toggle__code">{title.code}</span> : null}
-                </h2>
-                <div className="field-section__body">
-                  {items.length > 0 ? <div className="field-section__grid">{items.map((item) => headline(item, 'compact'))}</div> : null}
-                  {news.length > 0 ? <FieldNews items={news} /> : null}
-                </div>
-              </section>
-            );
-          })}
-
-          <p className="home-front__colophon">
-            {feed?.generatedAt !== null && feed?.generatedAt !== undefined ? t('home.gathered', { time: relative(feed.generatedAt) }) : ''}
-            {' · '}
-            <button type="button" className="text-link" disabled={refreshing} onClick={refresh}>
-              {refreshing ? t('home.refreshing') : t('home.refresh')}
-            </button>
+    <ReadContext.Provider value={setReading}>
+      <main className="screen home-front" aria-labelledby="home-date">
+        <div className="home-front__masthead">
+          <p id="home-date" className="home-front__date">
+            {new Intl.DateTimeFormat(locale(), { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }).format(new Date())}
           </p>
-        </>
-      )}
-    </main>
+          {feed !== null && feed !== undefined ? <p className="home-front__week">{weekLabel(feed.week)}</p> : null}
+          {hasInterests === true ? (
+            <button type="button" className="text-link text-link--quiet home-front__edit" onClick={onEditInterests}>
+              {t('interests.edit')}
+            </button>
+          ) : null}
+        </div>
+
+        {hasInterests === false ? (
+          <InterestPicker hub={hub} onSaved={load} />
+        ) : feed === undefined ? null : empty || sections === undefined ? (
+          <section className="home-front__blank">
+            <p className="home-front__deck">{t('home.empty')}</p>
+            <button type="button" className="text-link" disabled={refreshing} onClick={refresh}>
+              {refreshing ? t('home.refreshing') : t('home.gatherNow')}
+            </button>
+          </section>
+        ) : (
+          <>
+            {feed?.digest !== undefined ? (
+              <section className="digest" aria-label={t('home.digest')}>
+                <h2 className="home-front__kicker">{t('home.digest')}</h2>
+                <p className="digest__text">{feed.digest.text}</p>
+              </section>
+            ) : null}
+
+            <div className="home-front__grid">
+              <section className="home-front__lead-column" aria-label={t('home.papers')}>
+                {lead[0] !== undefined ? headline(lead[0], 'lead') : null}
+                <div className="home-front__secondary">{lead.slice(1).map((item) => headline(item, 'normal'))}</div>
+              </section>
+
+              <aside className="home-front__column" aria-label={t('home.aside')}>
+                {recent.length > 0 ? (
+                  <section aria-labelledby="home-shelf">
+                    <h2 id="home-shelf" className="home-front__kicker">
+                      {t('home.continue')}
+                    </h2>
+                    <ol className="home-front__list">
+                      {recent.slice(0, 3).map((paper) => (
+                        <li key={paper.paperKey}>
+                          <button type="button" onClick={() => onOpen(paper.paperKey)}>
+                            <span className="home-front__item-title">{paperTitle(paper)}</span>
+                            <span className="home-front__item-meta">{sourceLabel(paper)}</span>
+                          </button>
+                        </li>
+                      ))}
+                    </ol>
+                    {papers.length > 3 ? (
+                      <button type="button" className="text-link" onClick={onShowLibrary}>
+                        {t('home.allLibrary')}
+                      </button>
+                    ) : null}
+                  </section>
+                ) : null}
+
+                {sections.rankings.length > 0 ? (
+                  <section aria-labelledby="home-rankings">
+                    <h2 id="home-rankings" className="home-front__kicker">
+                      {t('home.rankings')}
+                    </h2>
+                    <ol className="ranking">
+                      {sections.rankings.slice(0, 10).map((item, index) => (
+                        <li key={item.id}>
+                          <span className="ranking__n">{index + 1}</span>
+                          <button type="button" onClick={() => onOpenExternal(openTarget(item))}>
+                            {item.title}
+                          </button>
+                          <span className="ranking__votes" aria-label={t('home.votes', { count: item.popularity })}>
+                            {item.popularity}
+                          </span>
+                        </li>
+                      ))}
+                    </ol>
+                  </section>
+                ) : null}
+
+                {otherNews.length > 0 ? (
+                  <section aria-labelledby="home-news">
+                    <h2 id="home-news" className="home-front__kicker">
+                      {t('home.generalNews')}
+                    </h2>
+                    <ul className="stories stories--column">
+                      {otherNews.map((item) => (
+                        <Story key={item.id} item={item} withPicture={false} />
+                      ))}
+                    </ul>
+                  </section>
+                ) : null}
+              </aside>
+            </div>
+
+            {recommended.length > 0 ? (
+              <section className="field-section field-section--recommended" aria-labelledby="home-similar">
+                <h2 id="home-similar" className="field-section__title">
+                  {t('home.similar')}
+                </h2>
+                <p className="field-section__deck">{t('home.similarDeck')}</p>
+                <div className="field-section__grid">{recommended.map((item) => headline(item, 'compact'))}</div>
+              </section>
+            ) : null}
+
+            {generalNews.length > 0 ? <NewsBoard items={generalNews} /> : null}
+
+            {fields.map(({ section, items, news, topics }) => {
+              if (items.length === 0 && news.length === 0 && topics.length === 0) return null;
+              const title = sectionTitle(section);
+              return (
+                <section key={section.field} className="field-section" data-news={news.length > 0 || topics.length > 0} aria-label={title.name}>
+                  <h2 className="field-section__title">
+                    {title.name} {title.code !== null ? <span className="field-toggle__code">{title.code}</span> : null}
+                  </h2>
+                  <div className="field-section__body">
+                    {items.length > 0 ? <div className="field-section__grid">{items.map((item) => headline(item, 'compact'))}</div> : null}
+                    {news.length > 0 || topics.length > 0 ? (
+                      <FieldNews items={news} topics={topics} onManage={() => setManaging({ field: section.field, name: title.name })} />
+                    ) : null}
+                  </div>
+                </section>
+              );
+            })}
+
+            <p className="home-front__colophon">
+              {feed?.generatedAt !== null && feed?.generatedAt !== undefined ? t('home.gathered', { time: relative(feed.generatedAt) }) : ''}
+              {' · '}
+              <button type="button" className="text-link" disabled={refreshing} onClick={refresh}>
+                {refreshing ? t('home.refreshing') : t('home.refresh')}
+              </button>
+            </p>
+          </>
+        )}
+        {reading !== null ? <ArticleView hub={hub} item={reading} onClose={() => setReading(null)} /> : null}
+        {managing !== null ? (
+          <TopicManager
+            hub={hub}
+            field={managing.field}
+            fieldName={managing.name}
+            onClose={(changed) => {
+              setManaging(null);
+              if (changed) refresh();
+            }}
+          />
+        ) : null}
+      </main>
+    </ReadContext.Provider>
   );
 }
