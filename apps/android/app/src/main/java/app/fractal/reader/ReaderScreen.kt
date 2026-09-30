@@ -109,6 +109,7 @@ fun ReaderScreen(app: ReaderApplication, paper: LibraryEntity, onBack: () -> Uni
     var viewMode by remember { mutableStateOf("original") }
     var translatedBlocks by remember(paper.paperKey) { mutableStateOf<List<TranslatedBlock>>(emptyList()) }
     var selected by remember { mutableStateOf<Pair<Int, PdfTextSelection>?>(null) }
+    var questionSelection by remember(paper.paperKey) { mutableStateOf<Pair<Int, PdfTextSelection>?>(null) }
     var memo by remember { mutableStateOf("") }
     val activePage = if (viewMode == "translation" && translatedBlocks.isNotEmpty()) {
         translatedBlocks.getOrNull(translatedList.firstVisibleItemIndex)?.page ?: 1
@@ -139,8 +140,8 @@ fun ReaderScreen(app: ReaderApplication, paper: LibraryEntity, onBack: () -> Uni
             val visibleList = if (viewMode == "translation") translatedList else list
             visibleList.firstVisibleItemIndex * 100000 + visibleList.firstVisibleItemScrollOffset
         }.collectLatest { position ->
-            if (position > previous + 6) barVisible = false
-            if (position < previous - 6) barVisible = true
+            if (!writing && position > previous + 6) barVisible = false
+            if (!writing && position < previous - 6) barVisible = true
             previous = position
         }
     }
@@ -175,36 +176,42 @@ fun ReaderScreen(app: ReaderApplication, paper: LibraryEntity, onBack: () -> Uni
         }
     }
     Column(Modifier.fillMaxSize().background(colors.paper)) {
-        if (barVisible) {
-            Row(Modifier.fillMaxWidth().height(48.dp).padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                TextButton(onClick = onBack) { Text(stringResource(R.string.back_symbol), fontSize = 24.sp, color = colors.ink) }
-                Text(paper.title ?: paper.paperKey, Modifier.weight(1f), fontFamily = FontFamily.Serif,
-                    maxLines = 1, overflow = TextOverflow.Ellipsis, color = colors.ink)
-                Text(stringResource(R.string.page_count, activePage, pages?.pageCount ?: 0), color = colors.inkSoft, fontSize = 12.sp)
-                Box {
-                    TextButton(onClick = { viewMenu = true }) { Text(stringResource(R.string.view), fontSize = 12.sp, color = colors.ink) }
-                    DropdownMenu(viewMenu, onDismissRequest = { viewMenu = false }) {
-                        DropdownMenuItem(text = { Text(stringResource(R.string.original)) }, onClick = { viewMode = "original"; viewMenu = false })
-                        if (translatedBlocks.isNotEmpty()) {
-                            DropdownMenuItem(text = { Text(stringResource(R.string.translation)) }, onClick = { viewMode = "translation"; viewMenu = false })
+        // Visibility and pen contact must never change the reader's measured viewport.
+        Box(Modifier.fillMaxWidth().height(48.5.dp)) {
+            if (barVisible) {
+                Column {
+                    Row(Modifier.fillMaxWidth().height(48.dp).padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                        TextButton(onClick = onBack) { Text(stringResource(R.string.back_symbol), fontSize = 24.sp, color = colors.ink) }
+                        Text(paper.title ?: paper.paperKey, Modifier.weight(1f), fontFamily = FontFamily.Serif,
+                            maxLines = 1, overflow = TextOverflow.Ellipsis, color = colors.ink)
+                        Text(stringResource(R.string.page_count, activePage, pages?.pageCount ?: 0), color = colors.inkSoft, fontSize = 12.sp)
+                        Box {
+                            TextButton(onClick = { viewMenu = true }) { Text(stringResource(R.string.view), fontSize = 12.sp, color = colors.ink) }
+                            DropdownMenu(viewMenu, onDismissRequest = { viewMenu = false }) {
+                                DropdownMenuItem(text = { Text(stringResource(R.string.original)) }, onClick = { viewMode = "original"; viewMenu = false })
+                                if (translatedBlocks.isNotEmpty()) {
+                                    DropdownMenuItem(text = { Text(stringResource(R.string.translation)) }, onClick = { viewMode = "translation"; viewMenu = false })
+                                }
+                            }
+                        }
+                        TextButton(onClick = { panelTab = "notes"; panel = true }) { Text(stringResource(R.string.notes), fontSize = 12.sp, color = colors.ink) }
+                        TextButton(onClick = { panelTab = "questions"; panel = true }) { Text(stringResource(R.string.questions), fontSize = 12.sp, color = colors.ink) }
+                        Box {
+                            TextButton(onClick = { moreMenu = true }) { Text(stringResource(R.string.more_symbol), fontSize = 20.sp, color = colors.ink) }
+                            DropdownMenu(moreMenu, onDismissRequest = { moreMenu = false }) {
+                                DropdownMenuItem(text = { Text(stringResource(R.string.fit_width)) }, onClick = { zoom = 1f; moreMenu = false })
+                                DropdownMenuItem(text = { Text(stringResource(if (panel) R.string.close_panel else R.string.open_panel)) },
+                                    onClick = { panel = !panel; moreMenu = false })
+                            }
                         }
                     }
+                    HorizontalDivider(color = colors.rule, thickness = .5.dp)
                 }
-                TextButton(onClick = { panelTab = "notes"; panel = true }) { Text(stringResource(R.string.notes), fontSize = 12.sp, color = colors.ink) }
-                TextButton(onClick = { panelTab = "questions"; panel = true }) { Text(stringResource(R.string.questions), fontSize = 12.sp, color = colors.ink) }
-                Box {
-                    TextButton(onClick = { moreMenu = true }) { Text(stringResource(R.string.more_symbol), fontSize = 20.sp, color = colors.ink) }
-                    DropdownMenu(moreMenu, onDismissRequest = { moreMenu = false }) {
-                        DropdownMenuItem(text = { Text(stringResource(R.string.fit_width)) }, onClick = { zoom = 1f; moreMenu = false })
-                        DropdownMenuItem(text = { Text(stringResource(if (panel) R.string.close_panel else R.string.open_panel)) },
-                            onClick = { panel = !panel; moreMenu = false })
-                    }
+            } else {
+                TextButton(onClick = { barVisible = true }, modifier = Modifier.fillMaxSize()) {
+                    Text(stringResource(R.string.show_reader_controls), color = colors.inkSoft)
                 }
             }
-            HorizontalDivider(color = colors.rule, thickness = .5.dp)
-        } else {
-            Box(Modifier.fillMaxWidth().height(if (writing) 48.dp else 12.dp)
-                .background(colors.sunken).clickable { barVisible = true })
         }
         Row(Modifier.fillMaxSize()) {
             if (!compact && viewMode == "original") {
@@ -237,9 +244,12 @@ fun ReaderScreen(app: ReaderApplication, paper: LibraryEntity, onBack: () -> Uni
                             val state = states.getOrPut(index + 1) { InkPageState() }
                             PdfPage(app, source, paper.paperKey, index, zoom, state, tool,
                                 annotations.filter { it.page == index + 1 && it.kind == "highlight" },
-                                onFingerGesture = { dy, factor ->
+                                onFingerGesture = { dy, factor, focusY ->
                                     zoom = (zoom * factor).coerceIn(.5f, 4f)
-                                    scope.launch { list.scrollBy(-dy) }
+                                    scope.launch {
+                                        if (factor != 1f) androidx.compose.runtime.withFrameNanos { }
+                                        list.scrollBy(focusY * (factor - 1f) - dy)
+                                    }
                                 },
                                 onWritingStateChanged = { active ->
                                     writing = active
@@ -277,14 +287,16 @@ fun ReaderScreen(app: ReaderApplication, paper: LibraryEntity, onBack: () -> Uni
                 SidePanel(app, paper.paperKey, annotations, pages, panelTab, { panelTab = it }, onJump = { page ->
                     viewMode = "original"
                     scope.launch { list.animateScrollToItem((page - 1).coerceAtLeast(0)) }
-                }, Modifier.align(androidx.compose.ui.Alignment.CenterEnd).width(360.dp).fillMaxHeight())
+                }, Modifier.align(androidx.compose.ui.Alignment.CenterEnd).width(360.dp).fillMaxHeight(),
+                    questionSelection = questionSelection, onClearQuestionSelection = { questionSelection = null })
             }
             }
             if (panel && expanded) {
                 SidePanel(app, paper.paperKey, annotations, pages, panelTab, { panelTab = it }, onJump = { page ->
                     viewMode = "original"
                     scope.launch { list.animateScrollToItem((page - 1).coerceAtLeast(0)) }
-                }, Modifier.width(400.dp).fillMaxHeight())
+                }, Modifier.width(400.dp).fillMaxHeight(),
+                    questionSelection = questionSelection, onClearQuestionSelection = { questionSelection = null })
             }
         }
     }
@@ -294,7 +306,8 @@ fun ReaderScreen(app: ReaderApplication, paper: LibraryEntity, onBack: () -> Uni
                 panel = false
                 viewMode = "original"
                 scope.launch { list.animateScrollToItem((page - 1).coerceAtLeast(0)) }
-            }, Modifier.fillMaxWidth().height(540.dp))
+            }, Modifier.fillMaxWidth().height(540.dp),
+                questionSelection = questionSelection, onClearQuestionSelection = { questionSelection = null })
         }
     }
     selected?.let { (page, selection) ->
@@ -303,6 +316,7 @@ fun ReaderScreen(app: ReaderApplication, paper: LibraryEntity, onBack: () -> Uni
             title = { Text(selection.text.ifBlank { stringResource(R.string.selected_region) }, maxLines = 3) },
             text = {
                 Column {
+                    if (selection.text.isBlank()) Text(stringResource(R.string.region_selection_hint), color = colors.inkSoft)
                     Row {
                         listOf("yellow", "green", "blue", "pink").forEach { color ->
                             TextButton(onClick = {
@@ -319,11 +333,12 @@ fun ReaderScreen(app: ReaderApplication, paper: LibraryEntity, onBack: () -> Uni
                             memo = ""
                         }) { Text(stringResource(R.string.memo)) }
                         TextButton(onClick = {
+                            questionSelection = page to selection
                             selected = null
                             panel = true
                             panelTab = "questions"
                         }) { Text(stringResource(R.string.questions)) }
-                        TextButton(onClick = {
+                        TextButton(enabled = selection.text.isNotBlank(), onClick = {
                             clipboard.setPrimaryClip(android.content.ClipData.newPlainText(app.getString(R.string.clipboard_pdf), selection.text))
                             selected = null
                         }) { Text(stringResource(R.string.copy)) }

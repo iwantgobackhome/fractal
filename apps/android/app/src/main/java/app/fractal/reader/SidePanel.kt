@@ -40,6 +40,7 @@ import app.fractal.data.AnnotationEntity
 import app.fractal.data.WireJson
 import app.fractal.design.LocalFractalColors
 import app.fractal.pdf.PdfPages
+import app.fractal.pdf.PdfTextSelection
 import app.fractal.sync.HubClient
 import app.fractal.sync.SseParser
 import kotlinx.coroutines.Dispatchers
@@ -62,6 +63,8 @@ fun SidePanel(
     onTabChange: (String) -> Unit,
     onJump: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    questionSelection: Pair<Int, PdfTextSelection>? = null,
+    onClearQuestionSelection: () -> Unit = {},
 ) {
     val colors = LocalFractalColors.current
     val answerLanguage = if (LocalConfiguration.current.locales[0].language == "ko") "ko" else "en"
@@ -96,18 +99,16 @@ fun SidePanel(
                 items(annotations.filter { it.kind == "highlight" || it.kind == "memo" }, key = { it.id }) { row ->
                     val json = runCatching { WireJson.format.parseToJsonElement(row.json).jsonObject }.getOrNull()
                     Column(Modifier.fillMaxWidth().clickable { onJump(row.page) }.padding(16.dp)) {
-                        val quote = json?.get("quote")?.jsonPrimitive?.content
-                            ?: json?.get("text")?.jsonPrimitive?.content.orEmpty()
+                        val text = readerNoteText(row.kind, json)
+                        val quote = text.quote
                         if (quote.isBlank() && row.kind == "highlight") {
                             Text(stringResource(R.string.region_label, row.page), color = colors.inkSoft, fontSize = 13.sp)
                             RegionThumbnail(pages, row.page, row.json)
                         } else {
                             Text(stringResource(R.string.page_label, row.page), color = colors.inkSoft, fontSize = 12.sp)
-                            Text(if (quote.isBlank()) stringResource(R.string.selected_region) else quote, fontFamily = FontFamily.Serif)
+                            if (quote.isNotBlank()) Text(quote, fontFamily = FontFamily.Serif)
                         }
-                        json?.get("note")?.jsonPrimitive?.content?.takeIf { it != "null" }?.let {
-                            Text(it, color = colors.inkSoft)
-                        }
+                        if (text.body.isNotBlank()) Text(text.body, color = colors.inkSoft)
                     }
                     HorizontalDivider(color = colors.rule, thickness = .5.dp)
                 }
@@ -127,6 +128,14 @@ fun SidePanel(
                     }
                 }
                 if (app.credentials.load() == null) Text(stringResource(R.string.questions_need_hub), Modifier.padding(16.dp), color = colors.inkSoft)
+                questionSelection?.let { (page, selection) ->
+                    Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+                        Text(stringResource(R.string.page_label, page), color = colors.inkSoft, fontSize = 12.sp)
+                        Text(selection.text.ifBlank { stringResource(R.string.selected_region) }, maxLines = 3,
+                            fontFamily = FontFamily.Serif, color = colors.inkSoft)
+                        TextButton(onClick = onClearQuestionSelection) { Text(stringResource(R.string.clear_quote)) }
+                    }
+                }
                 Row(Modifier.fillMaxWidth()) {
                     models.forEach { (provider, name) ->
                         TextButton(onClick = { model = name }) {
@@ -139,6 +148,7 @@ fun SidePanel(
                         modifier = Modifier.weight(1f), maxLines = 3)
                     TextButton(enabled = !busy && question.isNotBlank(), onClick = {
                         val asked = question
+                        val askedSelection = questionSelection
                         question = ""
                         answer = ""
                         busy = true
@@ -146,16 +156,7 @@ fun SidePanel(
                             runCatching {
                                 withContext(Dispatchers.IO) {
                                     val selection = models.firstOrNull { it.second == model }
-                                    val body = buildJsonObject {
-                                        put("question", asked)
-                                        put("answerLanguage", answerLanguage)
-                                        if (selection != null) {
-                                            put("selection", buildJsonObject {
-                                                put("provider", selection.first)
-                                                put("model", selection.second)
-                                            })
-                                        }
-                                    }
+                                    val body = readerQuestionBody(asked, answerLanguage, selection, askedSelection)
                                     val path = "/api/papers/${HubClient.keyPath(paperKey)}/ask"
                                     var response = app.client.execute(path, "POST", body)
                                     if (response.code == 400) {

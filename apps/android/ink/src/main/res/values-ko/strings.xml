@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="tool_text_selection">텍스트 선택</string>
     <string name="tool_ballpoint">볼펜</string>
     <string name="tool_fountain">만년필</string>
     <string name="tool_pencil">연필</string>

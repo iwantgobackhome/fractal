@@ -62,15 +62,14 @@ class PdfPages(file: File) : Closeable {
 
     /** Native text selection exists on API 35. Older devices can select a page region only. */
     @Synchronized
-    fun select(index: Int, x: Float, y: Float): PdfTextSelection? {
+    fun select(index: Int, x: Float, y: Float, endX: Float = x, endY: Float = y): PdfTextSelection? {
         if (Build.VERSION.SDK_INT < 35) return null
         renderer.openPage(index).use { page ->
-            val point = Point(
-                (x.coerceIn(0f, 1f) * page.width).toInt(),
-                (y.coerceIn(0f, 1f) * page.height).toInt(),
-            )
-            val boundary = SelectionBoundary(point)
-            val selected = page.selectContent(boundary, boundary) ?: return null
+            fun boundary(px: Float, py: Float) = SelectionBoundary(Point(
+                (px.coerceIn(0f, 1f) * page.width).toInt(),
+                (py.coerceIn(0f, 1f) * page.height).toInt(),
+            ))
+            val selected = page.selectContent(boundary(x, y), boundary(endX, endY)) ?: return null
             val contents = selected.selectedTextContents
             val rects = contents.flatMap { it.bounds }.map { rect ->
                 PdfRect(

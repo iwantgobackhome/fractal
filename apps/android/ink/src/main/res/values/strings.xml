@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="tool_text_selection">Select text</string>
     <string name="tool_ballpoint">Ballpoint pen</string>
     <string name="tool_fountain">Fountain pen</string>
     <string name="tool_pencil">Pencil</string>

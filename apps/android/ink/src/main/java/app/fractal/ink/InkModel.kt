@@ -90,6 +90,9 @@ fun List<InkStroke>.bounds(): InkBounds? {
 
 data class InkChange(val before: List<InkStroke>, val after: List<InkStroke>)
 
+/** Focus and deltas in local pixels; raw deltas avoid feedback when the page moves under a pinch. */
+data class InkFingerTransform(val panX: Float, val panY: Float, val zoom: Float, val focusX: Float, val focusY: Float)
+
 /** One instance per PDF page. All coordinates are normalized; a zoom change never mutates them. */
 class InkPageState {
     var strokes by mutableStateOf<List<InkStroke>>(emptyList()); private set
@@ -133,7 +136,7 @@ private fun InkStroke.edited(
     points: List<InkPoint> = this.points,
 ) = copy(deleted = deleted, color = color, points = points, rev = rev + 1, updatedAt = Instant.now().toString())
 
-enum class InkTool { Ballpoint, Fountain, Pencil, Highlighter, Eraser, Shape, Lasso }
+enum class InkTool { Ballpoint, Fountain, Pencil, Highlighter, Eraser, Shape, Lasso, TextSelection }
 enum class EraserMode { Stroke, Partial }
 enum class ShapeMode { Line, Arrow, Rectangle, Ellipse }
 class InkToolState {

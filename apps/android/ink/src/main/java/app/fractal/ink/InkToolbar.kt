@@ -63,6 +63,7 @@ private fun toolLabel(item: InkTool): Int = when (item) {
     InkTool.Eraser -> R.string.tool_eraser
     InkTool.Shape -> R.string.tool_shape
     InkTool.Lasso -> R.string.tool_lasso
+    InkTool.TextSelection -> R.string.tool_text_selection
 }
 private fun eraserLabel(mode: EraserMode): Int =
     if (mode == EraserMode.Stroke) R.string.eraser_stroke else R.string.eraser_partial
@@ -82,6 +83,7 @@ private fun icon(name: InkTool): ImageVector = ImageVector.Builder(name = name.n
             InkTool.Eraser -> { moveTo(3f,16f); lineTo(14f,5f); lineTo(21f,12f); lineTo(12f,21f); lineTo(8f,21f); close(); moveTo(8f,11f); lineTo(15f,18f) }
             InkTool.Shape -> { moveTo(3f,19f); lineTo(12f,5f); lineTo(21f,19f); close() }
             InkTool.Lasso -> { moveTo(5f,9f); curveTo(6f,3f,19f,3f,20f,10f); curveTo(21f,18f,8f,20f,5f,15f); curveTo(3f,12f,6f,10f,9f,12f); lineTo(12f,18f) }
+            InkTool.TextSelection -> { moveTo(5f,5f); lineTo(19f,5f); moveTo(12f,5f); lineTo(12f,19f); moveTo(8f,19f); lineTo(16f,19f) }
         }
     }
 }.build()
@@ -102,7 +104,7 @@ fun InkToolbar(state: InkPageState, tool: InkToolState, modifier: Modifier = Mod
             Box {
                 Box(
                     Modifier.size(48.dp).clickable {
-                        if (tool.active == item) popover = item else { tool.active = item; popover = null }
+                        if (tool.active == item && item != InkTool.TextSelection) popover = item else { tool.active = item; popover = null }
                     }.semantics { contentDescription = label },
                     contentAlignment = Alignment.Center
                 ) {

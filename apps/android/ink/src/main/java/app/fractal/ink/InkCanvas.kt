@@ -69,6 +69,9 @@ fun InkCanvas(
     paperKey: String = "demo",
     page: Int = 1,
     deviceId: String = "android",
+    fingerScrollsParent: Boolean = false,
+    onTextSelection: (InkPoint, InkPoint) -> Unit = { _, _ -> },
+    onFingerTransform: ((InkFingerTransform) -> Unit)? = null,
 ) {
     DisposableEffect(state, onStrokesChanged) {
         state.onChange = onStrokesChanged
@@ -84,6 +87,9 @@ fun InkCanvas(
                 surface.onFingerLongPress = onFingerLongPress
                 surface.onFingerDoubleTap = onFingerDoubleTap
                 surface.onWritingStateChanged = onWritingStateChanged
+                surface.fingerScrollsParent = fingerScrollsParent
+                surface.onTextSelection = onTextSelection
+                surface.onFingerTransform = onFingerTransform
                 surface.pageSize = pageSize
                 surface.sync(state.strokes, state.selectedIds)
             },
@@ -106,6 +112,9 @@ private class InkSurface(
     private val deviceId: String,
 ) : FrameLayout(context) {
     var pageSize: Size = Size.Zero
+    var fingerScrollsParent = false
+    var onTextSelection: (InkPoint, InkPoint) -> Unit = { _, _ -> }
+    var onFingerTransform: ((InkFingerTransform) -> Unit)? = null
     private val dry = DryInkView(context)
     private val wet = InProgressStrokesView(context)
     private val predictor = MotionEventPredictor.newInstance(wet)
@@ -116,6 +125,12 @@ private class InkSurface(
     private var tilts = mutableListOf<Float>()
     private var gestureTool = InkTool.Ballpoint
     private var gestureEraser = EraserMode.Stroke
+    private var gestureColor = "#1C1B19"
+    private var gestureWidth = .003f
+    private var gestureShape = ShapeMode.Line
+    // Kept until the entire stream ends, including any palm remaining after pen-up.
+    private var penOwnsStream = false
+    private var pinchOwnsStream = false
     private var lastMotion = 0L
     private var selectionStart: InkPoint? = null
     private var selectionBounds: InkBounds? = null
@@ -124,18 +139,25 @@ private class InkSurface(
     private var fingerX = 0f
     private var fingerY = 0f
     private var fingerSpan = 0f
+    private var fingerRawX = 0f
+    private var fingerRawY = 0f
     private var fingerActive = false
     private var fingerDownX = 0f
     private var fingerDownY = 0f
     private var lastFingerTapMs = 0L
+    private var fingerMoved = false
+    private val touchSlop = android.view.ViewConfiguration.get(context).scaledTouchSlop
     private val fingerHold = Runnable {
+        if (!fingerActive || fingerMoved || penOwnsStream) return@Runnable
+        fingerMoved = true
+        lastFingerTapMs = 0L
         onFingerLongPress(
             (fingerDownX / width.coerceAtLeast(1)).coerceIn(0f, 1f),
             (fingerDownY / height.coerceAtLeast(1)).coerceIn(0f, 1f),
         )
     }
     private val hold = Runnable {
-        if (gestureTool !in listOf(InkTool.Eraser, InkTool.Lasso, InkTool.Shape) &&
+        if (gestureTool !in listOf(InkTool.Eraser, InkTool.Lasso, InkTool.Shape, InkTool.TextSelection) &&
             path.size >= 4 && android.os.SystemClock.uptimeMillis() - lastMotion >= 480 &&
             recognizeShape(path) != null) {
             heldSnapped = true
@@ -174,50 +196,92 @@ private class InkSurface(
         tilts.add(event.getAxisValue(MotionEvent.AXIS_TILT, index))
         lastMotion = android.os.SystemClock.uptimeMillis()
     }
-    private fun cancel(event: MotionEvent) {
+    override fun onDetachedFromWindow() {
+        val now = android.os.SystemClock.uptimeMillis()
+        val event = MotionEvent.obtain(now, now, MotionEvent.ACTION_CANCEL, 0f, 0f, 0)
+        try { cancel(event) } finally { event.recycle() }
+        super.onDetachedFromWindow()
+    }
+
+    private fun cancel(event: MotionEvent, releaseStream: Boolean = true) {
         if (pointerId >= 0) onWritingStateChanged(false)
         removeCallbacks(hold)
         removeCallbacks(fingerHold)
         wetId?.let { wet.cancelStroke(it, event) }
         wetId = null; pointerId = -1; fingerActive = false; path.clear(); tilts.clear(); dry.transient = emptyList()
+        if (releaseStream) {
+            penOwnsStream = false; pinchOwnsStream = false
+            parent?.requestDisallowInterceptTouchEvent(false)
+        }
     }
     private fun handle(view: View, event: MotionEvent): Boolean {
         val action = event.actionMasked
-        if (action == MotionEvent.ACTION_CANCEL || (event.flags and MotionEvent.FLAG_CANCELED) != 0) {
-            val interruptedStroke = pointerId >= 0 && path.size > 1 &&
-                event.isFromSource(android.view.InputDevice.SOURCE_STYLUS)
-            if (interruptedStroke) finishGesture()
-            cancel(event)
+        if (action == MotionEvent.ACTION_DOWN && (penOwnsStream || fingerActive)) cancel(event)
+        if (action == MotionEvent.ACTION_CANCEL ||
+            ((event.flags and MotionEvent.FLAG_CANCELED) != 0 &&
+                event.getPointerId(event.actionIndex) == pointerId)) {
+            cancel(event, releaseStream = action != MotionEvent.ACTION_POINTER_UP)
             return true
         }
-        val stylusSource = event.isFromSource(android.view.InputDevice.SOURCE_STYLUS)
-        if (pointerId < 0 && !stylusSource && (fingerActive || event.getToolType(event.actionIndex) == MotionEvent.TOOL_TYPE_FINGER)) {
-            val fingers = (0 until event.pointerCount).filter { event.getToolType(it) == MotionEvent.TOOL_TYPE_FINGER }
+        val type = event.getToolType(event.actionIndex)
+        val penDown = (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) &&
+            (type == MotionEvent.TOOL_TYPE_STYLUS || type == MotionEvent.TOOL_TYPE_ERASER)
+        if (!penOwnsStream && !penDown && (fingerActive || type == MotionEvent.TOOL_TYPE_FINGER)) {
+            val fingers = (0 until event.pointerCount).filter {
+                event.getToolType(it) == MotionEvent.TOOL_TYPE_FINGER &&
+                    !(action == MotionEvent.ACTION_POINTER_UP && it == event.actionIndex)
+            }
             if (action == MotionEvent.ACTION_DOWN) {
                 fingerActive = true; fingerX = event.x; fingerY = event.y; fingerSpan = 0f
                 fingerDownX = event.x; fingerDownY = event.y
+                fingerRawX = event.rawX; fingerRawY = event.rawY
+                fingerMoved = false
+                if (!fingerScrollsParent) parent?.requestDisallowInterceptTouchEvent(true)
                 postDelayed(fingerHold, 500)
                 return true
             }
             if (action == MotionEvent.ACTION_MOVE && fingers.isNotEmpty()) {
-                if (kotlin.math.hypot(event.x - fingerDownX, event.y - fingerDownY) > 12f) removeCallbacks(fingerHold)
+                if (kotlin.math.hypot(event.x - fingerDownX, event.y - fingerDownY) > touchSlop) {
+                    fingerMoved = true
+                    lastFingerTapMs = 0L
+                    removeCallbacks(fingerHold)
+                }
                 val x = fingers.map { event.getX(it) }.average().toFloat()
                 val y = fingers.map { event.getY(it) }.average().toFloat()
                 val span = if (fingers.size >= 2) kotlin.math.hypot(event.getX(fingers[0])-event.getX(fingers[1]),event.getY(fingers[0])-event.getY(fingers[1])) else 0f
-                if (fingerActive) onFingerGesture(x-fingerX,y-fingerY,if (span > 0 && fingerSpan > 0) span/fingerSpan else 1f)
+                val rawX = fingers.map { event.getRawX(it) }.average().toFloat()
+                val rawY = fingers.map { event.getRawY(it) }.average().toFloat()
+                if (fingerActive && (!fingerScrollsParent || pinchOwnsStream)) {
+                    val factor = if (span > 0 && fingerSpan > 0) span/fingerSpan else 1f
+                    val transform = onFingerTransform
+                    if (transform == null) onFingerGesture(x-fingerX,y-fingerY,factor)
+                    else {
+                        val dx = rawX-fingerRawX; val dy = rawY-fingerRawY
+                        transform(InkFingerTransform(dx, dy, factor, x-dx, y-dy))
+                    }
+                }
                 fingerX = x; fingerY = y; fingerSpan = span
+                fingerRawX = rawX; fingerRawY = rawY
                 return true
             }
             if (action == MotionEvent.ACTION_POINTER_DOWN) {
                 removeCallbacks(fingerHold)
+                fingerMoved = true
+                lastFingerTapMs = 0L
+                if (fingers.size < 2) return true
+                pinchOwnsStream = true
+                parent?.requestDisallowInterceptTouchEvent(true)
                 fingerX = fingers.map { event.getX(it) }.average().toFloat()
                 fingerY = fingers.map { event.getY(it) }.average().toFloat()
+                fingerRawX = fingers.map { event.getRawX(it) }.average().toFloat()
+                fingerRawY = fingers.map { event.getRawY(it) }.average().toFloat()
                 fingerSpan = if (fingers.size >= 2) kotlin.math.hypot(event.getX(fingers[0])-event.getX(fingers[1]),event.getY(fingers[0])-event.getY(fingers[1])) else 0f
                 return true
             }
             if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP) {
                 removeCallbacks(fingerHold)
                 if (action == MotionEvent.ACTION_UP &&
+                    !fingerMoved &&
                     event.eventTime - event.downTime < 300 &&
                     kotlin.math.hypot(event.x - fingerDownX, event.y - fingerDownY) < 20f) {
                     if (event.eventTime - lastFingerTapMs < 320) {
@@ -227,22 +291,36 @@ private class InkSurface(
                         lastFingerTapMs = event.eventTime
                     }
                 }
-                if (action == MotionEvent.ACTION_UP) fingerActive = false
-                fingerSpan = 0f
+                if (action == MotionEvent.ACTION_UP) {
+                    fingerActive = false; pinchOwnsStream = false
+                    parent?.requestDisallowInterceptTouchEvent(false)
+                } else {
+                    // Rebase after pointer removal; never pan by the old two-finger centroid.
+                    fingerX = fingers.map { event.getX(it) }.average().toFloat()
+                    fingerY = fingers.map { event.getY(it) }.average().toFloat()
+                    fingerRawX = fingers.map { event.getRawX(it) }.average().toFloat()
+                    fingerRawY = fingers.map { event.getRawY(it) }.average().toFloat()
+                    fingerSpan = if (fingers.size >= 2) kotlin.math.hypot(event.getX(fingers[0])-event.getX(fingers[1]),event.getY(fingers[0])-event.getY(fingers[1])) else 0f
+                }
                 return true
             }
         }
         if (action == MotionEvent.ACTION_POINTER_DOWN && pointerId >= 0) return true // ignore incidental palm contact
-        if (action == MotionEvent.ACTION_DOWN) {
+        if (penDown && !penOwnsStream) {
             val index = event.actionIndex
-            val type = event.getToolType(index)
-            if (type != MotionEvent.TOOL_TYPE_STYLUS && type != MotionEvent.TOOL_TYPE_ERASER && !stylusSource) return false
+            removeCallbacks(fingerHold)
+            fingerActive = false; pinchOwnsStream = false
+            penOwnsStream = true
+            parent?.requestDisallowInterceptTouchEvent(true)
             view.requestUnbufferedDispatch(event)
             predictor.record(event)
             pointerId = event.getPointerId(index)
             onWritingStateChanged(true)
             gestureTool = if (button.update(true, event.buttonState and MotionEvent.BUTTON_STYLUS_PRIMARY != 0, type == MotionEvent.TOOL_TYPE_ERASER)) InkTool.Eraser else tool.active
             gestureEraser = if (gestureTool == InkTool.Eraser && tool.active != InkTool.Eraser) tool.buttonEraserMode else tool.eraserMode
+            gestureColor = tool.color
+            gestureWidth = tool.widthFor(gestureTool)
+            gestureShape = tool.shapeMode
             path.clear(); tilts.clear(); collect(event, index)
             heldSnapped = false
             if (gestureTool == InkTool.Lasso) {
@@ -253,15 +331,22 @@ private class InkSurface(
                 val within = b != null && p.x in b.left..b.right && p.y in b.top..b.bottom
                 selectionStart = if (within || resizeCorner >= 0) p else null
                 selectionBounds = b
-            } else if (gestureTool != InkTool.Eraser) {
-                wetId = wet.startStroke(event, pointerId, inkBrush(brushName(gestureTool), tool.color, tool.width * width))
+            } else if (gestureTool != InkTool.Eraser && gestureTool != InkTool.TextSelection) {
+                wetId = wet.startStroke(event, pointerId, inkBrush(brushName(gestureTool), gestureColor, gestureWidth * width))
             }
             postDelayed(hold, 500)
             return true
         }
-        if (pointerId < 0) return false
+        if (pointerId < 0) {
+            if (penOwnsStream && action == MotionEvent.ACTION_UP) {
+                penOwnsStream = false
+                parent?.requestDisallowInterceptTouchEvent(false)
+                return true
+            }
+            return penOwnsStream
+        }
         val index = event.findPointerIndex(pointerId)
-        if (index < 0) return false
+        if (index < 0) { cancel(event); return true }
         when (action) {
             MotionEvent.ACTION_MOVE -> {
                 predictor.record(event)
@@ -284,6 +369,10 @@ private class InkSurface(
                 onWritingStateChanged(false)
                 finishGesture()
                 dry.transient = emptyList()
+                if (action == MotionEvent.ACTION_UP) {
+                    penOwnsStream = false
+                    parent?.requestDisallowInterceptTouchEvent(false)
+                }
                 return true
             }
         }
@@ -293,7 +382,8 @@ private class InkSurface(
     private fun finishGesture() {
         if (path.isEmpty()) return
         when (gestureTool) {
-            InkTool.Eraser -> state.apply(eraseStrokes(state.strokes, path, tool.widthFor(InkTool.Eraser) / 2, gestureEraser))
+            InkTool.Eraser -> state.apply(eraseStrokes(state.strokes, path, gestureWidth / 2, gestureEraser))
+            InkTool.TextSelection -> onTextSelection(path.first(), path.last())
             InkTool.Lasso -> {
                 val start = selectionStart
                 if (start != null && selectionBounds != null) {
@@ -315,7 +405,7 @@ private class InkSurface(
                 var points = path.toList()
                 var shape: InkShape? = null
                 if (gestureTool == InkTool.Shape) {
-                    val recognized = explicitShape(points.first(), points.last(), tool.shapeMode)
+                    val recognized = explicitShape(points.first(), points.last(), gestureShape)
                     points = recognized.points; shape = InkShape(recognized.type)
                 } else if (heldSnapped) {
                     recognizeShape(points)?.let { points = it.points; shape = InkShape(it.type) }
@@ -324,8 +414,8 @@ private class InkSurface(
                 if (points.size == 1) points = points + points.first().copy(x = (points.first().x+.0001f).coerceAtMost(1f), tMillis = points.first().tMillis + 1)
                 val stroke = InkStroke(paperKey = paperKey, page = page, deviceId = deviceId,
                     updatedAt = Instant.now().toString(), tool = if (gestureTool == InkTool.Highlighter) "highlighter" else "pen",
-                    color = tool.color, width = tool.width, points = points,
-                    brush = brushName(gestureTool), shape = shape, tilt = tilts.takeIf { it.size == points.size })
+                    color = gestureColor, width = gestureWidth, points = points,
+                    brush = brushName(gestureTool), shape = shape, tilt = tilts.toList().takeIf { it.size == points.size })
                 state.apply(state.strokes + stroke)
             }
         }

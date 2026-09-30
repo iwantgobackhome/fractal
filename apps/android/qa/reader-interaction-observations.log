@@ -1,0 +1,72 @@
+﻿--------- beginning of main
+09-30 17:47:14.615  6341  6391 I ReaderInteraction: pen viewport before=316 down=315 up=221
+09-30 17:47:18.166  6341  6391 I ReaderInteraction: finger viewport before=316 after=-38
+09-30 17:53:23.015  9618  9649 I ReaderInteraction: pen viewport before=316 down=316 up=316
+09-30 17:53:25.499  9618  9649 I ReaderInteraction: finger viewport before=316 after=57
+09-30 17:57:29.867 10132 10154 I ReaderInteraction: pen viewport before=316 down=316 up=316
+09-30 17:57:32.299 10132 10154 I ReaderInteraction: mixed pen/palm viewport before=316 afterPen=316 freshFinger=97
+09-30 17:57:38.050 10132 10154 I ReaderInteraction: finger viewport before=316 after=57
+09-30 17:59:25.865 10609 10653 I ReaderInteraction: pen viewport before=316 down=316 up=316
+09-30 17:59:28.215 10609 10653 I ReaderInteraction: mixed pen/palm viewport before=316 afterPen=316 freshFinger=97
+--------- beginning of crash
+09-30 17:59:29.555 10609 10609 E AndroidRuntime: FATAL EXCEPTION: main
+09-30 17:59:29.555 10609 10609 E AndroidRuntime: Process: app.fractal.reader, PID: 10609
+09-30 17:59:29.555 10609 10609 E AndroidRuntime: java.lang.IllegalArgumentException: INVALID_ARGUMENT: Either all or none of the inputs in a batch must report `tilt`.
+09-30 17:59:29.555 10609 10609 E AndroidRuntime: 	at androidx.ink.strokes.MutableStrokeInputBatchNative.appendSingle(Native Method)
+09-30 17:59:29.555 10609 10609 E AndroidRuntime: 	at androidx.ink.strokes.MutableStrokeInputBatch.add(StrokeInputBatch.kt:262)
+09-30 17:59:29.555 10609 10609 E AndroidRuntime: 	at app.fractal.ink.DryInkView.drawStroke(InkCanvas.kt:444)
+09-30 17:59:29.555 10609 10609 E AndroidRuntime: 	at app.fractal.ink.DryInkView.rebuild(InkCanvas.kt:433)
+09-30 17:59:29.555 10609 10609 E AndroidRuntime: 	at app.fractal.ink.DryInkView.sync(InkCanvas.kt:418)
+09-30 17:59:29.555 10609 10609 E AndroidRuntime: 	at app.fractal.ink.InkSurface.sync(InkCanvas.kt:171)
+09-30 17:59:29.555 10609 10609 E AndroidRuntime: 	at app.fractal.ink.InkCanvasKt.InkCanvas_FEmcSYE$lambda$20$lambda$19(InkCanvas.kt:92)
+09-30 17:59:29.555 10609 10609 E AndroidRuntime: 	at app.fractal.ink.InkCanvasKt.$r8$lambda$MS27bdOp7SMIjePkrYtxDMYUfTk(Unknown Source:0)
+09-30 17:59:29.555 10609 10609 E AndroidRuntime: 	at app.fractal.ink.InkCanvasKt$$ExternalSyntheticLambda1.invoke(D8$$SyntheticClass:0)
+09-30 17:59:29.555 10609 10609 E AndroidRuntime: 	at androidx.compose.ui.viewinterop.ViewFactoryHolder$updateBlock$1.invoke(AndroidView.android.kt:361)
+09-30 17:59:29.555 10609 10609 E AndroidRuntime: 	at androidx.compose.ui.viewinterop.ViewFactoryHolder$updateBlock$1.invoke(AndroidView.android.kt:361)
+09-30 17:59:29.555 10609 10609 E AndroidRuntime: 	at androidx.compose.runtime.snapshots.Snapshot$Companion.observe(Snapshot.kt:2496)
+09-30 17:59:29.555 10609 10609 E AndroidRuntime: 	at androidx.compose.runtime.snapshots.SnapshotStateObserver$ObservedScopeMap.observe(SnapshotStateObserver.kt:460)
+09-30 17:59:29.555 10609 10609 E AndroidRuntime: 	at androidx.compose.runtime.snapshots.SnapshotStateObserver.observeReads(SnapshotStateObserver.kt:244)
+09-30 17:59:29.555 10609 10609 E AndroidRuntime: 	at androidx.compose.ui.node.OwnerSnapshotObserver.observeReads$ui_release(OwnerSnapshotObserver.kt:124)
+09-30 17:59:29.555 10609 10609 E AndroidRuntime: 	at androidx.compose.ui.viewinterop.AndroidViewHolder$runUpdate$1.invoke(AndroidViewHolder.android.kt:211)
+09-30 17:59:29.555 10609 10609 E AndroidRuntime: 	at androidx.compose.ui.viewinterop.AndroidViewHolder$runUpdate$1.invoke(AndroidViewHolder.android.kt:205)
+09-30 17:59:29.555 10609 10609 E AndroidRuntime: 	at androidx.compose.ui.viewinterop.AndroidViewHolder$Companion$OnCommitAffectingUpdate$1.invoke$lambda$0(AndroidViewHolder.android.kt:708)
+09-30 17:59:29.555 10609 10609 E AndroidRuntime: 	at androidx.compose.ui.viewinterop.AndroidViewHolder$Companion$OnCommitAffectingUpdate$1.$r8$lambda$ONKzdSlEJ3y5SXQ3mz_NY0YjNXE(Unknown Source:0)
+09-30 17:59:29.555 10609 10609 E AndroidRuntime: 	at androidx.compose.ui.viewinterop.AndroidViewHolder$Companion$OnCommitAffectingUpdate$1$$ExternalSyntheticLambda0.run(D8$$SyntheticClass:0)
+09-30 17:59:29.555 10609 10609 E AndroidRuntime: 	at android.os.Handler.handleCallback(Handler.java:958)
+09-30 17:59:29.555 10609 10609 E AndroidRuntime: 	at android.os.Handler.dispatchMessage(Handler.java:99)
+09-30 17:59:29.555 10609 10609 E AndroidRuntime: 	at android.os.Looper.loopOnce(Looper.java:205)
+09-30 17:59:29.555 10609 10609 E AndroidRuntime: 	at android.os.Looper.loop(Looper.java:294)
+09-30 17:59:29.555 10609 10609 E AndroidRuntime: 	at android.app.ActivityThread.main(ActivityThread.java:8177)
+09-30 17:59:29.555 10609 10609 E AndroidRuntime: 	at java.lang.reflect.Method.invoke(Native Method)
+09-30 17:59:29.555 10609 10609 E AndroidRuntime: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:552)
+09-30 17:59:29.555 10609 10609 E AndroidRuntime: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:971)
+09-30 18:01:36.649 11050 11074 I ReaderInteraction: pen viewport before=316 down=316 up=316
+09-30 18:01:39.283 11050 11074 I ReaderInteraction: mixed pen/palm viewport before=316 afterPen=316 freshFinger=97
+09-30 18:01:44.950 11050 11074 I ReaderInteraction: finger viewport before=316 after=57
+09-30 18:03:51.794 11578 11578 D InkRoutingProbe: action=0 flags=0 tracked=-1 penOwns=false ids=[(0, 1)]
+09-30 18:03:51.821 11578 11578 D InkRoutingProbe: action=261 flags=0 tracked=-1 penOwns=false ids=[(0, 1), (1, 2)]
+09-30 18:03:51.901 11578 11578 D InkRoutingProbe: action=6 flags=32 tracked=1 penOwns=true ids=[(0, 1), (1, 2)]
+09-30 18:03:51.918 11578 11578 D InkRoutingProbe: action=3 flags=0 tracked=1 penOwns=true ids=[(0, 0)]
+09-30 18:15:05.185 11994 12016 I ReaderInteraction: pen viewport before=316 down=316 up=316
+09-30 18:15:08.782 11994 12016 I ReaderInteraction: mixed pen/palm viewport before=316 afterPen=316 freshFinger=97
+09-30 18:15:13.232 11994 12016 I ReaderInteraction: finger viewport before=316 after=57
+09-30 18:15:19.915 11994 12016 I ReaderInteraction: pinch before=PaperBounds(x=0, y=316, width=1080, height=1440) after=PaperBounds(x=-250, y=16, width=1620, height=2160) focus=(500.0,916.0)
+09-30 18:20:33.416 12493 12518 I ReaderInteraction: pen viewport before=316 down=316 up=316
+09-30 18:20:37.499 12493 12518 I ReaderInteraction: mixed pen/palm viewport before=316 afterPen=316 freshFinger=97
+09-30 18:20:41.950 12493 12518 I ReaderInteraction: finger viewport before=316 after=57
+09-30 18:20:48.382 12493 12518 I ReaderInteraction: pinch before=PaperBounds(x=0, y=316, width=1080, height=1440) after=PaperBounds(x=-250, y=16, width=1620, height=2160) focus=(500.0,916.0)
+09-30 18:24:54.566 12988 13012 I ReaderInteraction: pen viewport before=316 down=316 up=316
+09-30 18:24:59.048 12988 13012 I ReaderInteraction: mixed pen/palm viewport before=316 afterPen=316 freshFinger=97
+09-30 18:25:03.783 12988 13012 I ReaderInteraction: finger viewport before=316 after=57
+09-30 18:25:10.817 12988 13012 I ReaderInteraction: pinch before=PaperBounds(x=0, y=316, width=1080, height=1440) after=PaperBounds(x=-250, y=16, width=1620, height=2160) focus=(500.0,916.0)
+09-30 18:25:10.868 12988 13012 I ReaderInteraction: PDF marker before=(514.5, 935.0) zoomed=(522.0, 944.5) matches ink bounds
+09-30 18:28:00.066 13467 13495 I ReaderInteraction: pen viewport before=316 down=316 up=316
+09-30 18:28:04.283 13467 13495 I ReaderInteraction: mixed pen/palm viewport before=316 afterPen=316 freshFinger=97
+09-30 18:28:08.683 13467 13495 I ReaderInteraction: finger viewport before=316 after=57
+09-30 18:28:16.137 13467 13495 I ReaderInteraction: pinch before=PaperBounds(x=0, y=316, width=1080, height=1440) after=PaperBounds(x=-250, y=16, width=1620, height=2160) focus=(500.0,916.0)
+09-30 18:28:16.195 13467 13495 I ReaderInteraction: PDF marker before=(514.5, 935.0) zoomed=(522.0, 944.5) matches ink bounds
+apps\android\app\build\outputs\androidTest-results\connected\debug\TEST-Pixel_2_API_34(AVD) - 14-_app-.xml tests=11 failures=0 errors=0
+apps\android\app\build\test-results\testDebugUnitTest\TEST-app.fractal.reader.ReaderContextTest.xml tests=3 failures=0 errors=0
+apps\android\data\build\test-results\testDebugUnitTest\TEST-app.fractal.data.MergeRulesTest.xml tests=2 failures=0 errors=0
+apps\android\ink\build\test-results\testDebugUnitTest\TEST-app.fractal.ink.InkEngineTest.xml tests=6 failures=0 errors=0
+apps\android\sync\build\test-results\testDebugUnitTest\TEST-app.fractal.sync.WireTest.xml tests=3 failures=0 errors=0
