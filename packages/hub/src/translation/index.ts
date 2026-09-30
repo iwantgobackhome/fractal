@@ -1,6 +1,7 @@
-import type { AppError, Block, Job, Paper, PauseReason, Translation, TranslationPageInput, Translator, Usage } from '@fractal/shared';
+import type { AppError, Block, Job, Language, Paper, PauseReason, Translation, TranslationPageInput, Translator, Usage } from '@fractal/shared';
 import { PaperStore, appError, notFound } from '../store/index';
 import { JobManager } from '../jobs/state';
+import { languageSchema } from '@fractal/shared';
 
 /**
  * Version of the PaperRead translation rules. It is part of a translation's
@@ -8,6 +9,11 @@ import { JobManager } from '../jobs/state';
  * deliberately invalidates reuse of every previously stored translation.
  */
 export const PROMPT_VERSION = 'paperread-ko-v1';
+export const translationPromptVersion = (language: Language): string => (language === 'ko' ? PROMPT_VERSION : `paperread-v1-${language}`);
+export const languageFromPromptVersion = (version: string): Language => {
+  const language = version.startsWith('paperread-v1-') ? version.slice('paperread-v1-'.length) : 'ko';
+  return languageSchema.safeParse(language).success ? language : 'ko';
+};
 
 /** Upper bound for an accepted translation body; a longer answer is not a paragraph. */
 const MAX_TRANSLATION_CHARS = 100_000;
@@ -393,7 +399,10 @@ export class TranslationPipeline {
     let output: { results: { number: number; text: string }[]; usage: Usage };
     try {
       const input: TranslationPageInput = { paragraphs, modelId: current.modelId, context, signal: controller.signal };
-      output = await this.raceAbort(this.translator.translatePage(input), controller.signal);
+      output = await this.raceAbort(
+        this.translator.translatePage({ ...input, targetLanguage: languageFromPromptVersion(current.promptVersion) }),
+        controller.signal,
+      );
     } catch (cause) {
       const error = toAppError(cause);
       const terminal = this.stopForTerminalError(jobId, error, tracker);
@@ -515,7 +524,10 @@ export class TranslationPipeline {
     const job = this.guard(jobId, generation);
     if (job === null || signal.aborted) return null;
     try {
-      const output = await this.raceAbort(this.translator.translate({ block, modelId: job.modelId, context, signal }), signal);
+      const output = await this.raceAbort(
+        this.translator.translate({ block, modelId: job.modelId, context, signal, targetLanguage: languageFromPromptVersion(job.promptVersion) }),
+        signal,
+      );
       return { text: validateTranslationText(output.text), usage: output.usage ?? emptyUsage() };
     } catch (cause) {
       const error = toAppError(cause);

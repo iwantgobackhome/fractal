@@ -25,6 +25,7 @@ export interface ChatServiceOptions {
   chat: PaperChat;
   /** The live account and model catalogue, checked before anything is stored. */
   connection: () => Promise<Connection>;
+  answerLanguage?: (question: string) => string;
   now?: () => Date;
   newId?: () => string;
   log?: (event: ChatLogEvent) => void;
@@ -134,6 +135,7 @@ export class ChatService {
   private readonly store: PaperStore;
   private readonly chat: PaperChat;
   private readonly connection: () => Promise<Connection>;
+  private readonly answerLanguage: (question: string) => string;
   private readonly now: () => Date;
   private readonly newId: () => string;
   private readonly log: (event: ChatLogEvent) => void;
@@ -151,6 +153,7 @@ export class ChatService {
     this.store = options.store;
     this.chat = options.chat;
     this.connection = options.connection;
+    this.answerLanguage = options.answerLanguage ?? (() => 'auto');
     this.now = options.now ?? (() => new Date());
     this.newId = options.newId ?? (() => randomUUID());
     this.log = options.log ?? (() => {});
@@ -229,7 +232,8 @@ export class ChatService {
     if (this.flights.has(paperKey)) throw busy('이전 질문에 아직 답하는 중입니다. 답변이 끝나거나 멈춘 뒤 다시 물어봐 주세요.');
     const { conversationId, messages } = this.plan(paperKey, request);
     const history = completedExchanges(messages);
-    const instructions = paperInstructions(paper, blocks);
+    const answerLanguage = this.answerLanguage(request.question);
+    const instructions = `${paperInstructions(paper, blocks)}\n\nAnswer in ${answerLanguage === 'auto' ? 'the same language as the question' : answerLanguage}.`;
     // Re-extraction changes the paper's text under a live conversation. Its thread was opened on
     // the old text; drop it so the question opens a new one on the new text, with the history.
     const digest = createHash('sha256').update(instructions, 'utf8').digest('hex');

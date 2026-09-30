@@ -7,3 +7,4 @@ export * from './contracts/sync';
 export * from './contracts/feed';
 export * from './contracts/pairing';
 export * from './contracts/structure';
+export * from './contracts/preferences';

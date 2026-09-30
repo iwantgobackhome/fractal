@@ -103,19 +103,24 @@ export class FeedService {
       .prepare('SELECT data FROM feed_items WHERE week=?')
       .all(week)
       .map((row) => JSON.parse(String(row.data)) as FeedItem)
-      .map(({ score: _score, reason: _reason, inLibrary: _inLibrary, ...item }) => item);
+      .map(({ score: _score, reason: _reason, reasonCode: _reasonCode, reasonParams: _reasonParams, inLibrary: _inLibrary, ...item }) => item);
   }
 
   private status(): FeedSourceStatus[] {
-    return this.meta('sourceStatus', []);
+    const language = this.store.getPreferences().uiLanguage;
+    return this.meta<FeedSourceStatus[]>('sourceStatus', []).map((status) =>
+      status.message ? { ...status, message: language === 'ko' ? '소스를 가져오지 못했습니다.' : 'Could not fetch source.' } : status,
+    );
   }
 
   read(week = isoWeek(this.now())): FeedResponse {
     if (!feedWeekSchema.safeParse(week).success) throw invalidInput('주차 형식은 YYYY-Www이어야 합니다.');
-    const items = rankItems(this.rawForWeek(week), this.interests(), this.store.listLibrary(), this.now());
+    const items = rankItems(this.rawForWeek(week), this.interests(), this.store.listLibrary(), this.now(), this.store.getPreferences().uiLanguage);
     const papers = items.filter((item) => item.kind === 'paper');
     const byField = this.interests().categories.map((field) => ({ field, items: papers.filter((item) => item.categories.includes(field)).slice(0, 20) }));
-    const digest = this.store.db.prepare('SELECT data FROM feed_digests WHERE week=?').get(week) as MetaRow | undefined;
+    const prefs = this.store.getPreferences();
+    const digestLanguage = prefs.answerLanguage === 'auto' ? prefs.uiLanguage : prefs.answerLanguage;
+    const digest = this.store.db.prepare('SELECT data FROM feed_digests WHERE week=?').get(`${week}:${digestLanguage}`) as MetaRow | undefined;
     return {
       week,
       generatedAt: this.meta(`generated:${week}`, null),
@@ -194,11 +199,11 @@ export class FeedService {
           source: source.id,
           state: cached.length ? 'cached' : 'error',
           fetchedAt: cached.length ? this.meta(`generated:${week}`, null) : null,
-          message: '소스를 가져오지 못했습니다.',
+          message: this.store.getPreferences().uiLanguage === 'ko' ? '소스를 가져오지 못했습니다.' : 'Could not fetch source.',
         });
       }
     }
-    const ranked = rankItems(newItems, context.interests, library, now);
+    const ranked = rankItems(newItems, context.interests, library, now, this.store.getPreferences().uiLanguage);
     this.store.db.exec('SAVEPOINT feed_refresh');
     try {
       this.store.db.prepare('DELETE FROM feed_items WHERE week=?').run(week);
@@ -230,20 +235,25 @@ export class FeedService {
   }
 
   private async generateDigest(week: string, items: FeedItem[]): Promise<void> {
-    if (this.store.db.prepare('SELECT 1 FROM feed_digests WHERE week=?').get(week) || !items.length || !this.registry) return;
+    const prefs = this.store.getPreferences();
+    const language = prefs.answerLanguage === 'auto' ? prefs.uiLanguage : prefs.answerLanguage;
+    const digestKey = `${week}:${language}`;
+    if (this.store.db.prepare('SELECT 1 FROM feed_digests WHERE week=?').get(digestKey) || !items.length || !this.registry) return;
     const references = items
       .slice(0, 12)
       .map((item, index) => `[${index + 1}] ${item.title} | ${item.url} | ${item.abstract.slice(0, 500)}`)
       .join('\n');
     const system =
-      '한국어로 이번 주 연구 동향을 짧은 문단으로 요약하세요. 주제별로 묶고 각 문단에 제공된 [번호] 인용을 넣으세요. 제공되지 않은 사실은 쓰지 마세요.';
+      language === 'ko'
+        ? '한국어로 이번 주 연구 동향을 짧은 문단으로 요약하세요. 주제별로 묶고 각 문단에 제공된 [번호] 인용을 넣으세요. 제공되지 않은 사실은 쓰지 마세요.'
+        : `Summarize this week's research trends in ${language} in short paragraphs. Group by topic and cite supplied [numbers] in each paragraph. Do not add unsupported facts.`;
     let text = '';
     for await (const delta of this.registry.complete('digest', { system, messages: [{ role: 'user', content: references }] })) {
       if (delta.type === 'text') text += delta.text;
     }
     if (!text.trim()) return;
     const digest: FeedDigest = { week, generatedAt: this.now().toISOString(), text: text.trim() };
-    this.store.db.prepare('INSERT OR IGNORE INTO feed_digests(week,data) VALUES(?,?)').run(week, JSON.stringify(digest));
+    this.store.db.prepare('INSERT OR IGNORE INTO feed_digests(week,data) VALUES(?,?)').run(digestKey, JSON.stringify(digest));
   }
 
   start(): void {

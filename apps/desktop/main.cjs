@@ -1,5 +1,5 @@
-const { app, BrowserWindow, Menu, Tray, nativeImage, shell } = require('electron');
-const { join } = require('node:path');
+const { app, BrowserWindow, Menu, Tray, nativeImage, shell, ipcMain, dialog } = require('electron');
+const { join, basename } = require('node:path');
 const { pathToFileURL } = require('node:url');
 const { writeFile } = require('node:fs/promises');
 
@@ -27,7 +27,7 @@ if (!app.requestSingleInstanceLock()) {
       minWidth: 820,
       minHeight: 600,
       icon,
-      webPreferences: { contextIsolation: true, nodeIntegration: false, sandbox: true },
+      webPreferences: { contextIsolation: true, nodeIntegration: false, sandbox: true, preload: join(__dirname, 'preload.cjs') },
     });
     window.on('minimize', () => window.hide());
     window.on('close', (event) => {
@@ -82,6 +82,22 @@ if (!app.requestSingleInstanceLock()) {
     .then(async () => {
       const { startHub } = await import(pathToFileURL(join(app.getAppPath(), 'apps/desktop/dist/hub.mjs')).href);
       hub = await startHub({ port: 0, indexHtml: join(app.getAppPath(), 'packages/ui/dist/index.html') });
+      ipcMain.handle('fractal:save-pdf', async (event, options) => {
+        const caller = BrowserWindow.fromWebContents(event.sender);
+        if (!caller || caller.isDestroyed() || new URL(event.sender.getURL()).origin !== new URL(hub.url).origin) throw new Error('PDF export is unavailable');
+        const requested =
+          typeof options?.suggestedName === 'string'
+            ? basename(options.suggestedName)
+                .replace(/[<>:"/\\|?*]/g, '_')
+                .trim()
+            : '';
+        const suggestedName = (requested || 'Fractal-translation').replace(/\.pdf$/i, '') + '.pdf';
+        const pdf = await event.sender.printToPDF({ printBackground: true, preferCSSPageSize: true });
+        const choice = await dialog.showSaveDialog(caller, { defaultPath: suggestedName, filters: [{ name: 'PDF', extensions: ['pdf'] }] });
+        if (choice.canceled || !choice.filePath) return { saved: false };
+        await writeFile(choice.filePath, pdf);
+        return { saved: true, path: choice.filePath };
+      });
       tray = new Tray(icon);
       tray.setToolTip('Fractal');
       tray.setContextMenu(

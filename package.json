@@ -44,6 +44,7 @@
     },
     "files": [
       "apps/desktop/main.cjs",
+      "apps/desktop/preload.cjs",
       "apps/desktop/dist/**",
       "packages/ui/dist/**",
       "package.json"

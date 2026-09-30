@@ -31,6 +31,8 @@ export const feedItemSchema = z.object({
   publishedAt: z.string().datetime(),
   score: z.number(),
   reason: z.string(),
+  reasonCode: z.enum(['followed_author', 'interest_category', 'interest_topic', 'similar_library', 'new_this_week']),
+  reasonParams: z.record(z.string(), z.string()),
   inLibrary: z.boolean(),
   popularity: z.number().nonnegative(),
 });

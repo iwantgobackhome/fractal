@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import type { FeedItem, FeedInterests, FeedSourceStatus } from '@fractal/shared';
 import type { SqlitePaperStore } from '../store/sqlite';
 
-export type RawItem = Omit<FeedItem, 'score' | 'reason' | 'inLibrary'>;
+export type RawItem = Omit<FeedItem, 'score' | 'reason' | 'reasonCode' | 'reasonParams' | 'inLibrary'>;
 export interface FeedSource {
   id: string;
   load(context: SourceContext): Promise<RawItem[]>;

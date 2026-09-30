@@ -8,7 +8,7 @@ import { PaperStore } from './store/index';
 import { SqlitePaperStore } from './store/sqlite';
 import { configureLibrarySearch } from './library/search';
 import { JobManager } from './jobs/state';
-import { AccountAuthenticator, CodexTranslator, createOfficialRpcFactory } from './codex/index';
+import { CodexTranslator, createOfficialRpcFactory } from './codex/index';
 import { startOfficialRpc } from './codex/runtime';
 import { CodexProvider } from './ai/codex';
 import { ClaudeProvider } from './ai/claude';
@@ -199,10 +199,8 @@ export async function startService(options: ServiceOptions = {}): Promise<Servic
   configureLibrarySearch(store);
   backfillTitles(store);
   const jobs = new JobManager(store);
-  // One official process serves both the translator's reads and the account session. The
-  // session alone owns login/logout; the translator never gains account methods. Its state
-  // lives in the app-owned `.codex-home` under the data directory, never in ~/.codex.
-  const official = createOfficialRpcFactory(() => startOfficialRpc({ dataDirectory }));
+  // The official process uses the same Codex login as the user's terminal.
+  const official = createOfficialRpcFactory(startOfficialRpc);
   const translator = new CodexTranslator(official);
   const aiRegistry = new ProviderRegistry(
     [new CodexProvider(translator), new ClaudeProvider()],
@@ -211,7 +209,6 @@ export async function startService(options: ServiceOptions = {}): Promise<Servic
     new JsonUsageStore(dataDirectory),
   );
   const aiAdapter = new RegistryLegacyAdapter(aiRegistry, translator);
-  const session = new AccountAuthenticator(official);
   const log = options.log ?? ((event) => process.stdout.write(`${JSON.stringify(event)}\n`));
   // Isolation evidence that outlived its turn still ends the process (CodexTranslator); here it is
   // also recorded, with the path only — never any provider text.
@@ -237,7 +234,6 @@ export async function startService(options: ServiceOptions = {}): Promise<Servic
     store,
     jobs,
     translator: aiAdapter,
-    session,
     pipeline,
     // The same official process answers the reader's paper questions, on its own tool-less
     // threads; the translation pipeline never receives this path.
@@ -271,8 +267,6 @@ export async function startService(options: ServiceOptions = {}): Promise<Servic
     async stop() {
       await feed.stop();
       await server.close();
-      // Process shutdown only: the app's stored login is kept for the next start.
-      await session.disconnect();
       await translator.disconnect();
       store.db.close();
     },

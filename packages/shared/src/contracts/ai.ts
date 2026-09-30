@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import type { AppError } from './common';
 import type { Block } from './library';
+import type { Language } from './preferences';
 
 export interface Translation {
   blockId: string;
@@ -69,6 +70,7 @@ export interface TranslationInput {
   block: Block;
   modelId: string;
   context: string;
+  targetLanguage?: Language;
   signal?: AbortSignal;
 }
 export interface TranslationOutput {
@@ -85,6 +87,7 @@ export interface TranslationPageInput {
   paragraphs: TranslationPageParagraph[];
   modelId: string;
   context: string;
+  targetLanguage?: Language;
   signal?: AbortSignal;
 }
 /** One matched-back result. A number missing from the response simply has no entry here —
@@ -200,6 +203,7 @@ export interface ProviderStatus {
   loggedIn: boolean;
   version: string | null;
   detail?: string;
+  loginCommand?: string;
 }
 export interface ProviderModel {
   id: string;
@@ -229,6 +233,7 @@ export const providerStatusSchema = z.object({
   loggedIn: z.boolean(),
   version: z.string().nullable(),
   detail: z.string().optional(),
+  loginCommand: z.string().optional(),
 });
 export const providerModelSchema = z.object({ id: z.string().min(1), label: z.string(), efforts: z.array(effortSchema).optional() });
 export const providerInfoSchema = z.object({ status: providerStatusSchema, models: z.array(providerModelSchema) });

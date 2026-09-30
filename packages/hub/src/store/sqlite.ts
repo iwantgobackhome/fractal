@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSy
 import { join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import type { Annotation, Block, Highlight, Job, LibraryPatch, LibraryRecord, Paper, RestartTranslationRequest, Translation } from '@fractal/shared';
-import { annotationSchema, libraryPatchSchema } from '@fractal/shared';
+import { annotationSchema, defaultPreferences, libraryPatchSchema, preferencesSchema, type Preferences } from '@fractal/shared';
 import { PaperStore, appError, busy, invalidInput, notFound, type ConversationRecord, type DeleteReport } from './index';
 import { readRecord } from './atomic';
 import { assertSafeKey, validateBlock, validateConversationRecord, validateHighlight, validateJob, validatePaper, validateTranslation } from './validate';
@@ -55,6 +55,30 @@ export class SqlitePaperStore extends PaperStore {
     const citationMigration = this.db.prepare('SELECT 1 FROM migrations WHERE version = 3').get();
     if (!citationMigration) this.backfillCitations();
     if (!this.db.prepare('SELECT 1 FROM migrations WHERE version = 5').get()) this.migrateStructure();
+    if (!this.db.prepare('SELECT 1 FROM migrations WHERE version = 6').get()) {
+      this.db.exec('SAVEPOINT preferences_migration');
+      try {
+        this.db.exec('CREATE TABLE IF NOT EXISTS preferences(id INTEGER PRIMARY KEY CHECK(id=1), data TEXT NOT NULL)');
+        this.db.prepare('INSERT OR IGNORE INTO preferences(id,data) VALUES(1,?)').run(JSON.stringify(defaultPreferences()));
+        this.db.prepare("INSERT INTO migrations VALUES(6, datetime('now'))").run();
+        this.db.exec('RELEASE preferences_migration');
+      } catch (error) {
+        this.db.exec('ROLLBACK TO preferences_migration');
+        this.db.exec('RELEASE preferences_migration');
+        throw error;
+      }
+    }
+  }
+
+  getPreferences(): Preferences {
+    const row = this.db.prepare('SELECT data FROM preferences WHERE id=1').get() as Row | undefined;
+    return row ? preferencesSchema.parse(JSON.parse(String(row.data))) : defaultPreferences();
+  }
+
+  putPreferences(input: Preferences): Preferences {
+    const value = preferencesSchema.parse(input);
+    this.db.prepare('INSERT INTO preferences(id,data) VALUES(1,?) ON CONFLICT(id) DO UPDATE SET data=excluded.data').run(JSON.stringify(value));
+    return value;
   }
 
   /** Paper structure tables (figures, equations, references, citation markers). */
@@ -289,7 +313,12 @@ export class SqlitePaperStore extends PaperStore {
     };
     this.db.exec('BEGIN');
     try {
-      this.clearDerivedWork(key);
+      // An explicit restart in the same language resets it. A language switch retains
+      // both versions so switching back can reuse completed translations.
+      if (old.promptVersion === promptVersion)
+        this.db.prepare("DELETE FROM translations WHERE paper_key=? AND json_extract(data, '$.promptVersion')=?").run(key, promptVersion);
+      this.db.prepare('DELETE FROM jobs WHERE paper_key=?').run(key);
+      this.db.prepare('DELETE FROM restart_receipts WHERE paper_key=?').run(key);
       this.saveJob(job);
       this.db
         .prepare('INSERT INTO restart_receipts VALUES(?,?) ON CONFLICT(paper_key) DO UPDATE SET data=excluded.data')

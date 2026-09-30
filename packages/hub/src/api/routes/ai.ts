@@ -15,13 +15,21 @@ import { ZodError } from 'zod';
 import { invalidInput, notFound } from '../../store/index';
 import { paperInstructions } from '../../chat/paper-text';
 import type { AiRouteContext as RouteContext, Result } from './types';
+import { SqlitePaperStore } from '../../store/sqlite';
 
 const json = (data: unknown): Result => ({ kind: 'json', status: 200, data });
-const questionLanguage = 'Answer in the same language as the user question. Answer Korean questions in Korean.';
 const explainKorean =
   '반드시 간결한 한국어로 답하세요. 수식은 LaTeX로 유지하고 전문 용어는 처음 나올 때 한국어(English)로 쓰세요. 무엇인지, 각 기호의 뜻(해당하는 경우), 이 논문에서 왜 중요한지 설명하고 근거를 [p.N]으로 인용하세요.';
 const glossaryKorean =
   'JSON 배열만 반환하세요. 각 definition은 간결한 한국어로 쓰고 전문 용어는 처음 나올 때 한국어(English)로 쓰세요. 정의마다 [p.N] 근거를 포함하세요.';
+function answerLanguage(ctx: RouteContext, question?: string): string {
+  const prefs = ctx.store instanceof SqlitePaperStore ? ctx.store.getPreferences() : { answerLanguage: 'auto', uiLanguage: 'ko' };
+  return prefs.answerLanguage === 'auto'
+    ? question
+      ? 'the same language as the user question. Answer Korean questions in Korean'
+      : prefs.uiLanguage
+    : prefs.answerLanguage;
+}
 async function body(request: IncomingMessage): Promise<unknown> {
   const parts: Buffer[] = [];
   let size = 0;
@@ -131,7 +139,7 @@ export async function handleAi(method: string, segments: string[], request: Inco
       events: generate(
         ctx,
         'chat',
-        `${questionLanguage}\nAnswer from these library excerpts. Cite claims as [paper:KEY p.N]. If no excerpt supports an answer, say so.\n${context}`,
+        `Answer in ${answerLanguage(ctx, input.question)}.\nAnswer from these library excerpts. Cite claims as [paper:KEY p.N]. If no excerpt supports an answer, say so.\n${context}`,
         input.question,
         input.selection,
         { libraryCitation: hits[0] ? `[paper:${hits[0].paperKey} p.${hits[0].page}]` : undefined },
@@ -152,7 +160,7 @@ export async function handleAi(method: string, segments: string[], request: Inco
       events: generate(
         ctx,
         'chat',
-        `${paperInstructions(paper, blocks)}\n\n${questionLanguage}\nCite evidence using [p.N] page markers.`,
+        `${paperInstructions(paper, blocks)}\n\nAnswer in ${answerLanguage(ctx, input.question)}.\nCite evidence using [p.N] page markers.`,
         question,
         input.selection,
         { page: input.page ?? blocks[0]?.regions[0]?.page },
@@ -174,7 +182,7 @@ export async function handleAi(method: string, segments: string[], request: Inco
       events: generate(
         ctx,
         'explain',
-        `${explainKorean}\nPaper: ${paper.title ?? key}\n[page ${input.page}]\n${pageText}\nCite [p.${input.page}].`,
+        `${answerLanguage(ctx) === 'ko' ? explainKorean : `Explain concisely in ${answerLanguage(ctx)}. Keep equations in LaTeX. Explain what this is, the symbols where relevant, and why it matters in this paper. Cite [p.N].`}\nPaper: ${paper.title ?? key}\n[page ${input.page}]\n${pageText}\nCite [p.${input.page}].`,
         question,
         input.selection,
         { page: input.page, equation: input.kind === 'equation' },
@@ -186,7 +194,7 @@ export async function handleAi(method: string, segments: string[], request: Inco
     const digest = createHash('sha256')
       .update(JSON.stringify(blocks.map((b) => [b.sourceHash, b.regions[0]?.page])))
       .digest('hex');
-    const cacheKey = `${key}:${input.selection?.provider ?? 'default'}:${input.selection?.model ?? 'default'}:${digest}`;
+    const cacheKey = `${key}:${input.selection?.provider ?? 'default'}:${input.selection?.model ?? 'default'}:${answerLanguage(ctx)}:${digest}`;
     const cached = glossaryCache.get(cacheKey);
     if (cached)
       return {
@@ -202,7 +210,7 @@ export async function handleAi(method: string, segments: string[], request: Inco
       events: generate(
         ctx,
         'digest',
-        `${paperInstructions(paper, blocks)}\n${glossaryKorean}\nReturn only a JSON array of {"term":string,"page":number,"definition":string}. Use first-occurrence page.`,
+        `${paperInstructions(paper, blocks)}\n${answerLanguage(ctx) === 'ko' ? glossaryKorean : `Return only a JSON array. Write each concise definition in ${answerLanguage(ctx)} and cite [p.N].`}\nReturn only a JSON array of {"term":string,"page":number,"definition":string}. Use first-occurrence page.`,
         'List up to 20 key terms.',
         input.selection,
         { glossaryKey: cacheKey },

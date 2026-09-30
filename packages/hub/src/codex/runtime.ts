@@ -1,8 +1,9 @@
-import { spawn } from 'node:child_process';
-import { access, mkdir } from 'node:fs/promises';
+import { execFile, spawn } from 'node:child_process';
+import { access, readFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { delimiter, dirname, join, resolve } from 'node:path';
-import { homedir as osHomedir } from 'node:os';
+import { homedir } from 'node:os';
+import { promisify } from 'node:util';
 import { failure, isRpcClosed, JsonLineRpc } from './rpc';
 
 /** CLI overrides only. Not a claim that read-only blocks shell/file-read/MCP tools.
@@ -28,7 +29,14 @@ export function restrictedArgs(): string[] {
       'features.multi_agent=false',
       'features.memories=false',
       'features.goals=false',
+      'features.plugins=false',
+      'features.remote_plugin=false',
+      'features.browser_use=false',
+      'features.computer_use=false',
+      'features.code_mode.enabled=false',
       'notify=[]',
+      'developer_instructions=""',
+      'instructions=""',
       'project_doc_max_bytes=0',
       // 0.156.0 otherwise opens every thread with a ~5,500-character developer message listing the
       // bundled skills and the user's own ~/.agents/skills (measured: 379 characters without it).
@@ -39,35 +47,48 @@ export function restrictedArgs(): string[] {
       'shell_environment_policy.inherit="none"',
       'shell_environment_policy.ignore_default_excludes=false',
       'model_provider="openai"',
-      'cli_auth_credentials_store="file"',
     ].flatMap((value) => ['-c', value]),
   ];
 }
-function appDataDirectory(env: NodeJS.ProcessEnv): string {
-  const injected = env.PAPERREAD_DATA?.trim();
-  if (injected) return resolve(injected);
-  if (process.platform === 'win32') {
-    const local = env.LOCALAPPDATA?.trim();
-    if (local) return resolve(local, 'PaperRead');
-    const profile = env.USERPROFILE?.trim();
-    if (profile) return resolve(profile, 'AppData', 'Local', 'PaperRead');
-    return resolve(osHomedir(), 'AppData', 'Local', 'PaperRead');
+const run = promisify(execFile);
+/** Discover configured server names without opening credential files or exposing server settings.
+ * A table-wide -c mcp_servers={} merges with config.toml, so every server needs an explicit
+ * disabled override. Refuse startup if the CLI cannot prove the resulting list is disabled. */
+export async function disabledMcpArgs(executable: string, env: NodeJS.ProcessEnv, probe: typeof run = run): Promise<string[]> {
+  try {
+    const first = JSON.parse((await probe(executable, ['mcp', 'list', '--json'], { env, windowsHide: true, timeout: 10_000 })).stdout) as unknown;
+    if (!Array.isArray(first)) throw new Error('invalid MCP list');
+    const names = first.map((entry) => (entry && typeof entry === 'object' ? (entry as { name?: unknown }).name : null));
+    if (names.some((name) => typeof name !== 'string' || !/^[A-Za-z0-9_-]{1,200}$/.test(name))) throw new Error('invalid MCP name');
+    const args = (names as string[]).flatMap((name) => ['-c', `mcp_servers.${name}.enabled=false`]);
+    const checked = JSON.parse((await probe(executable, ['mcp', 'list', '--json', ...args], { env, windowsHide: true, timeout: 10_000 })).stdout) as unknown;
+    if (!Array.isArray(checked) || checked.some((entry) => !entry || typeof entry !== 'object' || (entry as { enabled?: unknown }).enabled !== false))
+      throw new Error('MCP override did not disable every server');
+    return args;
+  } catch {
+    throw failure('UNSAFE_RUNTIME', 'Codex MCP isolation could not be verified.');
   }
-  const xdg = env.XDG_DATA_HOME?.trim();
-  if (xdg) return resolve(xdg, 'paperread');
-  const home = env.HOME?.trim() || osHomedir();
-  return resolve(home, '.local', 'share', 'paperread');
 }
-/** Preserve only OS startup paths and an app-owned official state location.
- * In particular, an inherited CODEX_HOME is never allowed to select a user's
- * default Codex credentials. */
-export function childEnvironment(env: NodeJS.ProcessEnv = process.env, dataDirectory?: string): NodeJS.ProcessEnv {
+/** Preserve OS startup paths and the user's CLI home selection. Credentials stay with Codex. */
+export function childEnvironment(env: NodeJS.ProcessEnv = process.env): NodeJS.ProcessEnv {
   const permitted = new Set(['path', 'systemroot', 'windir', 'comspec', 'pathext', 'temp', 'tmp', 'home', 'userprofile', 'appdata', 'localappdata']);
-  const output = Object.fromEntries(
-    Object.entries(env).filter(([key, value]) => permitted.has(key.toLowerCase()) && value !== undefined && key.toLowerCase() !== 'codex_home'),
-  );
-  output.CODEX_HOME = resolve(dataDirectory?.trim() ? resolve(dataDirectory) : appDataDirectory(env), '.codex-home');
+  const output = Object.fromEntries(Object.entries(env).filter(([key, value]) => permitted.has(key.toLowerCase()) && value !== undefined));
+  if (env.CODEX_HOME?.trim()) output.CODEX_HOME = env.CODEX_HOME;
   return output;
+}
+/** Inspect only config.toml, never credential files. User-supplied instructions cannot
+ * become part of Fractal's text-only generation task. */
+export async function assertNoCustomInstructions(env: NodeJS.ProcessEnv): Promise<void> {
+  const home = env.CODEX_HOME?.trim() || join(env.USERPROFILE || env.HOME || homedir(), '.codex');
+  let config: string;
+  try {
+    config = await readFile(join(home, 'config.toml'), 'utf8');
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return;
+    throw failure('UNSAFE_RUNTIME', 'Codex configuration could not be checked.');
+  }
+  if (/^\s*(?:model_instructions_file|experimental_instructions_file|developer_instructions|instructions)\s*=/m.test(config))
+    throw failure('UNSAFE_RUNTIME', 'Codex custom instructions are not allowed for Fractal threads.');
 }
 /** Resolve native official npm binary on Windows: never run a .cmd through a shell. */
 export async function resolveCodexExecutable(): Promise<string> {
@@ -98,16 +119,12 @@ export async function resolveCodexExecutable(): Promise<string> {
   }
   throw Object.assign(new Error('Codex is not installed'), { code: 'ENOENT' });
 }
-export interface OfficialRpcOptions {
-  dataDirectory?: string;
-}
-export async function startOfficialRpc(options: OfficialRpcOptions = {}): Promise<JsonLineRpc> {
+export async function startOfficialRpc(): Promise<JsonLineRpc> {
   const executable = await resolveCodexExecutable();
-  const env = childEnvironment(process.env, options.dataDirectory);
-  // Measured on 0.155.1: the official program refuses to start when CODEX_HOME is missing
-  // ("CODEX_HOME points to ..., but that path does not exist") and never creates it itself.
-  await mkdir(env.CODEX_HOME as string, { recursive: true });
-  const child = spawn(executable, restrictedArgs(), { shell: false, windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'], env });
+  const env = childEnvironment(process.env);
+  await assertNoCustomInstructions(env);
+  const mcpArgs = await disabledMcpArgs(executable, env);
+  const child = spawn(executable, [...restrictedArgs(), ...mcpArgs], { shell: false, windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'], env });
   const rpc = new JsonLineRpc(child);
   try {
     await rpc.request('initialize', { clientInfo: { name: 'paperread', title: 'PaperRead', version: '0.1.0' }, capabilities: { experimentalApi: true } });

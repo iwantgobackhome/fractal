@@ -47,7 +47,7 @@ export class ClaudeProvider implements AiProvider {
     try {
       version = (await this.probe(['--version'])).stdout.trim();
     } catch {
-      return { id: this.id, installed: false, loggedIn: false, version: null, detail: 'Claude CLI is not installed' };
+      return { id: this.id, installed: false, loggedIn: false, version: null, detail: 'Claude CLI is not installed', loginCommand: 'claude auth login' };
     }
     try {
       const auth = record(JSON.parse((await this.probe(['auth', 'status'])).stdout));
@@ -57,9 +57,10 @@ export class ClaudeProvider implements AiProvider {
         loggedIn: auth?.loggedIn === true,
         version,
         detail: auth?.loggedIn === true ? undefined : 'Run claude auth login',
+        loginCommand: 'claude auth login',
       };
     } catch {
-      return { id: this.id, installed: true, loggedIn: false, version, detail: 'Could not confirm Claude login' };
+      return { id: this.id, installed: true, loggedIn: false, version, detail: 'Could not confirm Claude login', loginCommand: 'claude auth login' };
     }
   }
   async listModels(): Promise<ProviderModel[]> {

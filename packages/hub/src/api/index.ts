@@ -6,7 +6,6 @@ import type {
   Block,
   Highlight,
   Job,
-  LogoutResult,
   Paper,
   PaperChat,
   PaperListResult,
@@ -16,16 +15,17 @@ import type {
   Translation,
   Translator,
 } from '@fractal/shared';
-import type { AccountSession } from '../codex/auth-contract';
+import { preferencesSchema } from '@fractal/shared';
 import { PaperStore, appError, invalidInput, notFound } from '../store/index';
 import { assertSafeKey } from '../store/validate';
 import { JobManager } from '../jobs/state';
-import { PROMPT_VERSION, TranslationPipeline, type PipelineLogEvent } from '../translation/index';
+import { translationPromptVersion, TranslationPipeline, type PipelineLogEvent } from '../translation/index';
 import { isExcludedModel } from '../codex/index';
 import { EXTRACTION_VERSION } from '../pdf/index';
-import { ChatService, LOGGED_OUT_ERROR, RESTARTED_ERROR, type ChatLogEvent } from '../chat/index';
+import { ChatService, RESTARTED_ERROR, type ChatLogEvent } from '../chat/index';
 import { HttpError, toHttp } from './errors';
-import { TOKEN_HEADER, assertCredentialHeader, assertLocalRequest, assertRemoteRequest, isLoopbackHost, isLoopbackPeer } from './guard';
+import { localizePayload } from './localize';
+import { TOKEN_HEADER, assertLocalRequest, assertRemoteRequest, isLoopbackHost, isLoopbackPeer } from './guard';
 import type { DeviceStore } from '../pairing/store';
 import type { PairingSessions } from '../pairing/session';
 import type { NetworkManager } from '../net/manager';
@@ -79,9 +79,6 @@ export interface ApiServerOptions {
   store: PaperStore;
   jobs: JobManager;
   translator: Translator;
-  /** Official login/logout for this app's own session. Deliberately not the translator:
-   * the generation path never gains account methods. */
-  session: AccountSession;
   pipeline: TranslationPipeline;
   acquirer: PaperAcquirer;
   /** The official program's question path for the reader's paper questions. Kept apart from
@@ -187,18 +184,6 @@ function readHighlightId(raw: string): string {
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-/** App-issued login attempt ids are UUIDs; anything else never reaches the session. */
-function readLoginId(raw: string): string {
-  let decoded: string;
-  try {
-    decoded = decodeURIComponent(raw);
-  } catch {
-    throw invalidInput('loginId 형식이 올바르지 않습니다.');
-  }
-  if (!UUID.test(decoded)) throw invalidInput('loginId 형식이 올바르지 않습니다.');
-  return decoded;
-}
-
 function requireRequestId(body: Record<string, unknown>): string {
   const value = body.requestId;
   if (typeof value !== 'string' || !UUID.test(value)) throw invalidInput('requestId 값은 UUID여야 합니다.');
@@ -225,8 +210,6 @@ const ROUTE_WORDS = new Set([
   'pause',
   'resume',
   'connection',
-  'login',
-  'logout',
   'cancel',
   'assets',
   'index.html',
@@ -350,13 +333,21 @@ export function injectToken(html: string, token: string): string {
  * credential (see guard.ts). Nothing is ever rendered as HTML here.
  */
 export function createApiServer(options: ApiServerOptions): ApiServer {
-  const { store, jobs, translator, session, pipeline, acquirer } = options;
+  const { store, jobs, translator, pipeline, acquirer } = options;
   const structure = store instanceof SqlitePaperStore ? new StructureService(store) : undefined;
   const log = options.log ?? (() => {});
   const token = options.token ?? randomBytes(32).toString('hex');
   const recovered: string[] = [];
+  const promptVersion = () => translationPromptVersion(store instanceof SqlitePaperStore ? store.getPreferences().translationLanguage : 'ko');
+  const currentTranslations = (paperKey: string) => store.listTranslations(paperKey).filter((t) => t.promptVersion === promptVersion());
   // Questions share the translator's account check: one live connection, one catalogue.
-  const chat = new ChatService({ store, chat: options.paperChat, connection: () => translator.connection(), log });
+  const chat = new ChatService({
+    store,
+    chat: options.paperChat,
+    connection: () => translator.connection(),
+    answerLanguage: () => (store instanceof SqlitePaperStore ? store.getPreferences().answerLanguage : 'auto'),
+    log,
+  });
   /** Per-revision identities for background acquisition/extraction work. */
   const acquiring = new Map<string, number>();
   let nextAcquisition = 0;
@@ -367,7 +358,8 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
   const listeners = new Map<string, Server>();
 
   function send(response: ServerResponse, status: number, payload: unknown): void {
-    const body = Buffer.from(safeJson(payload), 'utf8');
+    const language = store instanceof SqlitePaperStore ? store.getPreferences().uiLanguage : 'ko';
+    const body = Buffer.from(safeJson(localizePayload(payload, language)), 'utf8');
     response.writeHead(status, {
       ...baseHeaders(),
       'content-type': 'application/json; charset=utf-8',
@@ -417,10 +409,15 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
       } else if (result.kind === 'sse') {
         response.writeHead(200, { ...baseHeaders(), 'content-type': 'text/event-stream; charset=utf-8', connection: 'keep-alive' });
         try {
-          for await (const event of result.events) response.write(`event: ${event.type}\ndata: ${safeJson(event)}\n\n`);
+          for await (const event of result.events)
+            response.write(
+              `event: ${event.type}\ndata: ${safeJson(localizePayload(event, store instanceof SqlitePaperStore ? store.getPreferences().uiLanguage : 'ko'))}\n\n`,
+            );
         } catch (cause) {
           const { error } = toHttp(cause);
-          response.write(`event: error\ndata: ${safeJson({ type: 'error', error })}\n\n`);
+          response.write(
+            `event: error\ndata: ${safeJson(localizePayload({ type: 'error', error }, store instanceof SqlitePaperStore ? store.getPreferences().uiLanguage : 'ko'))}\n\n`,
+          );
         }
         response.end();
       } else {
@@ -450,6 +447,14 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
   const json = (data: unknown, status = 200): Result => ({ kind: 'json', status, data });
 
   async function route_(method: string, segments: string[], request: IncomingMessage, ctx: RouteContext): Promise<Result> {
+    if (store instanceof SqlitePaperStore && segments[0] === 'api' && segments[1] === 'preferences' && segments.length === 2) {
+      if (method === 'GET') return json(store.getPreferences());
+      if (method === 'PUT') {
+        const parsed = preferencesSchema.safeParse(await readJsonBody(request));
+        if (!parsed.success) throw invalidInput('Invalid preferences');
+        return json(store.putPreferences(parsed.data));
+      }
+    }
     if (options.feed) {
       const feed = await handleFeed(method, segments, request, { feed: options.feed, url: ctx.url });
       if (feed !== undefined) return feed;
@@ -492,22 +497,6 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
     // ------------------------------------------------------------- connection
     if (segments[1] === 'connection') {
       if (segments.length === 2 && method === 'GET') return json(await translator.connection());
-      if (segments.length === 3 && segments[2] === 'login' && method === 'POST') {
-        // The official program performs the login; this only starts it and hands back the
-        // official HTTPS address. No password, cookie or token ever passes through here.
-        return json(await locked(() => session.startLogin()));
-      }
-      if (segments.length === 4 && segments[2] === 'login' && method === 'GET') {
-        // A login attempt is per-session state: even this read needs the page credential.
-        assertCredentialHeader(request, token);
-        return json(await session.getLogin(readLoginId(segments[3])));
-      }
-      if (segments.length === 5 && segments[2] === 'login' && segments[4] === 'cancel' && method === 'POST') {
-        return json(await locked(() => session.cancelLogin(readLoginId(segments[3]))));
-      }
-      if (segments.length === 3 && segments[2] === 'logout' && method === 'POST') {
-        return json(await logout());
-      }
       throw notFound('없는 경로입니다.');
     }
 
@@ -570,8 +559,7 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
           if (segments.length === 4 && method === 'GET') return json({ conversation: chat.conversation(paperKey) });
           if (segments.length === 4 && method === 'POST') {
             const body = await readJsonBody(request);
-            // Serialized with logins, logouts and job starts: a question admitted before a logout
-            // never starts on the session that logout is ending.
+            // Serialized with job starts so the account and model check stays consistent.
             return json({ conversation: await locked(() => chat.ask(paperKey, body)) }, 202);
           }
           if (segments.length === 5 && segments[4] === 'cancel' && method === 'POST') return json({ conversation: chat.cancel(paperKey) });
@@ -595,7 +583,7 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
       if (existing === null) throw notFound(`작업을 찾을 수 없습니다: ${jobId}`);
 
       if (segments.length === 3 && method === 'GET') {
-        return json({ job: existing, translations: store.listTranslations(existing.paperKey) });
+        return json({ job: existing, translations: currentTranslations(existing.paperKey) });
       }
       if (segments.length === 4 && segments[3] === 'pause' && method === 'POST') {
         // Idempotent: pausing an already paused job just reports it.
@@ -636,8 +624,8 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
     return {
       paper,
       blocks: store.listBlocks(paperKey),
-      translations: store.listTranslations(paperKey),
-      job: store.getJobForPaper(paperKey),
+      translations: currentTranslations(paperKey),
+      job: store.getJobForPaper(paperKey)?.promptVersion === promptVersion() ? store.getJobForPaper(paperKey) : null,
     };
   }
 
@@ -821,9 +809,7 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
   }
 
   /**
-   * Account changes and job starts never interleave. A logout that finished before a start
-   * is what that start observes, and a start can never slip in between a logout's pause and
-   * its official sign-out; the same serial order protects a restart against both.
+   * Job starts and restarts are serialized so they cannot race one another.
    */
   let serial: Promise<unknown> = Promise.resolve();
   function locked<T>(task: () => Promise<T>): Promise<T> {
@@ -878,11 +864,24 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
       requireReadablePaper(paperKey);
       const existing = store.getJobForPaper(paperKey);
       // A finished or running job is simply reported: nothing is sent, so no account is needed.
-      if (existing !== null && (existing.state === 'running' || existing.state === 'completed' || existing.state === 'completed_with_gaps')) {
+      if (
+        existing !== null &&
+        existing.promptVersion === promptVersion() &&
+        (existing.state === 'running' || existing.state === 'completed' || existing.state === 'completed_with_gaps')
+      ) {
         return existing;
       }
-      await assertAccountReady(existing === null ? modelId : null);
-      const job = jobs.startJob(paperKey, modelId, PROMPT_VERSION);
+      await assertAccountReady(existing === null || existing.promptVersion !== promptVersion() ? modelId : null);
+      if (existing && existing.promptVersion !== promptVersion()) {
+        if (existing.state === 'running') {
+          pipeline.abort(existing.jobId);
+          await settleLoop(existing.jobId);
+        }
+        const switched = jobs.restartJob(paperKey, { modelId, requestId: randomUUID(), expectedJobId: existing.jobId }, promptVersion());
+        drive(switched);
+        return switched;
+      }
+      const job = jobs.startJob(paperKey, modelId, promptVersion());
       drive(job);
       return job;
     });
@@ -915,7 +914,7 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
         receipt.requestId === request.requestId &&
         receipt.expectedJobId === request.expectedJobId &&
         receipt.modelId === request.modelId &&
-        receipt.promptVersion === PROMPT_VERSION
+        receipt.promptVersion === promptVersion()
       ) {
         drive(existing);
         return existing;
@@ -934,25 +933,9 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
         pipeline.abort(existing.jobId);
         await settleLoop(existing.jobId);
       }
-      const job = jobs.restartJob(paperKey, request, PROMPT_VERSION);
+      const job = jobs.restartJob(paperKey, request, promptVersion());
       drive(job);
       return job;
-    });
-  }
-
-  /** Stop our own work, then end this app's official session — never the user's other Codex logins. */
-  async function logout(): Promise<LogoutResult> {
-    return locked(async () => {
-      // No new generation may start on credentials that are about to disappear, and an
-      // answer already in flight is discarded by the pause guard.
-      const active = jobs.currentActive();
-      if (active !== null) {
-        jobs.pauseJob(active.jobId, 'auth');
-        pipeline.abort(active.jobId);
-      }
-      // An answer being written on this session is settled now, not left to fail on its own.
-      chat.stopAll(LOGGED_OUT_ERROR);
-      return session.logout();
     });
   }
 

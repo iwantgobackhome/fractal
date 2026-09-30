@@ -2,7 +2,7 @@
 
 The hub listens at `http://127.0.0.1:7327` by default. `GET /` and `GET /index.html` serve the UI with its startup token on loopback; `GET /assets/:name` serves built assets. All JSON responses are `{ "data": ... }` or `{ "error": { "code": string, "message": string, "retryable": boolean } }`. `GET /api/hub/ping` is the minimal unauthenticated readiness check.
 
-For state-changing loopback requests, send `Origin: http://127.0.0.1:7327`, `x-paperread-token: <token from page meta>`, and `Content-Type: application/json`. Loopback origin and host checks remain in place. Login-attempt reads also require the token header. When LAN or Tailscale binding is enabled, every non-loopback request, including reads and static assets, requires `Authorization: Bearer <deviceToken>`, except `GET /api/hub/ping` and the one-time `POST /api/pairing/claim`. Failed remote authentication is limited to ten attempts per IP per minute. The route and response types below are defined in `packages/shared/src/contracts`.
+For state-changing loopback requests, send `Origin: http://127.0.0.1:7327`, `x-paperread-token: <token from page meta>`, and `Content-Type: application/json`. Loopback origin and host checks remain in place. When LAN or Tailscale binding is enabled, every non-loopback request, including reads and static assets, requires `Authorization: Bearer <deviceToken>`, except `GET /api/hub/ping` and the one-time `POST /api/pairing/claim`. Failed remote authentication is limited to ten attempts per IP per minute. The route and response types below are defined in `packages/shared/src/contracts`.
 
 ## Desktop pairing and network
 
@@ -24,10 +24,8 @@ Android v1 uses plain HTTP with a bearer token over LAN or Tailscale. Tailscale 
 | Method and path | Request JSON | `data` response |
 | --- | --- | --- |
 | `GET /api/connection` | — | `Connection` (`status`, `modelIds`, `defaultModelId`, `limits`) |
-| `POST /api/connection/login` | `{}` | `LoginStartResult` (`attempt`, `loginUrl`) |
-| `GET /api/connection/login/:id` | — | `LoginAttemptResult` (`attempt`) |
-| `POST /api/connection/login/:id/cancel` | `{}` | `LoginAttemptResult` |
-| `POST /api/connection/logout` | `{}` | `LogoutResult` (`connection`) |
+| `GET /api/preferences` | — | `{uiLanguage, translationLanguage, answerLanguage, onboardingCompleted}` |
+| `PUT /api/preferences` | Complete preferences object | Saved preferences |
 | `GET /api/papers` | — | `PaperListResult` (`papers: Paper[]`) |
 | `POST /api/papers/open` | `{ "input": string }` | `{ "paper": Paper }` after acquisition and extraction |
 | `GET /api/papers/:key` | — | `Snapshot` (`paper`, `blocks`, `translations`, `job`) |
@@ -49,6 +47,10 @@ Android v1 uses plain HTTP with a bearer token over LAN or Tailscale. Tailscale 
 
 `Paper` includes source identity, title, authors, extraction status, page count, and coverage. `Region` stores page-relative rectangle coordinates. `Job` includes state, progress, pause reason, and usage. IDs in paths are percent encoded by the client. Opening a paper or asking a question may return before its background work finishes; poll the corresponding paper, job, or chat read route.
 
+Preferences are stored in SQLite. `uiLanguage` is `ko` or `en`; it defaults to `ko` for a Korean OS locale and `en` otherwise. `translationLanguage` accepts BCP 47 tags, including `ko`, `en`, `ja`, `zh-Hans`, `zh-Hant`, `de`, `fr`, and `es`, and defaults to `uiLanguage`. `answerLanguage` accepts those tags or `auto` (the default). `onboardingCompleted` defaults to `false`. Translation jobs and cached results include the chosen translation language in their identity. Snapshots and job reads return translations for the current language. AI answers use `answerLanguage`; `auto` follows the question language for questions and `uiLanguage` for explanations, glossaries, and digests. Error messages and feed reasons use `uiLanguage`; error codes and feed `reasonCode` remain stable.
+
+Codex uses the login from the user's own CLI home (`CODEX_HOME` if set, otherwise the CLI default). Sign in with `codex login` in a terminal. Fractal does not manage login or logout. A CLI config that declares custom instructions causes a safe runtime refusal for Fractal generation. The former app-owned `<data>/.codex-home` is left untouched and can be deleted by the user after upgrading.
+
 ## AI providers and reading assistance
 
 These routes use the same loopback, Origin, and token guard as the rest of the API. `GET` responses use `{ "data": ... }`. The four generated-answer routes return `text/event-stream`: each frame has `event: delta|done|error` and a JSON `data:` object matching `AiSseEvent`. `delta.text` is appended to the answer; `done.answer` includes text, provider, model, token counts when reported, and duration in milliseconds. Token counts remain `null` when unavailable.
@@ -60,7 +62,7 @@ These routes use the same loopback, Origin, and token guard as the rest of the A
   "data": {
     "providers": [
       {
-        "status": { "id": "codex", "installed": true, "loggedIn": true, "version": "codex-cli 0.159.0", "detail": "subscription" },
+        "status": { "id": "codex", "installed": true, "loggedIn": true, "version": "codex-cli 0.159.0", "detail": "subscription", "loginCommand": "codex login" },
         "models": [{ "id": "gpt-6-sol", "label": "gpt-6-sol", "efforts": ["low", "medium", "high", "xhigh"] }]
       }
     ],
@@ -69,7 +71,7 @@ These routes use the same loopback, Origin, and token guard as the rest of the A
 }
 ```
 
-`status.version` may be `null`; `status.detail` and each model's `efforts` may be absent. The `providers` array also contains a `claude` entry with the same shape. `settings.overrides` may hold `chat`, `translate`, `explain`, and `digest` selections.
+`status.version` may be `null`; `status.detail` and each model's `efforts` may be absent. `loginCommand` gives the CLI sign-in command (`codex login` or `claude auth login`). The `providers` array also contains a `claude` entry with the same shape. `settings.overrides` may hold `chat`, `translate`, `explain`, and `digest` selections.
 
 | Method and path | Request JSON | Response |
 | --- | --- | --- |
@@ -82,7 +84,7 @@ These routes use the same loopback, Origin, and token guard as the rest of the A
 | `POST /api/papers/:key/glossary` | `{ selection? }` | SSE `done.terms` with `{ term, page, definition }[]`; cached by paper content and selection |
 
 `selection` is `{ provider: "codex"|"claude", model: string, effort?: "low"|"medium"|"high"|"xhigh" }`. It overrides the saved feature selection for one request. Normalized boxes use `x`, `y`, `width`, `height` in `[0,1]` and must fit on the page. The provider adapters currently use extracted page text for explanation; `croppedPngBase64` is accepted but not sent to the CLI. Claude model aliases are `opus`, `sonnet`, and `haiku`; full `claude-*` model IDs are also accepted. The legacy `/api/papers/:key/chat` and translation endpoints select their provider through the same registry using their `modelId`.
-Explain responses and glossary definitions are requested in concise Korean, with LaTeX formulas, English technical terms in parentheses on first use, and page citations. Paper and library questions are answered in the language of the question.
+Explain responses and glossary definitions follow `answerLanguage`, retaining LaTeX formulas and page citations. Paper and library questions follow the question language when `answerLanguage` is `auto`.
 `Paper` includes source identity, title, authors, extraction status, page count, and coverage. `Region` stores page-relative rectangle coordinates. `Job` includes state, progress, pause reason, and usage. IDs in paths are percent encoded by the client. Questions may return before their background work finishes; poll the chat read route.
 
 ## Library, ingest, export, and sync
@@ -135,7 +137,11 @@ The discovery feed uses the same `{data}` envelope and local mutation guard. `we
 | `GET /api/feed/digest?week=YYYY-Www` | — | `{week, generatedAt, text}` or `null`; opt-in only |
 | `POST /api/feed/items/:id/save` | `{}` | `{paperKey}` (201), after the existing URL/DOI/arXiv ingest succeeds |
 
-`sections` contains `top: Item[]`, `byField: {field, items}[]`, `rankings: Item[]`, `news: Item[]`, and `recommended: Item[]`. Each item has `id`, `kind`, `title`, `authors`, trimmed `abstract`, `source`, `url`, nullable `arxivId` and `doi`, `categories`, `publishedAt`, numeric `score`, Korean `reason`, `inLibrary`, and numeric `popularity`. `rankings` lists Hugging Face daily papers by upvotes; `recommended` omits items already saved in the library. Digest generation is off by default and uses the AI provider registry's `digest` selection only when enabled. Schemas are in `packages/shared/src/contracts/feed.ts`.
+`sections` contains `top: Item[]`, `byField: {field, items}[]`, `rankings: Item[]`, `news: Item[]`, and `recommended: Item[]`. Each item has `id`, `kind`, `title`, `authors`, trimmed `abstract`, `source`, `url`, nullable `arxivId` and `doi`, `categories`, `publishedAt`, numeric `score`, localized `reason`, stable `reasonCode` (`followed_author`, `interest_category`, `interest_topic`, `similar_library`, or `new_this_week`), `reasonParams`, `inLibrary`, and numeric `popularity`. `rankings` lists Hugging Face daily papers by upvotes; `recommended` omits items already saved in the library. Digest generation is off by default and uses the AI provider registry's `digest` selection only when enabled. Schemas are in `packages/shared/src/contracts/feed.ts`.
+
+## Desktop bridge
+
+The Electron preload exposes `window.fractalDesktop.savePdf({ suggestedName })`, returning `{ saved: false }` when the dialog is canceled or `{ saved: true, path }` after writing the PDF. It is available only in the desktop window. The main process prints that window with backgrounds and CSS page sizes enabled, opens the system PDF save dialog, and writes the selected file. The UI controls which pages appear through print CSS. `contextIsolation` and renderer sandboxing remain enabled.
 ## Paper structure and references
 
 The hub extracts page-relative figure, table, and display-equation boxes after PDF text extraction. A structure read starts extraction if the saved version is missing or stale. While it runs, the response is HTTP 202 with `status: "running"`; completed and failed reads are HTTP 200. Refresh returns HTTP 202. IDs are stable for one extraction version. Boxes use top-left coordinates in `[0,1]`.

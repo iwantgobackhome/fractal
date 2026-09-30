@@ -23,7 +23,21 @@ export class CodexProvider implements AiProvider {
       } catch {
         /* status remains best effort */
       }
-    return { id: this.id, installed: state.status !== 'missing', loggedIn: state.status === 'subscription', version, detail: state.status };
+    const detail = {
+      missing: 'Codex CLI is not installed',
+      signed_out: 'Run codex login',
+      api_key: 'Sign in with a ChatGPT subscription using codex login',
+      unavailable: 'Could not confirm Codex login',
+      subscription: 'subscription',
+    }[state.status];
+    return {
+      id: this.id,
+      installed: state.status !== 'missing',
+      loggedIn: state.status === 'subscription',
+      version,
+      detail,
+      loginCommand: 'codex login',
+    };
   }
   async listModels(): Promise<ProviderModel[]> {
     const state = await this.translator.connection();
