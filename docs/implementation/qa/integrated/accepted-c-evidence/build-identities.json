@@ -1,0 +1,18 @@
+{
+  "sourceSha": "f5319ad85ec913ae3f19a10f6dced7fef1891eab",
+  "finalCertification": false,
+  "artifacts": [
+    {
+      "path": "packages/ui/dist/index.html",
+      "sha256": "3132a25dfc6a9215a94e407116ddc90cea8f20dee6dda107cd9b9ac200277f3a"
+    },
+    {
+      "path": "apps/desktop/dist/hub.mjs",
+      "sha256": "902d20f2d59c29d0c5c5bf1727878e1682f9f3bd7e19746ee29aec4494b26bda"
+    },
+    {
+      "path": "apps/desktop/dist/pdf.worker.mjs",
+      "sha256": "df3bf6bf6b8b8dac8a4042d8c4ecf1cf21e1d197e0fe231c192122409eba656b"
+    }
+  ]
+}

@@ -1,0 +1,161 @@
+{
+  "sourceSha": "f5319ad85ec913ae3f19a10f6dced7fef1891eab",
+  "finalCertification": false,
+  "isolation": "Independent fresh SQLite/browser; D shared QA Hub and fixture untouched",
+  "hubUrl": "http://127.0.0.1:2711",
+  "provider": "Deterministic boundary only; actual accepted HTTP/SSE/SQLite/PDF.js/built UI",
+  "assertions": [
+    {
+      "name": "empty actual library",
+      "actual": true
+    },
+    {
+      "name": "actual metadata save/unsave preserves record without PDF/read event",
+      "actual": {
+        "paperKey": "pub-56e6843128f221da5cf691f5cff9e6f453900a4c9a0ebe6e29a494636c8b411b",
+        "lastReadAt": null,
+        "hasPdf": false
+      }
+    },
+    {
+      "name": "actual partial original pointer selection",
+      "actual": "WW iii"
+    },
+    {
+      "name": "actual reopened answer and durable citation rendered",
+      "actual": "Independent accepted-checkpoint prefix Independent completed answer retained. p.1"
+    },
+    {
+      "name": "close detaches; same actual entry reopens complete",
+      "actual": {
+        "id": "6ff2327a-3a96-40bb-a223-011a8554bcb4",
+        "page": 1,
+        "quote": "WW iii",
+        "sourceStatus": "current"
+      }
+    },
+    {
+      "name": "research Escape dismissal",
+      "actual": true
+    }
+  ],
+  "screenshots": [
+    {
+      "name": "current-empty-index-en-light-1440x900",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "overflow": false,
+      "titleFont": null
+    },
+    {
+      "name": "metadata-rich-discovery-en-light-1440x900",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "overflow": false,
+      "titleFont": null
+    },
+    {
+      "name": "current-reader-history-en-light-1440x900",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "overflow": false,
+      "titleFont": "\"Source Serif 4 Variable\", \"Source Serif 4\", \"Noto Serif KR\", Georgia, serif",
+      "title": "A long scholarly investigation of retained research history, selected original PDF passages and immutable source identity across reader lifecycles"
+    },
+    {
+      "name": "current-reader-en-sepia-1280x800",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "overflow": false,
+      "titleFont": "\"Source Serif 4 Variable\", \"Source Serif 4\", \"Noto Serif KR\", Georgia, serif",
+      "theme": "sepia",
+      "title": "A long scholarly investigation of retained research history, selected original PDF passages and immutable source identity across reader lifecycles"
+    }
+  ],
+  "history": {
+    "id": "6ff2327a-3a96-40bb-a223-011a8554bcb4",
+    "paperKey": "pdf-0bea91167d2ccd0bf40768e14d8324d032cf53c93eda8da91462d52605c92674-f79b45a88b17b236ade1298edf4cafdceae6a9f19907eb29126332a7c9037b96",
+    "kind": "question",
+    "question": "E current merged-checkpoint retained question",
+    "text": "Independent accepted-checkpoint prefix Independent completed answer retained. [p.1]",
+    "status": "completed",
+    "createdAt": "2026-09-30T23:28:32.378Z",
+    "updatedAt": "2026-09-30T23:28:32.472Z",
+    "completedAt": "2026-09-30T23:28:32.471Z",
+    "requestId": "4a27e93a-121b-4545-84b4-dc21e0ee5d54",
+    "context": {
+      "provenance": {
+        "coordinateSpace": "rendered-page-normalized-v1",
+        "textSource": "original",
+        "pdfSha256": "f79b45a88b17b236ade1298edf4cafdceae6a9f19907eb29126332a7c9037b96",
+        "layoutRange": {
+          "page": 1,
+          "extractionVersion": "pdfjs6-original-advances-v1",
+          "start": 1,
+          "end": 7
+        }
+      },
+      "answerLanguage": "zh-Hant",
+      "page": 1,
+      "rect": {
+        "x": 0.096216284710428,
+        "y": 0.043308791684711995,
+        "width": 0.092572021484375,
+        "height": 0.027717626678215677
+      },
+      "selectedText": "WW iii",
+      "selection": {
+        "provider": "codex",
+        "model": "qa-current-model"
+      }
+    },
+    "answer": {
+      "citations": [
+        {
+          "paperKey": "pdf-0bea91167d2ccd0bf40768e14d8324d032cf53c93eda8da91462d52605c92674-f79b45a88b17b236ade1298edf4cafdceae6a9f19907eb29126332a7c9037b96",
+          "page": 1,
+          "region": {
+            "provenance": {
+              "coordinateSpace": "unrotated-crop-normalized-v1",
+              "textSource": "original",
+              "pdfSha256": "f79b45a88b17b236ade1298edf4cafdceae6a9f19907eb29126332a7c9037b96",
+              "layoutRange": {
+                "page": 1,
+                "extractionVersion": "pdfjs6-original-advances-v1",
+                "start": 1,
+                "end": 7
+              }
+            },
+            "page": 1,
+            "x": 0.09620915032679737,
+            "y": 0.047525252525252526,
+            "width": 0.09254901960784313,
+            "height": 0.023358585858585856
+          }
+        }
+      ],
+      "contextSourceStatus": "current",
+      "text": "Independent accepted-checkpoint prefix Independent completed answer retained. [p.1]",
+      "provider": "codex",
+      "model": "qa-current-model",
+      "inputTokens": null,
+      "outputTokens": null,
+      "durationMs": 91
+    },
+    "error": null,
+    "rev": 5,
+    "deviceId": "hub",
+    "deleted": false
+  },
+  "errors": [],
+  "status": "passed",
+  "resourcesClosed": true
+}

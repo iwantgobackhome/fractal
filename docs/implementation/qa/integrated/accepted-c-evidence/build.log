@@ -1,0 +1,218 @@
+
+> fractal@0.1.0 desktop:build
+> npm run build && node scripts/build-desktop.mjs
+
+
+> fractal@0.1.0 build
+> npm run build -w @fractal/shared && npm run build -w @fractal/ui && npm run build -w @fractal/hub
+
+
+> @fractal/shared@0.1.0 build
+> tsc -p tsconfig.json
+
+
+> @fractal/ui@0.1.0 build
+> vite build
+
+vite v7.3.6 building client environment for production...
+transforming...
+node.exe : ../../node_modules/zod/v4/core/util.js (400:0): A comment
+위치 줄:1 문자:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (../../node_modu...0:0): A comment:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+
+"// Wrapped in a `@__PURE__` IIFE: esbuild never tree-shakes a top-level initializer that contains a member access on `
+Number`, so the bare object literal survived into every bundle."
+
+in "../../node_modules/zod/v4/core/util.js" contains an annotation that Rollup cannot interpret due to the position of
+the comment. The comment will be removed to avoid issues.
+../../node_modules/zod/v4/core/regexes.js (74:0): A comment
+
+"/** Anchors a pattern source. The interpolation lives here rather than at the call site because
+ * esbuild will not drop a `@__PURE__` call whose own argument interpolates a variable, but it
+ * will drop `anchor(dateSource)`. Keeping it inline pinned `date` into every bundle. */"
+
+in "../../node_modules/zod/v4/core/regexes.js" contains an annotation that Rollup cannot interpret due to the position
+of the comment. The comment will be removed to avoid issues.
+✓ 224 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                                         0.35 kB │ gzip:   0.26 kB
+dist/assets/KaTeX_Size3-Regular-gV2CO0n9.woff2                          3.62 kB
+dist/assets/KaTeX_Size3-Regular-CTq5MqoE.woff                           4.42 kB
+dist/assets/KaTeX_Size4-Regular-Dl5lxZxV.woff2                          4.93 kB
+dist/assets/KaTeX_Size2-Regular-Dy4dx90m.woff2                          5.21 kB
+dist/assets/KaTeX_Size1-Regular-mCD8mA8B.woff2                          5.47 kB
+dist/assets/KaTeX_Size4-Regular-BF-4gkZK.woff                           5.98 kB
+dist/assets/KaTeX_Size2-Regular-oD1tc_U0.woff                           6.19 kB
+dist/assets/KaTeX_Size1-Regular-C195tn64.woff                           6.50 kB
+dist/assets/KaTeX_Caligraphic-Regular-Di6jR-x-.woff2                    6.91 kB
+dist/assets/KaTeX_Caligraphic-Bold-Dq_IR9rO.woff2                       6.91 kB
+dist/assets/KaTeX_Size3-Regular-DgpXs0kz.ttf                            7.59 kB
+dist/assets/KaTeX_Caligraphic-Regular-CTRA-rTL.woff                     7.66 kB
+dist/assets/KaTeX_Caligraphic-Bold-BEiXGLvX.woff                        7.72 kB
+dist/assets/PretendardVariable.subset.66-C3HqaDeY.woff2                 8.25 kB
+dist/assets/PretendardVariable.subset.64-CTbrgYF9.woff2                 8.26 kB
+dist/assets/KaTeX_Script-Regular-D3wIWfF6.woff2                         9.64 kB
+dist/assets/KaTeX_SansSerif-Regular-DDBCnlJ7.woff2                     10.34 kB
+dist/assets/KaTeX_Size4-Regular-DWFBv043.ttf                           10.36 kB
+dist/assets/KaTeX_Script-Regular-D5yQViql.woff                         10.59 kB
+dist/assets/PretendardVariable.subset.65-B66rjuyf.woff2                11.11 kB
+dist/assets/KaTeX_Fraktur-Regular-CTYiF6lA.woff2                       11.32 kB
+dist/assets/KaTeX_Fraktur-Bold-CL6g_b3V.woff2                          11.35 kB
+dist/assets/KaTeX_Size2-Regular-B7gKUWhC.ttf                           11.51 kB
+dist/assets/KaTeX_SansSerif-Italic-C3H0VqGB.woff2                      12.03 kB
+dist/assets/KaTeX_SansSerif-Bold-D1sUS0GD.woff2                        12.22 kB
+dist/assets/KaTeX_Size1-Regular-Dbsnue_I.ttf                           12.23 kB
+dist/assets/KaTeX_SansSerif-Regular-CS6fqUqJ.woff                      12.32 kB
+dist/assets/KaTeX_Caligraphic-Regular-wX97UBjC.ttf                     12.34 kB
+dist/assets/KaTeX_Caligraphic-Bold-ATXxdsX0.ttf                        12.37 kB
+dist/assets/KaTeX_Fraktur-Regular-Dxdc4cR9.woff                        13.21 kB
+dist/assets/KaTeX_Fraktur-Bold-BsDP51OF.woff                           13.30 kB
+dist/assets/source-serif-4-vietnamese-wght-normal-D-yuW59g.woff2       13.45 kB
+dist/assets/KaTeX_Typewriter-Regular-CO6r4hn1.woff2                    13.57 kB
+dist/assets/KaTeX_SansSerif-Italic-DN2j7dab.woff                       14.11 kB
+dist/assets/KaTeX_SansSerif-Bold-DbIhKOiC.woff                         14.41 kB
+dist/assets/KaTeX_Typewriter-Regular-C0xS9mPB.woff                     16.03 kB
+dist/assets/PretendardVariable.subset.68-DS9B48d0.woff2                16.34 kB
+dist/assets/KaTeX_Math-BoldItalic-CZnvNsCZ.woff2                       16.40 kB
+dist/assets/KaTeX_Math-Italic-t53AETM-.woff2                           16.44 kB
+dist/assets/KaTeX_Script-Regular-C5JkGWo-.ttf                          16.65 kB
+dist/assets/KaTeX_Main-BoldItalic-DxDJ3AOS.woff2                       16.78 kB
+dist/assets/KaTeX_Main-Italic-NWA7e6Wa.woff2                           16.99 kB
+dist/assets/source-serif-4-cyrillic-ext-wght-normal-cHuGMAiY.woff2     18.06 kB
+dist/assets/PretendardVariable.subset.73-DMrK970F.woff2                18.34 kB
+dist/assets/KaTeX_Math-BoldItalic-iY-2wyZ7.woff                        18.67 kB
+dist/assets/KaTeX_Math-Italic-DA0__PXp.woff                            18.75 kB
+dist/assets/KaTeX_Main-BoldItalic-SpSLRI95.woff                        19.41 kB
+dist/assets/KaTeX_SansSerif-Regular-BNo7hRIc.ttf                       19.44 kB
+dist/assets/PretendardVariable.subset.72-pYYGrEQR.woff2                19.51 kB
+dist/assets/KaTeX_Fraktur-Regular-CB_wures.ttf                         19.57 kB
+dist/assets/KaTeX_Fraktur-Bold-BdnERNNW.ttf                            19.58 kB
+dist/assets/KaTeX_Main-Italic-BMLOBm91.woff                            19.68 kB
+dist/assets/PretendardVariable.subset.75-CxKdrRNf.woff2                20.00 kB
+dist/assets/source-serif-4-greek-wght-normal-ece1310W.woff2            20.23 kB
+dist/assets/PretendardVariable.subset.90-BF7RiZjm.woff2                20.85 kB
+dist/assets/PretendardVariable.subset.67-BmuXdlDy.woff2                21.84 kB
+dist/assets/PretendardVariable.subset.89-DOzqWPpX.woff2                21.86 kB
+dist/assets/KaTeX_SansSerif-Italic-YYjJ1zSn.ttf                        22.36 kB
+dist/assets/PretendardVariable.subset.74-D4tQnymK.woff2                22.39 kB
+dist/assets/PretendardVariable.subset.84-Brb8EsYQ.woff2                24.49 kB
+dist/assets/KaTeX_SansSerif-Bold-CFMepnvq.ttf                          24.50 kB
+dist/assets/PretendardVariable.subset.87-Lzui2vbK.woff2                24.66 kB
+dist/assets/PretendardVariable.subset.76-DhPm2b_q.woff2                24.92 kB
+dist/assets/PretendardVariable.subset.85-Byo_x2hf.woff2                25.10 kB
+dist/assets/KaTeX_Main-Bold-Cx986IdX.woff2                             25.32 kB
+dist/assets/PretendardVariable.subset.88-CqX6JSgh.woff2                25.64 kB
+dist/assets/PretendardVariable.subset.86-XG7lTN_6.woff2                25.72 kB
+dist/assets/PretendardVariable.subset.77-DwaxqOC8.woff2                26.04 kB
+dist/assets/PretendardVariable.subset.79-XpoyPP38.woff2                26.22 kB
+dist/assets/KaTeX_Main-Regular-B22Nviop.woff2                          26.27 kB
+dist/assets/PretendardVariable.subset.81-BZzF9Hb3.woff2                26.30 kB
+dist/assets/PretendardVariable.subset.82-BgAHe30u.woff2                26.50 kB
+dist/assets/PretendardVariable.subset.78-DhqRbBzT.woff2                26.55 kB
+dist/assets/PretendardVariable.subset.83-DF-zBLLe.woff2                26.96 kB
+dist/assets/PretendardVariable.subset.70-BUXiAGMT.woff2                27.55 kB
+dist/assets/KaTeX_Typewriter-Regular-D3Ib7_Hf.ttf                      27.56 kB
+dist/assets/PretendardVariable.subset.37-BD6FyOtY.woff2                27.92 kB
+dist/assets/KaTeX_AMS-Regular-BQhdFMY1.woff2                           28.08 kB
+dist/assets/PretendardVariable.subset.71-DuPZj8us.woff2                28.32 kB
+dist/assets/PretendardVariable.subset.80-DsV9Qp_h.woff2                28.80 kB
+dist/assets/PretendardVariable.subset.63-B35xsm4O.woff2                28.82 kB
+dist/assets/PretendardVariable.subset.40-BDaOfdUe.woff2                29.84 kB
+dist/assets/KaTeX_Main-Bold-Jm3AIy58.woff                              29.91 kB
+dist/assets/PretendardVariable.subset.43-DHdpry7N.woff2                30.38 kB
+dist/assets/KaTeX_Main-Regular-Dr94JaBh.woff                           30.77 kB
+dist/assets/KaTeX_Math-BoldItalic-B3XSjfu4.ttf                         31.20 kB
+dist/assets/KaTeX_Math-Italic-flOr_0UB.ttf                             31.31 kB
+dist/assets/PretendardVariable.subset.7-E2HaA55t.woff2                 31.91 kB
+dist/assets/PretendardVariable.subset.1-C-__qv6_.woff2                 32.04 kB
+dist/assets/PretendardVariable.subset.44-qHopVhdd.woff2                32.14 kB
+dist/assets/PretendardVariable.subset.24-CmkE8Q8D.woff2                32.30 kB
+dist/assets/KaTeX_Main-BoldItalic-DzxPMmG6.ttf                         32.97 kB
+dist/assets/PretendardVariable.subset.10-DzSWztS8.woff2                33.03 kB
+dist/assets/PretendardVariable.subset.41-BUACvzZC.woff2                33.19 kB
+dist/assets/PretendardVariable.subset.50-C8IyFH7L.woff2                33.23 kB
+dist/assets/PretendardVariable.subset.54-Dt2-cQkx.woff2                33.34 kB
+dist/assets/KaTeX_AMS-Regular-DMm9YOAa.woff                            33.52 kB
+dist/assets/KaTeX_Main-Italic-3WenGoN9.ttf                             33.58 kB
+dist/assets/PretendardVariable.subset.5-K_MNGNCe.woff2                 33.62 kB
+dist/assets/PretendardVariable.subset.6-Bxhohlcm.woff2                 33.97 kB
+dist/assets/PretendardVariable.subset.9-Btb3bmS6.woff2                 34.01 kB
+dist/assets/PretendardVariable.subset.55-jFgflYjX.woff2                34.18 kB
+dist/assets/PretendardVariable.subset.39-B_7wfth9.woff2                34.26 kB
+dist/assets/PretendardVariable.subset.52-CNgqKOOJ.woff2                34.36 kB
+dist/assets/PretendardVariable.subset.0-BHUkWNFR.woff2                 34.57 kB
+dist/assets/PretendardVariable.subset.53-BSRnyb-u.woff2                34.57 kB
+dist/assets/PretendardVariable.subset.42-Dp-5mnyL.woff2                34.61 kB
+dist/assets/PretendardVariable.subset.45-BniyRFfm.woff2                34.66 kB
+dist/assets/PretendardVariable.subset.36-Dn5IBRQB.woff2                34.69 kB
+dist/assets/PretendardVariable.subset.34-CaCS33Md.woff2                34.72 kB
+dist/assets/PretendardVariable.subset.69-YT16ymcp.woff2                34.78 kB
+dist/assets/PretendardVariable.subset.38-D4hu443z.woff2                34.81 kB
+dist/assets/PretendardVariable.subset.62-DGSAWCfb.woff2                34.88 kB
+dist/assets/PretendardVariable.subset.33--0OT__YQ.woff2                34.92 kB
+dist/assets/PretendardVariable.subset.17-BfZSA-Xc.woff2                34.94 kB
+dist/assets/PretendardVariable.subset.4-Bvh2YGoc.woff2                 35.16 kB
+dist/assets/PretendardVariable.subset.56-BwZdvJZQ.woff2                35.18 kB
+dist/assets/PretendardVariable.subset.35-DWFYRGLp.woff2                35.35 kB
+dist/assets/PretendardVariable.subset.27-CT6nuW9L.woff2                35.42 kB
+dist/assets/PretendardVariable.subset.61-PUuTnod4.woff2                35.64 kB
+dist/assets/PretendardVariable.subset.15-D04iXIE3.woff2                35.67 kB
+dist/assets/PretendardVariable.subset.13-C42mj_j2.woff2                35.71 kB
+dist/assets/PretendardVariable.subset.47-B-cWO2pw.woff2                35.72 kB
+dist/assets/PretendardVariable.subset.57-BwFDg-Fs.woff2                35.96 kB
+dist/assets/PretendardVariable.subset.51-Bxd0gTAs.woff2                36.02 kB
+dist/assets/PretendardVariable.subset.49-BblQVys9.woff2                36.05 kB
+dist/assets/PretendardVariable.subset.20-Ig1-z3n5.woff2                36.13 kB
+dist/assets/source-serif-4-cyrillic-wght-normal-DwHjdM4S.woff2         36.47 kB
+dist/assets/PretendardVariable.subset.14-Bl512uUX.woff2                36.51 kB
+dist/assets/PretendardVariable.subset.46-BMRq7xC-.woff2                36.54 kB
+dist/assets/PretendardVariable.subset.8-CRbJhhyA.woff2                 36.70 kB
+dist/assets/PretendardVariable.subset.21-yKPEdLXC.woff2                37.27 kB
+dist/assets/PretendardVariable.subset.11-CqVmlKJn.woff2                37.40 kB
+dist/assets/PretendardVariable.subset.48-Ct-fWrPO.woff2                37.78 kB
+dist/assets/PretendardVariable.subset.60-CeHezjjf.woff2                37.78 kB
+dist/assets/PretendardVariable.subset.16-BQUnS2GX.woff2                37.92 kB
+dist/assets/PretendardVariable.subset.12-BHuZSgT0.woff2                37.94 kB
+dist/assets/PretendardVariable.subset.91-Csm0YNoH.woff2                38.00 kB
+dist/assets/PretendardVariable.subset.30-CWDM1c0J.woff2                38.45 kB
+dist/assets/PretendardVariable.subset.28-CpO0Y96p.woff2                38.47 kB
+dist/assets/PretendardVariable.subset.22-CSqxKoOs.woff2                38.68 kB
+dist/assets/PretendardVariable.subset.59-CMkWjhdo.woff2                38.97 kB
+dist/assets/PretendardVariable.subset.29-D6hjrUWm.woff2                39.29 kB
+dist/assets/PretendardVariable.subset.32-CGnFWD2i.woff2                40.22 kB
+dist/assets/PretendardVariable.subset.23-DK80wi0t.woff2                40.28 kB
+dist/assets/PretendardVariable.subset.26-Sozl8dw8.woff2                40.32 kB
+dist/assets/PretendardVariable.subset.3-Dqw33sf4.woff2                 40.65 kB
+dist/assets/PretendardVariable.subset.58-DlucQts_.woff2                41.56 kB
+dist/assets/PretendardVariable.subset.18-CwAxMC3C.woff2                41.60 kB
+dist/assets/PretendardVariable.subset.31-CdmyZ5mm.woff2                41.89 kB
+dist/assets/PretendardVariable.subset.25-CsoWBIZB.woff2                42.03 kB
+dist/assets/source-serif-4-latin-ext-wght-normal-CxNHBx-q.woff2        42.04 kB
+dist/assets/PretendardVariable.subset.19-CJu4Zcdo.woff2                42.33 kB
+dist/assets/PretendardVariable.subset.2-dCZkyKLw.woff2                 43.92 kB
+dist/assets/source-serif-4-latin-wght-normal-D9elroTD.woff2            50.82 kB
+dist/assets/KaTeX_Main-Bold-waoOVXN0.ttf                               51.34 kB
+dist/assets/KaTeX_Main-Regular-ypZvNtVU.ttf                            53.58 kB
+dist/assets/KaTeX_AMS-Regular-DRggAlZN.ttf                             63.63 kB
+dist/assets/pdf.worker.min-Dswkl-cV.mjs                             1,265.41 kB
+dist/assets/index-CJgyxdg_.css                                        183.10 kB │ gzip:  39.15 kB
+dist/assets/index-CEhBzojG.js                                       1,831.92 kB │ gzip: 560.19 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-m
+anualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 4.61s
+
+> @fractal/hub@0.1.0 build
+> npm run typecheck && node ../../scripts/build-hub.mjs
+
+
+> @fractal/hub@0.1.0 typecheck
+> tsc --noEmit -p tsconfig.json
