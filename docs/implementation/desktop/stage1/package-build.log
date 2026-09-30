@@ -1,0 +1,21 @@
+  • electron-builder  version=26.15.3 os=10.0.26200
+  • loaded configuration  file=package.json ("build" field)
+  • description is missed in the package.json  appPackageFile=C:\Users\Home\orca\workspaces\fractal\fractal-desktop\package.json
+  • author is missed in the package.json  appPackageFile=C:\Users\Home\orca\workspaces\fractal\fractal-desktop\package.json
+  • detected workspace root for project using lock file  pm=npm config=undefined resolved=C:\Users\Home\orca\workspaces\fractal\fractal-desktop projectDir=C:\Users\Home\orca\workspaces\fractal\fractal-desktop
+  • executing @electron/rebuild  electronVersion=44.4.5 arch=x64 buildFromSource=false workspaceRoot=C:\Users\Home\orca\workspaces\fractal\fractal-desktop projectDir=./ appDir=./
+  • installing native dependencies  arch=x64
+  • completed installing native dependencies
+  • packaging       platform=win32 arch=x64 electron=44.4.5 appOutDir=dist\installer\win-unpacked
+  • downloaded      label=electron progress=100%
+  • downloaded electron zip extracted successfully  output=C:\Users\Home\orca\workspaces\fractal\fractal-desktop\dist\installer\win-unpacked
+  • searching for node modules  pm=npm searchDir=C:\Users\Home\orca\workspaces\fractal\fractal-desktop
+  • duplicate dependency references  dependencies=["@fractal/shared@0.1.0","@lydell/node-pty@1.2.0-beta.15","domhandler@6.0.1","domhandler@6.0.1","domhandler@5.0.3","domhandler@5.0.3","string-width@4.2.3","string-width@4.2.3","strip-ansi@6.0.1","strip-ansi@6.0.1","@fractal/shared@0.1.0","pdfjs-dist@6.3.289"]
+  • updating asar integrity executable resource  executablePath=dist\installer\win-unpacked\Fractal.exe
+  • signing with signtool.exe  path=dist\installer\win-unpacked\Fractal.exe
+  • signing with signtool.exe  path=dist\installer\win-unpacked\resources\app.asar.unpacked\node_modules\@lydell\node-pty-win32-x64\prebuilds\win32-x64\conpty\OpenConsole.exe
+  • building        target=nsis file=dist\installer\Fractal Setup 0.1.0.exe archs=x64 oneClick=false perMachine=false
+  • signing with signtool.exe  path=dist\installer\win-unpacked\resources\elevate.exe
+  • signing with signtool.exe  path=dist\installer\Fractal Setup 0.1.0.__uninstaller.exe
+  • signing with signtool.exe  path=dist\installer\Fractal Setup 0.1.0.exe
+  • building block map  blockMapFile=dist\installer\Fractal Setup 0.1.0.exe.blockmap

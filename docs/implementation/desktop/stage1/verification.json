@@ -1,0 +1,451 @@
+{
+  "isolation": "fresh temp FRACTAL_DATA and empty PAPERREAD_DATA; no user library reset",
+  "screenshots": [
+    {
+      "file": "index-ko-light-1280x800.png",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "theme": "light",
+      "language": "ko",
+      "horizontalOverflow": false,
+      "clippedTitles": [],
+      "titleLineHeights": [
+        {
+          "height": 59,
+          "lineHeight": 29.7
+        },
+        {
+          "height": 59,
+          "lineHeight": 29.7
+        }
+      ],
+      "reviewToolbar": false
+    },
+    {
+      "file": "index-ko-light-1440x900.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "theme": "light",
+      "language": "ko",
+      "horizontalOverflow": false,
+      "clippedTitles": [],
+      "titleLineHeights": [
+        {
+          "height": 59,
+          "lineHeight": 29.7
+        },
+        {
+          "height": 59,
+          "lineHeight": 29.7
+        }
+      ],
+      "reviewToolbar": false
+    },
+    {
+      "file": "index-ko-light-1920x1080.png",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "theme": "light",
+      "language": "ko",
+      "horizontalOverflow": false,
+      "clippedTitles": [],
+      "titleLineHeights": [
+        {
+          "height": 65,
+          "lineHeight": 32.4
+        },
+        {
+          "height": 65,
+          "lineHeight": 32.4
+        }
+      ],
+      "reviewToolbar": false
+    },
+    {
+      "file": "index-ko-dark-1280x800.png",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "theme": "dark",
+      "language": "ko",
+      "horizontalOverflow": false,
+      "clippedTitles": [],
+      "titleLineHeights": [
+        {
+          "height": 59,
+          "lineHeight": 29.7
+        },
+        {
+          "height": 59,
+          "lineHeight": 29.7
+        }
+      ],
+      "reviewToolbar": false
+    },
+    {
+      "file": "index-ko-dark-1440x900.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "theme": "dark",
+      "language": "ko",
+      "horizontalOverflow": false,
+      "clippedTitles": [],
+      "titleLineHeights": [
+        {
+          "height": 59,
+          "lineHeight": 29.7
+        },
+        {
+          "height": 59,
+          "lineHeight": 29.7
+        }
+      ],
+      "reviewToolbar": false
+    },
+    {
+      "file": "index-ko-dark-1920x1080.png",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "theme": "dark",
+      "language": "ko",
+      "horizontalOverflow": false,
+      "clippedTitles": [],
+      "titleLineHeights": [
+        {
+          "height": 65,
+          "lineHeight": 32.4
+        },
+        {
+          "height": 65,
+          "lineHeight": 32.4
+        }
+      ],
+      "reviewToolbar": false
+    },
+    {
+      "file": "index-ko-sepia-1280x800.png",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "theme": "sepia",
+      "language": "ko",
+      "horizontalOverflow": false,
+      "clippedTitles": [],
+      "titleLineHeights": [
+        {
+          "height": 59,
+          "lineHeight": 29.7
+        },
+        {
+          "height": 59,
+          "lineHeight": 29.7
+        }
+      ],
+      "reviewToolbar": false
+    },
+    {
+      "file": "index-ko-sepia-1440x900.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "theme": "sepia",
+      "language": "ko",
+      "horizontalOverflow": false,
+      "clippedTitles": [],
+      "titleLineHeights": [
+        {
+          "height": 59,
+          "lineHeight": 29.7
+        },
+        {
+          "height": 59,
+          "lineHeight": 29.7
+        }
+      ],
+      "reviewToolbar": false
+    },
+    {
+      "file": "index-ko-sepia-1920x1080.png",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "theme": "sepia",
+      "language": "ko",
+      "horizontalOverflow": false,
+      "clippedTitles": [],
+      "titleLineHeights": [
+        {
+          "height": 65,
+          "lineHeight": 32.4
+        },
+        {
+          "height": 65,
+          "lineHeight": 32.4
+        }
+      ],
+      "reviewToolbar": false
+    },
+    {
+      "file": "index-en-light-1280x800.png",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "theme": "light",
+      "language": "en",
+      "horizontalOverflow": false,
+      "clippedTitles": [],
+      "titleLineHeights": [
+        {
+          "height": 59,
+          "lineHeight": 29.7
+        },
+        {
+          "height": 59,
+          "lineHeight": 29.7
+        }
+      ],
+      "reviewToolbar": false
+    },
+    {
+      "file": "index-en-light-1440x900.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "theme": "light",
+      "language": "en",
+      "horizontalOverflow": false,
+      "clippedTitles": [],
+      "titleLineHeights": [
+        {
+          "height": 59,
+          "lineHeight": 29.7
+        },
+        {
+          "height": 59,
+          "lineHeight": 29.7
+        }
+      ],
+      "reviewToolbar": false
+    },
+    {
+      "file": "index-en-light-1920x1080.png",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "theme": "light",
+      "language": "en",
+      "horizontalOverflow": false,
+      "clippedTitles": [],
+      "titleLineHeights": [
+        {
+          "height": 65,
+          "lineHeight": 32.4
+        },
+        {
+          "height": 65,
+          "lineHeight": 32.4
+        }
+      ],
+      "reviewToolbar": false
+    },
+    {
+      "file": "index-en-dark-1280x800.png",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "theme": "dark",
+      "language": "en",
+      "horizontalOverflow": false,
+      "clippedTitles": [],
+      "titleLineHeights": [
+        {
+          "height": 59,
+          "lineHeight": 29.7
+        },
+        {
+          "height": 59,
+          "lineHeight": 29.7
+        }
+      ],
+      "reviewToolbar": false
+    },
+    {
+      "file": "index-en-dark-1440x900.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "theme": "dark",
+      "language": "en",
+      "horizontalOverflow": false,
+      "clippedTitles": [],
+      "titleLineHeights": [
+        {
+          "height": 59,
+          "lineHeight": 29.7
+        },
+        {
+          "height": 59,
+          "lineHeight": 29.7
+        }
+      ],
+      "reviewToolbar": false
+    },
+    {
+      "file": "index-en-dark-1920x1080.png",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "theme": "dark",
+      "language": "en",
+      "horizontalOverflow": false,
+      "clippedTitles": [],
+      "titleLineHeights": [
+        {
+          "height": 65,
+          "lineHeight": 32.4
+        },
+        {
+          "height": 65,
+          "lineHeight": 32.4
+        }
+      ],
+      "reviewToolbar": false
+    },
+    {
+      "file": "index-en-sepia-1280x800.png",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "theme": "sepia",
+      "language": "en",
+      "horizontalOverflow": false,
+      "clippedTitles": [],
+      "titleLineHeights": [
+        {
+          "height": 59,
+          "lineHeight": 29.7
+        },
+        {
+          "height": 59,
+          "lineHeight": 29.7
+        }
+      ],
+      "reviewToolbar": false
+    },
+    {
+      "file": "index-en-sepia-1440x900.png",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "theme": "sepia",
+      "language": "en",
+      "horizontalOverflow": false,
+      "clippedTitles": [],
+      "titleLineHeights": [
+        {
+          "height": 59,
+          "lineHeight": 29.7
+        },
+        {
+          "height": 59,
+          "lineHeight": 29.7
+        }
+      ],
+      "reviewToolbar": false
+    },
+    {
+      "file": "index-en-sepia-1920x1080.png",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "theme": "sepia",
+      "language": "en",
+      "horizontalOverflow": false,
+      "clippedTitles": [],
+      "titleLineHeights": [
+        {
+          "height": 65,
+          "lineHeight": 32.4
+        },
+        {
+          "height": 65,
+          "lineHeight": 32.4
+        }
+      ],
+      "reviewToolbar": false
+    }
+  ],
+  "readSaveUnsave": {
+    "passed": true,
+    "importedUnsaved": true,
+    "readCreatesRecent": true,
+    "pdfHistoryMemoProgressRetained": true,
+    "positionResumed": true
+  },
+  "folders": {
+    "passed": true,
+    "createNested": true,
+    "renameMove": true,
+    "excludesSelfAndDescendants": true,
+    "childPromotion": true,
+    "paperRetention": true,
+    "multipleMembership": true,
+    "orphanPreserved": true,
+    "filterDoesNotMutate": true
+  },
+  "indexSelector": {
+    "passed": true,
+    "arrowsHomeEndEnter": true,
+    "escapeRestoresFocus": true,
+    "outsideClick": true
+  },
+  "states": {
+    "actualEmptySaved": true,
+    "filteredEmpty": true,
+    "loadingDelayedRealRequest": true,
+    "injected503RetryRecovered": true
+  },
+  "browserExceptions": [],
+  "electron": {
+    "passed": true,
+    "name": "Fractal",
+    "windows": 1,
+    "windowIcon": {
+      "width": 256,
+      "height": 256
+    },
+    "trayIcon": {
+      "width": 32,
+      "height": 32
+    },
+    "screenshot": "electron-index-en.png",
+    "saveUnsave": true,
+    "readerRoute": true,
+    "selectorFocusKeyboard": true,
+    "nativeLauncherVisual": "not inspected by this renderer capture"
+  },
+  "passed": true
+}

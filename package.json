@@ -45,6 +45,7 @@
     "files": [
       "apps/desktop/main.cjs",
       "apps/desktop/preload.cjs",
+      "apps/desktop/assets/**",
       "apps/desktop/dist/**",
       "packages/ui/dist/**",
       "node_modules/@lydell/node-pty/**",
@@ -56,11 +57,14 @@
       "node_modules/@lydell/node-pty-win32-*/prebuilds/**"
     ],
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "apps/desktop/assets/fractal.ico"
     },
     "nsis": {
       "oneClick": false,
-      "perMachine": false
+      "perMachine": false,
+      "installerIcon": "apps/desktop/assets/fractal.ico",
+      "uninstallerIcon": "apps/desktop/assets/fractal.ico"
     },
     "mac": {
       "target": "dmg",

@@ -3,6 +3,10 @@ const { join, basename } = require('node:path');
 const { pathToFileURL } = require('node:url');
 const { writeFile } = require('node:fs/promises');
 
+app.setName('Fractal');
+app.setAppUserModelId('app.fractal.desktop');
+if (process.env.FRACTAL_DESKTOP_PROFILE) app.setPath('userData', process.env.FRACTAL_DESKTOP_PROFILE);
+
 if (!app.requestSingleInstanceLock()) {
   app.quit();
 } else {
@@ -11,9 +15,8 @@ if (!app.requestSingleInstanceLock()) {
   let tray;
   let quitting = false;
   const headless = process.argv.includes('--headless');
-  const icon = nativeImage.createFromDataURL(
-    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABFklEQVQ4T6WTwQ3CMAxFXwdgA7AB2ABsADYAG4ANwAZgA7AB2ABsADYAG4ANgA3gIpEmVfkhpUjvki4V6+f/f7QzSsoD8cEQAFQAkcgn0J/y8BrgDQBnCJfwTeAtxT8gUwBO8B+kwG8AqAF4A74FUC9P1B3Cq6BqAfgBPgU4BrAM4B7oH8AmAfgDbjPoB3APsB5DrgEt0D5CXgGsBXAFuN3HkBtAFvwn4FVAJ4CKgR4A9wH2AeQAAAABJRU5ErkJggg==',
-  );
+  const icon = nativeImage.createFromPath(join(__dirname, 'assets', 'icon-256.png'));
+  const trayIcon = nativeImage.createFromPath(join(__dirname, 'assets', 'icon-32.png'));
   function openWindow() {
     if (headless) return;
     if (window) {
@@ -98,7 +101,7 @@ if (!app.requestSingleInstanceLock()) {
         await writeFile(choice.filePath, pdf);
         return { saved: true, path: choice.filePath };
       });
-      tray = new Tray(icon);
+      tray = new Tray(trayIcon);
       tray.setToolTip('Fractal');
       tray.setContextMenu(
         Menu.buildFromTemplate([

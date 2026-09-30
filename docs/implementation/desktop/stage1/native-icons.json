@@ -1,0 +1,74 @@
+{
+  "masterGeometryPreserved": true,
+  "masterCopyExact": true,
+  "nativeSizes": [
+    16,
+    24,
+    32,
+    48,
+    64,
+    128,
+    256
+  ],
+  "contrast": [
+    {
+      "size": 16,
+      "darkestPixel": [
+        50,
+        49,
+        45,
+        255
+      ],
+      "strongestStrokeContrastOnTile": 12.16
+    },
+    {
+      "size": 24,
+      "darkestPixel": [
+        40,
+        39,
+        36,
+        255
+      ],
+      "strongestStrokeContrastOnTile": 13.95
+    },
+    {
+      "size": 32,
+      "darkestPixel": [
+        40,
+        39,
+        35,
+        255
+      ],
+      "strongestStrokeContrastOnTile": 13.96
+    },
+    {
+      "size": 48,
+      "darkestPixel": [
+        40,
+        39,
+        35,
+        255
+      ],
+      "strongestStrokeContrastOnTile": 13.96
+    }
+  ],
+  "observedNativeIcons": [
+    {
+      "artifact": "packaged-exe-icon.png",
+      "size": [
+        32,
+        32
+      ],
+      "pixelMatch32pxExport": true
+    },
+    {
+      "artifact": "installer-icon.png",
+      "size": [
+        32,
+        32
+      ],
+      "pixelMatch32pxExport": true
+    }
+  ],
+  "limits": "Extracted executable resources and renderer startup checked; installed shortcut, taskbar and OS tray appearance not visually inspected."
+}

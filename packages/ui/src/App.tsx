@@ -1,5 +1,17 @@
 import { Suspense, lazy, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type JSX, type RefObject } from 'react';
-import type { AppError, Block, Connection, InkStroke, PaperStructure, Highlight, Paper, Region, RestartTranslationRequest, Snapshot } from '@fractal/shared';
+import type {
+  AppError,
+  ReadProgress,
+  Block,
+  Connection,
+  InkStroke,
+  PaperStructure,
+  Highlight,
+  Paper,
+  Region,
+  RestartTranslationRequest,
+  Snapshot,
+} from '@fractal/shared';
 import { ChatBoundary } from './components/ChatBoundary';
 import type { ChatQuote } from './components/ChatPanel';
 import { HighlightPopover } from './components/HighlightLayer';
@@ -33,6 +45,7 @@ import { Masthead, type ShellView } from './shell/Masthead';
 import { OmniInput } from './shell/OmniInput';
 import { paperTitle } from './shell/paper-format';
 import { SettingsScreen } from './shell/SettingsScreen';
+import { Sidebar } from './shell/Sidebar';
 import { THEME_CHOICES, nextTheme, useTheme } from './shell/theme';
 import {
   beginProgrammaticScroll,
@@ -221,6 +234,8 @@ export function App(): JSX.Element {
   const [resetting, setResetting] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState<string | null>(null);
 
+  const resumeRead = useRef<ReadProgress | null>(null);
+  const [renderedPaperKey, setRenderedPaperKey] = useState<string | null>(null);
   const [doc, setDoc] = useState<PDFDocumentProxy | null>(null);
   const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
@@ -325,6 +340,15 @@ export function App(): JSX.Element {
     void loadLibrary();
   }, [refreshConnection, loadLibrary]);
 
+  // Bibliography and cached reader files can arrive from another paired device.
+  useEffect(() => {
+    if (paperKey !== null || view !== 'library') return;
+    const timer = window.setInterval(() => {
+      if (document.visibilityState === 'visible') void loadLibrary();
+    }, 20_000);
+    return () => window.clearInterval(timer);
+  }, [paperKey, view, loadLibrary]);
+
   // --------------------------------------------------------------- snapshot
 
   const applySnapshot = useCallback((next: Snapshot) => {
@@ -411,6 +435,8 @@ export function App(): JSX.Element {
     setPaperKey(key);
     setSnapshot(null);
     setDoc(null);
+    resumeRead.current = null;
+    setRenderedPaperKey(null);
     setPageCount(0);
     setCurrentPage(1);
     setHighlights([]);
@@ -434,6 +460,8 @@ export function App(): JSX.Element {
     setPaperKey(null);
     setSnapshot(null);
     setDoc(null);
+    resumeRead.current = null;
+    setRenderedPaperKey(null);
     setPageCount(0);
     setCurrentPage(1);
     setHighlights([]);
@@ -522,8 +550,9 @@ export function App(): JSX.Element {
       setError(null);
       setBusy(true);
       try {
-        const { paper: opened } = await client.openPaper(key);
+        const [{ paper: opened }, record] = await Promise.all([client.openPaper(key), hub.libraryRecord(key).catch(() => null)]);
         enterPaper(opened.paperKey);
+        resumeRead.current = record?.readProgress ?? null;
         await refresh(opened.paperKey);
       } catch (cause) {
         fail(cause);
@@ -922,6 +951,82 @@ export function App(): JSX.Element {
     },
     [paneBoxes],
   );
+
+  const onPdfRendered = useCallback(
+    (page: number) => {
+      const body = pdfBody.current;
+      const key = paperKeyRef.current;
+      if (!body || !key || !paneVisible(body) || document.visibilityState !== 'visible') return;
+      const resume = resumeRead.current;
+      if (resume && pageCount > 0) {
+        resumeRead.current = null;
+        const targetPage = Math.min(resume.page, pageCount);
+        setCurrentPage(targetPage);
+        const top = scrollTopForPosition({ page: targetPage, fraction: resume.scrollOffset ?? 0 }, paneBoxes('source'));
+        if (top !== null) scrollPaneTo('source', top);
+        if (targetPage !== page) return;
+      }
+      const node = pageNodes.current.get(page);
+      if (
+        !node ||
+        node.getBoundingClientRect().bottom <= body.getBoundingClientRect().top ||
+        node.getBoundingClientRect().top >= body.getBoundingClientRect().bottom
+      )
+        return;
+      setRenderedPaperKey(key);
+    },
+    [pageCount, paneBoxes, scrollPaneTo],
+  );
+
+  // An actual rendered, visible document records reading; acquisition and library browsing do not.
+  useEffect(() => {
+    if (!paperKey || renderedPaperKey !== paperKey || !doc || pageCount < 1) return;
+    const key = paperKey;
+    let timer: number | undefined;
+    let latest: ReadProgress | null = null;
+    let sent = '';
+    const flush = () => {
+      if (!latest || JSON.stringify(latest) === sent) return;
+      const progress = latest;
+      sent = JSON.stringify(progress);
+      void hub
+        .recordRead(key, progress)
+        .catch(() =>
+          setNotice(
+            language === 'ko'
+              ? '읽기 위치를 저장하지 못했습니다. 논문을 다시 열어 재시도하세요.'
+              : 'Reading position could not be saved. Reopen the paper to retry.',
+          ),
+        );
+    };
+    const observe = () => {
+      if (document.visibilityState !== 'visible') return;
+      const pane = paneVisible(pdfBody.current) ? 'source' : 'translation';
+      const body = pane === 'source' ? pdfBody.current : textBody.current;
+      if (!paneVisible(body)) return;
+      const position = panePosition(pane) ?? { page: 1, fraction: 0 };
+      latest = {
+        page: position.page,
+        scrollOffset: position.fraction,
+        fraction: Math.max(0, Math.min(1, (position.page - 1 + position.fraction) / pageCount)),
+      };
+      window.clearTimeout(timer);
+      timer = window.setTimeout(flush, 500);
+    };
+    const source = pdfBody.current;
+    const translation = textBody.current;
+    source?.addEventListener('scroll', observe, { passive: true });
+    translation?.addEventListener('scroll', observe, { passive: true });
+    document.addEventListener('visibilitychange', observe);
+    observe();
+    return () => {
+      window.clearTimeout(timer);
+      source?.removeEventListener('scroll', observe);
+      translation?.removeEventListener('scroll', observe);
+      document.removeEventListener('visibilitychange', observe);
+      flush();
+    };
+  }, [paperKey, renderedPaperKey, doc, pageCount, panePosition, language]);
 
   const changeZoom = useCallback(
     (delta: number) => {
@@ -1467,7 +1572,7 @@ export function App(): JSX.Element {
   }
 
   return (
-    <div className="app">
+    <div className={`app${paperKey === null ? ' app--workspace' : ''}`}>
       <Masthead
         view={paperKey !== null ? 'reader' : view}
         onNavigate={navigate}
@@ -1511,6 +1616,7 @@ export function App(): JSX.Element {
 
       {paperKey === null ? (
         <div className="app__page">
+          {view !== 'library' ? <Sidebar view={view} onNavigate={navigate} /> : null}
           {view === 'home' ? (
             <HomeScreen
               hub={hub}
@@ -1527,6 +1633,8 @@ export function App(): JSX.Element {
               onQueryChange={setLibraryQuery}
               onOpen={(key) => void openStored(key)}
               onRequestDelete={setDeleteConfirmation}
+              onImport={() => fileRef.current?.click()}
+              onNavigate={navigate}
               hub={hub}
             />
           ) : (
@@ -1619,6 +1727,7 @@ export function App(): JSX.Element {
               <section className={`pane ${activePane === 'source' ? '' : 'hidden'}`} style={{ flex: `0 0 ${split * 100}%` }} aria-label={t('reader.source')}>
                 <PdfPages
                   doc={doc}
+                  onRendered={onPdfRendered}
                   pageCount={pageCount}
                   currentPage={currentPage}
                   zoom={zoom}

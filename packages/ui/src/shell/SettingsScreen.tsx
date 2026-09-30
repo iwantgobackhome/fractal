@@ -1,3 +1,4 @@
+import { Selector } from '../components/Selector';
 import { useCallback, useEffect, useState, type JSX } from 'react';
 import { locale, t, type MessageKey } from '../i18n';
 import type {
@@ -57,7 +58,9 @@ function ModelSelect({
   onChange,
   allowInherit,
   label,
+  disabled = false,
 }: {
+  disabled?: boolean;
   providers: ProviderStatus[];
   value: AiChoice | undefined;
   onChange: (choice: AiChoice | undefined) => void;
@@ -66,27 +69,32 @@ function ModelSelect({
 }): JSX.Element {
   // Signed-out providers stay listed (marked), so a saved choice never silently shows as another model.
   const installed = providers.filter((p) => p.installed);
+  const key = value === undefined ? '' : choiceKey(value);
+  const options = [
+    ...(allowInherit ? [{ value: '', label: t('ai.inherit') }] : []),
+    ...installed.flatMap((p) =>
+      p.models.map((m) => ({
+        value: `${p.id}:${m.id}`,
+        label: m.label ?? m.id,
+        description: p.loggedIn ? PROVIDER_NAME[p.id] : t('ai.providerSignedOut', { name: PROVIDER_NAME[p.id] }),
+        disabled: !p.loggedIn,
+      })),
+    ),
+  ];
+  if (!options.some((option) => option.value === key) && value)
+    options.unshift({ value: key, label: value.model, description: t('settings.unavailable'), disabled: true });
   return (
-    <select
-      aria-label={label}
-      value={value === undefined ? '' : choiceKey(value)}
-      onChange={(event) => {
-        if (event.target.value === '') return onChange(undefined);
-        const [provider, ...model] = event.target.value.split(':');
+    <Selector
+      label={label}
+      value={key}
+      options={options}
+      disabled={disabled}
+      onChange={(key) => {
+        if (key === '') return onChange(undefined);
+        const [provider, ...model] = key.split(':');
         onChange({ provider: provider as AiChoice['provider'], model: model.join(':'), effort: value?.effort });
       }}
-    >
-      {allowInherit ? <option value="">{t('ai.inherit')}</option> : null}
-      {installed.map((p) => (
-        <optgroup key={p.id} label={p.loggedIn ? PROVIDER_NAME[p.id] : t('ai.providerSignedOut', { name: PROVIDER_NAME[p.id] })}>
-          {p.models.map((m) => (
-            <option key={m.id} value={`${p.id}:${m.id}`}>
-              {m.label ?? m.id}
-            </option>
-          ))}
-        </optgroup>
-      ))}
-    </select>
+    />
   );
 }
 
@@ -97,6 +105,7 @@ function AiSection({ hub }: { hub: HubApi }): JSX.Element {
   const loadAccounts = useCallback(() => hub.accounts(), [hub]);
   const [accounts, , reloadAccounts] = useLoad<AiAccount[]>(loadAccounts);
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const accountsChanged = useCallback(() => {
     reloadAccounts();
     recheck();
@@ -106,11 +115,17 @@ function AiSection({ hub }: { hub: HubApi }): JSX.Element {
   if (data === null) return <Unavailable />;
 
   const save = async (settings: AiSettings) => {
+    const previous = data;
     setData({ ...data, settings });
     setSaving(true);
+    setSaveError(null);
     try {
       const next = await hub.saveAiSettings(settings);
-      if (next !== null) setData(next);
+      if (next === null) throw new Error(t('settings.unavailable'));
+      setData(next);
+    } catch (cause) {
+      setData(previous);
+      setSaveError(cause instanceof Error ? cause.message : t('errors.request'));
     } finally {
       setSaving(false);
     }
@@ -133,25 +148,20 @@ function AiSection({ hub }: { hub: HubApi }): JSX.Element {
           providers={data.providers}
           value={data.settings.default}
           allowInherit={false}
+          disabled={saving}
           onChange={(choice) => choice !== undefined && void save({ ...data.settings, default: choice })}
         />
         {efforts.length > 0 ? (
-          <select
-            aria-label={t('ai.effort')}
+          <Selector
+            label={t('ai.effort')}
             value={data.settings.default.effort ?? ''}
-            onChange={(event) =>
-              void save({ ...data.settings, default: { ...data.settings.default, effort: (event.target.value || undefined) as AiChoice['effort'] } })
-            }
-          >
-            <option value="">{t('ai.effortDefault')}</option>
-            {efforts.map((e) => (
-              <option key={e} value={e}>
-                {e}
-              </option>
-            ))}
-          </select>
+            disabled={saving}
+            options={[{ value: '', label: t('ai.effortDefault') }, ...efforts.map((value) => ({ value, label: value }))]}
+            onChange={(value) => void save({ ...data.settings, default: { ...data.settings.default, effort: (value || undefined) as AiChoice['effort'] } })}
+          />
         ) : null}
         {saving ? <span className="settings__quiet">{t('settings.saving')}</span> : null}
+        {saveError ? <span role="alert">{saveError}</span> : null}
       </div>
 
       <table className="plain-table">
@@ -166,6 +176,7 @@ function AiSection({ hub }: { hub: HubApi }): JSX.Element {
                   providers={data.providers}
                   value={data.settings.overrides[f.id]}
                   allowInherit
+                  disabled={saving}
                   onChange={(choice) => {
                     const overrides = { ...data.settings.overrides };
                     if (choice === undefined) {
@@ -397,19 +408,12 @@ export function SettingsScreen({ hub, theme, onThemeChange, preferences, onPrefe
 
         <section id="settings-appearance" className="settings__section" aria-labelledby="settings-appearance-h">
           <h2 id="settings-appearance-h">{t('settings.appearance')}</h2>
-          <div className="theme-picker" role="radiogroup" aria-label={t('settings.theme')}>
-            {THEME_CHOICES.map((choice) => (
-              <label key={choice.value} className="theme-swatch" data-swatch={choice.value}>
-                <input type="radio" name="theme" value={choice.value} checked={theme === choice.value} onChange={() => onThemeChange(choice.value)} />
-                <span className="theme-swatch__page" aria-hidden="true">
-                  <span />
-                  <span />
-                  <span />
-                </span>
-                <span>{t(choice.label)}</span>
-              </label>
-            ))}
-          </div>
+          <Selector
+            label={t('settings.theme')}
+            value={theme}
+            onChange={(value) => onThemeChange(value as ThemeChoice)}
+            options={THEME_CHOICES.map((choice) => ({ value: choice.value, label: t(choice.label) }))}
+          />
         </section>
 
         <section id="settings-interests" className="settings__section" aria-labelledby="settings-interests-h">

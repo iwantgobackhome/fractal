@@ -48,6 +48,7 @@ export interface PageCanvasProps {
    * never shrinks to an empty canvas while the page loads. */
   size?: Size;
   onSize(page: number, size: Size): void;
+  onRendered?(page: number): void;
   registerPage(page: number, element: HTMLDivElement | null): void;
   /** Whatever the caller wants absolutely-positioned over the rendered page. */
   children?: ReactNode;
@@ -75,12 +76,15 @@ export function PageCanvas({
   ariaLabel,
   size,
   onSize,
+  onRendered,
   registerPage,
   children,
   onMouseDown,
   onMouseUp,
   pageColors,
 }: PageCanvasProps): JSX.Element {
+  const renderedCallback = useRef(onRendered);
+  renderedCallback.current = onRendered;
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [renderedSize, setRenderedSize] = useState<Size | null>(null);
   const box = size ?? renderedSize;
@@ -116,6 +120,7 @@ export function PageCanvas({
       task = render;
       try {
         await render.promise;
+        if (!cancelled) renderedCallback.current?.(page);
       } catch {
         /* superseded by a newer zoom or unmounted */
       }
@@ -201,6 +206,7 @@ interface PageViewProps {
   blocks: Block[];
   highlights: Highlight[];
   onSize(page: number, size: Size): void;
+  onRendered?(page: number): void;
   registerPage(page: number, element: HTMLDivElement | null): void;
   onSelectBlock(block: Block): void;
   onSelectText(selection: PendingSelection): void;
@@ -229,6 +235,7 @@ function PageView({
   blocks,
   highlights,
   onSize,
+  onRendered,
   registerPage,
   onSelectBlock,
   onSelectText,
@@ -315,6 +322,7 @@ function PageView({
       dpr={dpr}
       size={size}
       onSize={onSize}
+      onRendered={onRendered}
       registerPage={registerPage}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
@@ -364,6 +372,7 @@ export interface PdfPaneProps {
    * not, so moving the drawn window never moves what the reader is looking at. */
   pageIntrinsicSize(page: number): Size;
   onSize(page: number, size: Size): void;
+  onRendered?(page: number): void;
   registerPage(page: number, element: HTMLDivElement | null): void;
   bodyRef: React.RefObject<HTMLDivElement | null>;
   onScroll(): void;
@@ -392,6 +401,7 @@ export function PdfPages(props: PdfPaneProps): JSX.Element {
     highlights,
     pageIntrinsicSize,
     onSize,
+    onRendered,
     registerPage,
     bodyRef,
     onScroll,
@@ -428,6 +438,7 @@ export function PdfPages(props: PdfPaneProps): JSX.Element {
             blocks={blocks}
             highlights={highlights}
             onSize={onSize}
+            onRendered={onRendered}
             registerPage={registerPage}
             onSelectBlock={onSelectBlock}
             onSelectText={onSelectText}

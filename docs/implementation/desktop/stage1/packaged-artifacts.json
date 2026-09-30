@@ -1,0 +1,12 @@
+[
+  {
+    "path": "dist\\installer\\win-unpacked\\Fractal.exe",
+    "bytes": 246032896,
+    "sha256": "3ed07e6d7ee67f77104db12c23b80999dafdb1898f3ab141a96f3ecf1ea4b402"
+  },
+  {
+    "path": "dist\\installer\\Fractal Setup 0.1.0.exe",
+    "bytes": 117534350,
+    "sha256": "d7bbfad7456d5b41e0b3db991b1817060066ca36627f01c83ba02710d40e9564"
+  }
+]

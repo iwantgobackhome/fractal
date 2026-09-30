@@ -6,7 +6,7 @@ import type { FeedEntry, FeedSection, HubApi } from './hub-api';
 import { ArticleView } from './ArticleView';
 import { InterestPicker } from './InterestPicker';
 import { TopicManager } from './TopicManager';
-import { authorsLine, paperTitle, sourceLabel } from './paper-format';
+import { authorsLine } from './paper-format';
 
 interface Props {
   hub: HubApi;
@@ -283,9 +283,9 @@ function sectionTitle(section: FeedSection): { name: string; code: string | null
 
 /**
  * The front page: this week's papers and news in the reader's fields, set like a
- * journal's first page, with the reader's own shelf alongside.
+ * journal's first page, with field news alongside.
  */
-export function HomeScreen({ hub, papers, onOpen, onOpenExternal, onShowLibrary, onEditInterests }: Props): JSX.Element {
+export function HomeScreen({ hub, onOpenExternal, onEditInterests }: Props): JSX.Element {
   const [feed, setFeed] = useState<FeedResponse | null | undefined>(undefined);
   const [hasInterests, setHasInterests] = useState<boolean | null>(null);
   const [saving, setSaving] = useState<Set<string>>(new Set());
@@ -334,7 +334,6 @@ export function HomeScreen({ hub, papers, onOpen, onOpenExternal, onShowLibrary,
       );
   };
 
-  const recent = [...papers].filter((p) => p.status === 'ready' || p.status === 'partial').sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   const sections = feed?.sections as
     (FeedResponse['sections'] & { newsByField?: FeedSection[]; generalNews?: FeedEntry[]; newsByTopic?: TopicNews[] }) | undefined;
   const seen = new Set<string>();
@@ -411,29 +410,6 @@ export function HomeScreen({ hub, papers, onOpen, onOpenExternal, onShowLibrary,
               </section>
 
               <aside className="home-front__column" aria-label={t('home.aside')}>
-                {recent.length > 0 ? (
-                  <section aria-labelledby="home-shelf">
-                    <h2 id="home-shelf" className="home-front__kicker">
-                      {t('home.continue')}
-                    </h2>
-                    <ol className="home-front__list">
-                      {recent.slice(0, 3).map((paper) => (
-                        <li key={paper.paperKey}>
-                          <button type="button" onClick={() => onOpen(paper.paperKey)}>
-                            <span className="home-front__item-title">{paperTitle(paper)}</span>
-                            <span className="home-front__item-meta">{sourceLabel(paper)}</span>
-                          </button>
-                        </li>
-                      ))}
-                    </ol>
-                    {papers.length > 3 ? (
-                      <button type="button" className="text-link" onClick={onShowLibrary}>
-                        {t('home.allLibrary')}
-                      </button>
-                    ) : null}
-                  </section>
-                ) : null}
-
                 {sections.rankings.length > 0 ? (
                   <section aria-labelledby="home-rankings">
                     <h2 id="home-rankings" className="home-front__kicker">

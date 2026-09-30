@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "keyboard": true,
+  "disabledSkipped": true,
+  "disabledNeverSelected": true,
+  "activeValuePreservedOnReorder": true,
+  "activeDescendantValidOnRemoval": true,
+  "loadingAndEmptyDisable": true,
+  "escapeFocus": true,
+  "outsideAndTabClose": true,
+  "viewportAndOverflowContainment": {
+    "x": 17,
+    "y": 237,
+    "width": 776,
+    "height": 350
+  },
+  "longListEndVisible": {
+    "x": 22,
+    "y": 551,
+    "width": 766,
+    "height": 35
+  },
+  "exceptions": []
+}

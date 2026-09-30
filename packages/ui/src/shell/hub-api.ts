@@ -19,6 +19,10 @@ import type {
   ProviderModel,
   ProviderStatus as HubProviderStatus,
   UsageRecord,
+  LibraryRecord,
+  LibraryPatch,
+  Folder,
+  ReadProgress,
 } from '@fractal/shared';
 import { TOKEN_HEADER } from '../lib/api';
 import { t } from '../i18n';
@@ -285,6 +289,31 @@ export class HubApi {
   async providers(): Promise<ProvidersResult | null> {
     const raw = await this.call<Parameters<typeof HubApi.providers>[0]>('/api/ai/providers');
     return raw === null ? null : HubApi.providers(raw);
+  }
+
+  library(): Promise<LibraryRecord[] | null> {
+    return this.call('/api/library');
+  }
+  libraryRecord(key: string): Promise<LibraryRecord | null> {
+    return this.call(`/api/library/${encodeURIComponent(key)}`);
+  }
+  patchLibrary(key: string, patch: LibraryPatch): Promise<LibraryRecord | null> {
+    return this.call(`/api/library/${encodeURIComponent(key)}`, { method: 'PATCH', body: patch });
+  }
+  recordRead(key: string, readProgress: ReadProgress): Promise<LibraryRecord | null> {
+    return this.call(`/api/papers/${encodeURIComponent(key)}/read`, { method: 'POST', body: { readProgress } });
+  }
+  folders(): Promise<Folder[] | null> {
+    return this.call('/api/library/folders');
+  }
+  createFolder(name: string, parentId: string | null): Promise<Folder | null> {
+    return this.call('/api/library/folders', { method: 'POST', body: { id: crypto.randomUUID(), name, parentId } });
+  }
+  patchFolder(id: string, patch: { name?: string; parentId?: string | null }): Promise<Folder | null> {
+    return this.call(`/api/library/folders/${encodeURIComponent(id)}`, { method: 'PATCH', body: patch });
+  }
+  deleteFolder(id: string): Promise<{ deleted: boolean } | null> {
+    return this.call(`/api/library/folders/${encodeURIComponent(id)}`, { method: 'DELETE' });
   }
 
   /** The hub answers with the saved settings; the provider list is fetched again. */

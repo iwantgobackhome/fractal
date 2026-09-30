@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "name": "Fractal",
+  "packaged": true,
+  "appPath": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\dist\\installer\\win-unpacked\\resources\\app.asar",
+  "windowIcon": {
+    "width": 256,
+    "height": 256
+  },
+  "trayIcon": {
+    "width": 32,
+    "height": 32
+  },
+  "isolatedData": true,
+  "readerAssetsServed": true,
+  "emptyIndexAction": true,
+  "selectorKeyboard": true,
+  "exceptions": [],
+  "limits": "Packaged application startup verified; no installer installation or OS shortcut/tray visual inspection."
+}

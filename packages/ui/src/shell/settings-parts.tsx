@@ -1,3 +1,4 @@
+import { Selector } from '../components/Selector';
 import { useCallback, useEffect, useState, type JSX } from 'react';
 import { t } from '../i18n';
 import type { HubApi, Preferences, ProviderStatus, ProvidersResult } from './hub-api';
@@ -88,38 +89,36 @@ export function LanguageFields({ preferences, onChange }: { preferences: Prefere
     <div className="language-fields">
       <div className="field-row">
         <span className="field-row__label">{t('lang.ui')}</span>
-        <div className="segmented" role="group" aria-label={t('lang.ui')}>
-          {UI_LANGUAGES.map((l) => (
-            <button key={l.code} type="button" aria-pressed={preferences.uiLanguage === l.code} onClick={() => onChange({ uiLanguage: l.code })}>
-              {l.name}
-            </button>
-          ))}
-        </div>
+        <Selector
+          label={t('lang.ui')}
+          value={preferences.uiLanguage}
+          options={UI_LANGUAGES.map((l) => ({ value: l.code, label: l.name }))}
+          onChange={(value) => onChange({ uiLanguage: value as Preferences['uiLanguage'] })}
+        />
       </div>
       <div className="field-row">
         <label className="field-row__label" htmlFor="pref-translation">
           {t('lang.translation')}
         </label>
-        <select id="pref-translation" value={preferences.translationLanguage} onChange={(event) => onChange({ translationLanguage: event.target.value })}>
-          {TRANSLATION_LANGUAGES.map((l) => (
-            <option key={l.code} value={l.code}>
-              {l.name}
-            </option>
-          ))}
-        </select>
+        <Selector
+          id="pref-translation"
+          label={t('lang.translation')}
+          value={preferences.translationLanguage}
+          options={TRANSLATION_LANGUAGES.map((l) => ({ value: l.code, label: l.name }))}
+          onChange={(value) => onChange({ translationLanguage: value })}
+        />
       </div>
       <div className="field-row">
         <label className="field-row__label" htmlFor="pref-answer">
           {t('lang.answer')}
         </label>
-        <select id="pref-answer" value={preferences.answerLanguage} onChange={(event) => onChange({ answerLanguage: event.target.value })}>
-          <option value="auto">{t('lang.answerAuto')}</option>
-          {TRANSLATION_LANGUAGES.map((l) => (
-            <option key={l.code} value={l.code}>
-              {l.name}
-            </option>
-          ))}
-        </select>
+        <Selector
+          id="pref-answer"
+          label={t('lang.answer')}
+          value={preferences.answerLanguage}
+          options={[{ value: 'auto', label: t('lang.answerAuto') }, ...TRANSLATION_LANGUAGES.map((l) => ({ value: l.code, label: l.name }))]}
+          onChange={(value) => onChange({ answerLanguage: value })}
+        />
       </div>
     </div>
   );

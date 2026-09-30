@@ -1,6 +1,7 @@
 import type { JSX, ReactNode, RefObject } from 'react';
 import { t, type MessageKey } from '../i18n';
 import { FractalMark } from './FractalMark';
+import { locale } from '../i18n';
 
 export type ShellView = 'home' | 'library' | 'settings';
 
@@ -24,23 +25,25 @@ const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigat
 export function Masthead({ view, onNavigate, input, account, onOpenPalette, paletteButtonRef }: Props): JSX.Element {
   return (
     <header className="masthead">
-      <button type="button" className="masthead__brand" onClick={() => onNavigate('home')} aria-label={t('nav.brandHome')}>
-        <FractalMark />
-        <span className="masthead__word">Fractal</span>
-      </button>
-      <nav className="masthead__nav" aria-label={t('nav.main')}>
-        {NAV.map((item) => (
-          <button
-            key={item.view}
-            type="button"
-            className="masthead__link"
-            aria-current={view === item.view ? 'page' : undefined}
-            onClick={() => onNavigate(item.view)}
-          >
-            {t(item.label)}
+      {view === 'reader' ? (
+        <>
+          <button type="button" className="masthead__brand" onClick={() => onNavigate('home')} aria-label={t('nav.brandHome')}>
+            <FractalMark />
+            <span className="masthead__word">Fractal</span>
           </button>
-        ))}
-      </nav>
+          <nav className="masthead__nav" aria-label={t('nav.main')}>
+            {NAV.map((item) => (
+              <button key={item.view} type="button" className="masthead__link" onClick={() => onNavigate(item.view)}>
+                {t(item.label)}
+              </button>
+            ))}
+          </nav>
+        </>
+      ) : (
+        <span className="masthead__context">
+          READ · DISCOVER <span>/</span> {t(view === 'home' ? 'nav.home' : view === 'library' ? 'nav.library' : 'nav.settings')}
+        </span>
+      )}
       <div className="masthead__input">{input}</div>
       <div className="masthead__end">
         <button ref={paletteButtonRef} type="button" className="masthead__palette" onClick={onOpenPalette} aria-label={t('nav.openPalette')}>
@@ -48,6 +51,9 @@ export function Masthead({ view, onNavigate, input, account, onOpenPalette, pale
           <kbd>K</kbd>
         </button>
         {account}
+        {view !== 'reader' ? (
+          <time className="masthead__date">{new Intl.DateTimeFormat(locale(), { year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date())}</time>
+        ) : null}
       </div>
     </header>
   );
