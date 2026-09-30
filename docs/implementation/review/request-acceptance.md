@@ -6,7 +6,7 @@ Coordinator checkpoint: accepted root `1a28b75` plus coordination records. This 
 | --- | --- | --- |
 | 1. PC UI and consistent icons | A scholarly design; C stage1 real library and packaged icon resources; C stage2 real reader | C final discovery, current Windows package, integrated visual review |
 | 2. Selected text/figure question history survives close | B durable generation/history and persisted context/citations; C stage2 real Hub/SSE, close/reopen/restart | D stage3 actual HTTP lifecycle; final integrated history/source status review |
-| 3. Recent vs explicitly saved; folders | B foundation/discovery; C stage1 real library flows; D stage2 Room migration and immutable queue | E actual native HTTP offline/reconnect/CAS bridge; consistent discovery/save/PDF link states |
+| 3. Recent vs explicitly saved; folders | B foundation/discovery; C stage1 real library flows; D stage2 Room migration and immutable queue; E accepted actual native HTTP offline/reconnect/CAS/delete bridge | Consistent discovery/save/PDF link states in final platform screens |
 | 4. Custom model/language selectors | C stage1 dynamic keyboard/focus selector; D stage2 custom focus and font captures; B per-request BCP47/auto contract | C/D final reader and discovery controls, per-question language persistence |
 | 5. Journals/conferences beyond arXiv | B accepted OpenAlex/Crossref taxonomy and publication/source metadata | C final and D stage4 actual discovery presentation, honest unknown/source failures |
 | 6. App UI details | A design, D stage2 final phone/tablet library, themes and enlarged font | D stage3 discoverable compact tools and scholarly reader hierarchy; D stage4 discovery; final captures |
@@ -27,5 +27,6 @@ Coordinator checkpoint: accepted root `1a28b75` plus coordination records. This 
 - `apps/android/qa/reader-interaction-stability.md`
 - `apps/android/qa/android-library-foundation.md`
 - `docs/implementation/qa/reader-prerequisite/REVIEW.md`
+- `docs/implementation/qa/native-bridge/REVIEW.md`
 
 The final independent reviewer should inspect accepted owner evidence first, then execute concrete remaining integration risks using the current accepted source. Earlier stage2 APK evidence cannot certify subsequent reader or discovery behavior. Fixture provider success/error proves application handling, not live external-provider availability. Untagged historical geometry remains unchanged; translated copy/quote is in scope, translated-to-original annotation mapping is excluded.
