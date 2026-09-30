@@ -148,6 +148,80 @@ function Story({ item, withPicture }: { item: FeedEntry; withPicture: boolean })
   );
 }
 
+const FIELD_NEWS_SHOWN = 6;
+const BOARD_SHOWN = 8;
+
+/** A field's stories: the first few, and the rest a click away. */
+function FieldNews({ items }: { items: FeedEntry[] }): JSX.Element {
+  const [open, setOpen] = useState(false);
+  const shown = open ? items : items.slice(0, FIELD_NEWS_SHOWN);
+  return (
+    <div className="field-section__news">
+      <h3 className="home-front__kicker">{t('home.fieldNews')}</h3>
+      <ul className="stories">
+        {shown.map((item) => (
+          <Story key={item.id} item={item} withPicture />
+        ))}
+      </ul>
+      {items.length > FIELD_NEWS_SHOWN ? (
+        <button type="button" className="text-link stories__more" onClick={() => setOpen(!open)}>
+          {open ? t('home.fewerNews') : t('home.moreNewsCount', { count: items.length - FIELD_NEWS_SHOWN })}
+        </button>
+      ) : null}
+    </div>
+  );
+}
+
+/** One story on the news board: picture on top when there is one. */
+function NewsCard({ item }: { item: FeedEntry }): JSX.Element {
+  return (
+    <article className="news-card" data-picture={hasImage(item)}>
+      <a href={item.url} target="_blank" rel="noreferrer noopener" className="news-card__link">
+        <Picture item={item} kind="photo" />
+        <span className="news-card__title">{item.title}</span>
+      </a>
+      <span className="story__meta">
+        {item.source.replace(/^news:/, '')}
+        {' · '}
+        {relative(item.publishedAt)}
+      </span>
+    </article>
+  );
+}
+
+/** Science and technology news beyond the reader's fields. */
+function NewsBoard({ items }: { items: FeedEntry[] }): JSX.Element {
+  const [open, setOpen] = useState(false);
+  const cards = items.slice(0, BOARD_SHOWN);
+  const rest = items.slice(BOARD_SHOWN);
+  return (
+    <section className="field-section news-board" aria-labelledby="home-general-news">
+      <h2 id="home-general-news" className="field-section__title">
+        {t('home.generalNews')}
+      </h2>
+      <div className="news-board__grid">
+        {cards.map((item) => (
+          <NewsCard key={item.id} item={item} />
+        ))}
+      </div>
+      {rest.length > 0 ? (
+        <>
+          {open ? (
+            <ul className="stories news-board__rest">
+              {rest.map((item) => (
+                <Story key={item.id} item={item} withPicture />
+              ))}
+            </ul>
+          ) : null}
+          <button type="button" className="text-link stories__more" onClick={() => setOpen(!open)}>
+            {open ? t('home.fewerNews') : t('home.moreNewsCount', { count: rest.length })}
+          </button>
+        </>
+      ) : null}
+    </section>
+  );
+}
+
 function sectionTitle(section: FeedSection): { name: string; code: string | null } {
   if (section.field.startsWith('custom:')) return { name: section.label ?? section.field.slice(7), code: null };
   return { name: section.label ?? fieldName(section.field), code: section.field };
@@ -205,7 +279,7 @@ export function HomeScreen({ hub, papers, onOpen, onOpenExternal, onShowLibrary,
   };
 
   const recent = [...papers].filter((p) => p.status === 'ready' || p.status === 'partial').sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  const sections = feed?.sections as (FeedResponse['sections'] & { newsByField?: FeedSection[] }) | undefined;
+  const sections = feed?.sections as (FeedResponse['sections'] & { newsByField?: FeedSection[]; generalNews?: FeedEntry[] }) | undefined;
   const seen = new Set<string>();
   const lead: FeedEntry[] = sections === undefined ? [] : once(sections.top, seen, 7);
   const recommended: FeedEntry[] = sections === undefined ? [] : once(sections.recommended, seen, 6);
@@ -216,10 +290,11 @@ export function HomeScreen({ hub, papers, onOpen, onOpenExternal, onShowLibrary,
       : (sections.byField as FeedSection[]).map((section) => ({
           section,
           items: once(section.items, seen, 6),
-          news: once(newsByField.get(section.field)?.items ?? [], seen, 4),
+          news: once(newsByField.get(section.field)?.items ?? [], seen, 30),
         }));
   // Stories that belong to no field: general lab news, or everything from a hub without field news.
   const otherNews: FeedEntry[] = sections === undefined ? [] : once(sections.news, seen, 6);
+  const generalNews: FeedEntry[] = sections === undefined ? [] : once(sections.generalNews ?? [], seen, 40);
   const empty = sections === undefined || (sections.top.length === 0 && sections.rankings.length === 0 && sections.news.length === 0);
   const headline = (item: FeedEntry, size: 'lead' | 'normal' | 'compact') => (
     <Headline
@@ -340,6 +415,8 @@ export function HomeScreen({ hub, papers, onOpen, onOpenExternal, onShowLibrary,
             </section>
           ) : null}
 
+          {generalNews.length > 0 ? <NewsBoard items={generalNews} /> : null}
+
           {fields.map(({ section, items, news }) => {
             if (items.length === 0 && news.length === 0) return null;
             const title = sectionTitle(section);
@@ -350,16 +427,7 @@ export function HomeScreen({ hub, papers, onOpen, onOpenExternal, onShowLibrary,
                 </h2>
                 <div className="field-section__body">
                   {items.length > 0 ? <div className="field-section__grid">{items.map((item) => headline(item, 'compact'))}</div> : null}
-                  {news.length > 0 ? (
-                    <div className="field-section__news">
-                      <h3 className="home-front__kicker">{t('home.fieldNews')}</h3>
-                      <ul className="stories">
-                        {news.map((item) => (
-                          <Story key={item.id} item={item} withPicture />
-                        ))}
-                      </ul>
-                    </div>
-                  ) : null}
+                  {news.length > 0 ? <FieldNews items={news} /> : null}
                 </div>
               </section>
             );

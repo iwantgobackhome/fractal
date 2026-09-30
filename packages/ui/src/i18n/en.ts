@@ -201,6 +201,9 @@ export const en: Messages = {
     reasonSimilarTo: 'Based on “{title}” in your library',
     similarDeck: 'Chosen by Semantic Scholar from the papers you saved.',
     moreNews: 'More news',
+    generalNews: 'Science and technology news',
+    moreNewsCount: '{count} more stories',
+    fewerNews: 'Show fewer',
   },
   welcome: {
     skip: 'Skip',
