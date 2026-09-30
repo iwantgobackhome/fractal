@@ -3,6 +3,7 @@ import type { InkStroke } from '@fractal/shared';
 import { isHighlighter, strokeHits, strokeOutline, type InkPoint } from './ink';
 
 interface Props {
+  enabled?: boolean;
   page: number;
   strokes: InkStroke[];
   /** Ink colour for new strokes (a CSS colour; the theme's ink by default). */
@@ -20,12 +21,12 @@ const ERASER_RADIUS = 0.012;
  * a pen on the desktop (Surface, Wacom) writes directly, and its eraser end or barrel
  * button erases. The mouse keeps selecting text: only `pointerType === 'pen'` is taken.
  */
-export function InkLayer({ page, strokes, color, onCreate, onErase }: Props): JSX.Element {
+export function InkLayer({ page, strokes, color, onCreate, onErase, enabled = true }: Props): JSX.Element {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [size, setSize] = useState<{ width: number; height: number } | null>(null);
   const [live, setLive] = useState<InkPoint[] | null>(null);
-  const latest = useRef({ strokes, onCreate, onErase, color });
-  latest.current = { strokes, onCreate, onErase, color };
+  const latest = useRef({ strokes, onCreate, onErase, color, enabled });
+  latest.current = { strokes, onCreate, onErase, color, enabled };
 
   // The layer is sized by its page; redraw at the page's current pixel size.
   useEffect(() => {
@@ -56,7 +57,8 @@ export function InkLayer({ page, strokes, color, onCreate, onErase }: Props): JS
       }
     };
     const down = (event: PointerEvent) => {
-      if (event.pointerType !== 'pen') return;
+      if (event.pointerType !== 'pen' || !latest.current.enabled) return;
+      if (event.target instanceof Element && event.target.closest('button,textarea,.sticky-note')) return;
       event.preventDefault();
       try {
         host.setPointerCapture(event.pointerId);

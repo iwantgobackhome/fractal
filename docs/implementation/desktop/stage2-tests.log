@@ -1,0 +1,20 @@
+
+> @fractal/ui@0.1.0 test
+> vitest run
+
+
+ RUN  v3.2.7 C:/Users/Home/orca/workspaces/fractal/fractal-desktop/packages/ui
+
+ ✓ src/reader/ink.test.ts (3 tests) 5ms
+ ✓ src/lib/geometry.test.ts (2 tests) 3ms
+ ✓ src/shell/sse.test.ts (1 test) 5ms
+ ✓ src/shell/classify.test.ts (3 tests) 5ms
+ ✓ src/shell/fields.test.ts (2 tests) 13ms
+ ✓ src/i18n/i18n.test.ts (2 tests) 15ms
+ ✓ src/lib/native-selection.test.ts (3 tests) 15ms
+ ✓ src/shell/shell.test.ts (6 tests) 7ms
+
+ Test Files  8 passed (8)
+      Tests  22 passed (22)
+   Start at  06:49:48
+   Duration  829ms (transform 600ms, setup 0ms, collect 1.35s, tests 69ms, environment 2ms, prepare 1.54s)

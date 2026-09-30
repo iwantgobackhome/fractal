@@ -23,6 +23,8 @@ import type {
   LibraryPatch,
   Folder,
   ReadProgress,
+  HistoryEntry,
+  PdfTextLayout,
 } from '@fractal/shared';
 import { TOKEN_HEADER } from '../lib/api';
 import { t } from '../i18n';
@@ -251,6 +253,8 @@ export interface ExplainRequest {
   page: number;
   bbox: StructureBox;
   surroundingText?: string;
+  requestId?: string;
+  selection?: ModelSelection;
 }
 
 export class HubApi {
@@ -354,6 +358,42 @@ export class HubApi {
 
   annotations(paperKey: string): Promise<Annotation[] | null> {
     return this.call(`/api/papers/${encodeURIComponent(paperKey)}/annotations`);
+  }
+
+  textLayout(paperKey: string, page: number): Promise<PdfTextLayout | null> {
+    return this.call(`/api/papers/${encodeURIComponent(paperKey)}/text-layout?page=${page}`);
+  }
+
+  async history(paperKey: string): Promise<HistoryEntry[] | null> {
+    const result = await this.call<{ history: HistoryEntry[] }>(`/api/papers/${encodeURIComponent(paperKey)}/history`);
+    return result?.history ?? null;
+  }
+
+  cancelHistory(paperKey: string, id: string): Promise<unknown> {
+    return this.call(`/api/papers/${encodeURIComponent(paperKey)}/history/${encodeURIComponent(id)}/cancel`, { method: 'POST', body: {} });
+  }
+
+  deleteHistory(paperKey: string, id: string): Promise<unknown> {
+    return this.call(`/api/papers/${encodeURIComponent(paperKey)}/history/${encodeURIComponent(id)}`, { method: 'DELETE' });
+  }
+
+  async *ask(
+    paperKey: string,
+    request: { question: string; requestId: string; selectedText?: string; page?: number; rect?: StructureBox; selection?: ModelSelection },
+  ): AsyncGenerator<AiSseEvent> {
+    const headers: Record<string, string> = { accept: 'text/event-stream', 'content-type': 'application/json' };
+    if (this.token !== null) headers[TOKEN_HEADER] = this.token;
+    const response = await this.fetchImpl(`/api/papers/${encodeURIComponent(paperKey)}/ask`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(request),
+      credentials: 'same-origin',
+    });
+    if (!response.ok || !response.body) {
+      const payload = (await response.json().catch(() => null)) as { error?: { message?: string } } | null;
+      throw new Error(payload?.error?.message ?? t('errors.explain'));
+    }
+    yield* readSse(response.body);
   }
 
   saveAnnotation(annotation: Annotation): Promise<{ id: string; applied: boolean; rev: number } | null> {

@@ -18,15 +18,11 @@ interface HighlightBoxProps {
 
 /** One saved highlight, painted as a ratio-positioned colored rectangle per rect. */
 function HighlightBox({ highlight, onOpen }: HighlightBoxProps): JSX.Element {
-  // A text selection that starts on a highlight ends with a click on it; only a press
-  // that did not move opens the highlight's note.
-  const pressedAt = useRef<{ x: number; y: number } | null>(null);
   return (
     <>
       {highlight.rects.map((rect, index) => (
-        <button
+        <div
           key={`${highlight.highlightId}-${index}`}
-          type="button"
           className="highlight-box"
           style={{
             left: `${rect.x * 100}%`,
@@ -35,22 +31,23 @@ function HighlightBox({ highlight, onOpen }: HighlightBoxProps): JSX.Element {
             height: `${rect.height * 100}%`,
             backgroundColor: COLOR_VALUES[highlight.color],
           }}
+          aria-hidden="true"
+        ></div>
+      ))}
+      {highlight.rects[0] ? (
+        <button
+          type="button"
+          className="highlight-marker"
+          style={{ left: '-11px', top: `${highlight.rects[0].y * 100}%` }}
           aria-label={t('reader.highlightLabel', { text: highlight.text.slice(0, 40) })}
-          onPointerDown={(event) => {
-            pressedAt.current = { x: event.clientX, y: event.clientY };
-          }}
           onClick={(event) => {
             event.stopPropagation();
-            const start = pressedAt.current;
-            pressedAt.current = null;
-            const keyboard = event.detail === 0;
-            if (!keyboard && start !== null && Math.hypot(event.clientX - start.x, event.clientY - start.y) > 3) return;
             onOpen(highlight);
           }}
         >
-          {index === 0 && highlight.note !== null ? <span className="highlight-note-dot" aria-hidden="true" /> : null}
+          •
         </button>
-      ))}
+      ) : null}
     </>
   );
 }

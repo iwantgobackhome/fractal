@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState, type JSX, type RefObject } from 'react';
 import type { Job, Paper } from '@fractal/shared';
 import { jobLabel, primaryAction, primaryLabel } from './job';
-import { t, type MessageKey } from '../i18n';
+import { t, useLanguage, type MessageKey } from '../i18n';
+import { Selector } from '../components/Selector';
+import { TRANSLATION_LANGUAGES } from '../shell/preferences';
 
 export type ViewMode = 'source' | 'split' | 'translation';
 
@@ -40,6 +42,8 @@ export interface ReaderBarProps {
   /** Save the translation as a PDF, alone or beside the original; absent without a translation. */
   pdf?: { onSave(mode: 'translation' | 'split'): void; note: string | null; busy: boolean };
   onRequestDelete(): void;
+  language: string;
+  onLanguage(language: string): void;
 }
 
 function progressText(job: Job | null): string | null {
@@ -75,6 +79,7 @@ function usePopover(): [boolean, (open: boolean) => void, RefObject<HTMLDivEleme
  * action that matters now. Everything else waits in the ⋯ menu.
  */
 export function ReaderBar(props: ReaderBarProps): JSX.Element {
+  const ko = useLanguage() === 'ko';
   const { paper, job, currentPage, pageCount, zoom, viewMode, narrow, chat } = props;
   const [menuOpen, setMenuOpen, menuRef] = usePopover();
   const action = primaryAction(job);
@@ -94,184 +99,196 @@ export function ReaderBar(props: ReaderBarProps): JSX.Element {
   };
 
   return (
-    <div className="reader-bar" role="toolbar" aria-label={t('reader.toolbar')}>
-      <div className="reader-bar__title">
-        <h1 title={title}>{title}</h1>
-        {progress !== null ? (
-          <span className="reader-bar__progress" aria-live="polite">
-            {progress}
-          </span>
-        ) : null}
+    <>
+      <div className="reader-heading">
+        <h1>{title}</h1>
+        <p>
+          {paper?.authors.join(' · ') || (ko ? '저자 정보 없음' : 'Authors unavailable')} · {paper?.arxivId ? `arXiv:${paper.arxivId}` : paper?.sourceUrl || ''}
+        </p>
       </div>
+      <div className="reader-bar" role="toolbar" aria-label={t('reader.toolbar')}>
+        <div className="reader-bar__title">
+          {progress !== null ? (
+            <span className="reader-bar__progress" aria-live="polite">
+              {progress}
+            </span>
+          ) : null}
+        </div>
 
-      <div className="reader-bar__group" role="group" aria-label={t('reader.pages')}>
-        <button
-          type="button"
-          className="reader-bar__icon"
-          onClick={() => props.onPage(currentPage - 1)}
-          disabled={currentPage <= 1}
-          aria-label={t('reader.prevPage')}
-        >
-          ‹
-        </button>
-        <span className="reader-bar__readout" data-testid="page">
-          {currentPage} / {pageCount || '–'}
-        </span>
-        <button
-          type="button"
-          className="reader-bar__icon"
-          onClick={() => props.onPage(currentPage + 1)}
-          disabled={pageCount === 0 || currentPage >= pageCount}
-          aria-label={t('reader.nextPage')}
-        >
-          ›
-        </button>
-      </div>
-
-      <div className="reader-bar__group" role="group" aria-label={t('reader.zoom')}>
-        <button type="button" className="reader-bar__icon" onClick={() => props.onZoom(-1)} aria-label={t('reader.zoomOut')}>
-          −
-        </button>
-        <button
-          type="button"
-          className="reader-bar__readout reader-bar__readout--button"
-          onClick={props.onFitWidth}
-          title={t('reader.fitWidth')}
-          data-testid="zoom"
-        >
-          {Math.round(zoom * 100)}%
-        </button>
-        <button type="button" className="reader-bar__icon" onClick={() => props.onZoom(1)} aria-label={t('reader.zoomIn')}>
-          +
-        </button>
-      </div>
-
-      <div className="segmented reader-bar__views" role="group" aria-label={t('reader.view')}>
-        {modes.map((mode) => (
-          <button
-            key={mode}
-            type="button"
-            aria-pressed={viewMode === mode || (narrow && mode === 'source' && viewMode === 'split')}
-            onClick={() => props.onViewMode(mode)}
-          >
-            {t(VIEW_LABEL[mode])}
-          </button>
-        ))}
-      </div>
-
-      <div className="reader-bar__end">
-        {action !== 'saved' ? (
-          <button
-            type="button"
-            className={`reader-bar__action${action === 'start' ? ' is-primary' : ''}`}
-            onClick={runPrimary}
-            disabled={translateDisabled}
-            title={action === 'start' ? (props.canTranslate ? props.sendHint : (props.disabledReason ?? undefined)) : undefined}
-          >
-            {primaryLabel(job)}
-          </button>
-        ) : null}
-        <button type="button" className="reader-bar__action" aria-expanded={props.notes.open} aria-controls={chat.controls} onClick={props.notes.onToggle}>
-          {t('reader.notes')}
-        </button>
-        <button
-          ref={chat.buttonRef}
-          type="button"
-          className="reader-bar__action"
-          aria-expanded={chat.open}
-          aria-controls={chat.controls}
-          onClick={chat.onToggle}
-        >
-          {t('reader.questions')}
-        </button>
-        <div className="reader-bar__menu" ref={menuRef}>
+        <div className="reader-bar__group" role="group" aria-label={t('reader.pages')}>
           <button
             type="button"
             className="reader-bar__icon"
-            aria-label={t('reader.menu')}
-            aria-haspopup="menu"
-            aria-expanded={menuOpen}
-            onClick={() => setMenuOpen(!menuOpen)}
+            onClick={() => props.onPage(currentPage - 1)}
+            disabled={currentPage <= 1}
+            aria-label={t('reader.prevPage')}
           >
-            ⋯
+            ‹
           </button>
-          {menuOpen ? (
-            <div className="menu" role="menu">
-              <div className="menu__section">
-                <label className="menu__field">
-                  <span>{t('reader.model')}</span>
-                  <select value={props.selectedModelId} onChange={(event) => props.onModelChange(event.target.value)} disabled={props.modelIds.length === 0}>
-                    {props.modelIds.length === 0 ? <option value="">{t('reader.noModels')}</option> : null}
-                    {props.modelIds.map((id) => (
-                      <option key={id} value={id}>
-                        {id}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <button
-                  type="button"
-                  role="menuitem"
-                  disabled={job === null || props.selectedModelId.trim() === ''}
-                  onClick={() => {
-                    setMenuOpen(false);
-                    props.onRequestReplacement();
-                  }}
-                >
-                  {t('reader.retranslate')}
-                </button>
-              </div>
-              <div className="menu__section">
-                {props.pdf !== undefined ? (
-                  <>
-                    <button
-                      type="button"
-                      role="menuitem"
-                      disabled={props.pdf.busy}
-                      onClick={() => {
-                        setMenuOpen(false);
-                        props.pdf?.onSave('translation');
-                      }}
-                    >
-                      {t('reader.pdfTranslation')}
-                      {props.pdf.note !== null ? <span className="menu__note">{props.pdf.note}</span> : null}
-                    </button>
-                    <button
-                      type="button"
-                      role="menuitem"
-                      disabled={props.pdf.busy}
-                      onClick={() => {
-                        setMenuOpen(false);
-                        props.pdf?.onSave('split');
-                      }}
-                    >
-                      {t('reader.pdfSplit')}
-                    </button>
-                  </>
-                ) : null}
-                {props.exportLinks.map((link) => (
-                  <a key={link.label} role="menuitem" href={link.href} download={link.download} onClick={() => setMenuOpen(false)}>
-                    {link.label}
-                  </a>
-                ))}
-              </div>
-              <div className="menu__section">
-                <button
-                  type="button"
-                  role="menuitem"
-                  className="menu__danger"
-                  onClick={() => {
-                    setMenuOpen(false);
-                    props.onRequestDelete();
-                  }}
-                >
-                  {t('reader.deletePaper')}
-                </button>
-              </div>
-            </div>
+          <span className="reader-bar__readout" data-testid="page">
+            {currentPage} / {pageCount || '–'}
+          </span>
+          <button
+            type="button"
+            className="reader-bar__icon"
+            onClick={() => props.onPage(currentPage + 1)}
+            disabled={pageCount === 0 || currentPage >= pageCount}
+            aria-label={t('reader.nextPage')}
+          >
+            ›
+          </button>
+        </div>
+
+        <div className="reader-bar__group" role="group" aria-label={t('reader.zoom')}>
+          <button type="button" className="reader-bar__icon" onClick={() => props.onZoom(-1)} aria-label={t('reader.zoomOut')}>
+            −
+          </button>
+          <button
+            type="button"
+            className="reader-bar__readout reader-bar__readout--button"
+            onClick={props.onFitWidth}
+            title={t('reader.fitWidth')}
+            data-testid="zoom"
+          >
+            {Math.round(zoom * 100)}%
+          </button>
+          <button type="button" className="reader-bar__icon" onClick={() => props.onZoom(1)} aria-label={t('reader.zoomIn')}>
+            +
+          </button>
+        </div>
+
+        <div className="segmented reader-bar__views" role="group" aria-label={t('reader.view')}>
+          {modes.map((mode) => (
+            <button
+              key={mode}
+              type="button"
+              aria-pressed={viewMode === mode || (narrow && mode === 'source' && viewMode === 'split')}
+              onClick={() => props.onViewMode(mode)}
+            >
+              {t(VIEW_LABEL[mode])}
+            </button>
+          ))}
+        </div>
+
+        <div className="reader-bar__end">
+          <Selector
+            label={t('reader.model')}
+            value={props.selectedModelId}
+            options={props.modelIds.map((id) => ({ value: id, label: id }))}
+            onChange={props.onModelChange}
+          />
+          <Selector
+            label={ko ? '번역 언어' : 'Translation language'}
+            value={props.language}
+            options={TRANSLATION_LANGUAGES.map((l) => ({ value: l.code, label: l.name }))}
+            onChange={props.onLanguage}
+          />
+          {action !== 'saved' ? (
+            <button
+              type="button"
+              className={`reader-bar__action${action === 'start' ? ' is-primary' : ''}`}
+              onClick={runPrimary}
+              disabled={translateDisabled}
+              title={action === 'start' ? (props.canTranslate ? props.sendHint : (props.disabledReason ?? undefined)) : undefined}
+            >
+              {primaryLabel(job)}
+            </button>
           ) : null}
+          <button type="button" className="reader-bar__action" aria-expanded={props.notes.open} aria-controls={chat.controls} onClick={props.notes.onToggle}>
+            {t('reader.notes')}
+          </button>
+          <button
+            ref={chat.buttonRef}
+            type="button"
+            className="reader-bar__action"
+            aria-expanded={chat.open}
+            aria-controls={chat.controls}
+            onClick={chat.onToggle}
+          >
+            {t('reader.questions')}
+          </button>
+          <div className="reader-bar__menu" ref={menuRef}>
+            <button
+              type="button"
+              className="reader-bar__icon"
+              aria-label={t('reader.menu')}
+              aria-haspopup="menu"
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen(!menuOpen)}
+            >
+              ⋯
+            </button>
+            {menuOpen ? (
+              <div className="menu" role="menu">
+                <div className="menu__section">
+                  <label className="menu__field">
+                    <span>{t('reader.model')}</span>
+                    <span>{props.selectedModelId || t('reader.noModels')}</span>
+                  </label>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    disabled={job === null || props.selectedModelId.trim() === ''}
+                    onClick={() => {
+                      setMenuOpen(false);
+                      props.onRequestReplacement();
+                    }}
+                  >
+                    {t('reader.retranslate')}
+                  </button>
+                </div>
+                <div className="menu__section">
+                  {props.pdf !== undefined ? (
+                    <>
+                      <button
+                        type="button"
+                        role="menuitem"
+                        disabled={props.pdf.busy}
+                        onClick={() => {
+                          setMenuOpen(false);
+                          props.pdf?.onSave('translation');
+                        }}
+                      >
+                        {t('reader.pdfTranslation')}
+                        {props.pdf.note !== null ? <span className="menu__note">{props.pdf.note}</span> : null}
+                      </button>
+                      <button
+                        type="button"
+                        role="menuitem"
+                        disabled={props.pdf.busy}
+                        onClick={() => {
+                          setMenuOpen(false);
+                          props.pdf?.onSave('split');
+                        }}
+                      >
+                        {t('reader.pdfSplit')}
+                      </button>
+                    </>
+                  ) : null}
+                  {props.exportLinks.map((link) => (
+                    <a key={link.label} role="menuitem" href={link.href} download={link.download} onClick={() => setMenuOpen(false)}>
+                      {link.label}
+                    </a>
+                  ))}
+                </div>
+                <div className="menu__section">
+                  <button
+                    type="button"
+                    role="menuitem"
+                    className="menu__danger"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      props.onRequestDelete();
+                    }}
+                  >
+                    {t('reader.deletePaper')}
+                  </button>
+                </div>
+              </div>
+            ) : null}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -1,10 +1,12 @@
 import { t } from '../i18n';
 import { useCallback, useEffect, useMemo, useRef, useState, type JSX, type ReactNode } from 'react';
 import { TextLayer } from 'pdfjs-dist/legacy/build/pdf.mjs';
-import type { Block, Highlight, Region } from '@fractal/shared';
+import type { Block, Highlight, Memo, PdfTextLayout } from '@fractal/shared';
 import type { Size } from '../lib/geometry';
 import { hitTestBlock, pageRenderSize, visiblePageWindow } from '../lib/geometry';
-import { selectionToRegions, sweepSelection, type Point, type SpanBox } from '../lib/highlights';
+import { nativeSelection, orderTextSpans } from '../lib/native-selection';
+import { StickyLayer } from '../reader/StickyLayer';
+import { useLanguage } from '../i18n';
 import { intrinsicSize, type PDFDocumentProxy } from '../lib/pdf';
 import { HighlightLayer } from './HighlightLayer';
 import type { PendingSelection } from '../reader/SelectionMenu';
@@ -24,6 +26,7 @@ import type { InkPoint } from '../reader/ink';
 
 /** Handwriting shown over the pages, and what a desktop pen does. */
 export interface InkProps {
+  enabled?: boolean;
   strokes: InkStroke[];
   color: string;
   onCreate(page: number, points: InkPoint[], color: string): void;
@@ -148,6 +151,8 @@ export function PageCanvas({
 }
 
 interface TextLayerOverlayProps {
+  onCoverage?(page: number, hasText: boolean): void;
+  getLayout?(page: number): Promise<PdfTextLayout | null>;
   doc: PDFDocumentProxy;
   page: number;
   zoom: number;
@@ -161,7 +166,7 @@ interface TextLayerOverlayProps {
  * mount a container, hand it to `TextLayer`, and let the browser's own
  * selection machinery do the rest.
  */
-function TextLayerOverlay({ doc, page, zoom }: TextLayerOverlayProps): JSX.Element {
+function TextLayerOverlay({ doc, page, zoom, getLayout, onCoverage }: TextLayerOverlayProps): JSX.Element {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -174,15 +179,21 @@ function TextLayerOverlay({ doc, page, zoom }: TextLayerOverlayProps): JSX.Eleme
       const container = containerRef.current;
       if (container === null) return;
       container.replaceChildren();
-      container.style.setProperty('--total-scale-factor', String(zoom));
+      container.style.setProperty('--total-scale-factor', String(zoom * ((proxy as unknown as { userUnit?: number }).userUnit ?? 1)));
       container.style.setProperty('--scale-round-x', '1px');
       container.style.setProperty('--scale-round-y', '1px');
       container.style.setProperty('--min-font-size', '1');
       const viewport = proxy.getViewport({ scale: zoom });
-      const instance = new TextLayer({ textContentSource: proxy.streamTextContent(), container, viewport });
+      const instance = new TextLayer({ textContentSource: proxy.streamTextContent({ disableNormalization: true }), container, viewport });
       layer = instance;
       try {
         await instance.render();
+        if (!cancelled) {
+          orderTextSpans(container);
+          onCoverage?.(page, Boolean(container.textContent?.trim()));
+          const layout = await getLayout?.(page).catch(() => null);
+          if (!cancelled && layout?.status === 'ready') orderTextSpans(container, layout.page);
+        }
       } catch {
         /* superseded by a newer zoom or unmounted */
       }
@@ -192,7 +203,7 @@ function TextLayerOverlay({ doc, page, zoom }: TextLayerOverlayProps): JSX.Eleme
       cancelled = true;
       layer?.cancel();
     };
-  }, [doc, page, zoom]);
+  }, [doc, page, zoom, getLayout, onCoverage]);
 
   return <div className="textLayer" ref={containerRef} data-testid={`text-layer-${page}`} />;
 }
@@ -212,6 +223,11 @@ interface PageViewProps {
   onSelectText(selection: PendingSelection): void;
   onOpenHighlight(highlight: Highlight): void;
   pending: PendingSelection | null;
+  memos?: Memo[];
+  onSaveMemo?(memo: Memo): void;
+  getLayout?(page: number): Promise<PdfTextLayout | null>;
+  regionMode?: boolean;
+  onCoverage?(page: number, hasText: boolean): void;
   pageColors?: PageColors;
   ink?: InkProps;
   structure?: StructureProps;
@@ -244,75 +260,41 @@ function PageView({
   pageColors,
   ink,
   structure,
+  memos,
+  onSaveMemo,
+  getLayout,
+  regionMode,
+  onCoverage,
 }: PageViewProps): JSX.Element {
   const pageHighlights = useMemo(() => highlights.filter((h) => h.page === page), [highlights, page]);
-  // Where the drag began, in viewport pixels; null while no button is down on this page.
-  const dragStart = useRef<Point | null>(null);
-
-  // A drag released outside this page (over another page, the gutter, the other pane)
-  // never reaches this page's mouseup; the start point must not survive to pair with an
-  // unrelated later release here.
-  useEffect(() => {
-    const clear = () => {
-      dragStart.current = null;
-    };
-    window.addEventListener('mouseup', clear);
-    return () => window.removeEventListener('mouseup', clear);
-  }, []);
-
-  const handleMouseDown = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
-    if (event.button !== 0) return;
+  const dragStart = useRef<{ x: number; y: number } | null>(null);
+  const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (event.button !== 0 || (event.target as HTMLElement).closest('button,textarea,.sticky-note')) return;
     dragStart.current = { x: event.clientX, y: event.clientY };
-  }, []);
-
-  const handleMouseUp = useCallback(
-    (event: React.MouseEvent<HTMLDivElement>) => {
-      const container = event.currentTarget;
-      const pageBox = container.getBoundingClientRect();
-      const start = dragStart.current;
-      dragStart.current = null;
-      if (start === null) return; // the button went down on another page: not this page's gesture
-      const end: Point = { x: event.clientX, y: event.clientY };
-      const dragged = Math.hypot(end.x - start.x, end.y - start.y) > 3;
-      // A plain click on a saved highlight opens its note (the box's own click handler);
-      // it must not also hit-test the page beneath and jump the other pane. A drag that
-      // happens to end over a box is still a drag.
-      if (!dragged && (event.target as HTMLElement).closest('.highlight-box') !== null) return;
-
-      if (dragged) {
-        // The highlight follows the swept lines, not the browser's DOM-order selection;
-        // the native selection is only cleared so it does not linger under the new box.
-        const spans: SpanBox[] = Array.from(container.querySelectorAll<HTMLElement>('.textLayer span')).map((span) => {
-          const rect = span.getBoundingClientRect();
-          return { rect: { left: rect.left, top: rect.top, width: rect.width, height: rect.height }, text: span.textContent ?? '' };
-        });
-        const swept = sweepSelection(spans, start, end);
-        window.getSelection()?.removeAllRanges();
-        if (swept === null) return;
-        // pdf.js emits C0 codes for glyphs it cannot map to Unicode (math symbols); the
-        // stored excerpt is one line of prose, never raw control characters.
-        const text = swept.text
-          .replace(/\p{Cc}+/gu, ' ')
-          .replace(/\s+/g, ' ')
-          .trim()
-          .slice(0, 2000);
-        const regions = selectionToRegions(swept.rects, { left: pageBox.left, top: pageBox.top, width: pageBox.width, height: pageBox.height }, page);
-        if (regions !== null && text.length > 0) {
-          const last = swept.rects.reduce((a, b) => (b.top + b.height > a.top + a.height ? b : a), swept.rects[0]);
-          const first = swept.rects.reduce((a, b) => (b.top < a.top ? b : a), swept.rects[0]);
-          onSelectText({ page, regions, text, anchor: { x: last.left + last.width / 2, y: first.top } });
-        }
-        return;
-      }
-
-      // A plain click: hit-test for navigation.
-      const xRatio = (event.clientX - pageBox.left) / pageBox.width;
-      const yRatio = (event.clientY - pageBox.top) / pageBox.height;
-      const block = hitTestBlock(blocks, page, xRatio, yRatio);
-      if (block !== null) onSelectBlock(block);
-    },
-    [blocks, page, onSelectText, onSelectBlock],
-  );
+    if (regionMode) {
+      event.preventDefault();
+      window.getSelection()?.removeAllRanges();
+    }
+  };
+  const handleMouseUp = (event: React.MouseEvent<HTMLDivElement>) => {
+    const start = dragStart.current;
+    dragStart.current = null;
+    if (!start || (event.target as HTMLElement).closest('button,textarea,.sticky-note')) return;
+    const dragged = Math.hypot(event.clientX - start.x, event.clientY - start.y) > 3;
+    if (regionMode && dragged) {
+      const box = event.currentTarget.getBoundingClientRect();
+      const x = Math.max(0, Math.min(start.x, event.clientX) - box.left) / box.width,
+        y = Math.max(0, Math.min(start.y, event.clientY) - box.top) / box.height;
+      const width = Math.min(1 - x, Math.abs(start.x - event.clientX) / box.width),
+        height = Math.min(1 - y, Math.abs(start.y - event.clientY) / box.height);
+      if (width > 0 && height > 0) onSelectText({ page, regions: [{ page, x, y, width, height }], text: '', anchor: { x: event.clientX, y: event.clientY } });
+      return;
+    }
+    if (dragged || !window.getSelection()?.isCollapsed || event.detail > 1) return;
+    const box = event.currentTarget.getBoundingClientRect();
+    const block = hitTestBlock(blocks, page, (event.clientX - box.left) / box.width, (event.clientY - box.top) / box.height);
+    if (block) onSelectBlock(block);
+  };
 
   return (
     <PageCanvas
@@ -328,7 +310,8 @@ function PageView({
       onMouseUp={handleMouseUp}
       pageColors={pageColors}
     >
-      <TextLayerOverlay doc={doc} page={page} zoom={zoom} />
+      <TextLayerOverlay doc={doc} page={page} zoom={zoom} getLayout={getLayout} onCoverage={onCoverage} />
+      {memos && onSaveMemo ? <StickyLayer memos={memos.filter((m) => m.page === page)} onSave={onSaveMemo} /> : null}
       {structure !== undefined ? (
         <StructureLayer
           items={structure.items.filter((i) => i.page === page)}
@@ -343,19 +326,22 @@ function PageView({
           page={page}
           strokes={ink.strokes.filter((s) => s.page === page && !s.deleted)}
           color={ink.color}
+          enabled={ink.enabled}
           onCreate={ink.onCreate}
           onErase={ink.onErase}
         />
       ) : null}
-      {pending !== null && pending.page === page
-        ? pending.regions.map((r, i) => (
-            <div
-              key={i}
-              className="selection-pending"
-              style={{ left: `${r.x * 100}%`, top: `${r.y * 100}%`, width: `${r.width * 100}%`, height: `${r.height * 100}%` }}
-              aria-hidden="true"
-            />
-          ))
+      {pending !== null && pending.regions.some((r) => r.page === page)
+        ? pending.regions
+            .filter((r) => r.page === page)
+            .map((r, i) => (
+              <div
+                key={i}
+                className="selection-pending"
+                style={{ left: `${r.x * 100}%`, top: `${r.y * 100}%`, width: `${r.width * 100}%`, height: `${r.height * 100}%` }}
+                aria-hidden="true"
+              />
+            ))
         : null}
     </PageCanvas>
   );
@@ -380,6 +366,11 @@ export interface PdfPaneProps {
   onSelectText(selection: PendingSelection): void;
   onOpenHighlight(highlight: Highlight): void;
   pending: PendingSelection | null;
+  memos?: Memo[];
+  onSaveMemo?(memo: Memo): void;
+  getLayout?(page: number): Promise<PdfTextLayout | null>;
+  regionMode?: boolean;
+  onCoverage?(page: number, hasText: boolean): void;
   pageColors?: PageColors;
   ink?: InkProps;
   structure?: StructureProps;
@@ -412,9 +403,163 @@ export function PdfPages(props: PdfPaneProps): JSX.Element {
     pageColors,
     ink,
     structure,
+    memos,
+    onSaveMemo,
+    getLayout,
   } = props;
   const dpr = useMemo(() => Math.min(2, typeof window === 'undefined' ? 1 : window.devicePixelRatio || 1), []);
-  const live = useMemo(() => new Set(visiblePageWindow(currentPage, pageCount, 1)), [currentPage, pageCount]);
+  const copiedSelection = useRef<PendingSelection | null>(null);
+  type RangeSnapshot = Pick<Range, 'startContainer' | 'startOffset' | 'endContainer' | 'endOffset'>;
+  const copiedRange = useRef<RangeSnapshot | null>(null);
+  const ko = useLanguage() === 'ko';
+  const [noTextPages, setNoTextPages] = useState<Set<number>>(() => new Set());
+  useEffect(() => setNoTextPages(new Set()), [doc]);
+  const coverage = useCallback(
+    (page: number, hasText: boolean) =>
+      setNoTextPages((previous) => {
+        if (previous.has(page) === !hasText) return previous;
+        const next = new Set(previous);
+        if (hasText) next.delete(page);
+        else next.add(page);
+        return next;
+      }),
+    [],
+  );
+  const [tool, setTool] = useState<'pen' | 'text' | 'region'>('pen');
+  const [anchorPage, setAnchorPage] = useState<number | null>(null);
+  const live = useMemo(
+    () => new Set([...visiblePageWindow(currentPage, pageCount, 1), ...(anchorPage === null ? [] : [anchorPage])]),
+    [currentPage, pageCount, anchorPage],
+  );
+  useEffect(() => {
+    const root = bodyRef.current;
+    if (!root || !doc) return;
+    copiedSelection.current = null;
+    copiedRange.current = null;
+    const sameRange = (saved: RangeSnapshot | null): boolean => {
+      const selection = window.getSelection();
+      if (!saved || !saved.startContainer.isConnected || !saved.endContainer.isConnected || !selection?.rangeCount || selection.isCollapsed) return false;
+      const current = selection.getRangeAt(0);
+      return (
+        current.startContainer === saved.startContainer &&
+        current.startOffset === saved.startOffset &&
+        current.endContainer === saved.endContainer &&
+        current.endOffset === saved.endOffset
+      );
+    };
+    const captureSelection = () => {
+      const result = nativeSelection(root, getLayout);
+      const current = window.getSelection()?.rangeCount ? window.getSelection()!.getRangeAt(0) : null;
+      // A DOM Range is live and shifts on virtual-page removal; retain immutable endpoints.
+      const range = current
+        ? { startContainer: current.startContainer, startOffset: current.startOffset, endContainer: current.endContainer, endOffset: current.endOffset }
+        : null;
+      void result.then((selection) => {
+        if (!selection || !sameRange(range)) return;
+        copiedSelection.current = selection;
+        copiedRange.current = range;
+        onSelectText(selection);
+      });
+    };
+    let dragging = false,
+      point: { x: number; y: number } | null = null,
+      frame = 0;
+    let start: { x: number; y: number } | null = null,
+      anchor: { node: Node; offset: number; page: number; run: string | undefined } | null = null;
+    const updateRange = () => {
+      if (!point || !start || !anchor || Math.hypot(point.x - start.x, point.y - start.y) < 3) return;
+      const box = root.getBoundingClientRect();
+      const target = document.caretRangeFromPoint(point.x, Math.max(box.top + 2, Math.min(box.bottom - 2, point.y)));
+      if (!target || target.startContainer.nodeType !== Node.TEXT_NODE || !root.contains(target.startContainer)) return;
+      if (!anchor.node.isConnected) {
+        const replacement = root.querySelector<HTMLElement>(`[data-page="${anchor.page}"] .textLayer span[data-text-run="${anchor.run}"]`)?.firstChild;
+        if (!replacement) return;
+        anchor.node = replacement;
+      }
+      window
+        .getSelection()
+        ?.setBaseAndExtent(anchor.node, Math.min(anchor.offset, anchor.node.textContent?.length ?? 0), target.startContainer, target.startOffset);
+    };
+    const tick = () => {
+      if (!dragging || !point) return;
+      const box = root.getBoundingClientRect(),
+        edge = 36;
+      const step = point.y < box.top + edge ? -12 : point.y > box.bottom - edge ? 12 : 0;
+      if (step) root.scrollTop += step;
+      updateRange();
+      frame = requestAnimationFrame(tick);
+    };
+    const down = (e: PointerEvent) => {
+      if (
+        tool === 'region' ||
+        (e.pointerType === 'pen' && tool === 'pen') ||
+        e.button !== 0 ||
+        !(e.target instanceof Element) ||
+        !root.contains(e.target) ||
+        e.target.closest('button,textarea,.sticky-note')
+      )
+        return;
+      copiedSelection.current = null;
+      copiedRange.current = null;
+      dragging = true;
+      point = start = { x: e.clientX, y: e.clientY };
+      const caret = document.caretRangeFromPoint(e.clientX, e.clientY),
+        page = Number(e.target.closest<HTMLElement>('[data-page]')?.dataset.page) || 1;
+      anchor =
+        caret && caret.startContainer.nodeType === Node.TEXT_NODE
+          ? { node: caret.startContainer, offset: caret.startOffset, page, run: caret.startContainer.parentElement?.dataset.textRun }
+          : null;
+      setAnchorPage(page);
+      frame = requestAnimationFrame(tick);
+    };
+    const move = (e: PointerEvent) => {
+      point = { x: e.clientX, y: e.clientY };
+    };
+    const finish = () => {
+      if (!dragging) return;
+      dragging = false;
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        updateRange();
+        captureSelection();
+      });
+    };
+    const key = (e: KeyboardEvent) => {
+      if (
+        (e.shiftKey && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(e.key)) ||
+        ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a')
+      )
+        captureSelection();
+    };
+    const copy = (event: ClipboardEvent) => {
+      if (
+        document.activeElement instanceof HTMLInputElement ||
+        document.activeElement instanceof HTMLTextAreaElement ||
+        (document.activeElement as HTMLElement | null)?.isContentEditable
+      )
+        return;
+      const selection = window.getSelection();
+      if (copiedSelection.current && sameRange(copiedRange.current) && selection?.anchorNode && root.contains(selection.anchorNode)) {
+        event.clipboardData?.setData('text/plain', copiedSelection.current.text);
+        event.preventDefault();
+      }
+    };
+    document.addEventListener('copy', copy);
+    document.addEventListener('pointerdown', down);
+    document.addEventListener('pointermove', move);
+    document.addEventListener('pointerup', finish);
+    document.addEventListener('pointercancel', finish);
+    document.addEventListener('keyup', key);
+    return () => {
+      cancelAnimationFrame(frame);
+      document.removeEventListener('copy', copy);
+      document.removeEventListener('pointerdown', down);
+      document.removeEventListener('pointermove', move);
+      document.removeEventListener('pointerup', finish);
+      document.removeEventListener('pointercancel', finish);
+      document.removeEventListener('keyup', key);
+    };
+  }, [doc, bodyRef, getLayout, onSelectText, tool]);
 
   if (doc === null) {
     return (
@@ -425,42 +570,73 @@ export function PdfPages(props: PdfPaneProps): JSX.Element {
   }
 
   return (
-    <div className="pane-body" ref={bodyRef} onScroll={onScroll} data-testid="pdf-body">
-      {Array.from({ length: pageCount }, (_, index) => index + 1).map((page) =>
-        live.has(page) ? (
-          <PageView
-            key={page}
-            doc={doc}
-            page={page}
-            zoom={zoom}
-            dpr={dpr}
-            size={pageRenderSize(pageIntrinsicSize(page), zoom)}
-            blocks={blocks}
-            highlights={highlights}
-            onSize={onSize}
-            onRendered={onRendered}
-            registerPage={registerPage}
-            onSelectBlock={onSelectBlock}
-            onSelectText={onSelectText}
-            onOpenHighlight={onOpenHighlight}
-            pending={pending}
-            pageColors={pageColors}
-            ink={ink}
-            structure={structure}
-          />
-        ) : (
-          <div
-            key={page}
-            className="pdf-page pdf-placeholder"
-            data-page={page}
-            ref={(element) => registerPage(page, element)}
-            style={pageRenderSize(pageIntrinsicSize(page), zoom)}
-          >
-            {t('misc.pageLabel', { page })}
-          </div>
-        ),
-      )}
-    </div>
+    <>
+      <div className="original-tools" role="toolbar" aria-label={ko ? '원본 도구' : 'Original tools'}>
+        {(['pen', 'text', 'region'] as const).map((mode) => (
+          <button key={mode} aria-pressed={tool === mode} onClick={() => setTool(mode)}>
+            {mode === 'text' ? 'T' : mode === 'pen' ? (ko ? '펜' : 'Pen') : ko ? '영역' : 'Region'}
+          </button>
+        ))}
+        <span>
+          {tool === 'region'
+            ? ko
+              ? '드래그해 원본 영역 선택'
+              : 'Drag to select an original region'
+            : noTextPages.has(currentPage)
+              ? ko
+                ? '\uc120\ud0dd\ud560 PDF \ud14d\uc2a4\ud2b8\uac00 \uc5c6\uc2b5\ub2c8\ub2e4. \uc601\uc5ed\uc73c\ub85c \uba54\ubaa8\ud558\uac70\ub098 \uc9c8\ubb38\ud558\uc138\uc694.'
+                : 'No selectable PDF text. Choose Region for notes or questions.'
+              : tool === 'pen'
+                ? ko
+                  ? '펜으로 필기 · 마우스로 텍스트 선택'
+                  : 'Pen writes · mouse selects text'
+                : ko
+                  ? '텍스트 선택'
+                  : 'Select text'}
+        </span>
+      </div>
+      <div className="pane-body" ref={bodyRef} onScroll={onScroll} data-testid="pdf-body">
+        {Array.from({ length: pageCount }, (_, index) => index + 1).map((page) =>
+          live.has(page) ? (
+            <PageView
+              key={page}
+              doc={doc}
+              page={page}
+              zoom={zoom}
+              dpr={dpr}
+              size={pageRenderSize(pageIntrinsicSize(page), zoom)}
+              blocks={blocks}
+              highlights={highlights}
+              onSize={onSize}
+              onRendered={onRendered}
+              registerPage={registerPage}
+              onSelectBlock={onSelectBlock}
+              onSelectText={onSelectText}
+              onOpenHighlight={onOpenHighlight}
+              pending={pending}
+              pageColors={pageColors}
+              ink={ink ? { ...ink, enabled: tool === 'pen' } : undefined}
+              structure={structure}
+              memos={memos}
+              onSaveMemo={onSaveMemo}
+              getLayout={getLayout}
+              regionMode={tool === 'region'}
+              onCoverage={coverage}
+            />
+          ) : (
+            <div
+              key={page}
+              className="pdf-page pdf-placeholder"
+              data-page={page}
+              ref={(element) => registerPage(page, element)}
+              style={pageRenderSize(pageIntrinsicSize(page), zoom)}
+            >
+              {t('misc.pageLabel', { page })}
+            </div>
+          ),
+        )}
+      </div>
+    </>
   );
 }
 

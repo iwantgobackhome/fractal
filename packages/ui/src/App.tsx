@@ -1,10 +1,11 @@
-import { Suspense, lazy, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type JSX, type RefObject } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type JSX, type RefObject } from 'react';
 import type {
   AppError,
   ReadProgress,
   Block,
   Connection,
   InkStroke,
+  Memo,
   PaperStructure,
   Highlight,
   Paper,
@@ -12,14 +13,13 @@ import type {
   RestartTranslationRequest,
   Snapshot,
 } from '@fractal/shared';
-import { ChatBoundary } from './components/ChatBoundary';
-import type { ChatQuote } from './components/ChatPanel';
+import { ResearchPanel, type ResearchIntent } from './reader/ResearchPanel';
 import { HighlightPopover } from './components/HighlightLayer';
 import { KoreanPages, type SelectVia } from './components/KoreanPane';
 import { DeleteDialog, ReplacementDialog, type ReplacementRequest } from './components/ConfirmDialog';
 import { PdfPages } from './components/PdfPane';
 import type { InkProps, PageColors, StructureProps } from './components/PdfPane';
-import { CitationCard, ExplainCard, type CitationState, type ExplainState } from './reader/Cards';
+import { CitationCard, type CitationState } from './reader/Cards';
 import { DESKTOP_PEN_WIDTH } from './reader/InkLayer';
 import { NotesPanel } from './reader/NotesPanel';
 import { PrintView, type PrintMode } from './reader/PrintView';
@@ -82,7 +82,6 @@ const CHAT_TRANSITION_MS = 220;
 const CHAT_SHEET_QUERY = '(max-width: 999px)';
 
 // The question panel (with its markdown and formula typesetting) loads the first time it opens.
-const ChatPanel = lazy(() => import('./components/ChatPanel'));
 
 const client = new ApiClient(readToken(document));
 const hub = new HubApi(readToken(document));
@@ -217,7 +216,7 @@ export function App(): JSX.Element {
   // The question panel: open or shut, mounted from its first opening, and a passage to quote.
   const [chatOpen, setChatOpen] = useState(false);
   const [chatMounted, setChatMounted] = useState(false);
-  const [chatQuote, setChatQuote] = useState<ChatQuote | null>(null);
+  const [chatQuote, setChatQuote] = useState<ResearchIntent | null>(null);
   const chatButtonRef = useRef<HTMLButtonElement | null>(null);
   const chatDockRef = useRef<HTMLElement | null>(null);
   const quoteCount = useRef(0);
@@ -250,15 +249,17 @@ export function App(): JSX.Element {
   const [pendingSelection, setPendingSelection] = useState<PendingSelection | null>(null);
   // What the hub recognised on this paper, and the card open over it.
   const [structure, setStructure] = useState<PaperStructure | null>(null);
-  const [explain, setExplain] = useState<ExplainState | null>(null);
   const [citation, setCitation] = useState<CitationState | null>(null);
-  const explainAbort = useRef<AbortController | null>(null);
   // A translated PDF being laid out for saving.
   const [printMode, setPrintMode] = useState<PrintMode | null>(null);
   // Handwriting on this paper (from the tablet, or a desktop pen).
+  const [memos, setMemos] = useState<Memo[]>([]);
+  const memoQueue = useRef(new Map<string, Memo>());
+  const [pdfFailure, setPdfFailure] = useState<string | null>(null);
+  const [pdfRetry, setPdfRetry] = useState(0);
   const [inkStrokes, setInkStrokes] = useState<InkStroke[]>([]);
   // The side panel holds the reader's notes and the questions; one of them is in front.
-  const [panelTab, setPanelTab] = useState<'notes' | 'questions' | 'related'>('questions');
+  const [panelTab, setPanelTab] = useState<'notes' | 'questions' | 'history' | 'related'>('questions');
 
   const pdfBody = useRef<HTMLDivElement | null>(null);
   const textBody = useRef<HTMLDivElement | null>(null);
@@ -284,6 +285,26 @@ export function App(): JSX.Element {
   const paper = snapshot?.paper ?? null;
   const job = snapshot?.job ?? null;
   const readable = paper !== null && isReadable(paper.status);
+  const originalAvailable = doc !== null;
+  const documentHash = useMemo(
+    () =>
+      doc
+        ? doc
+            .getData()
+            .then(async (bytes) =>
+              Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new Uint8Array(bytes).buffer)), (b) => b.toString(16).padStart(2, '0')).join(''),
+            )
+        : null,
+    [doc],
+  );
+  const getTextLayout = useCallback(
+    async (page: number) => {
+      if (!paperKey || !documentHash) return null;
+      const [layout, hash] = await Promise.all([hub.textLayout(paperKey, page), documentHash]);
+      return layout?.status === 'ready' && layout.pdfSha256 !== hash ? null : layout;
+    },
+    [paperKey, documentHash],
+  );
   const translated = (snapshot?.translations ?? []).some((t) => t.status === 'completed') || job?.state === 'running';
 
   // Once a translation exists it goes beside the original, unless the reader picked a view.
@@ -391,18 +412,24 @@ export function App(): JSX.Element {
 
   // Load the PDF once the revision's bytes exist.
   useEffect(() => {
-    if (paperKey === null || paper === null || !isReadable(paper.status)) return;
+    if (paperKey === null || paper === null || paper.status === 'fetching') return;
     const controller = new AbortController();
+    let canceled = false;
+    setPdfFailure(null);
     void loadPdf(client.pdfUrl(paperKey), controller.signal)
       .then((loaded) => {
+        if (canceled) return;
         setDoc(loaded);
         setPageCount(loaded.numPages);
       })
-      .catch(() => {
-        /* the bytes may still be arriving; the poll will retry */
+      .catch((cause: unknown) => {
+        if (!canceled) setPdfFailure(cause instanceof Error ? cause.message : String(cause));
       });
-    return () => controller.abort();
-  }, [paperKey, paper?.status]);
+    return () => {
+      canceled = true;
+      controller.abort();
+    };
+  }, [paperKey, paper?.status, pdfRetry]);
 
   // Read every page's native dimensions without rasterising it. Virtual Korean pages use
   // these same dimensions as measured pages and boundary calculations.
@@ -440,6 +467,8 @@ export function App(): JSX.Element {
     setPageCount(0);
     setCurrentPage(1);
     setHighlights([]);
+    setMemos([]);
+    setPdfFailure(null);
     setOpenHighlightId(null);
     setNarrowPane('source');
     setViewMode('source');
@@ -465,6 +494,8 @@ export function App(): JSX.Element {
     setPageCount(0);
     setCurrentPage(1);
     setHighlights([]);
+    setMemos([]);
+    setPdfFailure(null);
     setOpenHighlightId(null);
     setResetting(false);
     setReplacement(null);
@@ -676,6 +707,8 @@ export function App(): JSX.Element {
   useEffect(() => {
     if (paperKey === null) {
       setHighlights([]);
+      setMemos([]);
+      setPdfFailure(null);
       return;
     }
     let cancelled = false;
@@ -1105,7 +1138,12 @@ export function App(): JSX.Element {
       hub
         .annotations(paperKey)
         .then((list) => {
-          if (!cancelled && list !== null) setInkStrokes(list.filter((a): a is InkStroke => a.kind === 'ink' && !a.deleted));
+          if (!cancelled && list !== null) {
+            setInkStrokes(list.filter((a): a is InkStroke => a.kind === 'ink' && !a.deleted));
+            const remote = list.filter((a): a is Memo => a.kind === 'memo' && !a.deleted);
+            const pending = [...memoQueue.current.values()].filter((m) => m.paperKey === paperKey);
+            setMemos([...remote.filter((m) => !pending.some((p) => p.id === m.id)), ...pending.filter((m) => !m.deleted)]);
+          }
         })
         .catch(() => undefined);
     };
@@ -1120,7 +1158,6 @@ export function App(): JSX.Element {
   // Recognition runs in the background after a paper is extracted; poll until it settles.
   useEffect(() => {
     setStructure(null);
-    setExplain(null);
     setCitation(null);
     if (paperKey === null) return;
     let cancelled = false;
@@ -1142,46 +1179,104 @@ export function App(): JSX.Element {
     };
   }, [paperKey]);
 
+  const saveMemo = useCallback((memo: Memo) => {
+    const next = { ...memo, updatedAt: new Date().toISOString() };
+    memoQueue.current.set(next.id, next);
+    try {
+      localStorage.setItem(`fractal.memo-pending.${next.id}`, JSON.stringify(next));
+    } catch {
+      /* retry stays in memory */
+    }
+    if (paperKeyRef.current === next.paperKey) setMemos((rows) => [...rows.filter((m) => m.id !== next.id), ...(!next.deleted ? [next] : [])]);
+    void hub
+      .saveAnnotation(next)
+      .then((result) => {
+        if (result === null) throw new Error('Annotations unavailable');
+        if (memoQueue.current.get(next.id)?.updatedAt === next.updatedAt) {
+          memoQueue.current.delete(next.id);
+          try {
+            localStorage.removeItem(`fractal.memo-pending.${next.id}`);
+          } catch {
+            /* durable server copy exists */
+          }
+        }
+        if (paperKeyRef.current === next.paperKey)
+          setMemos((rows) => rows.map((m) => (m.id === next.id && m.updatedAt === next.updatedAt ? { ...m, rev: result.rev } : m)));
+      })
+      .catch((cause: unknown) => setNotice(String(cause)));
+  }, []);
+  useEffect(() => {
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key?.startsWith('fractal.memo-pending.')) {
+          const memo = JSON.parse(localStorage.getItem(key)!) as Memo;
+          memoQueue.current.set(memo.id, memo);
+        }
+      }
+    } catch {
+      /* retain valid in-memory drafts */
+    }
+    const retry = () => {
+      for (const memo of memoQueue.current.values()) saveMemo(memo);
+    };
+    retry();
+    window.addEventListener('online', retry);
+    const timer = setInterval(retry, 15000);
+    return () => {
+      window.removeEventListener('online', retry);
+      clearInterval(timer);
+    };
+  }, [saveMemo]);
+  const createMemo = (page: number, position: Region | null, quote: string) => {
+    if (!paperKey) return;
+    const width = 0.32,
+      height = 0.25;
+    const memo: Memo = {
+      id: newRequestId(),
+      kind: 'memo',
+      paperKey,
+      page,
+      text: '',
+      quote: quote || null,
+      rect: { x: Math.min(1 - width, position?.x ?? 0.1), y: Math.min(1 - height, position?.y ?? 0.1), width, height },
+      collapsed: false,
+      color: 'yellow',
+      updatedAt: new Date().toISOString(),
+      rev: 0,
+      deviceId: 'desktop',
+      deleted: false,
+    };
+    saveMemo(memo);
+    chooseView('source');
+    goToPage(page);
+  };
   const structureProps = useMemo<StructureProps | undefined>(() => {
     if (paperKey === null || structure === null) return undefined;
     return {
       items: structure.items,
       markers: structure.markers,
       onExplain: (item, anchor) => {
-        explainAbort.current?.abort();
-        const controller = new AbortController();
-        explainAbort.current = controller;
+        quoteCount.current += 1;
+        const surrounding = (snapshotRef.current?.blocks ?? [])
+          .filter((b) => b.regions.some((r) => r.page === item.page))
+          .map((b) => b.sourceText)
+          .join('\n')
+          .slice(0, 6000);
+        setChatQuote({
+          id: quoteCount.current,
+          text: [item.label, item.caption, item.latex, surrounding].filter(Boolean).join('\n'),
+          page: item.page,
+          from: 'source',
+          rect: item.bbox,
+          kind: item.kind,
+        });
+        setPanelTab('questions');
+        setChatMounted(true);
+        setChatOpen(true);
         setCitation(null);
-        setExplain({ item, anchor, text: '', latex: null, done: false, error: null });
-        void (async () => {
-          try {
-            const surrounding = (snapshotRef.current?.blocks ?? [])
-              .filter((b) => b.regions.some((r) => r.page === item.page))
-              .map((b) => b.sourceText)
-              .join('\n')
-              .slice(0, 6000);
-            for await (const event of hub.explain(
-              paperKey,
-              { kind: item.kind, page: item.page, bbox: item.bbox, surroundingText: [item.caption, surrounding].filter(Boolean).join('\n\n') },
-              controller.signal,
-            )) {
-              if (event.type === 'delta') {
-                setExplain((s) => (s === null || s.item.id !== item.id ? s : { ...s, text: s.text + event.text }));
-              } else if (event.type === 'done') {
-                setExplain((s) => (s === null || s.item.id !== item.id ? s : { ...s, done: true, latex: event.latex ?? s.latex }));
-              } else {
-                setExplain((s) => (s === null || s.item.id !== item.id ? s : { ...s, done: true, error: event.error.message }));
-              }
-            }
-            setExplain((s) => (s === null || s.item.id !== item.id ? s : { ...s, done: true }));
-          } catch (cause) {
-            if (controller.signal.aborted) return;
-            setExplain((s) => (s === null ? s : { ...s, done: true, error: cause instanceof Error ? cause.message : t('reader.explainFailed') }));
-          }
-        })();
       },
       onCitation: (marker, anchor) => {
-        setExplain(null);
         setCitation({ anchor, entries: null, error: null, added: new Set() });
         Promise.all(marker.references.slice(0, 4).map((n) => hub.reference(paperKey, n)))
           .then((results) => setCitation((s) => (s === null ? s : { ...s, entries: results.filter((r) => r !== null) })))
@@ -1372,14 +1467,15 @@ export function App(): JSX.Element {
 
   /** Open the panel with `text` quoted into the question being written. */
   const askAbout = useCallback(
-    (text: string, from: Pane) => {
+    (text: string, from: Pane, page = currentPage) => {
       quoteCount.current += 1;
-      setChatQuote({ id: quoteCount.current, text });
+      setChatQuote({ id: quoteCount.current, text, page, from });
+      setPanelTab('questions');
       if (!chatOpen) showChat(true, from);
     },
-    [chatOpen, showChat],
+    [chatOpen, showChat, currentPage],
   );
-  const askAboutKorean = useCallback((text: string) => askAbout(text, 'translation'), [askAbout]);
+  const askAboutKorean = useCallback((text: string, page?: number) => askAbout(text, 'translation', page), [askAbout]);
   const askAboutSource = useCallback((text: string) => askAbout(text, 'source'), [askAbout]);
 
   // The reader's width decides whether two panes still fit beside the docked panel.
@@ -1651,6 +1747,8 @@ export function App(): JSX.Element {
       ) : (
         <main className="reader-shell">
           <ReaderBar
+            language={preferences?.translationLanguage ?? 'ko'}
+            onLanguage={(translationLanguage) => updatePreferences({ translationLanguage })}
             paper={paper}
             job={job}
             currentPage={currentPage}
@@ -1709,18 +1807,25 @@ export function App(): JSX.Element {
           ) : null}
 
           <div className="reader-stage">
-            {paper !== null && !readable ? (
+            {paper !== null && !originalAvailable ? (
               <div className="reader-status" role="status" inert={chatOpen && chatSheet}>
                 <p className="eyebrow">{paper.paperKey}</p>
                 <h2>{paperStatusLabel(paper)}</h2>
-                {paper.status === 'fetching' || paper.status === 'extracting' ? <p>{t('reader.fetching')}</p> : <p>{t('reader.failedHint')}</p>}
+                {pdfFailure ? (
+                  <>
+                    <p role="alert">{pdfFailure}</p>
+                    <button onClick={() => setPdfRetry((n) => n + 1)}>{language === 'ko' ? '원본 다시 불러오기' : 'Retry original PDF'}</button>
+                  </>
+                ) : (
+                  <p>{t('reader.fetching')}</p>
+                )}
               </div>
             ) : null}
 
             <div
               ref={readerRef}
               className={`reader narrow${onePane || viewMode !== 'split' ? ' one-pane' : ''}${resetting ? ' resetting' : ''}`}
-              hidden={paper !== null && !readable}
+              hidden={paper !== null && !originalAvailable}
               // Covered by the panel's sheet on a narrow screen: out of reach until it closes.
               inert={chatOpen && chatSheet}
             >
@@ -1744,6 +1849,9 @@ export function App(): JSX.Element {
                   pageColors={pageColors}
                   ink={ink}
                   structure={structureProps}
+                  getLayout={getTextLayout}
+                  memos={memos}
+                  onSaveMemo={saveMemo}
                   onOpenHighlight={openHighlight}
                 />
                 {openHighlightRecord !== null ? (
@@ -1781,22 +1889,34 @@ export function App(): JSX.Element {
               />
 
               <section className={`pane ${activePane === 'translation' ? '' : 'hidden'}`} style={{ flex: '1 1 0' }} aria-label={t('reader.translation')}>
-                <KoreanPages
-                  pageColors={pageColors}
-                  doc={doc}
-                  pageCount={pageCount}
-                  currentPage={currentPage}
-                  zoom={zoom}
-                  blocks={snapshot?.blocks ?? []}
-                  translations={snapshot?.translations ?? []}
-                  pageHeights={koreanHeights}
-                  pageIntrinsicSize={pageIntrinsicSize}
-                  onPageHeight={recordKoreanHeight}
-                  bodyRef={textBody}
-                  onScroll={onTextScroll}
-                  onAdjustScroll={onKoreanAdjustScroll}
-                  onSelectBlock={selectKoreanBlock}
-                />
+                {!readable ? (
+                  <div className="translation-unavailable" role="status">
+                    <h2>{language === 'ko' ? '추출된 텍스트 없음' : 'Extracted text unavailable'}</h2>
+                    <p>
+                      {language === 'ko'
+                        ? '원본 PDF를 그대로 읽고 영역을 선택해 메모하거나 질문할 수 있습니다. 텍스트 없는 페이지를 번역문으로 표시하지 않습니다.'
+                        : 'Read the original PDF and deliberately select a region for notes or questions. No translation text is available for this extraction.'}
+                    </p>
+                    <button onClick={() => chooseView('source')}>{t('reader.source')}</button>
+                  </div>
+                ) : (
+                  <KoreanPages
+                    pageColors={pageColors}
+                    doc={doc}
+                    pageCount={pageCount}
+                    currentPage={currentPage}
+                    zoom={zoom}
+                    blocks={snapshot?.blocks ?? []}
+                    translations={snapshot?.translations ?? []}
+                    pageHeights={koreanHeights}
+                    pageIntrinsicSize={pageIntrinsicSize}
+                    onPageHeight={recordKoreanHeight}
+                    bodyRef={textBody}
+                    onScroll={onTextScroll}
+                    onAdjustScroll={onKoreanAdjustScroll}
+                    onSelectBlock={selectKoreanBlock}
+                  />
+                )}
                 <SelectionQuote containerRef={textBody} onQuote={askAboutKorean} />
               </section>
             </div>
@@ -1811,12 +1931,46 @@ export function App(): JSX.Element {
               // reachable (it holds the toggle that closes the sheet), so the dialog is not modal.
               role={chatSheet && chatOpen ? 'dialog' : undefined}
             >
-              <div className="panel-tabs" role="tablist" aria-label={t('reader.sidePanel')}>
+              <div
+                className="panel-tabs"
+                role="tablist"
+                aria-label={t('reader.sidePanel')}
+                onKeyDown={(event) => {
+                  const buttons = Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
+                  const index = buttons.indexOf(event.target as HTMLButtonElement);
+                  const next =
+                    event.key === 'Home'
+                      ? 0
+                      : event.key === 'End'
+                        ? buttons.length - 1
+                        : event.key === 'ArrowRight'
+                          ? (index + 1) % buttons.length
+                          : event.key === 'ArrowLeft'
+                            ? (index + buttons.length - 1) % buttons.length
+                            : -1;
+                  if (next >= 0) {
+                    event.preventDefault();
+                    buttons[next].click();
+                    buttons[next].focus();
+                  }
+                }}
+              >
                 <button type="button" role="tab" aria-selected={panelTab === 'notes'} onClick={() => setPanelTab('notes')}>
-                  {t('reader.notes')} <span className="panel-tabs__count">{highlights.length > 0 ? highlights.length : ''}</span>
+                  {t('reader.notes')} <span className="panel-tabs__count">{highlights.length + memos.length || ''}</span>
                 </button>
                 <button type="button" role="tab" aria-selected={panelTab === 'questions'} onClick={() => setPanelTab('questions')}>
                   {t('reader.questions')}
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={panelTab === 'history'}
+                  onClick={() => {
+                    setChatMounted(true);
+                    setPanelTab('history');
+                  }}
+                >
+                  {language === 'ko' ? '기록' : 'History'}
                 </button>
                 <button type="button" role="tab" aria-selected={panelTab === 'related'} onClick={() => setPanelTab('related')}>
                   {t('related.tab')}
@@ -1826,6 +1980,18 @@ export function App(): JSX.Element {
               {panelTab === 'notes' ? (
                 <NotesPanel
                   highlights={highlights}
+                  memos={memos}
+                  onCreate={() => createMemo(currentPage, null, '')}
+                  onMemo={(m) => {
+                    chooseView('source');
+                    goToPage(m.page);
+                    saveMemo({ ...m, collapsed: false });
+                    requestAnimationFrame(() => {
+                      const node = pageNodes.current.get(m.page),
+                        body = pdfBody.current;
+                      if (node && body) body.scrollTop += Math.max(0, (m.rect?.y ?? 0) * node.clientHeight - 30);
+                    });
+                  }}
                   onOpen={(h) => {
                     if (viewMode === 'translation') chooseView('source');
                     goToPage(h.page);
@@ -1833,26 +1999,23 @@ export function App(): JSX.Element {
                   }}
                 />
               ) : null}
-              <div className="chat-dock__inner" hidden={panelTab !== 'questions'}>
-                {chatMounted ? (
-                  <ChatBoundary key={paperKey} open={chatOpen} onClose={closeChat}>
-                    <Suspense fallback={<p className="chat-dock__loading">{t('reader.openingQuestions')}</p>}>
-                      <ChatPanel
-                        key={paperKey}
-                        client={client}
-                        paperKey={paperKey}
-                        paper={paper}
-                        connection={connection}
-                        canMutate={client.canMutate}
-                        preferredModelId={modelId}
-                        open={chatOpen}
-                        quote={chatQuote}
-                        onClose={closeChat}
-                        onOpenAccount={openAiSettings}
-                        onConnectionStale={refreshConnection}
-                      />
-                    </Suspense>
-                  </ChatBoundary>
+              <div className="chat-dock__inner" hidden={panelTab !== 'questions' && panelTab !== 'history'}>
+                {chatMounted && paperKey ? (
+                  <ResearchPanel
+                    key={paperKey}
+                    hub={hub}
+                    paperKey={paperKey}
+                    open={chatOpen}
+                    historyMode={panelTab === 'history'}
+                    intent={chatQuote}
+                    onClose={closeChat}
+                    onQuestion={() => setPanelTab('questions')}
+                    onPage={(page) => {
+                      chooseView('source');
+                      goToPage(page);
+                    }}
+                    onSettings={openAiSettings}
+                  />
                 ) : null}
               </div>
             </aside>
@@ -1876,34 +2039,32 @@ export function App(): JSX.Element {
           selection={pendingSelection}
           onClose={() => setPendingSelection(null)}
           onHighlight={(color) => {
-            const { page, regions, text } = pendingSelection;
+            const { regions, text, pageTexts } = pendingSelection;
             setPendingSelection(null);
-            void createHighlight(page, regions, text, color);
+            for (const page of new Set(regions.map((r) => r.page)))
+              void createHighlight(
+                page,
+                regions.filter((r) => r.page === page),
+                pageTexts?.[page] ?? text,
+                color,
+              );
           }}
           onMemo={() => {
             const { page, regions, text } = pendingSelection;
             setPendingSelection(null);
-            void createHighlight(page, regions, text, 'yellow').then((created) => {
-              if (created !== null) setOpenHighlightId(created.highlightId);
-            });
+            createMemo(page, regions[0] ?? null, text);
           }}
           onAsk={() => {
-            const { text } = pendingSelection;
+            const selection = pendingSelection;
             setPendingSelection(null);
-            askAboutSource(text);
+            quoteCount.current += 1;
+            setChatQuote({ id: quoteCount.current, text: selection.text, page: selection.page, from: 'source', rect: selection.regions[0], kind: 'text' });
+            setPanelTab('questions');
+            showChat(true, 'source');
           }}
         />
       ) : null}
 
-      {explain !== null ? (
-        <ExplainCard
-          state={explain}
-          onClose={() => {
-            explainAbort.current?.abort();
-            setExplain(null);
-          }}
-        />
-      ) : null}
       {citation !== null && paperKey !== null ? (
         <CitationCard
           state={citation}

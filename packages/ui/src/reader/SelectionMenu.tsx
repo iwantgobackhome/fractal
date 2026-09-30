@@ -7,6 +7,7 @@ export interface PendingSelection {
   page: number;
   regions: Region[];
   text: string;
+  pageTexts?: Record<number, string>;
   /** Viewport point just above the end of the selection. */
   anchor: { x: number; y: number };
 }
@@ -78,6 +79,7 @@ export function SelectionMenu({ selection, onHighlight, onMemo, onAsk, onClose }
             type="button"
             className={`selection-menu__swatch hl-${c.value}`}
             aria-label={t('reader.highlightColor', { color: t(c.label) })}
+            disabled={!selection.text}
             onClick={() => onHighlight(c.value)}
           />
         ))}
@@ -91,6 +93,7 @@ export function SelectionMenu({ selection, onHighlight, onMemo, onAsk, onClose }
       </button>
       <button
         type="button"
+        disabled={!selection.text}
         onClick={() => {
           void navigator.clipboard?.writeText(selection.text).then(() => {
             setCopied(true);

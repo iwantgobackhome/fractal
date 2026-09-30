@@ -6,7 +6,7 @@ import { IconQuote } from './ChatIcons';
 export interface SelectionQuoteProps {
   /** The Korean pane's scrolling body; only a selection inside it offers a quote. */
   containerRef: RefObject<HTMLElement | null>;
-  onQuote(text: string): void;
+  onQuote(text: string, page?: number): void;
 }
 
 interface Anchor {
@@ -14,6 +14,7 @@ interface Anchor {
   left: number;
   below: boolean;
   text: string;
+  page: number;
 }
 
 /** Room above a selection the button needs; closer to the pane's top it goes below instead. */
@@ -91,7 +92,8 @@ export function SelectionQuote({ containerRef, onQuote }: SelectionQuoteProps): 
       }
       const below = rect.top - BUTTON_ROOM < pane.top;
       const left = Math.min(Math.max(rect.left + rect.width / 2, pane.left + 64), pane.right - 64);
-      setAnchor({ top: below ? Math.min(rect.bottom, pane.bottom - BUTTON_ROOM) + 8 : rect.top - 8, left, below, text });
+      const page = Number(range.startContainer.parentElement?.closest<HTMLElement>('[data-page]')?.dataset.page) || 1;
+      setAnchor({ top: below ? Math.min(rect.bottom, pane.bottom - BUTTON_ROOM) + 8 : rect.top - 8, left, below, text, page });
     };
     const schedule = () => {
       if (presses.pressed || frame.current !== null) return;
@@ -133,7 +135,7 @@ export function SelectionQuote({ containerRef, onQuote }: SelectionQuoteProps): 
       // Keep the selection: a press on the button must not collapse it before the click.
       onMouseDown={(event) => event.preventDefault()}
       onClick={() => {
-        onQuote(anchor.text);
+        onQuote(anchor.text, anchor.page);
         document.getSelection()?.removeAllRanges();
         setAnchor(null);
       }}
