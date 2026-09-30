@@ -1,0 +1,23 @@
+
+> @fractal/hub@0.1.0 test
+> vitest run src/structure/shutdown.test.ts
+
+
+ RUN  v3.2.7 C:/Users/Home/orca/workspaces/fractal/fractal-reader-qa/packages/hub
+
+node.exe : (node:43768) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+위치 줄:1 문자:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:43768) Ex...nge at any time:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ src/structure/shutdown.test.ts (7 tests) 1731ms
+   ✓ structure shutdown > does not cache late reference enrichment failure or start a fallback after stop  1002ms
+   ✓ structure shutdown > closes the real Hub immediately after HTTP PDF upload while detection is pending  442ms
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  08:17:55
+   Duration  4.08s (transform 661ms, setup 0ms, collect 1.72s, tests 1.73s, environment 0ms, prepare 179ms)

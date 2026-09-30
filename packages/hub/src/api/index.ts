@@ -1073,6 +1073,7 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
       }
     },
     async close(): Promise<void> {
+      structure?.stop();
       pipeline.abortAll();
       await related?.close();
       // An answer cut off by shutdown is stored as interrupted, never left without an answer;

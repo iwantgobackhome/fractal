@@ -1,0 +1,9 @@
+node : (node:45624) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+위치 줄:2 문자:1
++ node docs/implementation/qa/integrated/reproduce-shutdown-baseline.mj ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:45624) Ex...nge at any time:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+Accepted baseline real HTTP upload/immediate-stop reproduced unhandled closed-SQLite rejection

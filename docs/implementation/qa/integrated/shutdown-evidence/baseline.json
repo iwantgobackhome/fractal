@@ -1,0 +1,11 @@
+{
+  "sourceSha": "3a2cf10617b85dbbbf74aea25b810730175448cc",
+  "status": "reproduced",
+  "route": "POST /api/papers/upload",
+  "httpStatus": 201,
+  "paperKey": "pdf-f5c88d24ba71384dd5f3da929389bb39977649d40fb85a978cbfca8307b88b15-f79b45a88b17b236ade1298edf4cafdceae6a9f19907eb29126332a7c9037b96",
+  "detector": "controlled pending then reject after stop",
+  "unhandledRejection": "Error: database is not open",
+  "hubStopped": true,
+  "isolation": "fresh E-only disposable Hub; retained Hub40024 and D fixture untouched"
+}

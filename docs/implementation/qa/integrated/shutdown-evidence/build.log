@@ -1,0 +1,7 @@
+
+> @fractal/hub@0.1.0 build
+> npm run typecheck && node ../../scripts/build-hub.mjs
+
+
+> @fractal/hub@0.1.0 typecheck
+> tsc --noEmit -p tsconfig.json

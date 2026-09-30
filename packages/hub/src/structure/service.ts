@@ -8,17 +8,39 @@ type Row = Record<string, unknown>;
 
 export class StructureService {
   private readonly running = new Map<string, Promise<void>>();
+  private stopped = false;
+  private readonly shutdown = new AbortController();
+  private readonly fetcher: typeof fetch;
+  private readonly onBlocksSaved = (key: string) => this.schedule(key, true);
 
   constructor(
     readonly store: SqlitePaperStore,
     private readonly detector: StructureDetector = new PdfJsStructureDetector(),
-    private readonly fetcher: typeof fetch = fetch,
+    fetcher: typeof fetch = fetch,
   ) {
+    this.fetcher = async (input, init) => {
+      this.shutdown.signal.throwIfAborted();
+      const signal = init?.signal ?? (input instanceof Request ? input.signal : undefined);
+      return fetcher(input, {
+        ...init,
+        signal: signal ? AbortSignal.any([signal, this.shutdown.signal]) : this.shutdown.signal,
+      });
+    };
     store.db.prepare('UPDATE structure_state SET status=? WHERE status=?').run('pending', 'running');
-    store.onBlocksSaved = (key) => this.schedule(key, true);
+    store.onBlocksSaved = this.onBlocksSaved;
+  }
+
+  /** Late detectors/fetchers may ignore cancellation; their continuations must not touch SQLite. */
+  stop(): void {
+    if (this.stopped) return;
+    this.stopped = true;
+    if (this.store.onBlocksSaved === this.onBlocksSaved) this.store.onBlocksSaved = undefined;
+    this.shutdown.abort();
+    // Leave unfinished rows recoverable: the next constructor resets running to pending.
   }
 
   read(key: string): PaperStructure {
+    if (this.stopped) return { version: STRUCTURE_VERSION, status: 'pending', items: [], references: [], markers: [] };
     const row = this.store.db.prepare('SELECT version,status FROM structure_state WHERE paper_key=?').get(key) as Row | undefined;
     if (!row || row.version !== STRUCTURE_VERSION) return { version: STRUCTURE_VERSION, status: 'pending', items: [], references: [], markers: [] };
     const read = <T>(table: string): T[] =>
@@ -35,6 +57,7 @@ export class StructureService {
   }
 
   schedule(key: string, force = false): void {
+    if (this.stopped) return;
     if (this.running.has(key)) return;
     if (!force && this.read(key).status === 'ready') return;
     if (!this.store.getPdf(key)) return;
@@ -43,10 +66,12 @@ export class StructureService {
       .run(key, STRUCTURE_VERSION, 'running');
     const job = new Promise<void>((resolve) => setImmediate(resolve))
       .then(async () => {
+        if (this.stopped) return;
         const bytes = this.store.getPdf(key);
         const paper = this.store.getPaper(key);
         if (!bytes || !paper) return;
         const result = await this.detector.detect(bytes, key, this.store.listBlocks(key));
+        if (this.stopped) return;
         if (paper.arxivId) {
           const sourceId = `${paper.arxivId}${paper.version ? `v${paper.version}` : ''}`;
           const sourceKey = `latex-numbers-v2:${sourceId}`;
@@ -56,6 +81,7 @@ export class StructureService {
             fragments = JSON.parse(String(cached.data)) as SourceFragment[];
           } else {
             fragments = await fetchArxivSource(sourceId, this.fetcher);
+            if (this.stopped) return;
             this.store.db.prepare("INSERT OR REPLACE INTO arxiv_source_cache VALUES(?,?,datetime('now'))").run(sourceKey, JSON.stringify(fragments));
           }
           result.items = matchLatex(result.items, fragments);
@@ -64,6 +90,7 @@ export class StructureService {
         this.write(key, result);
       })
       .catch(() => {
+        if (this.stopped) return;
         if (this.store.getPaper(key)) this.store.db.prepare('UPDATE structure_state SET status=? WHERE paper_key=?').run('failed', key);
       })
       .finally(() => this.running.delete(key));
@@ -90,11 +117,13 @@ export class StructureService {
   }
 
   async enrichment(reference: ReferenceEntry): Promise<ReferenceEnrichment | null> {
+    if (this.stopped) return null;
     const identity = reference.doi?.toLowerCase() ?? reference.arxivId?.toLowerCase() ?? reference.title?.toLowerCase() ?? reference.raw.toLowerCase();
     const cacheKey = `${ENRICHMENT_CACHE_VERSION}:${identity}`;
     const cached = this.store.db.prepare('SELECT data FROM reference_enrichment WHERE cache_key=?').get(cacheKey) as Row | undefined;
     if (cached) return JSON.parse(String(cached.data)) as ReferenceEnrichment | null;
     const data = await enrichReference(reference, this.fetcher);
+    if (this.stopped) return null;
     this.store.db.prepare("INSERT OR REPLACE INTO reference_enrichment VALUES(?,?,datetime('now'))").run(cacheKey, JSON.stringify(data));
     return data;
   }

@@ -1,0 +1,33 @@
+
+> @fractal/hub@0.1.0 test
+> vitest run src/structure/shutdown.test.ts src/structure/structure.test.ts src/api/provenance.test.ts
+
+
+ RUN  v3.2.7 C:/Users/Home/orca/workspaces/fractal/fractal-reader-qa/packages/hub
+
+node.exe : (node:32052) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+위치 줄:1 문자:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:32052) Ex...nge at any time:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43588) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:53128) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ src/structure/shutdown.test.ts (6 tests) 786ms
+   ✓ structure shutdown > closes the real Hub immediately after HTTP PDF upload while detection is pending  469ms
+ ✓ src/api/provenance.test.ts (10 tests) 1350ms
+   ✓ actual HTTP original provenance and reader prerequisites > admits exact authorized local binary PDF linking while retaining all guards  467ms
+ ✓ src/structure/structure.test.ts (9 tests) 5682ms
+   ✓ paper structure > uses Semantic Scholar, then OpenAlex when the first service fails  1011ms
+   ✓ paper structure > rejects wrong titles and years from mocked reference providers  2492ms
+   ✓ paper structure > ignores enrichment cache rows written before candidate validation  508ms
+   ✓ paper structure > stores detection and serves pending and ready route responses  1510ms
+
+ Test Files  3 passed (3)
+      Tests  25 passed (25)
+   Start at  08:15:18
+   Duration  7.06s (transform 910ms, setup 0ms, collect 3.38s, tests 7.82s, environment 1ms, prepare 488ms)
