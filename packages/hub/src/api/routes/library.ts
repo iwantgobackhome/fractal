@@ -1,6 +1,15 @@
+import { bookmark, linkPdf } from '../../scholarly/bookmarks';
 import type { IncomingMessage } from 'node:http';
 import { createHash } from 'node:crypto';
-import { collectionSchema, folderPatchSchema, libraryPatchSchema, libraryRecordSchema, readProgressSchema, tagSchema } from '@fractal/shared';
+import {
+  publicationBookmarkSchema,
+  collectionSchema,
+  folderPatchSchema,
+  libraryPatchSchema,
+  libraryRecordSchema,
+  readProgressSchema,
+  tagSchema,
+} from '@fractal/shared';
 import { ingestPdf, ingestUrl } from '../../ingest/index';
 import { exportLibrary, markdown } from '../../export/index';
 import { searchLibrary } from '../../library/search';
@@ -31,6 +40,18 @@ export async function handleLibrary(method: string, segments: string[], request:
   const s = segments;
   if (s[0] !== 'api') return undefined;
   if (s[1] === 'library') {
+    if (s.length === 3 && s[2] === 'bookmarks' && method === 'POST')
+      return json(bookmark(ctx.store, parseRequest(publicationBookmarkSchema, await jsonBody(request))), 201);
+    if (s.length === 4 && s[3] === 'pdf' && method === 'POST') {
+      if (
+        String(request.headers['content-type'] ?? '')
+          .split(';')[0]
+          ?.trim()
+          .toLowerCase() !== 'application/pdf'
+      )
+        throw unsupportedMedia('Upload application/pdf');
+      return json(await linkPdf(ctx.store, s[2]!, await body(request, 50 * 1024 * 1024, 'PDF exceeds 50 MiB')), 201);
+    }
     if (s.length === 3 && s[2] === 'metadata' && method === 'POST')
       return json(ctx.store.publishMetadata(parseRequest(libraryRecordSchema, await jsonBody(request))), 201);
     if (s.length === 2 && method === 'GET') {

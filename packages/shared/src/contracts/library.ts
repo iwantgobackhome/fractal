@@ -1,3 +1,4 @@
+import { publicationMetadataSchema } from './publication';
 import { z } from 'zod';
 import type { Job, Translation } from './ai';
 
@@ -9,6 +10,8 @@ export interface Coverage {
 export interface Paper {
   paperKey: string;
   sourceKind?: 'arxiv' | 'publication';
+  /** Explicit provenance for a user-linked, existing metadata catalog identity. */
+  catalogKey?: string;
   arxivId: string | null;
   version: number | null;
   title: string | null;
@@ -88,6 +91,7 @@ export const libraryRecordSchema = z.object({
   updatedAt: z.string().datetime(),
   status: readingStatusSchema,
   bibtexKey: z.string().min(1),
+  publication: publicationMetadataSchema.optional(),
   saved: z.boolean().optional(),
   savedAt: z.string().datetime().nullable().optional(),
   lastReadAt: z.string().datetime().nullable().optional(),
@@ -110,6 +114,7 @@ export const libraryPatchSchema = libraryRecordSchema
     collections: true,
     status: true,
     bibtexKey: true,
+    publication: true,
     saved: true,
     lastReadAt: true,
     readProgress: true,

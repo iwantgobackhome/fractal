@@ -16,6 +16,18 @@ const value = <T>(row: Row | undefined, field = 'data'): T | null => (row ? (JSO
 const hash = (bytes: Uint8Array) => createHash('sha256').update(bytes).digest('hex');
 
 /** Production store. JSON import is read-only; all subsequent records live in SQLite. */
+/** Compare UTC ISO instants without dropping Android's sub-millisecond fraction. */
+function compareReadInstants(a: string, b: string): number {
+  const secondsA = Date.parse(a.replace(/\.\d+Z$/, 'Z')),
+    secondsB = Date.parse(b.replace(/\.\d+Z$/, 'Z'));
+  if (secondsA !== secondsB) return Math.sign(secondsA - secondsB);
+  const fractionA = /\.(\d+)Z$/.exec(a)?.[1] ?? '',
+    fractionB = /\.(\d+)Z$/.exec(b)?.[1] ?? '';
+  const precision = Math.max(fractionA.length, fractionB.length),
+    left = fractionA.padEnd(precision, '0'),
+    right = fractionB.padEnd(precision, '0');
+  return left === right ? 0 : left < right ? -1 : 1;
+}
 export class SqlitePaperStore extends PaperStore {
   readonly db: DatabaseSync;
   onBlocksSaved?: (paperKey: string) => void;
@@ -110,6 +122,12 @@ export class SqlitePaperStore extends PaperStore {
           data TEXT NOT NULL, size INTEGER NOT NULL, accessed_at INTEGER NOT NULL, PRIMARY KEY(pdf_hash,version,page));
         INSERT INTO migrations VALUES(12,datetime('now'));
         RELEASE pdf_text_migration;`);
+    }
+    if (!this.db.prepare('SELECT 1 FROM migrations WHERE version=13').get()) {
+      this.db.exec(`SAVEPOINT scholarly_cache_migration;
+        CREATE TABLE related_provider_cache(provider TEXT NOT NULL,identity TEXT NOT NULL,data TEXT NOT NULL,fetched_at TEXT NOT NULL,PRIMARY KEY(provider,identity));
+        INSERT INTO migrations VALUES(13,datetime('now'));
+        RELEASE scholarly_cache_migration;`);
     }
   }
 
@@ -220,6 +238,7 @@ export class SqlitePaperStore extends PaperStore {
   }
   override savePaper(paper: Paper, pdfBytes?: Buffer | Uint8Array): Paper {
     const p = validatePaper(paper);
+    if (p.catalogKey && !this.getLibrary(p.paperKey)) throw invalidInput('Catalog-linked reader requires existing publication metadata');
     const previous = this.getPaper(p.paperKey);
     let pdfHash = p.pdfSha256 ?? previous?.pdfSha256 ?? null;
     if (pdfBytes) pdfHash = this.saveBlob(pdfBytes);
@@ -603,7 +622,10 @@ export class SqlitePaperStore extends PaperStore {
       }
     }
     next.tags = [...new Set(next.tags)];
-    if (parsed.data.lastReadAt && old.lastReadAt && parsed.data.lastReadAt < old.lastReadAt) next.lastReadAt = old.lastReadAt;
+    if (parsed.data.lastReadAt && old.lastReadAt && compareReadInstants(parsed.data.lastReadAt, old.lastReadAt) <= 0) {
+      next.lastReadAt = old.lastReadAt;
+      if (parsed.data.readProgress !== undefined) next.readProgress = old.readProgress;
+    }
     const pageCount = this.getPaper(key)?.pageCount;
     if (next.readProgress && pageCount && next.readProgress.page > pageCount) throw invalidInput('Read progress page exceeds paper page count');
 

@@ -1,3 +1,4 @@
+import { ProviderFailure, ScholarlyClient } from '../scholarly/client';
 import { createHash } from 'node:crypto';
 import type { Paper } from '@fractal/shared';
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
@@ -29,28 +30,23 @@ export async function resolveDoi(doi: string, fetcher: typeof fetch = fetch, ema
   }
   if (!/^10\.\d{4,9}\/\S+$/.test(doi)) throw invalidInput('DOI 형식이 올바르지 않습니다.');
   const headers: HeadersInit = email ? { 'User-Agent': `Fractal/0.1 (mailto:${email})` } : {};
-  let cross: Response;
-  try {
-    cross = await fetcher(`https://api.crossref.org/works/${encodeURIComponent(doi)}`, { headers });
-  } catch {
-    throw appError('NETWORK', 'Crossref에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.', true);
-  }
-
-  if (cross.status === 404) {
-    throw notFound('이 DOI를 찾지 못했습니다. DOI를 다시 확인해 주세요.');
-  }
-  if (cross.status === 429 || cross.status >= 500) {
-    throw appError('NETWORK', 'Crossref에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.', true);
-  }
-  if (!cross.ok) {
-    throw invalidInput('DOI를 확인할 수 없습니다. DOI를 다시 확인해 주세요.');
-  }
-
   let work: Record<string, unknown>;
   try {
-    work = ((await cross.json()) as { message: Record<string, unknown> }).message;
+    const url = new URL(`https://api.crossref.org/works/${encodeURIComponent(doi)}`);
+    if (email && /^[^\s@]+@[^\s@]+$/.test(email)) url.searchParams.set('mailto', email);
+    const data = await new ScholarlyClient(fetcher).json('crossref', url.href);
+    work = data.message as Record<string, unknown>;
     if (!work || typeof work !== 'object') throw new Error('Crossref response missing message');
-  } catch {
+  } catch (error) {
+    if (error instanceof ProviderFailure && error.status.state === 'not_found') throw notFound('이 DOI를 찾지 못했습니다. DOI를 다시 확인해 주세요.');
+    if (
+      error instanceof ProviderFailure &&
+      error.status.httpStatus &&
+      error.status.httpStatus >= 400 &&
+      error.status.httpStatus < 500 &&
+      ![401, 403, 409, 429].includes(error.status.httpStatus)
+    )
+      throw invalidInput('DOI를 확인할 수 없습니다. DOI를 다시 확인해 주세요.');
     throw appError('NETWORK', 'Crossref에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.', true);
   }
   const names = Array.isArray(work.author) ? (work.author as Array<{ given?: string; family?: string }>) : [];
@@ -62,7 +58,11 @@ export async function resolveDoi(doi: string, fetcher: typeof fetch = fetch, ema
   let pdfUrl: null | string = null;
   if (email) {
     try {
-      const unpay = await fetcher(`https://api.unpaywall.org/v2/${encodeURIComponent(doi)}?email=${encodeURIComponent(email)}`, { headers });
+      const unpay = await fetcher(`https://api.unpaywall.org/v2/${encodeURIComponent(doi)}?email=${encodeURIComponent(email)}`, {
+        headers,
+        redirect: 'error',
+        signal: AbortSignal.timeout(5000),
+      });
       if (!unpay.ok) throw new Error(`Unpaywall HTTP ${unpay.status}`);
       const data = (await unpay.json()) as { best_oa_location?: { url_for_pdf?: string } };
       pdfUrl = data.best_oa_location?.url_for_pdf ?? null;

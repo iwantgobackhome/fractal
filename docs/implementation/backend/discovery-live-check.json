@@ -1,0 +1,193 @@
+[
+  {
+    "check": "openAlexTypes",
+    "url": "https://api.openalex.org/work-types?per_page=100",
+    "authentication": "anonymous",
+    "observedAt": "2026-09-30T20:23:43.660394+00:00",
+    "httpStatus": 200,
+    "quotaHeaders": {
+      "X-RateLimit-Cost-USD": "0.0001",
+      "X-RateLimit-Credits-Used": "1",
+      "X-RateLimit-Limit": "1000",
+      "X-RateLimit-Limit-USD": "0.1",
+      "X-RateLimit-Onetime-Remaining": "0",
+      "X-RateLimit-Prepaid-Remaining-USD": "0",
+      "X-RateLimit-Remaining": "980",
+      "X-RateLimit-Remaining-USD": "0.098",
+      "X-RateLimit-Reset": "12972"
+    },
+    "count": 25,
+    "types": [
+      "https://openalex.org/types/article",
+      "https://openalex.org/types/dataset",
+      "https://openalex.org/types/other",
+      "https://openalex.org/types/book-chapter",
+      "https://openalex.org/types/dissertation",
+      "https://openalex.org/types/conference-paper",
+      "https://openalex.org/types/book",
+      "https://openalex.org/types/preprint",
+      "https://openalex.org/types/paratext",
+      "https://openalex.org/types/conference-abstract",
+      "https://openalex.org/types/report",
+      "https://openalex.org/types/reference-entry",
+      "https://openalex.org/types/book-review",
+      "https://openalex.org/types/libguides",
+      "https://openalex.org/types/peer-review",
+      "https://openalex.org/types/editorial",
+      "https://openalex.org/types/review",
+      "https://openalex.org/types/software",
+      "https://openalex.org/types/supplementary-materials",
+      "https://openalex.org/types/erratum",
+      "https://openalex.org/types/letter",
+      "https://openalex.org/types/standard",
+      "https://openalex.org/types/retraction",
+      "https://openalex.org/types/data-paper",
+      "https://openalex.org/types/software-paper"
+    ]
+  },
+  {
+    "check": "openAlexSearch",
+    "url": "https://api.openalex.org/works?search=language%20models&filter=from_publication_date:2026-08-30&per_page=1&select=id,display_name,type,publication_year,primary_location,open_access",
+    "authentication": "anonymous",
+    "observedAt": "2026-09-30T20:23:44.127816+00:00",
+    "httpStatus": 200,
+    "quotaHeaders": {
+      "X-RateLimit-Cost-USD": "0.001",
+      "X-RateLimit-Credits-Used": "10",
+      "X-RateLimit-Limit": "1000",
+      "X-RateLimit-Limit-USD": "0.1",
+      "X-RateLimit-Onetime-Remaining": "0",
+      "X-RateLimit-Prepaid-Remaining-USD": "0",
+      "X-RateLimit-Remaining": "970",
+      "X-RateLimit-Remaining-USD": "0.097",
+      "X-RateLimit-Reset": "12971"
+    },
+    "count": 1,
+    "sample": {
+      "id": "https://openalex.org/W4390529182",
+      "display_name": "Beyond Efficiency: A Systematic Survey of Resource-Efficient Large Language Models",
+      "type": "article",
+      "publication_year": 2026
+    }
+  },
+  {
+    "check": "crossrefSearch",
+    "url": "https://api.crossref.org/works?query.bibliographic=language%20models&rows=1&filter=from-pub-date:2026-08-30",
+    "authentication": "anonymous",
+    "observedAt": "2026-09-30T20:23:45.119355+00:00",
+    "httpStatus": 200,
+    "quotaHeaders": {
+      "x-rate-limit-limit": "1",
+      "x-rate-limit-interval": "1s",
+      "x-concurrency-limit": "1"
+    },
+    "count": 1,
+    "sample": {
+      "type": "book-chapter",
+      "DOI": "10.1201/9781003650065-9"
+    }
+  },
+  {
+    "check": "semanticScholarGraph",
+    "url": "https://api.semanticscholar.org/graph/v1/paper/ARXIV:1706.03762?fields=title,paperId",
+    "authentication": "anonymous",
+    "observedAt": "2026-09-30T20:23:46.014943+00:00",
+    "httpStatus": 200,
+    "quotaHeaders": {},
+    "count": 0,
+    "sample": {
+      "title": "Attention is All you Need"
+    }
+  },
+  {
+    "check": "openAlexAuthorLookup",
+    "url": "https://api.openalex.org/authors?search=Geoffrey%20Hinton&per_page=5&select=id,display_name",
+    "authentication": "anonymous",
+    "observedAt": "2026-09-30T20:44:48.537838+00:00",
+    "httpStatus": 200,
+    "quotaHeaders": {
+      "X-RateLimit-Cost-USD": "0.001",
+      "X-RateLimit-Credits-Used": "10",
+      "X-RateLimit-Limit": "1000",
+      "X-RateLimit-Limit-USD": "0.1",
+      "X-RateLimit-Onetime-Remaining": "0",
+      "X-RateLimit-Prepaid-Remaining-USD": "0",
+      "X-RateLimit-Remaining": "960",
+      "X-RateLimit-Remaining-USD": "0.096",
+      "X-RateLimit-Reset": "11706"
+    },
+    "count": 5,
+    "sample": [
+      {
+        "id": "https://openalex.org/A5108093963",
+        "display_name": "Geoffrey E. Hinton"
+      },
+      {
+        "id": "https://openalex.org/A5110248343",
+        "display_name": "Geoffrey E. Hinton"
+      },
+      {
+        "id": "https://openalex.org/A5002428732",
+        "display_name": "Geoffrey F. Hinton"
+      },
+      {
+        "id": "https://openalex.org/A5098035523",
+        "display_name": "James A. Anderson and Geoffrey E. Hinton"
+      },
+      {
+        "id": "https://openalex.org/A5126876061",
+        "display_name": "Geoffrey Hinton"
+      }
+    ]
+  },
+  {
+    "check": "crossrefAuthorQuery",
+    "url": "https://api.crossref.org/works?query.author=Geoffrey%20Hinton&rows=1",
+    "authentication": "anonymous",
+    "observedAt": "2026-09-30T20:44:50.565081+00:00",
+    "httpStatus": 200,
+    "quotaHeaders": {
+      "x-rate-limit-limit": "1",
+      "x-rate-limit-interval": "1s",
+      "x-concurrency-limit": "1"
+    },
+    "count": 1,
+    "sample": {
+      "type": "other",
+      "DOI": "10.1002/0471743984.vse0673"
+    }
+  },
+  {
+    "check": "openAlexEncodedDoiSingleton",
+    "url": "https://api.openalex.org/works/https://doi.org/10.1038%2Fnature14539?select=id,display_name,doi,authorships,publication_year,primary_location,related_works,referenced_works",
+    "authentication": "anonymous",
+    "observedAt": "2026-09-30T20:44:52.386195+00:00",
+    "httpStatus": 200,
+    "quotaHeaders": {
+      "X-RateLimit-Cost-USD": "0.0001",
+      "X-RateLimit-Credits-Used": "1",
+      "X-RateLimit-Limit": "1000",
+      "X-RateLimit-Limit-USD": "0.1",
+      "X-RateLimit-Onetime-Remaining": "0",
+      "X-RateLimit-Prepaid-Remaining-USD": "0",
+      "X-RateLimit-Remaining": "959",
+      "X-RateLimit-Remaining-USD": "0.0959",
+      "X-RateLimit-Reset": "11703"
+    },
+    "count": 0,
+    "sample": {
+      "id": "https://openalex.org/W2919115771",
+      "display_name": "Deep learning",
+      "doi": "https://doi.org/10.1038/nature14539",
+      "publication_year": 2015
+    }
+  },
+  {
+    "check": "openAlexAuthorWorksFilter",
+    "url": "https://api.openalex.org/works?filter=author.id:A5108093963&per_page=1&select=id,display_name",
+    "authentication": "anonymous",
+    "observedAt": "2026-09-30T20:44:53.738284+00:00",
+    "httpStatus": 200,
+    "count": 1
+  }
+]

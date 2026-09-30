@@ -1,3 +1,11 @@
+import {
+  identityMatches,
+  identifiersConflict,
+  normalizeDoi,
+  normalizeArxiv,
+  normalizedTitle as normalizeTitle,
+  unknownPublication,
+} from '../scholarly/metadata';
 import type { FeedInterests, FeedItem, LibraryRecord } from '@fractal/shared';
 import type { Preferences } from '@fractal/shared';
 import type { RawItem } from './sources';
@@ -8,47 +16,78 @@ const words = (value: string): string[] =>
     .toLowerCase()
     .normalize('NFKC')
     .match(/[\p{L}\p{N}]{2,}/gu) ?? [];
-const normalizedTitle = (value: string): string => words(value).join(' ');
-const identity = (item: RawItem): string =>
-  item.arxivId ? `a:${item.arxivId.toLowerCase().replace(/v\d+$/, '')}` : item.doi ? `d:${item.doi.toLowerCase()}` : `t:${normalizedTitle(item.title)}`;
-
+const normalizedTitle = normalizeTitle;
 export function deduplicate(items: RawItem[]): RawItem[] {
-  const seen = new Map<string, number>();
-  const output: RawItem[] = [];
+  const seen = new Map<string, Set<number>>(),
+    output: Array<RawItem | null> = [];
+  const merge = (existing: RawItem, item: RawItem): RawItem => {
+    const a = existing.publication ?? unknownPublication(),
+      b = item.publication ?? unknownPublication();
+    const publication = {
+      sources: [...new Set([...(a.sources ?? []), ...(b.sources ?? [])])],
+      year: a.year ?? b.year,
+      venue: a.venue ?? b.venue,
+      publicationDate: a.publicationDate ?? b.publicationDate,
+      publicationKind: a.publicationKind !== 'unknown' ? a.publicationKind : b.publicationKind,
+      oaAvailability: a.oaAvailability !== 'unknown' ? a.oaAvailability : b.oaAvailability,
+      oaPdfUrl: a.oaPdfUrl ?? b.oaPdfUrl,
+    };
+    return {
+      ...existing,
+      abstract: existing.abstract.length >= item.abstract.length ? existing.abstract : item.abstract,
+      authors: existing.authors.length ? existing.authors : item.authors,
+      arxivId: normalizeArxiv(existing.arxivId) ?? normalizeArxiv(item.arxivId),
+      doi: normalizeDoi(existing.doi) ?? normalizeDoi(item.doi),
+      categories: [...new Set([...existing.categories, ...item.categories])],
+      popularity: Math.max(existing.popularity, item.popularity),
+      source: [...new Set([...existing.source.split(','), ...item.source.split(',')])].join(','),
+      image: existing.image ?? item.image ?? null,
+      imageCandidate: item.source.includes('bing.com') && item.imageCandidate ? item.imageCandidate : (existing.imageCandidate ?? item.imageCandidate),
+      topicIds: [...new Set([...(existing.topicIds ?? []), ...(item.topicIds ?? [])])],
+      ...(existing.publication || item.publication ? { publication } : {}),
+      ...(existing.dateBasis === 'observed' && item.dateBasis === 'publication' ? { publishedAt: item.publishedAt, dateBasis: 'publication' as const } : {}),
+    };
+  };
   for (const item of items) {
-    const keys = [identity(item), `t:${normalizedTitle(item.title)}`];
-    const index = keys.map((key) => seen.get(key)).find((value) => value !== undefined);
-    if (index !== undefined) {
-      const existing = output[index]!;
-      const merged: RawItem = {
-        ...existing,
-        abstract: existing.abstract.length >= item.abstract.length ? existing.abstract : item.abstract,
-        authors: existing.authors.length ? existing.authors : item.authors,
-        arxivId: existing.arxivId ?? item.arxivId,
-        doi: existing.doi ?? item.doi,
-        categories: [...new Set([...existing.categories, ...item.categories])],
-        popularity: Math.max(existing.popularity, item.popularity),
-        source: [...new Set([...existing.source.split(','), ...item.source.split(',')])].join(','),
-        image: existing.image ?? item.image ?? null,
-        imageCandidate: item.source.includes('bing.com') && item.imageCandidate ? item.imageCandidate : (existing.imageCandidate ?? item.imageCandidate),
-        topicIds: [...new Set([...(existing.topicIds ?? []), ...(item.topicIds ?? [])])],
-      };
+    const doi = normalizeDoi(item.doi),
+      arxiv = normalizeArxiv(item.arxivId);
+    const keys = [`${item.kind}:t:${normalizedTitle(item.title)}`, ...(doi ? [`d:${doi}`] : []), ...(arxiv ? [`a:${arxiv}`] : [])];
+    let matches = [...new Set(keys.flatMap((k) => [...(seen.get(k) ?? [])]))].filter((index) => {
+      const prior = output[index];
+      return (
+        prior &&
+        (item.kind === 'news'
+          ? normalizedTitle(prior.title) === normalizedTitle(item.title)
+          : identityMatches({ ...prior, year: prior.publication?.year }, { ...item, year: item.publication?.year }))
+      );
+    });
+    if (matches.some((a, i) => matches.slice(i + 1).some((b) => identifiersConflict(output[a]!, output[b]!)))) matches = [];
+    const index = matches[0] ?? output.length;
+    if (!matches.length) output.push(item);
+    else {
+      let merged = merge(output[index]!, item);
+      // A later item can bridge a DOI-only group and an arXiv-only group.
+      for (const other of matches.slice(1)) {
+        merged = merge(merged, output[other]!);
+        output[other] = null;
+        for (const values of seen.values()) if (values.delete(other)) values.add(index);
+      }
       output[index] = merged;
-      for (const key of keys) seen.set(key, index);
-    } else {
-      const next = output.push(item) - 1;
-      for (const key of keys) seen.set(key, next);
+    }
+    for (const key of keys) {
+      const values = seen.get(key) ?? new Set<number>();
+      values.add(index);
+      seen.set(key, values);
     }
   }
-  return output;
+  return output.filter((v): v is RawItem => !!v);
 }
 
 function libraryMatch(item: RawItem, library: LibraryRecord[]): boolean {
   return library.some((record) =>
-    Boolean(
-      (item.arxivId && record.arxivId?.replace(/v\d+$/, '').toLowerCase() === item.arxivId.toLowerCase()) ||
-      (item.doi && record.doi?.toLowerCase() === item.doi.toLowerCase()) ||
-      (record.title && normalizedTitle(record.title) === normalizedTitle(item.title)),
+    identityMatches(
+      { ...item, year: item.publication?.year },
+      { ...record, authors: record.authors.map((a) => [a.given, a.family].filter(Boolean).join(' ')) },
     ),
   );
 }

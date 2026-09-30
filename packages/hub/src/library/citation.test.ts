@@ -55,7 +55,7 @@ function arxivPaper(arxivId: string, author = 'Ashish Vaswani'): Paper {
 
 describe('citation year and key', () => {
   it('reports an unknown Crossref DOI as non-retryable NOT_FOUND', async () => {
-    const missing = (async () => ({ ok: false, status: 404 }) as Response) as typeof fetch;
+    const missing = (async () => new Response(null, { status: 404 })) as typeof fetch;
     let error: unknown;
     try {
       await resolveDoi('10.1234/doesnotexist', missing);
@@ -72,7 +72,7 @@ describe('citation year and key', () => {
       },
     });
 
-    const unavailable = (async () => ({ ok: false, status: 503 }) as Response) as typeof fetch;
+    const unavailable = (async () => new Response(null, { status: 503 })) as typeof fetch;
     let upstreamError: unknown;
     try {
       await resolveDoi('10.1234/doesnotexist', unavailable);
@@ -83,12 +83,7 @@ describe('citation year and key', () => {
   });
 
   it('uses the Crossref issued year when published is absent', async () => {
-    const response = (async () =>
-      ({
-        ok: true,
-        status: 200,
-        json: async () => ({ message: { issued: { 'date-parts': [[2022, 5, 1]] } } }),
-      }) as Response) as typeof fetch;
+    const response = (async () => Response.json({ message: { issued: { 'date-parts': [[2022, 5, 1]] } } })) as typeof fetch;
     const metadata = await resolveDoi('10.1234/example', response, '');
     expect(metadata.year).toBe(2022);
   });
@@ -168,6 +163,6 @@ describe('citation year and key', () => {
     expect(migrated.getLibrary(first.paperKey)).toMatchObject({ year: 2017, bibtexKey: 'vaswani2017' });
     expect(migrated.getLibrary(second.paperKey)).toMatchObject({ year: 2017, bibtexKey: 'vaswani2017a' });
     expect(migrated.getLibrary(edited.paperKey)).toMatchObject({ year: 2017, bibtexKey: 'my-transformer-key' });
-    expect(migrated.db.prepare('SELECT count(*) AS count FROM migrations').get()).toMatchObject({ count: 12 });
+    expect(migrated.db.prepare('SELECT count(*) AS count FROM migrations').get()).toMatchObject({ count: 13 });
   });
 });

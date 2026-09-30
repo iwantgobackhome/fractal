@@ -1060,6 +1060,7 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
     },
     async close(): Promise<void> {
       pipeline.abortAll();
+      await related?.close();
       // An answer cut off by shutdown is stored as interrupted, never left without an answer;
       // an answer whose earlier write failed gets one more try before it would be lost.
       chat.stopAll(RESTARTED_ERROR);

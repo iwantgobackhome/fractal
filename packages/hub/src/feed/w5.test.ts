@@ -168,7 +168,7 @@ describe('W5 feed sources', () => {
       const fetcher = vi.fn(
         async () => new Response(JSON.stringify({ references: [item], citations: [] }), { headers: { 'content-type': 'application/json' } }),
       ) as unknown as typeof fetch;
-      const related = new RelatedPaperService(store, fetcher);
+      const related = new RelatedPaperService(store, fetcher, { intervalMs: 0 });
       expect((await related.get('1706.03762v1')).items).toMatchObject([{ title: 'Related', relation: 'cites' }]);
       expect((await related.get('1706.03762v1')).items).toHaveLength(1);
       expect(fetcher).toHaveBeenCalledTimes(1);
@@ -198,9 +198,11 @@ describe('W5 feed sources', () => {
       });
       const fetcher = vi.fn(async (url: string) => {
         if (url.includes('semanticscholar.org')) return new Response('', { status: 429 });
-        if (url.includes('/works/https://doi.org/'))
-          return Response.json({ id: 'https://openalex.org/W1', related_works: ['https://openalex.org/W2'], referenced_works: [] });
-        if (url.includes('openalex_id:'))
+        if (url.includes('search='))
+          return Response.json({
+            results: [{ id: 'https://openalex.org/W1', display_name: 'Behavioral Shadows', related_works: ['https://openalex.org/W2'], referenced_works: [] }],
+          });
+        if (decodeURIComponent(url).includes('openalex_id:'))
           return Response.json({
             results: [
               { id: 'https://openalex.org/W2', display_name: 'Related work', doi: 'https://doi.org/10.1000/test', authorships: [], publication_year: 2025 },
@@ -209,16 +211,24 @@ describe('W5 feed sources', () => {
         return Response.json({ results: [] });
       }) as unknown as typeof fetch;
       const started = Date.now();
-      const result = await new RelatedPaperService(store, fetcher).get('2609.29233v1');
+      const result = await new RelatedPaperService(store, fetcher, { intervalMs: 0 }).get('2609.29233v1');
       expect(result).toMatchObject({ source: 'openAlex', items: [{ title: 'Related work', relation: 'similar' }] });
       expect(fetcher).toHaveBeenCalledTimes(4);
       expect(Date.now() - started).toBeLessThan(1000);
       const limited = vi.fn(async () => new Response('', { status: 429 })) as unknown as typeof fetch;
       store.db.prepare('DELETE FROM related_papers').run();
-      const failure = await new RelatedPaperService(store, limited).get('2609.29233v1').catch((error: unknown) => error);
-      expect(failure).toMatchObject({ error: { code: 'RELATED_RATE_LIMITED', retryable: true } });
+      store.db.prepare('DELETE FROM related_provider_cache').run();
+      const failure = await new RelatedPaperService(store, limited, { intervalMs: 0 }).get('2609.29233v1').catch((error: unknown) => error);
+      expect(failure).toMatchObject({
+        status: 'unavailable',
+        fetchedAt: null,
+        providerStatus: [
+          { provider: 'semanticScholar', state: 'rate_limited' },
+          { provider: 'openAlex', state: 'rate_limited' },
+        ],
+      });
       expect(limited).toHaveBeenCalledTimes(2);
-      expect(toHttp(failure).status).toBe(429);
+
       const emptyFallback = vi.fn(async (url: string) =>
         url.includes('semanticscholar.org')
           ? new Response('', { status: 429 })
@@ -226,8 +236,12 @@ describe('W5 feed sources', () => {
             ? Response.json({ id: 'https://openalex.org/W1', related_works: [], referenced_works: [] })
             : Response.json({ results: [] }),
       ) as unknown as typeof fetch;
-      await expect(new RelatedPaperService(store, emptyFallback).get('2609.29233v1')).rejects.toMatchObject({
-        error: { code: 'RELATED_RATE_LIMITED' },
+      expect(await new RelatedPaperService(store, emptyFallback, { intervalMs: 0 }).get('2609.29233v1')).toMatchObject({
+        status: 'unavailable',
+        providerStatus: [
+          { provider: 'semanticScholar', state: 'rate_limited' },
+          { provider: 'openAlex', state: 'not_found' },
+        ],
       });
     } finally {
       store.db.close();

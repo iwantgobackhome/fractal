@@ -88,7 +88,11 @@ export function validatePaper(paper: unknown): Paper {
   assertSafeKey(p.paperKey);
   if (p.sourceKind !== undefined && p.sourceKind !== 'arxiv' && p.sourceKind !== 'publication') throw invalidInput('paper.sourceKind is invalid');
   if (p.sourceKind === 'publication') {
-    if (p.arxivId !== null || p.version !== null || !/^pdf-[a-f0-9]{64}-[a-f0-9]{64}$/.test(p.paperKey)) throw invalidInput('publication identity is invalid');
+    const canonical = /^pdf-[a-f0-9]{64}-[a-f0-9]{64}$/.test(p.paperKey);
+    const catalog =
+      p.catalogKey === p.paperKey && !p.paperKey.startsWith('pdf-') && !/^(?:\d{4}\.\d{4,5}|[a-z][a-z0-9.-]*[._-]\d{7})(?:v\d+)?$/.test(p.paperKey);
+    if (p.arxivId !== null || p.version !== null || (!canonical && !catalog) || (canonical && p.catalogKey !== undefined))
+      throw invalidInput('publication identity is invalid');
   } else {
     if (!isNonEmptyString(p.arxivId)) throw invalidInput('paper.arxivId must be a non-empty string');
     if (!isInt(p.version) || p.version < 1) throw invalidInput('paper.version must be a positive integer');
@@ -122,6 +126,7 @@ export function validatePaper(paper: unknown): Paper {
   return {
     paperKey: p.paperKey,
     ...(p.sourceKind === undefined ? {} : { sourceKind: p.sourceKind }),
+    ...(p.sourceKind === 'publication' && p.catalogKey ? { catalogKey: p.catalogKey } : {}),
     arxivId: p.arxivId,
     version: p.version,
     title: p.title ?? null,

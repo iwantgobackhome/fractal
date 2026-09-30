@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { languageSchema } from './preferences';
+import { publicationMetadataSchema } from './publication';
 
 /** ISO week, Monday through Sunday, used as the feed snapshot key. */
 export const feedWeekSchema = z.string().regex(/^\d{4}-W(?:0[1-9]|[1-4]\d|5[0-3])$/);
@@ -22,7 +23,14 @@ export const feedInterestsInputSchema = feedInterestsSchema.extend({
 });
 
 export const feedSettingsSchema = z.object({
-  sources: z.object({ arxiv: z.boolean(), huggingFace: z.boolean(), news: z.boolean(), recommendations: z.boolean() }),
+  sources: z.object({
+    arxiv: z.boolean(),
+    huggingFace: z.boolean(),
+    news: z.boolean(),
+    recommendations: z.boolean(),
+    openAlex: z.boolean().optional(),
+    crossref: z.boolean().optional(),
+  }),
   customRssFeeds: z.array(z.string().url().startsWith('https://')).max(20),
   digestEnabled: z.boolean(),
   refreshIntervalHours: z.number().int().min(1).max(168),
@@ -57,6 +65,9 @@ export const feedItemSchema = z.object({
   reasonParams: z.record(z.string(), z.string()),
   inLibrary: z.boolean(),
   popularity: z.number().nonnegative(),
+  publication: publicationMetadataSchema.optional(),
+  dateBasis: z.enum(['publication', 'observed']).optional(),
+  topicIds: z.array(z.string()).optional(),
   image: feedImageSchema.nullable().default(null),
 });
 export type FeedItem = z.infer<typeof feedItemSchema>;
@@ -66,6 +77,8 @@ export const feedSourceStatusSchema = z.object({
   state: z.enum(['ok', 'cached', 'error', 'disabled']),
   fetchedAt: z.string().datetime().nullable(),
   message: z.string().optional(),
+  errorCode: z.enum(['not_found', 'rate_limited', 'timeout', 'error', 'auth_required', 'budget_exhausted']).optional(),
+  retryAt: z.string().datetime().optional(),
 });
 export type FeedSourceStatus = z.infer<typeof feedSourceStatusSchema>;
 

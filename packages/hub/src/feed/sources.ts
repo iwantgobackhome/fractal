@@ -1,3 +1,4 @@
+import { ScholarlyClient } from '../scholarly/client';
 import { createHash } from 'node:crypto';
 import type { FeedItem, FeedInterests, FeedSourceStatus, FieldTopic } from '@fractal/shared';
 import type { Preferences } from '@fractal/shared';
@@ -402,13 +403,34 @@ export const recommendationSource: FeedSource = {
 };
 
 export class CachedFetcher {
+  private readonly scholarly: ScholarlyClient;
   constructor(
     private readonly store: SqlitePaperStore,
     private readonly fetcher: typeof fetch = fetch,
-  ) {}
+  ) {
+    this.scholarly = new ScholarlyClient(fetcher);
+  }
 
   async get(url: string, extraHeaders: Record<string, string> = {}, requestBody?: string): Promise<string> {
     const key = requestBody ? `${url}\n${requestBody}` : url;
+    const origin = new URL(url).origin;
+    const provider =
+      origin === 'https://api.openalex.org'
+        ? 'openAlex'
+        : origin === 'https://api.crossref.org'
+          ? 'crossref'
+          : origin === 'https://api.semanticscholar.org'
+            ? 'semanticScholar'
+            : null;
+    if (provider) {
+      const text = await this.scholarly.text(provider, url, undefined, extraHeaders, requestBody);
+      this.store.db
+        .prepare(
+          'INSERT INTO feed_fetch(url,etag,modified,body,fetched_at) VALUES(?,NULL,NULL,?,?) ON CONFLICT(url) DO UPDATE SET body=excluded.body,fetched_at=excluded.fetched_at',
+        )
+        .run(key, text, new Date().toISOString());
+      return text;
+    }
     const previous = this.store.db.prepare('SELECT etag, modified, body FROM feed_fetch WHERE url=?').get(key) as
       { etag: string | null; modified: string | null; body: string } | undefined;
     const email = process.env.FRACTAL_CONTACT_EMAIL;

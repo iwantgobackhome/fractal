@@ -92,11 +92,9 @@ function request(data?: unknown, headers: Record<string, string> = {}, url = '/'
   return stream;
 }
 const metadataFetch = (async (url: string) =>
-  ({
-    ok: true,
-    json: async () =>
-      url.includes('crossref') ? { message: { title: ['An Interesting PDF'], author: [], published: { 'date-parts': [[2024]] } } } : { best_oa_location: null },
-  }) as Response) as typeof fetch;
+  Response.json(
+    url.includes('crossref') ? { message: { title: ['An Interesting PDF'], author: [], published: { 'date-parts': [[2024]] } } } : { best_oa_location: null },
+  )) as typeof fetch;
 async function mappedError(run: () => Promise<unknown>) {
   try {
     await run();
@@ -172,7 +170,7 @@ describe('SQLite library', () => {
     expect(store.getPaper(p.paperKey)?.title).toBe(p.title);
     expect(store.listBlocks(p.paperKey)).toHaveLength(1);
     expect(store.listAnnotations(p.paperKey)[0]).toMatchObject({ id, kind: 'highlight' });
-    expect(store.db.prepare('SELECT count(*) n FROM migrations').get()).toMatchObject({ n: 12 });
+    expect(store.db.prepare('SELECT count(*) n FROM migrations').get()).toMatchObject({ n: 13 });
     store.db.close();
     const again = new SqlitePaperStore(next, old);
     expect(again.listPapers()).toHaveLength(1);
@@ -184,21 +182,19 @@ describe('SQLite library', () => {
     const calls: string[] = [];
     const fetcher = (async (input: string) => {
       calls.push(input);
-      return {
-        ok: true,
-        json: async () =>
-          input.includes('crossref')
-            ? {
-                message: {
-                  title: ['Paper Title'],
-                  author: [{ given: 'Ada', family: 'Lovelace' }],
-                  published: { 'date-parts': [[2024]] },
-                  'container-title': ['Journal'],
-                  URL: 'https://doi.org/10.1234/example',
-                },
-              }
-            : { best_oa_location: { url_for_pdf: 'https://example.org/free.pdf' } },
-      } as Response;
+      return Response.json(
+        input.includes('crossref')
+          ? {
+              message: {
+                title: ['Paper Title'],
+                author: [{ given: 'Ada', family: 'Lovelace' }],
+                published: { 'date-parts': [[2024]] },
+                'container-title': ['Journal'],
+                URL: 'https://doi.org/10.1234/example',
+              },
+            }
+          : { best_oa_location: { url_for_pdf: 'https://example.org/free.pdf' } },
+      );
     }) as typeof fetch;
     expect(await resolveDoi('10.1234/example', fetcher, 'user@example.org')).toMatchObject({
       doi: '10.1234/example',
@@ -206,7 +202,7 @@ describe('SQLite library', () => {
       year: 2024,
     });
     expect(calls).toHaveLength(2);
-    const failing = (async (url: string) => (url.includes('unpaywall') ? ({ ok: false, status: 503 } as Response) : metadataFetch(url))) as typeof fetch;
+    const failing = (async (url: string) => (url.includes('unpaywall') ? new Response(null, { status: 503 }) : metadataFetch(url))) as typeof fetch;
     expect(await mappedError(() => resolveDoi('10.1234/example', failing, 'user@example.org'))).toMatchObject({
       status: 502,
       error: { code: 'NETWORK', retryable: true },
@@ -314,11 +310,9 @@ describe('SQLite library', () => {
       });
       const candidate = paper(`pdf-${hash('different-url')}-${hash('different-pdf')}`);
       const fetcher = (async (url: string) =>
-        ({
-          ok: true,
-          json: async () =>
-            url.includes('crossref') ? { message: { title: ['Catalog'], author: [] } } : { best_oa_location: { url_for_pdf: candidate.sourceUrl } },
-        }) as Response) as typeof fetch;
+        Response.json(
+          url.includes('crossref') ? { message: { title: ['Catalog'], author: [] } } : { best_oa_location: { url_for_pdf: candidate.sourceUrl } },
+        )) as typeof fetch;
       const acquirer = {
         resolve: async () => candidate,
         acquire: async () => ({ paper: candidate, blocks: [], pdf: Buffer.from('pdf') }),

@@ -5,7 +5,9 @@ import { createHash, randomUUID } from 'node:crypto';
 import type { ProviderRegistry } from '../ai/registry';
 import type { SqlitePaperStore } from '../store/sqlite';
 import { invalidInput, notFound } from '../store/errors';
-import { ingestUrl } from '../ingest/index';
+import { bookmark } from '../scholarly/bookmarks';
+import { ProviderFailure } from '../scholarly/client';
+import { openAlexSource, crossrefSource } from './scholarly-sources';
 import type { PaperAcquirer } from '../api/index';
 import { CachedFetcher, arxivSource, huggingFaceSource, newsSource, recommendationSource, parseArxivAtom, type FeedSource, type RawItem } from './sources';
 import { rankItems } from './ranking';
@@ -16,13 +18,13 @@ import { QuickTranslator } from './quick-translate';
 
 const DEFAULT_INTERESTS: FeedInterests = { categories: [], topics: [], authors: [], custom: [] };
 const DEFAULT_SETTINGS: FeedSettings = {
-  sources: { arxiv: true, huggingFace: true, news: true, recommendations: true },
+  sources: { arxiv: true, huggingFace: true, news: true, recommendations: true, openAlex: true, crossref: true },
   customRssFeeds: [],
   digestEnabled: false,
   refreshIntervalHours: 6,
   translateNewsTitles: true,
 };
-const SOURCES = [arxivSource, huggingFaceSource, newsSource, recommendationSource];
+const SOURCES = [arxivSource, huggingFaceSource, newsSource, recommendationSource, openAlexSource, crossrefSource];
 
 /** Preserve each selected field's news allowance independently of the general pool. */
 export function retainNewsByField(items: FeedItem[], interests: FeedInterests): FeedItem[] {
@@ -113,7 +115,8 @@ export class FeedService {
       : arxivCategories;
   }
   settings(): FeedSettings {
-    return { ...DEFAULT_SETTINGS, ...this.meta('settings', DEFAULT_SETTINGS) };
+    const settings = this.meta('settings', DEFAULT_SETTINGS);
+    return { ...DEFAULT_SETTINGS, ...settings, sources: { ...DEFAULT_SETTINGS.sources, ...settings.sources } };
   }
   putInterests(value: Omit<FeedInterests, 'custom'> & { custom?: { id?: string; label: string; query?: string }[] }): FeedInterests {
     const custom = (value.custom ?? []).map((item) => ({ id: item.id ?? randomUUID(), label: item.label, query: item.query?.trim() || item.label }));
@@ -162,7 +165,7 @@ export class FeedService {
   private status(): FeedSourceStatus[] {
     const language = this.store.getPreferences().uiLanguage;
     return this.meta<FeedSourceStatus[]>('sourceStatus', []).map((status) =>
-      status.message ? { ...status, message: language === 'ko' ? '소스를 가져오지 못했습니다.' : 'Could not fetch source.' } : status,
+      status.message && !status.errorCode ? { ...status, message: language === 'ko' ? '소스를 가져오지 못했습니다.' : 'Could not fetch source.' } : status,
     );
   }
 
@@ -211,22 +214,18 @@ export class FeedService {
     };
   }
 
-  async save(id: string): Promise<{ paperKey: string }> {
+  async save(id: string) {
     const item = this.rawForWeek(isoWeek(this.now())).find((candidate) => candidate.id === id);
-    if (!item || item.kind !== 'paper') throw notFound('저장할 논문을 찾을 수 없습니다.');
-    const input = item.arxivId ?? item.doi ?? item.url;
-    const paper = await ingestUrl(this.store, input, this.acquirer);
-    this.store.patchLibrary(paper.paperKey, {
+    if (!item || item.kind !== 'paper') throw notFound('Paper not found in the current feed');
+    return bookmark(this.store, {
       title: item.title,
-      abstract: item.abstract || null,
-      authors: item.authors.map((name) => {
-        const parts = name.trim().split(/\s+/);
-        return { given: parts.slice(0, -1).join(' '), family: parts.at(-1) ?? name };
-      }),
+      authors: item.authors,
       doi: item.doi,
       arxivId: item.arxivId,
+      url: item.url,
+      abstract: item.abstract || null,
+      publication: item.publication,
     });
-    return { paperKey: paper.paperKey };
   }
 
   async refresh(): Promise<FeedResponse> {
@@ -245,6 +244,7 @@ export class FeedService {
     const settings = this.settings();
     const library = this.store.listLibrary();
     const statuses: FeedSourceStatus[] = [];
+    const previousStatuses = this.meta<FeedSourceStatus[]>('sourceStatus', []);
     const context = {
       interests: this.interests(),
       uiLanguage: this.store.getPreferences().uiLanguage,
@@ -268,15 +268,18 @@ export class FeedService {
       try {
         const items = await source.load(context);
         newItems.push(...items);
-        statuses.push({ source: source.id, state: 'ok', fetchedAt: now.toISOString() });
-      } catch {
+        if (!statuses.some((s) => s.source === source.id && s.state === 'error'))
+          statuses.push({ source: source.id, state: 'ok', fetchedAt: now.toISOString() });
+      } catch (error) {
+        const failure = error instanceof ProviderFailure ? error.status : undefined;
         const cached = old.filter((item) => item.source.split(',').includes(source.id));
         newItems.push(...cached);
         statuses.push({
           source: source.id,
           state: cached.length ? 'cached' : 'error',
-          fetchedAt: cached.length ? this.meta(`generated:${week}`, null) : null,
-          message: this.store.getPreferences().uiLanguage === 'ko' ? '소스를 가져오지 못했습니다.' : 'Could not fetch source.',
+          fetchedAt: cached.length ? (previousStatuses.find((s) => s.source === source.id)?.fetchedAt ?? null) : null,
+          message: failure?.message ?? (this.store.getPreferences().uiLanguage === 'ko' ? '소스를 가져오지 못했습니다.' : 'Could not fetch source.'),
+          ...(failure ? { errorCode: failure.state === 'ok' ? undefined : failure.state, retryAt: failure.retryAt } : {}),
         });
       }
     }
