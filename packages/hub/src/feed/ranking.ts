@@ -1,6 +1,7 @@
 import type { FeedInterests, FeedItem, LibraryRecord } from '@fractal/shared';
 import type { Preferences } from '@fractal/shared';
 import type { RawItem } from './sources';
+import { newsMatchScore } from './news-relevance';
 
 const words = (value: string): string[] =>
   value
@@ -29,7 +30,7 @@ export function deduplicate(items: RawItem[]): RawItem[] {
         popularity: Math.max(existing.popularity, item.popularity),
         source: [...new Set([...existing.source.split(','), ...item.source.split(',')])].join(','),
         image: existing.image ?? item.image ?? null,
-        imageCandidate: existing.imageCandidate ?? item.imageCandidate,
+        imageCandidate: item.source.includes('bing.com') && item.imageCandidate ? item.imageCandidate : (existing.imageCandidate ?? item.imageCandidate),
       };
       output[index] = merged;
       for (const key of keys) seen.set(key, index);
@@ -72,7 +73,8 @@ function relevance(
     (value) => interests.categories.includes(value) || (interests.custom ?? []).some((interest) => value === `custom:${interest.id}`),
   );
   const author = item.authors.find((value) => interests.authors.some((wantedAuthor) => value.toLowerCase().includes(wantedAuthor.toLowerCase())));
-  const score = termScore + (category ? 4 : 0) + (author ? 5 : 0);
+  const newsScore = item.kind === 'news' ? newsMatchScore(item.title, item.abstract, interests, category) : 0;
+  const score = termScore + (category ? 4 : 0) + (author ? 5 : 0) + newsScore;
   const reasonCode = author
     ? 'followed_author'
     : category

@@ -1,7 +1,7 @@
 import type { FeedDigest, FeedInterests, FeedItem, FeedResponse, FeedSettings, FeedSourceStatus } from '@fractal/shared';
 import { feedWeekSchema } from '@fractal/shared';
 import { arxivCategories, type ArxivCategory } from '@fractal/shared';
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import type { ProviderRegistry } from '../ai/registry';
 import type { SqlitePaperStore } from '../store/sqlite';
 import { invalidInput, notFound } from '../store/errors';
@@ -9,7 +9,7 @@ import { ingestUrl } from '../ingest/index';
 import type { PaperAcquirer } from '../api/index';
 import { CachedFetcher, arxivSource, huggingFaceSource, newsSource, recommendationSource, parseArxivAtom, type FeedSource, type RawItem } from './sources';
 import { rankItems } from './ranking';
-import { FeedImageStore, firstFigureImage, imageDimensions, ogImage } from './images';
+import { FeedImageStore, dropSharedImages, firstFigureImage, imageDimensions, ogImage } from './images';
 
 const DEFAULT_INTERESTS: FeedInterests = { categories: [], topics: [], authors: [], custom: [] };
 const DEFAULT_SETTINGS: FeedSettings = {
@@ -234,6 +234,7 @@ export class FeedService {
     const ranked = rankItems(newItems, context.interests, library, now, this.store.getPreferences().uiLanguage);
     if (this.images) {
       const selected = [...ranked.filter((item) => item.kind === 'paper').slice(0, 30), ...ranked.filter((item) => item.kind === 'news').slice(0, 30)];
+      const fingerprints = new Map<string, string>();
       let cursor = 0;
       await Promise.all(
         Array.from({ length: 5 }, async () => {
@@ -245,14 +246,18 @@ export class FeedService {
                 const pageUrl = `https://arxiv.org/html/${encodeURIComponent(item.arxivId)}`;
                 candidate = firstFigureImage(await this.cache.get(pageUrl), pageUrl) ?? undefined;
               }
-              if (!candidate && item.kind === 'news') {
+              if (!candidate && item.kind === 'news' && new URL(item.url).hostname !== 'news.google.com') {
                 const article = await this.images!.article(item.url);
-                candidate = ogImage(article.html, article.url) ?? undefined;
+                if (new URL(article.url).hostname !== 'news.google.com') candidate = ogImage(article.html, article.url) ?? undefined;
               }
+              if (candidate && new URL(candidate).hostname === 'news.google.com') candidate = undefined;
               const image = candidate ? this.images!.register(candidate) : null;
               if (image) {
                 const fetched = await this.images!.get(image.url.split('/').at(-1)!);
-                if (fetched) item.image = { ...image, ...imageDimensions(fetched.body, fetched.contentType), alt: item.title };
+                if (fetched) {
+                  item.image = { ...image, ...imageDimensions(fetched.body, fetched.contentType), alt: item.title };
+                  fingerprints.set(item.id, createHash('sha256').update(fetched.body).digest('hex'));
+                }
               }
             } catch {
               item.image = null;
@@ -260,6 +265,7 @@ export class FeedService {
           }
         }),
       );
+      dropSharedImages(ranked, fingerprints);
     }
     this.store.db.exec('SAVEPOINT feed_refresh');
     try {

@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { parseClaudeUsageScreen } from './claude-usage';
+import { parseClaudeUsageScreen, resolveClaudePtyCommand } from './claude-usage';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 describe('Claude /usage screen', () => {
   it('reads both subscription windows and their local reset times', () => {
@@ -9,5 +12,16 @@ describe('Claude /usage screen', () => {
       weekly: { usedPercent: 28, resetsAt: '2026-10-03T13:00:00.000Z' },
     });
     expect(parseClaudeUsageScreen('No subscription windows')).toEqual({ fiveHour: null, weekly: null });
+  });
+  it('resolves the Windows CLI to an absolute executable from an inherited PATH', () => {
+    const directory = mkdtempSync(join(tmpdir(), 'fractal-claude-cli-'));
+    try {
+      const executable = join(directory, 'claude.exe');
+      writeFileSync(executable, '');
+      expect(resolveClaudePtyCommand({ Path: directory })).toEqual({ file: executable, args: [] });
+      expect(() => resolveClaudePtyCommand({ Path: join(directory, 'missing') })).toThrow('not found on PATH');
+    } finally {
+      rmSync(directory, { recursive: true, force: true });
+    }
   });
 });

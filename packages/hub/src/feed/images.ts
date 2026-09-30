@@ -4,10 +4,26 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node
 import { isIP } from 'node:net';
 import { join } from 'node:path';
 import type { SqlitePaperStore } from '../store/sqlite';
+import type { FeedItem } from '@fractal/shared';
 
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 const MAX_CACHE_BYTES = 300 * 1024 * 1024;
 const types = new Set(['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'image/avif']);
+/** A picture reused by separate stories is usually a publisher or aggregator logo. */
+export function dropSharedImages(items: Pick<FeedItem, 'id' | 'image'>[], fingerprints: Map<string, string>): void {
+  const users = new Map<string, Set<string>>();
+  for (const item of items) {
+    if (!item.image) continue;
+    for (const key of [item.image.url, fingerprints.get(item.id)].filter((value): value is string => !!value)) {
+      const stories = users.get(key) ?? new Set<string>();
+      stories.add(item.id);
+      users.set(key, stories);
+    }
+  }
+  for (const item of items) {
+    if (item.image && [item.image.url, fingerprints.get(item.id)].some((key) => key && (users.get(key)?.size ?? 0) > 1)) item.image = null;
+  }
+}
 export function imageDimensions(body: Buffer, type: string): { width: number; height: number } | null {
   if (type === 'image/png' && body.length >= 24 && body.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])))
     return { width: body.readUInt32BE(16), height: body.readUInt32BE(20) };

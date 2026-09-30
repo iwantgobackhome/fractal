@@ -1,9 +1,29 @@
-import * as pty from '@lydell/node-pty';
+import { existsSync } from 'node:fs';
+import { delimiter, join } from 'node:path';
+import type { IPty } from '@lydell/node-pty';
 import type { AiAccountLimits } from '@fractal/shared';
 
 type Windows = AiAccountLimits['windows'];
 const empty = (): Windows => ({ fiveHour: null, weekly: null });
 const ansi = /\x1b(?:\[[0-?]*[ -/]*[@-~]|\][^\x07]*(?:\x07|\x1b\\))/g;
+
+/** Give ConPTY an absolute CLI path rather than relying on the inherited PATH. */
+export function resolveClaudePtyCommand(env: NodeJS.ProcessEnv): { file: string; args: string[] } {
+  const paths = Object.entries(env)
+    .filter(([key, value]) => key.toLowerCase() === 'path' && typeof value === 'string')
+    .flatMap(([, value]) => value!.split(delimiter).map((part) => part.replace(/^"|"$/g, '')));
+  if (env.USERPROFILE) paths.push(join(env.USERPROFILE, '.local', 'bin'));
+  for (const name of ['claude.exe', 'claude.cmd']) {
+    for (const directory of paths) {
+      const file = join(directory, name);
+      if (!existsSync(file)) continue;
+      return name.endsWith('.cmd')
+        ? { file: env.ComSpec ?? env.COMSPEC ?? join(env.SystemRoot ?? 'C:\\Windows', 'System32', 'cmd.exe'), args: ['/d', '/s', '/c', `"${file}"`] }
+        : { file, args: [] };
+    }
+  }
+  throw new Error('Claude CLI executable was not found on PATH');
+}
 
 function resetAt(raw: string, now: Date): string | null {
   const zone = /\(([^)]+\/[^)]+)\)/.exec(raw)?.[1] ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -72,45 +92,69 @@ export function parseClaudeUsageScreen(output: string, now = new Date()): Window
 /** Drive /usage in a PTY. This command reads quota status and never sends a model prompt. */
 export async function readClaudeUsageViaPty(env: NodeJS.ProcessEnv): Promise<Windows> {
   if (process.platform !== 'win32') return empty();
+  let pty: typeof import('@lydell/node-pty');
+  try {
+    pty = await import('@lydell/node-pty');
+  } catch {
+    throw new Error('Claude PTY module is unavailable');
+  }
+  const command = resolveClaudePtyCommand(env);
+  const childEnv = { ...env };
+  delete childEnv.CLAUDECODE;
+  delete childEnv.CLAUDE_CODE_ENTRYPOINT;
   return new Promise((resolve, reject) => {
-    let terminal: pty.IPty;
+    let terminal: IPty;
     try {
-      terminal = pty.spawn('claude.exe', [], { name: 'xterm-256color', cols: 120, rows: 40, cwd: process.cwd(), env: env as Record<string, string> });
-    } catch (error) {
-      reject(error);
+      terminal = pty.spawn(command.file, command.args, {
+        name: 'xterm-256color',
+        cols: 120,
+        rows: 40,
+        cwd: process.cwd(),
+        env: childEnv as Record<string, string>,
+      });
+    } catch {
+      reject(new Error('Claude PTY could not start'));
       return;
     }
     let output = '';
     let sent = false;
     let settled = false;
-    const finish = (error?: Error) => {
+    let poll: ReturnType<typeof setInterval> | undefined;
+    let deadline: ReturnType<typeof setTimeout> | undefined;
+    const finish = (reason?: string) => {
       if (settled) return;
       settled = true;
-      clearInterval(poll);
-      clearTimeout(deadline);
+      if (poll) clearInterval(poll);
+      if (deadline) clearTimeout(deadline);
       try {
         terminal.kill();
       } catch {
         /* already exited */
       }
-      if (error) reject(error);
-      else resolve(parseClaudeUsageScreen(output));
+      const windows = parseClaudeUsageScreen(output);
+      if (windows.fiveHour || windows.weekly) resolve(windows);
+      else reject(new Error(reason ?? (sent ? 'Claude /usage did not show subscription windows' : 'Claude CLI did not reach its prompt')));
     };
     terminal.onData((data) => {
       output = (output + data).slice(-40000);
     });
-    terminal.onExit(() => finish(new Error('Claude usage PTY exited')));
-    const poll = setInterval(() => {
+    terminal.onExit(() => finish('Claude CLI exited before showing usage'));
+    poll = setInterval(() => {
       const screen = output.replace(ansi, '');
       if (!sent && /Claude\s*Code|ClaudeCode|\/effort/i.test(screen)) {
         sent = true;
-        terminal.write('/usage\r');
+        try {
+          terminal.write('/usage\r');
+        } catch {
+          finish('Claude CLI did not accept /usage');
+          return;
+        }
       }
       if (sent) {
         const windows = parseClaudeUsageScreen(screen);
         if (windows.fiveHour && windows.weekly) finish();
       }
     }, 200);
-    const deadline = setTimeout(() => finish(), 45000);
+    deadline = setTimeout(() => finish(), 30000);
   });
 }

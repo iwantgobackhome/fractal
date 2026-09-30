@@ -15,6 +15,6 @@ export interface RelatedPaper {
 }
 export interface RelatedPapersResponse {
   items: RelatedPaper[];
-  source: 'semanticScholar';
+  source: 'semanticScholar' | 'openAlex';
   fetchedAt: string;
 }

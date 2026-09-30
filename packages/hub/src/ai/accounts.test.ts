@@ -9,6 +9,34 @@ import { SqlitePaperStore } from '../store/sqlite';
 import { AccountManager, mapClaudeWindows, mapCodexWindows, type AccountCli } from './accounts';
 
 describe('AI accounts and quota windows', () => {
+  it('returns the specific Claude probe failure reason in unavailable limits', async () => {
+    const root = mkdtempSync(join(tmpdir(), 'fractal-limits-message-'));
+    const store = new SqlitePaperStore(root);
+    try {
+      const cli: AccountCli = {
+        probe: async (provider) => (provider === 'claude' ? JSON.stringify({ loggedIn: true, subscriptionType: 'pro' }) : 'Not logged in'),
+        login: async () => {
+          throw new Error('unused');
+        },
+      };
+      const manager = new AccountManager(
+        store,
+        root,
+        async () => {},
+        cli,
+        async () => {
+          throw new Error('Claude CLI executable was not found on PATH');
+        },
+      );
+      manager.requestRefresh('claude:system');
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      const claude = (await manager.limits()).accounts.find((account) => account.provider === 'claude');
+      expect(claude).toMatchObject({ state: 'unavailable', message: expect.stringContaining('not found on PATH') });
+    } finally {
+      store.db.close();
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
   it('maps windows by duration and rate limit type, including missing data', () => {
     expect(
       mapCodexWindows({
