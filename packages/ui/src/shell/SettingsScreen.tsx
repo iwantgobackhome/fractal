@@ -371,7 +371,16 @@ export function SettingsScreen({ hub, theme, onThemeChange, preferences, onPrefe
         <ul>
           {SECTIONS.map((s) => (
             <li key={s.id}>
-              <a href={`#settings-${s.id}`}>{t(s.label)}</a>
+              {/* The app routes on the hash, so these scroll instead of changing it. */}
+              <a
+                href={`#/settings`}
+                onClick={(event) => {
+                  event.preventDefault();
+                  document.getElementById(`settings-${s.id}`)?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+                }}
+              >
+                {t(s.label)}
+              </a>
             </li>
           ))}
         </ul>

@@ -3,6 +3,7 @@ import { ConfirmDialog } from '../components/ConfirmDialog';
 import { t } from '../i18n';
 import type { AccountLimits, AccountLogin, AiAccount, HubApi, ProviderStatus } from './hub-api';
 import { PROVIDER_NAME } from './settings-parts';
+import { InstallControl, LoginControl } from './ProviderSetup';
 import { useLimits } from './UsageBar';
 
 const LOGIN_POLL_MS = 2_000;
@@ -175,7 +176,7 @@ export function AccountsPanel({
               {status?.version ? <span className="settings__quiet"> {status.version.replace(/^codex-cli\s+/, '').replace(/\s*\(.*\)$/, '')}</span> : null}
             </h3>
             {status !== undefined && !status.installed ? (
-              <p className="settings__quiet">{t('ai.notInstalled')}</p>
+              <InstallControl hub={hub} provider={provider} onInstalled={onChange} />
             ) : (
               <ul className="account-list">
                 {own.map((account) => (
@@ -200,7 +201,7 @@ export function AccountsPanel({
                     ) : pending.has(account.id) ? null : account.kind === 'system' ? (
                       <span className="account__todo">
                         <span className="settings__warn">{t('ai.notSignedIn')}</span>
-                        <code className="command">{status?.loginCommand ?? (provider === 'codex' ? 'codex login' : 'claude auth login')}</code>
+                        <LoginControl hub={hub} account={account} command={status?.loginCommand} onSignedIn={onChange} />
                       </span>
                     ) : (
                       <button

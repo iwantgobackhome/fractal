@@ -105,6 +105,13 @@ export interface AiAccount {
   plan?: string;
 }
 
+/** A CLI install the hub runs for the reader. */
+export interface InstallJob {
+  state: 'idle' | 'running' | 'done' | 'failed';
+  step?: string;
+  message?: string;
+}
+
 export interface AccountLogin {
   state: 'pending' | 'done' | 'failed';
   verificationUrl?: string;
@@ -402,6 +409,14 @@ export class HubApi {
 
   removeAccount(id: string): Promise<unknown> {
     return this.call(`/api/ai/accounts/${encodeURIComponent(id)}`, { method: 'DELETE' });
+  }
+
+  installProvider(provider: HubProviderStatus['id']): Promise<InstallJob | null> {
+    return this.call(`/api/ai/providers/${provider}/install`, { method: 'POST', body: {} });
+  }
+
+  installStatus(provider: HubProviderStatus['id']): Promise<InstallJob | null> {
+    return this.call(`/api/ai/providers/${provider}/install`);
   }
 
   async categories(): Promise<ArxivCategory[] | null> {
