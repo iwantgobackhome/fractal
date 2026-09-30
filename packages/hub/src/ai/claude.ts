@@ -3,6 +3,7 @@ import { createInterface } from 'node:readline';
 import { promisify } from 'node:util';
 import type { ProviderModel, ProviderStatus } from '@fractal/shared';
 import type { AiProvider, CompleteInput, ProviderDelta } from './provider';
+import { resolveClaudePtyCommand } from './claude-usage';
 
 const run = promisify(execFile);
 export type SpawnClaude = (args: string[], env?: NodeJS.ProcessEnv) => ChildProcessWithoutNullStreams;
@@ -39,10 +40,14 @@ export class ClaudeProvider implements AiProvider {
   readonly id = 'claude' as const;
   onRateLimit: ((event: unknown) => void) | null = null;
   constructor(
-    private readonly spawnProcess: SpawnClaude = (args, env) =>
-      spawn(process.platform === 'win32' ? 'claude.exe' : 'claude', args, { stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true, shell: false, env }),
-    private readonly probe: ProbeClaude = (args, env) =>
-      run(process.platform === 'win32' ? 'claude.exe' : 'claude', args, { windowsHide: true, timeout: 10_000, env }),
+    private readonly spawnProcess: SpawnClaude = (args, env) => {
+      const command = process.platform === 'win32' ? resolveClaudePtyCommand(env ?? process.env) : { file: 'claude', args: [] };
+      return spawn(command.file, [...command.args, ...args], { stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true, shell: false, env });
+    },
+    private readonly probe: ProbeClaude = (args, env) => {
+      const command = process.platform === 'win32' ? resolveClaudePtyCommand(env ?? process.env) : { file: 'claude', args: [] };
+      return run(command.file, [...command.args, ...args], { windowsHide: true, timeout: 10_000, env });
+    },
     private readonly environment: () => NodeJS.ProcessEnv = () => process.env,
   ) {}
   async status(): Promise<ProviderStatus> {

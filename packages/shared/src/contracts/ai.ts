@@ -249,6 +249,16 @@ export interface ProviderInfo {
   status: ProviderStatus;
   models: ProviderModel[];
 }
+export interface AiInstallProgress {
+  state: 'idle' | 'running' | 'done' | 'failed';
+  step?: string;
+  message?: string;
+}
+export const aiInstallProgressSchema = z.object({
+  state: z.enum(['idle', 'running', 'done', 'failed']),
+  step: z.string().optional(),
+  message: z.string().optional(),
+});
 export interface UsageRecord {
   day: string;
   provider: ProviderId;

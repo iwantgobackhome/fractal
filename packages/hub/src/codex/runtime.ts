@@ -120,6 +120,11 @@ export async function assertNoCustomInstructions(env: NodeJS.ProcessEnv): Promis
 /** Resolve native official npm binary on Windows: never run a .cmd through a shell. */
 export async function resolveCodexExecutable(): Promise<string> {
   const paths = (process.env.PATH ?? process.env.Path ?? '').split(delimiter);
+  if (process.platform === 'win32') {
+    const local = process.env.LOCALAPPDATA ?? join(process.env.USERPROFILE ?? homedir(), 'AppData', 'Local');
+    const roaming = process.env.APPDATA ?? join(process.env.USERPROFILE ?? homedir(), 'AppData', 'Roaming');
+    paths.push(join(local, 'Programs', 'OpenAI', 'Codex', 'bin'), join(roaming, 'npm'));
+  }
   for (const directory of paths) {
     if (!directory) continue;
     const direct = join(directory, process.platform === 'win32' ? 'codex.exe' : 'codex');

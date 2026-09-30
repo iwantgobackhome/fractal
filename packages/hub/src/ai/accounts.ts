@@ -7,7 +7,7 @@ import type { AiAccount, AiAccountLimits, AiLoginProgress, AiLimitsResponse, Pro
 import type { SqlitePaperStore } from '../store/sqlite';
 import { invalidInput, notFound } from '../store/errors';
 import { resolveCodexExecutable, startOfficialRpc } from '../codex/runtime';
-import { readClaudeUsageViaPty } from './claude-usage';
+import { readClaudeUsageViaPty, resolveClaudePtyCommand } from './claude-usage';
 
 const run = promisify(execFile);
 interface Row {
@@ -54,8 +54,8 @@ export function mapClaudeWindows(value: unknown): AiAccountLimits['windows'] {
   }
   return windows;
 }
-function claudeExecutable(): string {
-  return process.platform === 'win32' ? 'claude.exe' : 'claude';
+function claudeCommand(env: NodeJS.ProcessEnv): { file: string; args: string[] } {
+  return process.platform === 'win32' ? resolveClaudePtyCommand(env) : { file: 'claude', args: [] };
 }
 export interface AccountCli {
   probe(provider: ProviderId, args: string[], env: NodeJS.ProcessEnv): Promise<string>;
@@ -63,11 +63,13 @@ export interface AccountCli {
 }
 const defaultCli: AccountCli = {
   async probe(provider, args, env) {
-    const result = await run(provider === 'codex' ? await resolveCodexExecutable() : claudeExecutable(), args, { env, timeout: 12000, windowsHide: true });
+    const command = provider === 'codex' ? { file: await resolveCodexExecutable(), args: [] } : claudeCommand(env);
+    const result = await run(command.file, [...command.args, ...args], { env, timeout: 12000, windowsHide: true });
     return `${result.stdout}\n${result.stderr}`;
   },
   async login(provider, args, env) {
-    return spawn(provider === 'codex' ? await resolveCodexExecutable() : claudeExecutable(), args, {
+    const command = provider === 'codex' ? { file: await resolveCodexExecutable(), args: [] } : claudeCommand(env);
+    return spawn(command.file, [...command.args, ...args], {
       env,
       windowsHide: true,
       shell: false,

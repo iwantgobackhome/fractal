@@ -73,6 +73,8 @@ These routes use the same loopback, Origin, and token guard as the rest of the A
 
 `status.version` may be `null`; `status.detail` and each model's `efforts` may be absent. `loginCommand` gives the CLI sign-in command (`codex login` or `claude auth login`). The `providers` array also contains a `claude` entry with the same shape. `settings.overrides` may hold `chat`, `translate`, `explain`, and `digest` selections.
 
+Provider installation uses `POST /api/ai/providers/:id/install` to start a job (HTTP 202) and `GET /api/ai/providers/:id/install` to read it. `:id` is `codex` or `claude`. Both return `{state: "idle"|"running"|"done"|"failed", step?, message?}` in the normal `data` envelope. A second POST while a job is running returns its current state; POST after failure retries. On Windows, the job checks an existing binary first, uses [Anthropic's native PowerShell installer](https://code.claude.com/docs/en/setup) for Claude, or installs the [ChatGPT desktop app through its documented Windows Store package](https://learn.chatgpt.com/docs/windows/windows-app) for Codex when WinGet is available. Without WinGet, Codex uses official `@openai/codex` npm only if Node.js and npm already exist. No job requests administrator elevation. The job finishes only after `--version` verifies the executable; failure includes a short step and reason.
+
 | Method and path | Request JSON | Response |
 | --- | --- | --- |
 | `GET /api/ai/providers` | — | `{ providers: ProviderInfo[], settings: AiSettings }` |

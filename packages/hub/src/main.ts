@@ -13,6 +13,7 @@ import { startOfficialRpc } from './codex/runtime';
 import { CodexProvider } from './ai/codex';
 import { ClaudeProvider } from './ai/claude';
 import { AccountManager } from './ai/accounts';
+import { ProviderInstallManager } from './ai/install';
 import { ProviderRegistry } from './ai/registry';
 import { JsonSettingsStore } from './ai/settings';
 import { FtsLibrarySearch } from './ai/library-search';
@@ -216,6 +217,7 @@ export async function startService(options: ServiceOptions = {}): Promise<Servic
     if (provider === 'codex') await aiAdapter.waitIdle();
     if (provider === 'codex') await translator.disconnect();
   });
+  const installer = new ProviderInstallManager();
   const official = createOfficialRpcFactory(() => startOfficialRpc(accounts.activeEnvironment('codex')));
   translator = new CodexTranslator(official);
   const claude = new ClaudeProvider(undefined, undefined, () => accounts.activeEnvironment('claude'));
@@ -259,6 +261,7 @@ export async function startService(options: ServiceOptions = {}): Promise<Servic
     paperChat: aiAdapter,
     aiRegistry,
     accounts,
+    installer,
     librarySearch: new FtsLibrarySearch(store),
     acquirer,
     feed,
@@ -288,6 +291,7 @@ export async function startService(options: ServiceOptions = {}): Promise<Servic
       await feed.stop();
       await server.close();
       accounts.stop();
+      installer.stop();
       await translator.disconnect();
       store.db.close();
     },

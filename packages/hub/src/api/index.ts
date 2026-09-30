@@ -35,6 +35,7 @@ import type { RouteContext, Result } from './routes/types';
 import { handleAi } from './routes/ai';
 import type { ProviderRegistry } from '../ai/registry';
 import type { AccountManager } from '../ai/accounts';
+import type { ProviderInstallManager } from '../ai/install';
 import { RelatedPaperService } from '../feed/related';
 import type { LibrarySearch } from '../ai/library-search';
 import { SqlitePaperStore } from '../store/sqlite';
@@ -88,6 +89,7 @@ export interface ApiServerOptions {
   paperChat: PaperChat;
   aiRegistry?: ProviderRegistry;
   accounts?: AccountManager;
+  installer?: ProviderInstallManager;
   librarySearch?: LibrarySearch;
   log?: (event: ApiLogEvent) => void;
   /** Overridable for tests; production mints a fresh 256-bit credential. */
@@ -476,6 +478,7 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
         registry: options.aiRegistry,
         librarySearch: options.librarySearch,
         accounts: options.accounts,
+        installer: options.installer,
       });
       if (ai) return ai;
     }

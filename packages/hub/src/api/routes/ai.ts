@@ -157,6 +157,11 @@ export async function handleAi(method: string, segments: string[], request: Inco
     }
     if (segments.length === 3 && segments[2] === 'providers' && method === 'GET')
       return json({ providers: await ctx.registry.providersInfo(), settings: await ctx.registry.getSettings() });
+    if (ctx.installer && segments.length === 5 && segments[2] === 'providers' && segments[4] === 'install') {
+      const provider = parse(providerIdSchema, segments[3]);
+      if (method === 'GET') return json(ctx.installer.get(provider));
+      if (method === 'POST') return { kind: 'json', status: 202, data: ctx.installer.start(provider) };
+    }
     if (segments.length === 3 && segments[2] === 'usage' && method === 'GET') return json(await ctx.registry.usage());
     if (segments.length === 3 && segments[2] === 'settings' && method === 'PUT') {
       const patch = parse(aiSettingsPatchSchema, await body(request));
