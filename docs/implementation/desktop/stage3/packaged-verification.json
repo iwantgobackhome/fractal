@@ -1,7 +1,10 @@
 {
+  "sourceCommit": "08af7b3959a3816e8d54d6ea1f9886b253693d79",
   "isolatedProfile": true,
   "installerInstalled": false,
   "taskbarPinOrMacOSInspected": false,
+  "immediateHubShutdownAfterPdfAssociation": true,
+  "structureAtStop": "running",
   "name": "Fractal",
   "packaged": true,
   "appPath": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\dist\\installer\\win-unpacked\\resources\\app.asar",
@@ -22,17 +25,17 @@
     {
       "path": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\dist\\installer\\win-unpacked\\Fractal.exe",
       "size": 246032896,
-      "sha256": "9d9084b04518b60760f2f3061a4064a240829637afa25559a5eff55da74d3aa1"
+      "sha256": "5592bd308cc6a486a6d8fda4e4d01c204ac7e0beec6e175aa115ce7d8266c891"
     },
     {
       "path": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\dist\\installer\\Fractal Setup 0.1.0.exe",
-      "size": 117587597,
-      "sha256": "bcf95f41f3aba5849291d2f306000401606af2189f4a47d8cd304f18c1afa8d7"
+      "size": 117588458,
+      "sha256": "8662a9e659428fca7279075d6cc8cef6efb563cb0eb820dc2587d4f8b9c8b557"
     },
     {
       "path": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\dist\\installer\\win-unpacked\\resources\\app.asar",
-      "size": 13185036,
-      "sha256": "c560dd6a2029ac4984db372677a5e5174b4f0022e78060e82e1241ea9c9234eb"
+      "size": 13186162,
+      "sha256": "ff789125fbeec83978dac39ec4d6e6aabbdd237cd21dc3e421128297d8082d18"
     },
     {
       "path": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\apps\\desktop\\assets\\fractal.ico",
@@ -45,5 +48,7 @@
       "sha256": "ed1047a4eca5dcc9ad6dd16fd27a541ac392dcf2842d881e2dac0e160230543d"
     }
   ],
-  "status": "passed"
+  "status": "passed",
+  "ownedTemporaryProfileRemoved": true,
+  "ownedElectronClosed": true
 }

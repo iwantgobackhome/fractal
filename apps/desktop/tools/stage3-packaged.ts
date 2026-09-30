@@ -4,6 +4,7 @@ import { mkdtemp, readFile, mkdir, writeFile, rm, stat } from 'node:fs/promises'
 import { tmpdir } from 'node:os';
 import { join, resolve, sep } from 'node:path';
 import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import { _electron } from 'playwright-core';
 import { startService } from '../../../packages/hub/src/main';
 import { SqlitePaperStore } from '../../../packages/hub/src/store/sqlite';
@@ -86,15 +87,9 @@ for (const [key, value] of Object.entries({
   sourceStatus: [],
 }))
   store.db.prepare('INSERT OR REPLACE INTO feed_meta VALUES(?,?)').run(key, JSON.stringify(value));
-for (let attempt = 0; attempt < 100; attempt++) {
-  const state = store.db.prepare('SELECT status FROM structure_state WHERE paper_key=?').get(saved.paperKey) as { status: string } | undefined;
-  if (state && ['ready', 'failed'].includes(state.status)) break;
-  await new Promise((done) => setTimeout(done, 100));
-}
-assert.ok(
-  ['ready', 'failed'].includes((store.db.prepare('SELECT status FROM structure_state WHERE paper_key=?').get(saved.paperKey) as { status: string }).status),
-  'Preseed structure work must settle before closing its Hub',
-);
+const structureAtStop = store.db.prepare('SELECT status FROM structure_state WHERE paper_key=?').get(saved.paperKey) as { status: string } | undefined;
+// Exercise the accepted lifecycle correction: stop immediately after association,
+// without the preliminary fixture's structure-settlement workaround.
 await service.stop();
 const app = await _electron.launch({
   executablePath: join(root, 'dist/installer/win-unpacked/Fractal.exe'),
@@ -102,7 +97,14 @@ const app = await _electron.launch({
   env: { ...process.env, FRACTAL_DESKTOP_PROFILE: join(directory, 'profile') },
   timeout: 60000,
 });
-const evidence: Record<string, unknown> = { isolatedProfile: true, installerInstalled: false, taskbarPinOrMacOSInspected: false };
+const evidence: Record<string, unknown> = {
+  sourceCommit: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf-8' }).trim(),
+  isolatedProfile: true,
+  installerInstalled: false,
+  taskbarPinOrMacOSInspected: false,
+  immediateHubShutdownAfterPdfAssociation: true,
+  structureAtStop: structureAtStop?.status,
+};
 try {
   const page = await app.firstWindow();
   await page.waitForLoadState('domcontentloaded');
@@ -177,4 +179,15 @@ try {
   await app.close();
   assert.ok(resolve(directory).startsWith(resolve(tmpdir()) + sep + 'fractal-packaged-stage3-'));
   await rm(directory, { recursive: true, force: true });
+  const remains = await stat(directory).then(
+    () => true,
+    (error: NodeJS.ErrnoException) => {
+      if (error.code === 'ENOENT') return false;
+      throw error;
+    },
+  );
+  assert.equal(remains, false);
+  evidence.ownedTemporaryProfileRemoved = true;
+  evidence.ownedElectronClosed = true;
+  await writeFile(join(output, 'packaged-verification.json'), JSON.stringify(evidence, null, 2));
 }

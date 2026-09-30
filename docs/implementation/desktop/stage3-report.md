@@ -2,7 +2,7 @@
 
 The scholarly discovery desk now uses the accepted research index: paper, news and topic views; wrapped publication titles; reported journal/conference/preprint/unknown metadata; explicit metadata saves; and local PDF association with the existing catalog identity. Related results retain useful rows while refreshing or failing, with provider-specific status, cache time, cooldown and an explicit retry. New original reader actions declare the actual loaded PDF hash and rendered page frame, with exact layout offsets only when native endpoints, physical page, legal UTF-16 boundaries and the entire selected stream agree.
 
-Current C implementation and browser evidence pass. **Final packaged certification is pending the coordinator's accepted Hub shutdown correction and the required subsequent current rebuild.** The package results currently recorded here are preliminary integration evidence. No Hub/shared/Android files, generated tokens, package dependencies or scripts were changed by C; review/prototype paper contents were not shipped.
+Current C implementation, browser evidence and final Windows package verification pass. **The final package was built from accepted source `08af7b3959a3816e8d54d6ea1f9886b253693d79`, including the coordinator-supplied Hub shutdown correction.** No Hub/shared/Android files, generated tokens, package dependencies or scripts were changed by C; review/prototype paper contents were not shipped.
 
 ## Accepted source boundary
 
@@ -10,7 +10,9 @@ Current C implementation and browser evidence pass. **Final packaged certificati
 - Discovery dependency supplied by root as `8554ab261589599a866f2d67692d54b0eea2cb6e` (B source `12db751`).
 - C foundation checkpoint `b1625c54eae54a29e3c9955c64994d1b1ca9db3d`.
 - Optional provenance/answer-language dependency supplied by root as `0bb7509c711bef95e858f8121c9b36babc510517` (B source `5dad1b3af05ca0ee979af358b8b0c67d25170fdc`).
-- Final C implementation checkpoint and final artifact evidence commit are reported through Orca; C does not merge dependencies.
+- C implementation/evidence checkpoint `b98b77921c7ef956b68f000fc1ef98e619c42805`, accepted/integrated by root as `1897440` / `769ac81` together with the foundation checkpoint.
+- Root supplied the accepted E lifecycle correction as `08af7b3959a3816e8d54d6ea1f9886b253693d79` (E source `adef9fbd`, root `02811cc`). This is the actual final package build source. C does not merge dependencies.
+- The subsequent C artifact/report commit is reported through Orca; it does not change product UI or Hub source.
 
 ## Resulting behavior
 
@@ -29,14 +31,14 @@ All data and browser/Electron profiles are temporary and isolated. The actual Hu
 | Command | Result and evidence |
 | --- | --- |
 | `npm run build -w @fractal/shared` | Accepted declarations rebuilt before optional-field integration. |
-| `npm run typecheck` | Shared, Hub and UI pass; [typecheck log](stage3/typecheck.log). |
+| `npm run typecheck` | Shared, Hub and UI pass on the final accepted source; [typecheck log](stage3/typecheck.log). |
 | `npm run typecheck -w @fractal/ui` | Current UI passes; [UI typecheck log](stage3/ui-typecheck.log). |
 | `npm run test -w @fractal/ui` | 27 tests in 10 files pass, including identity collision/alias cases and declared-frame geometry; [UI test log](stage3/ui-tests.log). |
 | `npm run build -w @fractal/ui` | Current production build passes; [build log](stage3/ui-build.log). |
 | `$env:FRACTAL_VERIFICATION_OUTPUT='docs/implementation/desktop/stage3/reader-regression'; npx tsx apps/desktop/tools/stage2-verify.ts` | Existing full native selection/scan/sticky/history browser and Electron regression passes under stage-3 UI; [results](stage3/reader-regression/verification.json), [log](stage3/reader-regression.log). |
 | `npx tsx apps/desktop/tools/stage3-verify.ts` | Real Hub/browser integration and Hub restart pass with no browser exceptions; [results](stage3/verification.json), [log](stage3/verification.log). |
-| `npm run desktop:dist` | Current source produced Windows unpacked exe and NSIS installer; preliminary build before required lifecycle dependency; [log](stage3/package-build.log). |
-| `npx tsx apps/desktop/tools/stage3-packaged.ts` | Actual packaged exe, isolated persisted Hub/profile, discovery, cached original reader, text layer, selector keyboard and bundled icons pass; [results/hashes](stage3/packaged-verification.json), [log](stage3/packaged-verification.log). |
+| `npm run desktop:dist` | Final accepted `08af7b3` produced the current Windows unpacked exe and NSIS installer; [log](stage3/package-build.log). |
+| `npx tsx apps/desktop/tools/stage3-packaged.ts` | Current actual packaged exe, isolated persisted Hub/profile, discovery, cached original reader, text layer, selector keyboard, bundled icons, immediate seed-Hub shutdown and owned profile cleanup pass; [results/hashes](stage3/packaged-verification.json), [log](stage3/packaged-verification.log). |
 | `python apps/desktop/tools/stage3-icons.py` | Native executable/NSIS RT_GROUP_ICON and RT_ICON bytes match accepted ICO at 16/24/32/48/64/128/256 px; [results](stage3/native-icons.json), [log](stage3/native-icons.log). |
 
 The reader regression uses the actual five-page PDF geometry fixture and a real image-only PDF through the Hub. It verifies proportional partial-character selections, columns, reverse dragging, pages with bounded rendering/auto-scroll, zoom, cropped/intrinsically rotated and angled text, Unicode boundaries, selections over highlights, keyboard range changes and native Electron clipboard copy. It also covers real translated selection/copy/quote, pending/final/failed explanation history across close/paper change/restart, complete note editing/keyboard movement/collapse/color/autosave/delete and retained scanned-page notes.
@@ -51,8 +53,18 @@ Representative current renders: [1280 light English](stage3/discovery-1280-light
 
 ## Packaging boundary and remaining limits
 
-Package paths are `dist/installer/win-unpacked/Fractal.exe`, `dist/installer/Fractal Setup 0.1.0.exe` and `dist/installer/win-unpacked/resources/app.asar`; their exact absolute paths, sizes and hashes are in the package verification manifest. Accepted branch master/ICO hashes are recorded there too. The actual executable is packaged, named Fractal and runs from app.asar; its 256/32 window/tray asset sizes and native executable/installer resources were checked. The installer was not installed, and no taskbar pin, user-data reset, macOS or physical Android/pen claim is made.
+All paths below are relative to `C:\Users\Home\orca\workspaces\fractal\fractal-desktop`; exact absolute paths and sizes are in the package verification manifest.
 
-Immediate preseed Hub shutdown after local PDF association exposed background `StructureService.schedule` work resuming against closed SQLite (`structure/service.ts:67`, `ERR_INVALID_STATE`). Root confirmed and routed the narrow lifecycle fix to E. The preliminary packaged fixture settles real structure work before stopping its seed Hub; **the final artifact rebuild/certification must wait for root's accepted correction**.
+| Current artifact | SHA-256 |
+| --- | --- |
+| `dist/installer/win-unpacked/Fractal.exe` (246032896 bytes) | `5592bd308cc6a486a6d8fda4e4d01c204ac7e0beec6e175aa115ce7d8266c891` |
+| `dist/installer/Fractal Setup 0.1.0.exe` (117588458 bytes) | `8662a9e659428fca7279075d6cc8cef6efb563cb0eb820dc2587d4f8b9c8b557` |
+| `dist/installer/win-unpacked/resources/app.asar` (13186162 bytes) | `ff789125fbeec83978dac39ec4d6e6aabbdd237cd21dc3e421128297d8082d18` |
+
+Accepted branch master/ICO hashes are recorded in the same manifest. The actual executable is packaged, named Fractal and runs from app.asar; its 256/32 window/tray asset sizes and native executable/installer resources were checked. The installer was not installed, and no taskbar pin, user-data reset, macOS or physical Android/pen claim is made.
+
+Immediate preseed Hub shutdown after local PDF association exposed background `StructureService.schedule` work resuming against closed SQLite (`structure/service.ts:67`, `ERR_INVALID_STATE`). Root confirmed and accepted E's narrow correction and seven focused regressions. The final fixture removes its preliminary settlement workaround: it calls `service.stop()` while structure is `running`, then launches the newly built package over the retained original PDF. Shutdown, packaged restart/routes and reader rendering pass without exceptions. [Accepted lifecycle report](../qa/integrated/SHUTDOWN-FIX.md) describes the correction; no C Hub edits were made.
+
+The final fixture closes only its own Playwright/Electron application and removes only its resolved, validated temporary profile directory; both cleanup results are recorded as true. One directory from the initial failed preseed was also removed after checking its exact task-specific temporary path and its single known fixture publication in read-only SQLite. [Cleanup proof](stage3/owned-cleanup.json) and [exact executed cleanup command](stage3/owned-cleanup.md) document those bounds. No matching task-specific temporary profile directories remain.
 
 Provider protocol/status/caching fixtures do not prove live provider quota or production credentials. Native exact ranges remain conditional on uniquely matched/legal authoritative runs; ambiguous offsets stay omitted. Positional layout glyph metrics and their citation envelopes remain approximate as defined by B. SQLite experimental-feature and Vite large-bundle warnings remain. Independent E performs final cross-platform QA after root integration.

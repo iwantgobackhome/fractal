@@ -205,14 +205,14 @@ dist/assets/KaTeX_Main-Regular-ypZvNtVU.ttf                            53.58 kB
 dist/assets/KaTeX_AMS-Regular-DRggAlZN.ttf                             63.63 kB
 dist/assets/pdf.worker.min-Dswkl-cV.mjs                             1,265.41 kB
 dist/assets/index-CJgyxdg_.css                                        183.10 kB │ gzip:  39.15 kB
-dist/assets/index-C_szfybo.js                                       1,831.88 kB │ gzip: 560.19 kB
+dist/assets/index-CEhBzojG.js                                       1,831.92 kB │ gzip: 560.19 kB
 
 (!) Some chunks are larger than 500 kB after minification. Consider:
 - Using dynamic import() to code-split the application
 - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-m
 anualchunks
 - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
-✓ built in 5.04s
+✓ built in 5.08s
 
 > @fractal/hub@0.1.0 build
 > npm run typecheck && node ../../scripts/build-hub.mjs
