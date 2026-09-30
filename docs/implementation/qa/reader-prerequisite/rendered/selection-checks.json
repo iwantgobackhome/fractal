@@ -1,0 +1,59 @@
+[
+  {
+    "page": 1,
+    "selected": "iii",
+    "utf16": [
+      4,
+      7
+    ],
+    "advanceEdgeMaxErrorPdfPoints": 4e-06
+  },
+  {
+    "page": 2,
+    "selected": "iii",
+    "utf16": [
+      17,
+      20
+    ],
+    "advanceEdgeMaxErrorPdfPoints": 2.1e-05
+  },
+  {
+    "page": 3,
+    "selected": "iii",
+    "utf16": [
+      11,
+      14
+    ],
+    "baselineOriginErrorPdfPoints": 1.8e-05
+  },
+  {
+    "page": 5,
+    "selected": "fi",
+    "utf16": [
+      16,
+      18
+    ],
+    "legalUnits": 1,
+    "visualReviewRequired": true
+  },
+  {
+    "page": 5,
+    "selected": "é",
+    "utf16": [
+      13,
+      15
+    ],
+    "legalUnits": 1,
+    "visualReviewRequired": true
+  },
+  {
+    "page": 5,
+    "selected": "😀",
+    "utf16": [
+      38,
+      40
+    ],
+    "legalUnits": 1,
+    "visualReviewRequired": true
+  }
+]

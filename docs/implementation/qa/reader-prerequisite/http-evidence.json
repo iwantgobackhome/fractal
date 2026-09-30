@@ -1,0 +1,336 @@
+[
+  {
+    "name": "own server",
+    "category": "HTTP pass",
+    "evidence": {
+      "host": "127.0.0.1",
+      "port": 13296,
+      "pid": 29204,
+      "checkpoint": "9dea34cebe4133068b63a289b504cce141d889f1",
+      "noRealCli": true
+    }
+  },
+  {
+    "name": "metadata publication + data envelope",
+    "category": "HTTP pass",
+    "evidence": {
+      "paperKey": "qa-reader-catalog",
+      "rev": 1
+    }
+  },
+  {
+    "name": "metadata-only positions",
+    "category": "HTTP pass",
+    "evidence": {
+      "status": "unavailable",
+      "reason": "no_pdf"
+    }
+  },
+  {
+    "name": "local PDF-link rejected before handler",
+    "category": "HTTP reproduced defect",
+    "evidence": {
+      "status": 415,
+      "body": {
+        "error": {
+          "code": "INVALID_INPUT",
+          "message": "Invalid request.",
+          "retryable": false
+        }
+      }
+    }
+  },
+  {
+    "name": "paired Android-style PDF-link",
+    "category": "HTTP pass",
+    "evidence": {
+      "hasPdf": true,
+      "pageCount": 5,
+      "sourceKind": "publication",
+      "catalogKey": "qa-reader-catalog"
+    }
+  },
+  {
+    "name": "same PDF relink",
+    "category": "HTTP pass",
+    "evidence": {
+      "unchangedHash": true
+    }
+  },
+  {
+    "name": "different PDF rejected",
+    "category": "HTTP pass",
+    "evidence": {
+      "error": {
+        "code": "SOURCE_CHANGED",
+        "message": "The source has changed.",
+        "retryable": false
+      }
+    }
+  },
+  {
+    "name": "text-layout current envelope and provenance",
+    "category": "HTTP pass",
+    "evidence": {
+      "outer": "data",
+      "status": "ready",
+      "physicalPage": 2,
+      "pdfSha256": "f79b45a88b17b236ade1298edf4cafdceae6a9f19907eb29126332a7c9037b96",
+      "layoutVersion": "pdfjs6-original-advances-v1",
+      "snapshotExtractionVersion": "pdfjs6-lines-v4"
+    }
+  },
+  {
+    "name": "reader snapshot envelope",
+    "category": "HTTP pass",
+    "evidence": {
+      "keys": [
+        "paper",
+        "blocks",
+        "translations",
+        "job"
+      ],
+      "pages": 5,
+      "exampleOrdinal": 0,
+      "examplePhysicalPage": 1
+    }
+  },
+  {
+    "name": "position page bounds",
+    "category": "HTTP pass",
+    "evidence": {
+      "zeroHttp": 400,
+      "beyondLast": "page_out_of_range"
+    }
+  },
+  {
+    "name": "Android RangePlan wire resume",
+    "category": "HTTP pass",
+    "evidence": {
+      "partial": 206,
+      "staleEtagFullReplace": 200,
+      "completePart": 416,
+      "unchanged": 304,
+      "etagMatchesHash": true
+    }
+  },
+  {
+    "name": "SyncEngine-shaped folder-before-paper CAS + retry",
+    "category": "HTTP pass",
+    "evidence": {
+      "kinds": [
+        "folder",
+        "paper"
+      ],
+      "unchangedReceipt": true
+    }
+  },
+  {
+    "name": "stale revision returns authority",
+    "category": "HTTP pass",
+    "evidence": [
+      {
+        "kind": "paper",
+        "id": "qa-reader-catalog",
+        "applied": false,
+        "conflict": true,
+        "rev": 3,
+        "current": {
+          "id": "qa-reader-catalog",
+          "paperKey": "qa-reader-catalog",
+          "title": "Reader HTTP bridge fixture",
+          "authors": [
+            {
+              "given": "",
+              "family": "Fixture"
+            }
+          ],
+          "year": 2026,
+          "venue": null,
+          "doi": null,
+          "arxivId": null,
+          "url": "https://example.org/qa",
+          "abstract": null,
+          "tags": [
+            "qa"
+          ],
+          "collections": [
+            "qa-folder"
+          ],
+          "addedAt": "2026-09-30T21:17:46.399Z",
+          "updatedAt": "2026-09-30T21:17:46.615Z",
+          "status": "unread",
+          "bibtexKey": "qa",
+          "saved": true,
+          "deviceId": "4c01ebdb-013f-4489-ae35-8f36b282a1ce",
+          "savedAt": "2026-09-30T21:17:46.416Z",
+          "lastReadAt": "2026-09-30T21:17:46.399Z",
+          "readProgress": {
+            "page": 2,
+            "scrollOffset": 0.25
+          },
+          "rev": 3
+        }
+      }
+    ]
+  },
+  {
+    "name": "receipt fingerprint guard",
+    "category": "HTTP pass",
+    "evidence": {
+      "changedRequestIdPayload": 400
+    }
+  },
+  {
+    "name": "typed Kotlin nullable defaults differ from shared schema",
+    "category": "HTTP compatibility observation",
+    "evidence": {
+      "nullableProgress": "INVALID_INPUT",
+      "nullableAuthor": "INVALID_INPUT",
+      "actualBuildersOmitTheseNulls": true
+    }
+  },
+  {
+    "name": "Android memo wire + pull unchanged geometry",
+    "category": "HTTP pass",
+    "evidence": {
+      "id": "7c988410-1832-4831-b5f0-5f13f85b06fc",
+      "rect": {
+        "x": 0.2,
+        "y": 0.3,
+        "width": 0.1,
+        "height": 0.05
+      }
+    }
+  },
+  {
+    "name": "ask SSE + durable history envelopes",
+    "category": "HTTP pass",
+    "evidence": {
+      "historyId": "0ef6f9de-6daf-499f-9fac-1f6bdc9bc907",
+      "events": [
+        "event: delta",
+        "event: delta",
+        "event: delta",
+        "event: delta",
+        "event: done"
+      ],
+      "context": {
+        "page": 2,
+        "rect": {
+          "x": 0.2,
+          "y": 0.3,
+          "width": 0.1,
+          "height": 0.05
+        },
+        "selectedText": "iii"
+      },
+      "collectionShape": "data.history[]",
+      "itemShape": "data.history",
+      "status": "completed"
+    }
+  },
+  {
+    "name": "question requestId retry + changed payload",
+    "category": "HTTP pass",
+    "evidence": {
+      "duplicateGenerationCalls": 0,
+      "changedPayload": 400
+    }
+  },
+  {
+    "name": "explanation durable region + latex",
+    "category": "HTTP pass",
+    "evidence": {
+      "status": "completed",
+      "context": {
+        "page": 3,
+        "rect": {
+          "x": 0.1,
+          "y": 0.2,
+          "width": 0.4,
+          "height": 0.1
+        },
+        "selectedText": "x=1",
+        "explanationKind": "equation"
+      },
+      "latex": "x=1"
+    }
+  },
+  {
+    "name": "out-of-range question physical page admitted",
+    "category": "HTTP reproduced defect",
+    "evidence": {
+      "actualPageCount": 5,
+      "submittedPage": 6,
+      "status": 200,
+      "context": {
+        "page": 6
+      },
+      "answer": "Fixture prefix $$x=1$$ [p.6]"
+    }
+  },
+  {
+    "name": "real HTTP observer disconnect retains generation",
+    "category": "HTTP pass",
+    "evidence": {
+      "historyId": "b1a790ce-f54f-4404-a76f-950f446b9e02",
+      "beforeRelease": "running",
+      "afterRelease": "completed"
+    }
+  },
+  {
+    "name": "active history CAS owner + explicit cancel",
+    "category": "HTTP pass",
+    "evidence": {
+      "activeReplacement": false,
+      "authoritativeStatus": "running",
+      "canceled": "canceled"
+    }
+  },
+  {
+    "name": "settled question history CAS import",
+    "category": "HTTP pass",
+    "evidence": {
+      "applied": true,
+      "currentStatus": "canceled"
+    }
+  },
+  {
+    "name": "history delete returns tombstone",
+    "category": "HTTP pass",
+    "evidence": {
+      "deleted": true,
+      "subsequentGet": 404
+    }
+  },
+  {
+    "name": "folder removal retains reader PDF/cache and notes",
+    "category": "HTTP pass",
+    "evidence": {
+      "membership": [],
+      "pdfRetained": true,
+      "annotations": 1
+    }
+  },
+  {
+    "name": "restart durable failure + same-id replay",
+    "category": "HTTP pass",
+    "evidence": {
+      "status": "failed",
+      "error": "NETWORK",
+      "text": "Persisted crash prefix",
+      "newProviderCalls": 0
+    }
+  },
+  {
+    "name": "restart text-layout + settled history",
+    "category": "HTTP pass",
+    "evidence": {
+      "pdfShaMatches": true,
+      "layoutVersion": "pdfjs6-original-advances-v1",
+      "settledQuestionRetained": "completed",
+      "pullHistoryPresent": 6
+    }
+  }
+]
