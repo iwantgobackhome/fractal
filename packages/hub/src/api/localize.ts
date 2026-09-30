@@ -23,6 +23,7 @@ const messages: Record<ErrorCode, { ko: string; en: string }> = {
 };
 
 export function localizeError(error: AppError, language: 'ko' | 'en'): AppError {
+  if (error.code === 'UNSAFE_RUNTIME') return error;
   return {
     ...error,
     message: language === 'ko' && /[\uac00-\ud7a3]/u.test(error.message) ? error.message : (messages[error.code]?.[language] ?? error.message),
