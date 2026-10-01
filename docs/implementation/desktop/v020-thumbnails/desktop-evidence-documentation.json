@@ -1,0 +1,117 @@
+{
+  "sourceSha": "edd8019808c923c58f3964528bb57832f79b72d6",
+  "appVersion": "0.2.0",
+  "packaged": false,
+  "wrapper": {
+    "ProcessId": 25480,
+    "ParentProcessId": 40908,
+    "CreationDate": "/Date(1790842085105)/",
+    "ExecutablePath": "C:\\WINDOWS\\system32\\cmd.exe",
+    "CommandLine": "C:\\WINDOWS\\system32\\cmd.exe /d /s /c \"\"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\node_modules\\electron\\dist\\electron.exe\" \"--inspect=0\" \"--remote-debugging-port=0\" \"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-v020-thumbnails-clients\"\""
+  },
+  "runtime": {
+    "ProcessId": 45360,
+    "ParentProcessId": 25480,
+    "CreationDate": "/Date(1790842085139)/",
+    "ExecutablePath": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\node_modules\\electron\\dist\\electron.exe",
+    "CommandLine": "\"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\node_modules\\electron\\dist\\electron.exe\"  \"--inspect=0\" \"--remote-debugging-port=0\" \"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-v020-thumbnails-clients\""
+  },
+  "screenshots": [
+    "desktop1440-papers",
+    "desktop1440-paper-dossier",
+    "desktop1440-news",
+    "desktop1440-news-dossier"
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:4337",
+      "path": "/assets/PretendardVariable.subset.75-CxKdrRNf.woff2"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:4337",
+      "path": "http://127.0.0.1:4337/8de69fdd-59ac-4f49-a352-a8e9f0635187"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:4337",
+      "path": "/api/feed/images/bc175c6d20a54ddc9589ed4d2ca6032a2ba78dc14159b8e59a3a7b71dd74c861"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:4337",
+      "path": "http://127.0.0.1:4337/99bdb26f-7e3e-40dd-8cb0-3438972d8fb9"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:4337",
+      "path": "/api/news/article"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:4337",
+      "path": "/assets/PretendardVariable.subset.70-BUXiAGMT.woff2"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:4337",
+      "path": "http://127.0.0.1:4337/0196a195-bedf-44fd-9d67-34b0aa338b7f"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:4337",
+      "path": "http://127.0.0.1:4337/e4a7a155-4e86-42a8-b54a-4d1f93ba45c0"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:4337",
+      "path": "/api/library"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:4337",
+      "path": "/api/sync/pull"
+    }
+  ],
+  "errors": [],
+  "origin": "http://127.0.0.1:4337",
+  "state": {
+    "library": [],
+    "history": []
+  },
+  "imageRequestPaths": [
+    "/api/feed/images/bc175c6d20a54ddc9589ed4d2ca6032a2ba78dc14159b8e59a3a7b71dd74c861"
+  ],
+  "publicImages": [
+    {
+      "directory": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-v020-thumbnails-clients\\apps\\android\\qa\\v020-thumbnails\\data\\desktop-hub-documentation",
+      "name": "paper",
+      "publicSource": "https://arxiv.org/html/2609.40325v1/anomaly_taxonomy.png",
+      "contentSha": "c4b29afc943f6b8cd2ada156874b70e4967a8f3d5f2951ccb23ce94ca3fa2e84",
+      "bytes": 3086692,
+      "image": {
+        "url": "/api/feed/images/734f8081f3e1980309cce54586072b22a95053ee1c0d8c3e89971b13fbaabab0",
+        "width": 1920,
+        "height": 1150,
+        "alt": "WorldAuditBench Figure 1: anomaly taxonomy"
+      }
+    },
+    {
+      "directory": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-v020-thumbnails-clients\\apps\\android\\qa\\v020-thumbnails\\data\\desktop-hub-documentation",
+      "name": "news",
+      "publicSource": "https://news.mit.edu/sites/default/files/styles/news_article__image_gallery/public/images/202403/MIT-DMD.png?itok=oIzEyXxR",
+      "contentSha": "ac64b89e3b693917a13f75d638e6c7ce5c6816bb3118d8b22b4d451abafd470c",
+      "bytes": 678963,
+      "image": {
+        "url": "/api/feed/images/bc175c6d20a54ddc9589ed4d2ca6032a2ba78dc14159b8e59a3a7b71dd74c861",
+        "width": 900,
+        "height": 600,
+        "alt": "MIT news: diffusion image synthesis comparison"
+      }
+    }
+  ],
+  "metadata": "Actual publication metadata from official arXiv abstract and MIT News pages; isolated cached feed, not a live gathering claim",
+  "lastText": "READ · DISCOVER / Home\narXiv id, DOI, paper URL or search words\nUpload PDF\nCtrl\nK\nAI connected\n10/01/2026\nFractal\nREAD DEEPER. DISCOVER FURTHER.\n⌂\nDiscover · field news\n▤\nLibrary\n✳\nInterests\n⚙\nAppearance & connections\n\nOctober 1, 2026\n\nResearch & discovery\n\nPapers, publications and reporting from your followed fields.\n\nEdit interests\nSources\nGather now\nPapers\nNews\nTopics\nSource status · View reported source checks\n\nSnapshot: 10/1/2026, 5:07:36 PM\n\nAll sources\n⌄\nAll publication types\n⌄\nRelevance\n⌄\n01\nPreprint\narXiv\n2026\nOpen access\narXiv\nWorldAuditBench: Interactive 3D World Auditing with Multimodal Agents\n\nJiang, Ziyan, Yang, Jingbo, Ji, Jiabao, Liu, Yujian, Wu, Qiucheng, Jaakkola, Tommi, Zhang, Yang, Chang, Shiyu\n\nAs interactive 3D worlds are increasingly used to study intelligent behavior, it becomes important to develop efficient pipelines for identifying anomalies in these simulated environments, such as floating objects, traversable walls, or objects inconsistent with the surrounding scene. Multimodal AI systems, including vision-language models (VLMs) and vision-language-action models (VLAs), have shown potential for automating this task. However, 3D world auditing is complex, requiring the close coupling of two distinct capabilities: action, to navigate the 3D world and search for anomalies systematically and efficiently; and visual reasoning, to understand the environment and identify anomalies from multimodal observations. It remains largely unexplored whether multimodal agents can effectively couple these two capabilities, using visual reasoning to identify potential anomalies while taking actions to validate them. In this paper, we introduce WorldAuditBench, a benchmark for 3D world auditing comprising 213 anomaly tasks across 13 environments built with Unreal Engine 5 and this http URL , spanning five anomaly families. We evaluate five frontier models under a fixed exploration budget using two auditing paradigms: VLA-based exploration followed by VLM-based anomaly identification, and an end-to-end VLM agent in which visual reasoning directly guides action selection. Across the evaluated models and two paradigms, success rates range from 6.6% to 42.3%, substantially below human performance (83.4%). Through the task of world auditing, WorldAuditBench provides a testbed for studying how multimodal agents couple action and visual reasoning in interactive 3D environments, while highlighting current limitations in their ability to gather and interpret evidence during exploration.\n\nInterested in cs.AI\n\nRead PDF\nSave metadata\nTo link your own PDF, choose Save metadata, then Link PDF. Read PDF works without saving.\nPublication source\nPDF availability unknown\nFractal · 1 papers · 1 stories",
+  "closed": true
+}

@@ -1,0 +1,78 @@
+{
+  "productionSourceSha": "edd8019808c923c58f3964528bb57832f79b72d6",
+  "documentationFixtureSha": "b90dc74a2bda81e2f970c608edbd7841bf7dc666",
+  "backendSha": "b90dc74a2bda81e2f970c608edbd7841bf7dc666",
+  "apkSha256": "42dd1eda407ccc90abcd646b94cd1c2df363cf53634638ce3088ed7529dde64c",
+  "serial": "emulator-5572",
+  "profile": "phone360x800 density160 fontScale1.0 API34 read-only",
+  "testSelection": [
+    "capturesPublicationDocumentation",
+    "rejectsRoutesAndCancelsDiscardedCapturedSession"
+  ],
+  "testResult": "OK (2 tests), 20.712 seconds",
+  "library": [],
+  "history": [],
+  "publicImages": [
+    {
+      "directory": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-v020-thumbnails-clients\\apps\\android\\qa\\v020-thumbnails\\data\\desktop-hub-documentation",
+      "name": "paper",
+      "publicSource": "https://arxiv.org/html/2609.40325v1/anomaly_taxonomy.png",
+      "contentSha": "c4b29afc943f6b8cd2ada156874b70e4967a8f3d5f2951ccb23ce94ca3fa2e84",
+      "bytes": 3086692,
+      "image": {
+        "url": "/api/feed/images/734f8081f3e1980309cce54586072b22a95053ee1c0d8c3e89971b13fbaabab0",
+        "width": 1920,
+        "height": 1150,
+        "alt": "WorldAuditBench Figure 1: anomaly taxonomy"
+      }
+    },
+    {
+      "directory": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-v020-thumbnails-clients\\apps\\android\\qa\\v020-thumbnails\\data\\desktop-hub-documentation",
+      "name": "news",
+      "publicSource": "https://news.mit.edu/sites/default/files/styles/news_article__image_gallery/public/images/202403/MIT-DMD.png?itok=oIzEyXxR",
+      "contentSha": "ac64b89e3b693917a13f75d638e6c7ce5c6816bb3118d8b22b4d451abafd470c",
+      "bytes": 678963,
+      "image": {
+        "url": "/api/feed/images/bc175c6d20a54ddc9589ed4d2ca6032a2ba78dc14159b8e59a3a7b71dd74c861",
+        "width": 900,
+        "height": 600,
+        "alt": "MIT news: diffusion image synthesis comparison"
+      }
+    },
+    {
+      "directory": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-v020-thumbnails-clients\\apps\\android\\qa\\v020-thumbnails\\data\\android-hub-documentation",
+      "name": "paper",
+      "publicSource": "https://arxiv.org/html/2609.40325v1/anomaly_taxonomy.png",
+      "contentSha": "c4b29afc943f6b8cd2ada156874b70e4967a8f3d5f2951ccb23ce94ca3fa2e84",
+      "bytes": 3086692,
+      "image": {
+        "url": "/api/feed/images/734f8081f3e1980309cce54586072b22a95053ee1c0d8c3e89971b13fbaabab0",
+        "width": 1920,
+        "height": 1150,
+        "alt": "WorldAuditBench Figure 1: anomaly taxonomy"
+      }
+    },
+    {
+      "directory": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-v020-thumbnails-clients\\apps\\android\\qa\\v020-thumbnails\\data\\android-hub-documentation",
+      "name": "news",
+      "publicSource": "https://news.mit.edu/sites/default/files/styles/news_article__image_gallery/public/images/202403/MIT-DMD.png?itok=oIzEyXxR",
+      "contentSha": "ac64b89e3b693917a13f75d638e6c7ce5c6816bb3118d8b22b4d451abafd470c",
+      "bytes": 678963,
+      "image": {
+        "url": "/api/feed/images/bc175c6d20a54ddc9589ed4d2ca6032a2ba78dc14159b8e59a3a7b71dd74c861",
+        "width": 900,
+        "height": 600,
+        "alt": "MIT news: diffusion image synthesis comparison"
+      }
+    }
+  ],
+  "metadata": "Actual publication metadata from official arXiv abstract and MIT News pages; isolated cached feed, not a live gathering claim",
+  "individuallyInspected": [
+    "paper-index",
+    "paper-dossier",
+    "news-index",
+    "news-dossier"
+  ],
+  "priorLayouts": "Original source f66ba73 phone360/font2/tablet1280 evidence remains version0.1 and is not claimed as version0.2 builds",
+  "trialNote": "Initial broad test selection mistakenly ran absent/broken fixture assertions against the two-item documentation feed; that QA selection failed, was preserved ignored, then corrected to the two intended tests which passed. No production change followed."
+}

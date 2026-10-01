@@ -207,5 +207,62 @@
       "sha256": "6e506635c6da0761a04f4c2d308cc6bb28f7727c8b65868f7fc10d1b7c808b31",
       "bytes": 179833
     }
-  ]
+  ],
+  "finalDocumentation": {
+    "productionSourceSha": "edd8019808c923c58f3964528bb57832f79b72d6",
+    "documentationFixtureSha": "b90dc74a2bda81e2f970c608edbd7841bf7dc666",
+    "version": "0.2.0 / Android code2",
+    "captures": [
+      {
+        "path": "apps/android/qa/v020-thumbnails/documentation-phone360/end.png",
+        "sha256": "0ab15ca78b592090ed3ded5ee4b9a6f184c86ac4afe160761080108e410156ac",
+        "bytes": 141234
+      },
+      {
+        "path": "apps/android/qa/v020-thumbnails/documentation-phone360/news-dossier.png",
+        "sha256": "0ab15ca78b592090ed3ded5ee4b9a6f184c86ac4afe160761080108e410156ac",
+        "bytes": 141234
+      },
+      {
+        "path": "apps/android/qa/v020-thumbnails/documentation-phone360/news-index.png",
+        "sha256": "d5658203122264692052f9988edf6b8988c6807d57d540fc2ac681992aad4b27",
+        "bytes": 124296
+      },
+      {
+        "path": "apps/android/qa/v020-thumbnails/documentation-phone360/paper-dossier.png",
+        "sha256": "ee957c34d55c44e925e1f782aa58cbafa4e7627489aa5f1136a467fa22e61919",
+        "bytes": 147935
+      },
+      {
+        "path": "apps/android/qa/v020-thumbnails/documentation-phone360/paper-index.png",
+        "sha256": "ac3f7c57d9c78663ddbd3952f9fe17548a852c38e65ab5d6f96e785e1ed2bc37",
+        "bytes": 103052
+      },
+      {
+        "path": "docs/implementation/desktop/v020-thumbnails/documentation-screens/desktop1440-news-dossier.png",
+        "sha256": "268e141c8e90888ae36735d7fa2cc30ca0d6591f3d04985e55d8849681e5eaf4",
+        "bytes": 395593
+      },
+      {
+        "path": "docs/implementation/desktop/v020-thumbnails/documentation-screens/desktop1440-news.png",
+        "sha256": "f90a99a5be917fa1dd3a62cad5de598f4bd5e7af985a67bf5084a7b23aa98286",
+        "bytes": 140721
+      },
+      {
+        "path": "docs/implementation/desktop/v020-thumbnails/documentation-screens/desktop1440-paper-dossier.png",
+        "sha256": "4440f958c0ce40a5a0ba7ece72be5abab78bef8b3c847ce18527e20437a019ec",
+        "bytes": 401929
+      },
+      {
+        "path": "docs/implementation/desktop/v020-thumbnails/documentation-screens/desktop1440-papers.png",
+        "sha256": "41492d494d34b13f2886923e130a83f0f29a2c5bc5ade910f93653f913b413bb",
+        "bytes": 214987
+      },
+      {
+        "path": "docs/implementation/desktop/v020-thumbnails/documentation-screens/last-state.png",
+        "sha256": "12dc5bfd041d69550f8045544d75795185141c15ad4969c7325dca351577dfcc",
+        "bytes": 215097
+      }
+    ]
+  }
 }
