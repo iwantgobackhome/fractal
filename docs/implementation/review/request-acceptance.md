@@ -1,5 +1,9 @@
 # Request acceptance map
 
+## Reopened PC word selection gate
+
+The user reproduced an overexpanded PC drag in the previously reviewed build: selecting a word or part of a sentence can become a wider range or entire sentence. Request10 is reopened; the Windows08af7b3 installer is historical evidence and must be superseded by a verified fixed package before final delivery. C follow-up `ctx_c38585b8afdb` owns reproduction, repair and a new package; E will independently verify pointer-driven substring, clipboard, highlight and quote agreement. Source inspection identifies a candidate path: coarse authoritative PDF run boundaries are used to snap native browser selection endpoints. Actual input reproduction and a focused regression are required; no extraction precision or provenance offsets may be fabricated. Android final source/evidence is accepted through root `066531b`; E Android evidence review continues separately. The table below records earlier checkpoints, not resolution of this new report.
+
 Coordinator checkpoint: accepted C stage3 implementation/final Windows package/independent desktop review and D stage3 reader through root `a991ff2`. This is a review map, not final product certification. Android discovery remains active and E independent current Android review is pending. User direction: scholarly newspaper/paper typography, richer useful information, restrained rules and paper surfaces. Requests 1–13 are authorized; request 14 is excluded.
 
 | Request | Accepted evidence | Remaining final gate |
