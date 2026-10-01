@@ -1,6 +1,6 @@
 # Independent accepted Android discovery checkpoint
 
-Final follow-up: [FINAL-REVIEW.md](FINAL-REVIEW.md) records accepted D e690dca product/331b67d evidence, current APK inspection, scoped native logs, cold launch, title fallback, eight capture profiles and verified resource closure. The pending statements below remain the historical boundary of this checkpoint. Overall acceptance awaits the separate desktop request10 repair.
+Final follow-up: [FINAL-REVIEW.md](FINAL-REVIEW.md) accepts D e690dca product/331b67d evidence, current APK, scoped native logs/cold launch/title fallback/eight profiles/closure, and the subsequent desktop request10 repair/current package. The pending statements below remain the historical boundary of this checkpoint.
 
 Root supplied clean `8b23e50fdeefbc8a924ac478ba6e277d9cf2cd0b` in `msg_9e62e6965650`, including accepted D implementation checkpoint `f81cd026` / root029e44d. This review reads immutable accepted source and the supplied executed logs; E did not operate D's5554, source build, private data or current server. **Final Android certification remains pending** current captures, title-only translation fallback, process-cold offline launch, scoped reader/PDF proofs, APK resources/source/hashes and owner cleanup. Request14 remains excluded.
 

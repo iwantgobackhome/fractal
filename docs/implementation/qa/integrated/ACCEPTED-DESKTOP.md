@@ -1,6 +1,6 @@
 # Independent accepted C implementation review
 
-Later status: [FINAL-REVIEW.md](FINAL-REVIEW.md) accepts final Android evidence but withholds overall/Desktop request10 acceptance following the user's newly reproduced mouse-drag expansion (`msg_6b5c8afc8b57`). The package/source checks below retain their historical provenance; a repair/current Windows package and focused actual pointer verification are now required. The retained E Hub has been safely closed as recorded in hub-cleanup.json.
+Final status: [FINAL-REVIEW.md](FINAL-REVIEW.md) closes the later user-reproduced request10 after accepted0efa repair, independent actual browser pointer proof and current native packageb28d420 review. The08af package/source checks below are historical and superseded. Android final evidence is accepted and all E resources are closed; [DESKTOP-WORD-REVIEW.md](DESKTOP-WORD-REVIEW.md) records the corrected current delivery.
 
 Implementation source supplied clean by root: `f5319ad85ec913ae3f19a10f6dced7fef1891eab`, including accepted C implementation `1897440/769ac81` and shutdown correction `02811cc`. E rebuilt this worktree and ran its own isolated brief flow. Final C package evidence was subsequently supplied at `6be69e335b180cb85d55c4937b9a6a93236be285`. Desktop implementation and current Windows package evidence pass this review; **Android D3/D4 certification remains pending**. Request 14 is excluded.
 

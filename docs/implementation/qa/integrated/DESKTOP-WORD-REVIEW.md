@@ -1,6 +1,6 @@
 # Independent desktop word-drag repair review
 
-Accepted clean input **`e5e85ddbc1711aeb76d1793429fcf69e7786c7da`**, including C repair `0efa96c7575435d9ce408c4dcc2ce427134e9141` / root `4a78495c153b7c95babd9d42ff7816fc15db4e0d`. `git diff 0efa96c e5e85dd` under shipped UI/Hub/shared/Desktop main/preload/assets is empty. E built this checkout, then ran its own [focused script](word-pointer-check.ts), not the C owner matrix. Root accepted this independent browser input gate in `msg_8a8fdc5c0c69`; final Windows package evidence still needs immutable supply/review at this clean checkpoint.
+Accepted clean input **`e5e85ddbc1711aeb76d1793429fcf69e7786c7da`**, including C repair `0efa96c7575435d9ce408c4dcc2ce427134e9141` / root `4a78495c153b7c95babd9d42ff7816fc15db4e0d`. `git diff 0efa96c e5e85dd` under shipped UI/Hub/shared/Desktop main/preload/assets is empty. E built this checkout, then ran its own [focused script](word-pointer-check.ts), not the C owner matrix. Root accepted this independent input gate; final supplied71fae0d subsequently includes b28d420 actual packaged proof/roota0295f2, reviewed below. **Desktop request10 is closed at the stated software boundaries.**
 
 ## Actual independent result
 
@@ -16,6 +16,12 @@ The root-delivered public Attention PDF is2,215,244bytes/SHA256 `bdfaa68d8984f0d
 | Partial-word Ask quote, close/reload/reopen | Exact durable context, honest provenance | UI/localStorage context `ominan` retained byte-for-byte across reopen with physical page1, actual PDF hash and `rendered-page-normalized-v1`; unsupported authoritative layoutRange omitted. [Settled capture](word-pointer-evidence/browser-reopened-quote.png). |
 
 All four independent drags pass with zero page errors. Source checking of `native-selection.ts`/`PdfPane.tsx` confirms native grapheme/known glyph safety is separate from backend geometry legality; stale datasets are cleared, unchanged text nodes aren't detached on late metadata, asynchronous captures have generations, actual release coordinates freeze and pointercancel uses last valid position. C accepted broad focused transform/column/Unicode/ligature/cross-page/translated tests supplement these bounded independent actual public-page cases; E does not claim to rerun them.
+
+## Current Windows package closure
+
+Independently reviewed [owner report](../../desktop/selection-repair/REPORT.md), [actual packaged state](../../desktop/selection-repair/packaged.json), [archive/resources/exit](../../desktop/selection-repair/package-resources.json), [native icons](../../desktop/selection-repair/native-icons.json) and actual native word/partial/highlight/quote captures. Source0efa actual app.isPackaged/app.asar preserves `dominant`/`ominan` through release/Ctrl+C/menu Copy; four pointer cases pass, persisted bounded highlight and exact quote retain actual PDF/frame with no unsupported coarse layoutRange. Shipped main/preload/Hub/UI/artwork byte-match current accepted build; test scripts/reports/PDF input are excluded. Executable/NSIS icons match16/24/32/48/64/128/256 branch artwork, window/tray256/32.
+
+E read/hash-inspected the root-delivered installer `C:/Users/Home/Desktop/Fractal/fractal/dist/reviewed-builds/desktop-0efa96c/Fractal Setup 0.1.0.exe`,117,588,001bytes/SHA256 `63ee8767cf28671a1d140dada62502b51ebddfb9f2e515c7cc020714cb52b986`. Owner executable246,032,896bytes/SHA `053eb6d3931cee208b54154cb0840fc22f4ffe9a47d6663f7635b189e8fbd9c1`; app.asar13,186,982bytes/SHA `c0f5e32e378d15dd92e7e84ba8d344e1745991a85a854503cfe0cf671a341ed1`. Old08af package is superseded. E never launches a peer executable or installs the installer. Package proof records exact PID3952/executable/start/command/profile and closed main process/listener; profile retained. Native quote capture catches drawer transition, so settled independent E capture anchors visual assessment; native JSON/copy/persistence assertions establish its interaction gate.
 
 ## Execution and capture boundaries
 

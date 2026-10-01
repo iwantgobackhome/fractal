@@ -1,11 +1,57 @@
 {
   "acceptanceStatus": {
     "android": "accepted software gates",
-    "overall": "withheld: desktop request10 user-reproduced drag expansion; accepted repair/current package required"
+    "desktop": "accepted repaired source, actual independent browser pointer and immutable owner native packaged proof",
+    "overall": "requests1-13 accepted at stated software boundaries; request14 excluded"
   },
-  "reviewedAcceptedSource": "594f418d6e9ba374b9f2b5a220d0541270a4416b",
+  "reviewedAcceptedSource": "71fae0d6c6af45a39781b22e419fb7ebb68f0914",
+  "androidReviewSource": "594f418d6e9ba374b9f2b5a220d0541270a4416b",
   "androidProductSource": "e690dcabfc150c7c83170a512cf2562166b3a014",
-  "desktopPackagedProductSource": "08af7b3959a3816e8d54d6ea1f9886b253693d79",
+  "desktopPackagedProductSource": "0efa96c7575435d9ce408c4dcc2ce427134e9141",
+  "desktopIndependentPointerExecutionSource": "e5e85ddbc1711aeb76d1793429fcf69e7786c7da",
+  "desktopPackageArtifactsOwnerManifest": [
+    {
+      "path": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\dist\\installer-selection-repair\\win-unpacked\\Fractal.exe",
+      "bytes": 246032896,
+      "sha256": "053eb6d3931cee208b54154cb0840fc22f4ffe9a47d6663f7635b189e8fbd9c1"
+    },
+    {
+      "path": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\dist\\installer-selection-repair\\Fractal Setup 0.1.0.exe",
+      "bytes": 117588001,
+      "sha256": "63ee8767cf28671a1d140dada62502b51ebddfb9f2e515c7cc020714cb52b986"
+    },
+    {
+      "path": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\dist\\installer-selection-repair\\win-unpacked\\resources\\app.asar",
+      "bytes": 13186982,
+      "sha256": "c0f5e32e378d15dd92e7e84ba8d344e1745991a85a854503cfe0cf671a341ed1"
+    },
+    {
+      "path": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\apps\\desktop\\assets\\fractal.ico",
+      "bytes": 15480,
+      "sha256": "fbe027c730fe0bee700d1d48832e3c3133a6a261e5d78bdcc658d55192ab8d8d"
+    },
+    {
+      "path": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\docs\\implementation\\design\\assets\\branch-master.svg",
+      "bytes": 452,
+      "sha256": "ed1047a4eca5dcc9ad6dd16fd27a541ac392dcf2842d881e2dac0e160230543d"
+    }
+  ],
+  "independentlyInspectedRootDeliveredInstaller": {
+    "path": "C:\\Users\\Home\\Desktop\\Fractal\\fractal\\dist\\reviewed-builds\\desktop-0efa96c\\Fractal Setup 0.1.0.exe",
+    "bytes": 117588001,
+    "sha256": "63ee8767cf28671a1d140dada62502b51ebddfb9f2e515c7cc020714cb52b986"
+  },
+  "desktopNativeBoundary": "Own node_modules/electron/dist/electron.exe is absent; no peer binary or optional download substituted. Accepted owner packaged proof remains a separate gate.",
+  "desktopOwnerActualPackageProcess": {
+    "ProcessId": 3952,
+    "ExecutablePath": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\dist\\installer-selection-repair\\win-unpacked\\Fractal.exe",
+    "CommandLine": "\"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\dist\\installer-selection-repair\\win-unpacked\\Fractal.exe\"  \"--inspect=0\" \"--remote-debugging-port=0\"",
+    "CreationDate": "/Date(1790825558229)/"
+  },
+  "desktopPackageResourcesAllMatchAcceptedBuild": true,
+  "desktopPackageOwnedProcessAndListenerClosed": true,
+  "eCompiledHubBundleSha256": "902d20f2d59c29d0c5c5bf1727878e1682f9f3bd7e19746ee29aec4494b26bda",
+  "eBrowserHubLoadBoundary": "startService loaded accepted e5e85dd TypeScript production source in-process; compiled bundle hash is build inspection, not a claim that this bundle was loaded there",
   "screenshotVerification": {
     "acceptedReader": {
       "count": 84,
@@ -13,6 +59,10 @@
     },
     "acceptedDiscovery": {
       "count": 104,
+      "mismatches": []
+    },
+    "independentRepairedDesktop": {
+      "count": 3,
       "mismatches": []
     }
   },
