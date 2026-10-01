@@ -1,0 +1,317 @@
+{
+  "mode": "browser",
+  "source": "a45b36286f4ded81d708b32efd70e327b3ee33d3",
+  "directory": "C:\\Users\\Home\\AppData\\Local\\Temp\\fractal-reader-failure-browser-748aUm",
+  "output": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\dist\\pdf-reader-failure-evidence\\browser",
+  "seededPdfBytes": false,
+  "externalNavigation": [],
+  "cases": [
+    {
+      "name": "localized-corrupted-primary-Read",
+      "language": "en",
+      "heading": "Could not open the original PDF",
+      "context": "Original",
+      "display": "The stored PDF no longer matches its recorded hash. The cached file was not replaced. Check the stored file or open the publication site.",
+      "rawKeyAbsent": true,
+      "retryWorked": true,
+      "mountedPdf": false,
+      "recordedRecent": false,
+      "acquisitionSkipped": true,
+      "metadataPreserved": true
+    },
+    {
+      "name": "localized-corrupted-primary-Read",
+      "language": "ko",
+      "heading": "원본 PDF를 열지 못했습니다",
+      "context": "원문",
+      "display": "저장된 PDF가 기록된 해시와 일치하지 않습니다. 캐시 파일은 교체되지 않았습니다. 저장 파일을 확인하거나 출판물 사이트를 여세요.",
+      "rawKeyAbsent": true,
+      "retryWorked": true,
+      "mountedPdf": false,
+      "recordedRecent": false,
+      "acquisitionSkipped": true,
+      "metadataPreserved": true
+    },
+    {
+      "name": "restored-primary-Read",
+      "exactOriginalHash": "d87d482d5ae7960e2e43d7dd6d21377e60e73e8fce1bf2a01aff7aca8a08c537",
+      "mountedPdf": true,
+      "recentAfterActualRead": true,
+      "retainedMetadataPreserved": true
+    }
+  ],
+  "reference": {
+    "url": "https://papers.nips.cc/paper_files/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf",
+    "bytes": 569417,
+    "sha256": "d87d482d5ae7960e2e43d7dd6d21377e60e73e8fce1bf2a01aff7aca8a08c537",
+    "paperKey": "pub-a7f082412c26f4efd83d74e27f6ac2df66e63468821bfe416ceb86eea9486777"
+  },
+  "browserIdentity": {
+    "ProcessId": 51132,
+    "ParentProcessId": 50028,
+    "ExecutablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+    "CommandLine": "\"C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe\" --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,Translate,AutoDeElevate,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-updater-scheduler --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --user-data-dir=C:\\Users\\Home\\AppData\\Local\\Temp\\playwright_chromiumdev_profile-7zwdfj --remote-debugging-pipe --no-startup-window",
+    "CreationDate": "/Date(1790836779941)/"
+  },
+  "origin": "http://127.0.0.1:9811",
+  "before": {
+    "library": [
+      {
+        "id": "pub-a7f082412c26f4efd83d74e27f6ac2df66e63468821bfe416ceb86eea9486777",
+        "paperKey": "pub-a7f082412c26f4efd83d74e27f6ac2df66e63468821bfe416ceb86eea9486777",
+        "title": "Attention is All you Need",
+        "authors": [
+          {
+            "given": "Ashish",
+            "family": "Vaswani"
+          }
+        ],
+        "year": 2017,
+        "venue": "NeurIPS",
+        "doi": null,
+        "arxivId": null,
+        "url": "https://papers.nips.cc/paper_files/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html",
+        "abstract": null,
+        "tags": [
+          "cache-integrity"
+        ],
+        "collections": [
+          "child"
+        ],
+        "addedAt": "2026-10-01T06:39:37.905Z",
+        "updatedAt": "2026-10-01T06:39:39.919Z",
+        "status": "unread",
+        "bibtexKey": "publicationddb2e1330f0f",
+        "publication": {
+          "year": 2017,
+          "venue": "NeurIPS",
+          "publicationKind": "conference",
+          "publicationDate": null,
+          "sources": [
+            "user"
+          ],
+          "oaAvailability": "open",
+          "oaPdfUrl": "https://papers.nips.cc/paper_files/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf"
+        },
+        "saved": true,
+        "savedAt": "2026-10-01T06:39:39.919Z",
+        "lastReadAt": null,
+        "readProgress": {
+          "page": 1,
+          "fraction": 0.1
+        },
+        "rev": 3,
+        "deviceId": "hub"
+      }
+    ],
+    "paper": {
+      "paper": {
+        "paperKey": "pub-a7f082412c26f4efd83d74e27f6ac2df66e63468821bfe416ceb86eea9486777",
+        "sourceKind": "publication",
+        "catalogKey": "pub-a7f082412c26f4efd83d74e27f6ac2df66e63468821bfe416ceb86eea9486777",
+        "arxivId": null,
+        "version": null,
+        "title": "Attention is All you Need",
+        "authors": [
+          "Ashish Vaswani"
+        ],
+        "sourceUrl": "https://papers.nips.cc/paper_files/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html",
+        "pdfSha256": "d87d482d5ae7960e2e43d7dd6d21377e60e73e8fce1bf2a01aff7aca8a08c537",
+        "pageCount": 11,
+        "extractionVersion": "pdfjs6-lines-v4",
+        "status": "ready",
+        "coverage": {
+          "totalPages": 11,
+          "textPages": 11,
+          "unsupportedPages": []
+        },
+        "createdAt": "2026-10-01T06:39:39.893Z"
+      },
+      "blocks": {
+        "count": 158,
+        "sha256": "eeef2463154e02ee36e918315659e834215e6afca4f899cc2ca58782fe74b8be"
+      },
+      "translations": [],
+      "job": null
+    },
+    "folders": [
+      {
+        "id": "child",
+        "name": "Preserved child",
+        "parentId": "parent",
+        "updatedAt": "2026-10-01T06:39:39.917Z",
+        "deleted": false,
+        "rev": 1,
+        "deviceId": "hub"
+      },
+      {
+        "id": "parent",
+        "name": "Preserved parent",
+        "parentId": null,
+        "updatedAt": "2026-10-01T06:39:39.917Z",
+        "deleted": false,
+        "rev": 1,
+        "deviceId": "hub"
+      }
+    ],
+    "history": {
+      "history": [
+        {
+          "id": "preserved-history",
+          "paperKey": "pub-a7f082412c26f4efd83d74e27f6ac2df66e63468821bfe416ceb86eea9486777",
+          "kind": "question",
+          "question": "Preserved question",
+          "text": "Preserved answer",
+          "status": "completed",
+          "createdAt": "2026-10-01T06:39:36.558Z",
+          "updatedAt": "2026-10-01T06:39:39.927Z",
+          "completedAt": "2026-10-01T06:39:36.558Z",
+          "requestId": null,
+          "context": {},
+          "answer": null,
+          "error": null,
+          "rev": 1,
+          "deviceId": "hub",
+          "deleted": false
+        }
+      ]
+    },
+    "fullStateSha256": "7bd03fc5228c1854c902f7d78dd2ef841431d4a1fdbc3b31daf7630ef4b6eecf"
+  },
+  "after": {
+    "library": [
+      {
+        "id": "pub-a7f082412c26f4efd83d74e27f6ac2df66e63468821bfe416ceb86eea9486777",
+        "paperKey": "pub-a7f082412c26f4efd83d74e27f6ac2df66e63468821bfe416ceb86eea9486777",
+        "title": "Attention is All you Need",
+        "authors": [
+          {
+            "given": "Ashish",
+            "family": "Vaswani"
+          }
+        ],
+        "year": 2017,
+        "venue": "NeurIPS",
+        "doi": null,
+        "arxivId": null,
+        "url": "https://papers.nips.cc/paper_files/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html",
+        "abstract": null,
+        "tags": [
+          "cache-integrity"
+        ],
+        "collections": [
+          "child"
+        ],
+        "addedAt": "2026-10-01T06:39:37.905Z",
+        "updatedAt": "2026-10-01T06:39:48.000Z",
+        "status": "unread",
+        "bibtexKey": "publicationddb2e1330f0f",
+        "publication": {
+          "year": 2017,
+          "venue": "NeurIPS",
+          "publicationKind": "conference",
+          "publicationDate": null,
+          "sources": [
+            "user"
+          ],
+          "oaAvailability": "open",
+          "oaPdfUrl": "https://papers.nips.cc/paper_files/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf"
+        },
+        "saved": true,
+        "savedAt": "2026-10-01T06:39:39.919Z",
+        "lastReadAt": "2026-10-01T06:39:48.000Z",
+        "readProgress": {
+          "page": 1,
+          "fraction": 0,
+          "scrollOffset": 0
+        },
+        "rev": 4,
+        "deviceId": "hub"
+      }
+    ],
+    "paper": {
+      "paper": {
+        "paperKey": "pub-a7f082412c26f4efd83d74e27f6ac2df66e63468821bfe416ceb86eea9486777",
+        "sourceKind": "publication",
+        "catalogKey": "pub-a7f082412c26f4efd83d74e27f6ac2df66e63468821bfe416ceb86eea9486777",
+        "arxivId": null,
+        "version": null,
+        "title": "Attention is All you Need",
+        "authors": [
+          "Ashish Vaswani"
+        ],
+        "sourceUrl": "https://papers.nips.cc/paper_files/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html",
+        "pdfSha256": "d87d482d5ae7960e2e43d7dd6d21377e60e73e8fce1bf2a01aff7aca8a08c537",
+        "pageCount": 11,
+        "extractionVersion": "pdfjs6-lines-v4",
+        "status": "ready",
+        "coverage": {
+          "totalPages": 11,
+          "textPages": 11,
+          "unsupportedPages": []
+        },
+        "createdAt": "2026-10-01T06:39:39.893Z"
+      },
+      "blocks": {
+        "count": 158,
+        "sha256": "eeef2463154e02ee36e918315659e834215e6afca4f899cc2ca58782fe74b8be"
+      },
+      "translations": [],
+      "job": null
+    },
+    "folders": [
+      {
+        "id": "child",
+        "name": "Preserved child",
+        "parentId": "parent",
+        "updatedAt": "2026-10-01T06:39:39.917Z",
+        "deleted": false,
+        "rev": 1,
+        "deviceId": "hub"
+      },
+      {
+        "id": "parent",
+        "name": "Preserved parent",
+        "parentId": null,
+        "updatedAt": "2026-10-01T06:39:39.917Z",
+        "deleted": false,
+        "rev": 1,
+        "deviceId": "hub"
+      }
+    ],
+    "history": {
+      "history": [
+        {
+          "id": "preserved-history",
+          "paperKey": "pub-a7f082412c26f4efd83d74e27f6ac2df66e63468821bfe416ceb86eea9486777",
+          "kind": "question",
+          "question": "Preserved question",
+          "text": "Preserved answer",
+          "status": "completed",
+          "createdAt": "2026-10-01T06:39:36.558Z",
+          "updatedAt": "2026-10-01T06:39:39.927Z",
+          "completedAt": "2026-10-01T06:39:36.558Z",
+          "requestId": null,
+          "context": {},
+          "answer": null,
+          "error": null,
+          "rev": 1,
+          "deviceId": "hub",
+          "deleted": false
+        }
+      ]
+    },
+    "fullStateSha256": "947ecef31987fadb2a3f5417e4c58ec54e79a79a89ba296f43206b47f989bc62"
+  },
+  "status": "passed",
+  "listenerOwnership": [
+    {
+      "LocalAddress": "127.0.0.1",
+      "LocalPort": 9811,
+      "OwningProcess": 50028
+    }
+  ],
+  "ownedBrowserExited": true,
+  "listenerReleased": true,
+  "errors": []
+}

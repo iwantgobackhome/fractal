@@ -1876,8 +1876,8 @@ export function App(): JSX.Element {
           <div className="reader-stage">
             {paper !== null && !originalAvailable ? (
               <div className="reader-status" role="status" inert={chatOpen && chatSheet}>
-                <p className="eyebrow">{paper.paperKey}</p>
-                <h2>{paperStatusLabel(paper)}</h2>
+                <p className="eyebrow">{pdfFailure ? t('reader.source') : paper.paperKey}</p>
+                <h2>{pdfFailure ? (language === 'ko' ? '원본 PDF를 열지 못했습니다' : 'Could not open the original PDF') : paperStatusLabel(paper)}</h2>
                 {pdfFailure ? (
                   <>
                     <p role="alert">{pdfFailure}</p>
