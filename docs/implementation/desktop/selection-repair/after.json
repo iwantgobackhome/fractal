@@ -1,0 +1,878 @@
+{
+  "mode": "after",
+  "source": "2632f91d2f17955f75d2857078f319d7ab99ea19",
+  "directory": "C:\\Users\\Home\\AppData\\Local\\Temp\\fractal-selection-after-6XOxVi",
+  "pdfSha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697",
+  "academic": "https://arxiv.org/pdf/1706.03762",
+  "text": "The dominant sequence transduction models are based on complex recurrent or",
+  "run": {
+    "start": 647,
+    "end": 722,
+    "quad": [
+      [
+        0.2345702614379085,
+        0.5342385373737373
+      ],
+      [
+        0.2345702614379085,
+        0.5229928752525252
+      ],
+      [
+        0.765194941771242,
+        0.5229928752525252
+      ],
+      [
+        0.765194941771242,
+        0.5342385373737373
+      ]
+    ],
+    "direction": "ltr",
+    "granularity": "run",
+    "confidence": "approximate",
+    "units": [
+      {
+        "start": 647,
+        "end": 722,
+        "quad": [
+          [
+            0.2345702614379085,
+            0.5342385373737373
+          ],
+          [
+            0.2345702614379085,
+            0.5229928752525252
+          ],
+          [
+            0.765194941771242,
+            0.5229928752525252
+          ],
+          [
+            0.765194941771242,
+            0.5342385373737373
+          ]
+        ]
+      }
+    ],
+    "words": []
+  },
+  "boundaries": [
+    647,
+    722
+  ],
+  "issues": [
+    "font_advance_envelopes_not_glyph_outlines",
+    "run_boundary_fallback"
+  ],
+  "cases": [
+    {
+      "label": "browser-word",
+      "expected": "dominant",
+      "beforeUp": {
+        "text": "dominant",
+        "start": 4,
+        "end": 12,
+        "backwards": false
+      },
+      "afterUp": {
+        "text": "dominant",
+        "start": 4,
+        "end": 12,
+        "backwards": false
+      },
+      "copied": "dominant",
+      "menuCopy": "dominant",
+      "a": {
+        "x": 503.5401306152344,
+        "y": 523.265625
+      },
+      "b": {
+        "x": 559.5889770507813,
+        "y": 523.265625
+      },
+      "metadata": {
+        "textRun": "37",
+        "boundaries": "[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75]",
+        "layoutStart": "647"
+      },
+      "transform": "matrix(0.916393, 0, 0, 1, 0, 0)",
+      "regions": [
+        "left: 26.4431%; top: 51.9509%; width: 6.13522%; height: 1.42788%;"
+      ]
+    },
+    {
+      "label": "browser-partial-backward",
+      "expected": "ominan",
+      "beforeUp": {
+        "text": "ominan",
+        "start": 5,
+        "end": 11,
+        "backwards": true
+      },
+      "afterUp": {
+        "text": "ominan",
+        "start": 5,
+        "end": 11,
+        "backwards": true
+      },
+      "copied": "ominan",
+      "menuCopy": "ominan",
+      "a": {
+        "x": 555.7802551269531,
+        "y": 523.265625
+      },
+      "b": {
+        "x": 511.1590881347656,
+        "y": 523.265625
+      },
+      "metadata": {
+        "textRun": "37",
+        "boundaries": "[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75]",
+        "layoutStart": "647"
+      },
+      "transform": "matrix(0.916393, 0, 0, 1, 0, 0)",
+      "regions": [
+        "left: 27.2711%; top: 51.9509%; width: 4.89323%; height: 1.42788%;"
+      ]
+    },
+    {
+      "label": "browser-highlight",
+      "expected": "dominant",
+      "beforeUp": {
+        "text": "dominant",
+        "start": 4,
+        "end": 12,
+        "backwards": false
+      },
+      "afterUp": {
+        "text": "dominant",
+        "start": 4,
+        "end": 12,
+        "backwards": false
+      },
+      "copied": "dominant",
+      "a": {
+        "x": 503.5401306152344,
+        "y": 523.265625
+      },
+      "b": {
+        "x": 559.5889770507813,
+        "y": 523.265625
+      },
+      "metadata": {
+        "textRun": "37",
+        "boundaries": "[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75]",
+        "layoutStart": "647"
+      },
+      "transform": "matrix(0.916393, 0, 0, 1, 0, 0)",
+      "regions": [
+        "left: 26.4431%; top: 51.9509%; width: 6.13522%; height: 1.42788%;"
+      ]
+    },
+    {
+      "label": "browser-question",
+      "expected": "dominant",
+      "beforeUp": {
+        "text": "dominant",
+        "start": 4,
+        "end": 12,
+        "backwards": false
+      },
+      "afterUp": {
+        "text": "dominant",
+        "start": 4,
+        "end": 12,
+        "backwards": false
+      },
+      "copied": "dominant",
+      "a": {
+        "x": 503.5401306152344,
+        "y": 523.265625
+      },
+      "b": {
+        "x": 559.5889770507813,
+        "y": 523.265625
+      },
+      "metadata": {
+        "textRun": "37",
+        "boundaries": "[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75]",
+        "layoutStart": "647"
+      },
+      "transform": "matrix(0.916393, 0, 0, 1, 0, 0)",
+      "regions": [
+        "left: 26.4431%; top: 51.9509%; width: 6.13522%; height: 1.42788%;"
+      ]
+    },
+    {
+      "label": "browser-release-drift",
+      "expected": "ominan",
+      "beforeUp": {
+        "text": "ominan",
+        "start": 5,
+        "end": 11,
+        "backwards": false
+      },
+      "afterUp": {
+        "text": "ominan",
+        "start": 5,
+        "end": 11,
+        "backwards": false
+      },
+      "copied": "ominan",
+      "menuCopy": "ominan",
+      "a": {
+        "x": 511.1590881347656,
+        "y": 523.265625
+      },
+      "b": {
+        "x": 555.7802551269531,
+        "y": 523.265625
+      },
+      "metadata": {
+        "textRun": "37",
+        "boundaries": "[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75]",
+        "layoutStart": "647"
+      },
+      "transform": "matrix(0.916393, 0, 0, 1, 0, 0)",
+      "regions": [
+        "left: 27.2711%; top: 51.9509%; width: 4.89323%; height: 1.42788%;"
+      ]
+    },
+    {
+      "label": "browser-zoom",
+      "expected": "dominant",
+      "beforeUp": {
+        "text": "dominant",
+        "start": 4,
+        "end": 12,
+        "backwards": false
+      },
+      "afterUp": {
+        "text": "dominant",
+        "start": 4,
+        "end": 12,
+        "backwards": false
+      },
+      "copied": "dominant",
+      "menuCopy": "dominant",
+      "a": {
+        "x": 467.61212158203125,
+        "y": 523.96875
+      },
+      "b": {
+        "x": 532.9879272460937,
+        "y": 523.96875
+      },
+      "metadata": {
+        "textRun": "37",
+        "boundaries": "[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75]",
+        "layoutStart": "647"
+      },
+      "transform": "matrix(0.916369, 0, 0, 1, 0, 0)",
+      "regions": [
+        "left: 26.4418%; top: 51.9754%; width: 6.13564%; height: 1.44032%;"
+      ]
+    },
+    {
+      "label": "risk-glyph-forward",
+      "expected": "WW iii",
+      "beforeUp": {
+        "text": "WW iii",
+        "start": 1,
+        "end": 7,
+        "backwards": false
+      },
+      "afterUp": {
+        "text": "WW iii",
+        "start": 1,
+        "end": 7,
+        "backwards": false
+      },
+      "copied": "WW iii",
+      "menuCopy": "WW iii",
+      "a": {
+        "x": 81.66492919921875,
+        "y": 239.65625
+      },
+      "b": {
+        "x": 144.38181762695314,
+        "y": 239.65625
+      },
+      "metadata": {
+        "textRun": "0",
+        "boundaries": "[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]",
+        "layoutStart": "0"
+      },
+      "transform": "matrix(1.00037, 0, 0, 1, 0, 0)",
+      "regions": [
+        "left: 9.62154%; top: 4.27634%; width: 9.25684%; height: 2.89497%;"
+      ]
+    },
+    {
+      "label": "risk-glyph-backward",
+      "expected": "WW iii",
+      "beforeUp": {
+        "text": "WW iii",
+        "start": 1,
+        "end": 7,
+        "backwards": true
+      },
+      "afterUp": {
+        "text": "WW iii",
+        "start": 1,
+        "end": 7,
+        "backwards": true
+      },
+      "copied": "WW iii",
+      "menuCopy": "WW iii",
+      "a": {
+        "x": 144.38181762695314,
+        "y": 239.65625
+      },
+      "b": {
+        "x": 81.66492919921875,
+        "y": 239.65625
+      },
+      "metadata": {
+        "textRun": "0",
+        "boundaries": "[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]",
+        "layoutStart": "0"
+      },
+      "transform": "matrix(1.00037, 0, 0, 1, 0, 0)",
+      "regions": [
+        "left: 9.62154%; top: 4.27634%; width: 9.25684%; height: 2.89497%;"
+      ]
+    },
+    {
+      "label": "risk-neighbor-column",
+      "expected": "2 alph",
+      "beforeUp": {
+        "text": "2 alph",
+        "start": 5,
+        "end": 11,
+        "backwards": false
+      },
+      "afterUp": {
+        "text": "2 alph",
+        "start": 5,
+        "end": 11,
+        "backwards": false
+      },
+      "copied": "2 alph",
+      "menuCopy": "2 alph",
+      "a": {
+        "x": 85.26768341064454,
+        "y": 338.984375
+      },
+      "b": {
+        "x": 122.67362060546876,
+        "y": 338.984375
+      },
+      "metadata": {
+        "textRun": "3",
+        "boundaries": "[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]",
+        "layoutStart": "45"
+      },
+      "transform": "matrix(0.997492, 0, 0, 1, 0, 0)",
+      "regions": [
+        "left: 10.3403%; top: 15.9484%; width: 5.39215%; height: 1.67018%;"
+      ]
+    },
+    {
+      "label": "risk-rotated-crop",
+      "expected": "tated cr",
+      "beforeUp": {
+        "text": "tated cr",
+        "start": 2,
+        "end": 10,
+        "backwards": false
+      },
+      "afterUp": {
+        "text": "tated cr",
+        "start": 2,
+        "end": 10,
+        "backwards": false
+      },
+      "copied": "tated cr",
+      "menuCopy": "tated cr",
+      "a": {
+        "x": 510.084375,
+        "y": 445.77845764160156
+      },
+      "b": {
+        "x": 510.084375,
+        "y": 519.5235107421875
+      },
+      "metadata": {
+        "textRun": "0",
+        "boundaries": "[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]",
+        "layoutStart": "0"
+      },
+      "transform": "matrix(1.0004, 0, 0, 1, 0, 0)",
+      "regions": [
+        "left: 68.272%; top: 11.5103%; width: 3.5825%; height: 13.3434%;"
+      ]
+    },
+    {
+      "label": "risk-angled-transform",
+      "expected": "gled W",
+      "beforeUp": {
+        "text": "gled W",
+        "start": 2,
+        "end": 8,
+        "backwards": false
+      },
+      "afterUp": {
+        "text": "gled W",
+        "start": 2,
+        "end": 8,
+        "backwards": false
+      },
+      "copied": "gled W",
+      "menuCopy": "gled W",
+      "a": {
+        "x": 182.94975891113282,
+        "y": 547.800537109375
+      },
+      "b": {
+        "x": 245.19505157470704,
+        "y": 510.11122131347656
+      },
+      "metadata": {
+        "textRun": "0",
+        "boundaries": "[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14]",
+        "layoutStart": "0"
+      },
+      "transform": "matrix(0.862403, -0.497909, 0.5, 0.866025, 0, 0)",
+      "regions": [
+        "left: 19.6134%; top: 50.8455%; width: 12.6342%; height: 7.41577%;"
+      ]
+    },
+    {
+      "label": "risk-combining-grapheme",
+      "expected": "é",
+      "beforeUp": {
+        "text": "é",
+        "start": 13,
+        "end": 15,
+        "backwards": false
+      },
+      "afterUp": {
+        "text": "é",
+        "start": 13,
+        "end": 15,
+        "backwards": false
+      },
+      "copied": "é",
+      "menuCopy": "é",
+      "a": {
+        "x": 212.06017150878907,
+        "y": 523.765625
+      },
+      "b": {
+        "x": 225.2314468383789,
+        "y": 523.765625
+      },
+      "metadata": {
+        "textRun": "0",
+        "boundaries": "[0,1,2,3,4,5,6,7,8,9,10,11,12,13,15,16,18,19,20]",
+        "layoutStart": "0"
+      },
+      "transform": "matrix(1.00031, 0, 0, 1, 0, 0)",
+      "regions": [
+        "left: 28.5191%; top: 9.11637%; width: 1.9999%; height: 3.11766%;"
+      ]
+    },
+    {
+      "label": "risk-real-fi-ligature",
+      "expected": "fi",
+      "beforeUp": {
+        "text": "f",
+        "start": 16,
+        "end": 17,
+        "backwards": false
+      },
+      "afterUp": {
+        "text": "fi",
+        "start": 16,
+        "end": 18,
+        "backwards": false
+      },
+      "copied": "fi",
+      "menuCopy": "fi",
+      "a": {
+        "x": 232.1695358276367,
+        "y": 523.765625
+      },
+      "b": {
+        "x": 238.95600433349608,
+        "y": 523.765625
+      },
+      "metadata": {
+        "textRun": "0",
+        "boundaries": "[0,1,2,3,4,5,6,7,8,9,10,11,12,13,15,16,18,19,20]",
+        "layoutStart": "0"
+      },
+      "transform": "matrix(1.00031, 0, 0, 1, 0, 0)",
+      "regions": [
+        "left: 31.5167%; top: 9.11637%; width: 1.79946%; height: 3.11766%;"
+      ]
+    },
+    {
+      "label": "risk-ordinary-fi-character",
+      "expected": "f",
+      "beforeUp": {
+        "text": "f",
+        "start": 9,
+        "end": 10,
+        "backwards": false
+      },
+      "afterUp": {
+        "text": "f",
+        "start": 9,
+        "end": 10,
+        "backwards": false
+      },
+      "copied": "f",
+      "menuCopy": "f",
+      "a": {
+        "x": 155.8802749633789,
+        "y": 523.8125
+      },
+      "b": {
+        "x": 162.6667449951172,
+        "y": 523.8125
+      },
+      "metadata": {
+        "textRun": "2",
+        "boundaries": "[0,1,2,3,4,5,6,7,8,9,10,11]",
+        "layoutStart": "26"
+      },
+      "transform": "matrix(1.00031, 0, 0, 1, 0, 0)",
+      "regions": [
+        "left: 20.524%; top: 18.5859%; width: 0.99995%; height: 3.11766%;"
+      ]
+    },
+    {
+      "label": "risk-surrogate",
+      "expected": "😀",
+      "beforeUp": {
+        "text": "😀",
+        "start": 0,
+        "end": 2,
+        "backwards": false
+      },
+      "afterUp": {
+        "text": "😀",
+        "start": 0,
+        "end": 2,
+        "backwards": false
+      },
+      "copied": "😀",
+      "menuCopy": "😀",
+      "a": {
+        "x": 60.62022399902344,
+        "y": 524.203125
+      },
+      "b": {
+        "x": 83.06585693359375,
+        "y": 524.203125
+      },
+      "metadata": {
+        "textRun": "3",
+        "boundaries": "[0,2]",
+        "layoutStart": "38"
+      },
+      "transform": "matrix(0.728532, 0, 0, 1, 0, 0)",
+      "regions": [
+        "left: 6.53818%; top: 21.7471%; width: 3.59542%; height: 3.11766%;"
+      ]
+    },
+    {
+      "label": "electron-word",
+      "expected": "dominant",
+      "beforeUp": {
+        "text": "dominant",
+        "start": 4,
+        "end": 12,
+        "backwards": false
+      },
+      "afterUp": {
+        "text": "dominant",
+        "start": 4,
+        "end": 12,
+        "backwards": false
+      },
+      "copied": "dominant",
+      "menuCopy": "dominant",
+      "a": {
+        "x": 406.61256103515626,
+        "y": 466.625
+      },
+      "b": {
+        "x": 466.1698516845703,
+        "y": 466.625
+      },
+      "metadata": {
+        "textRun": "37",
+        "boundaries": "[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75]",
+        "layoutStart": "647"
+      },
+      "transform": "matrix(0.874817, 0, 0, 1, 0, 0)",
+      "regions": [
+        "left: 26.2825%; top: 51.8131%; width: 6.53142%; height: 1.76385%;"
+      ]
+    },
+    {
+      "label": "electron-partial-backward",
+      "expected": "ominan",
+      "beforeUp": {
+        "text": "ominan",
+        "start": 5,
+        "end": 11,
+        "backwards": true
+      },
+      "afterUp": {
+        "text": "ominan",
+        "start": 5,
+        "end": 11,
+        "backwards": true
+      },
+      "copied": "ominan",
+      "menuCopy": "ominan",
+      "a": {
+        "x": 461.4348846435547,
+        "y": 466.625
+      },
+      "b": {
+        "x": 414.71417846679685,
+        "y": 466.625
+      },
+      "metadata": {
+        "textRun": "37",
+        "boundaries": "[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75]",
+        "layoutStart": "647"
+      },
+      "transform": "matrix(0.874817, 0, 0, 1, 0, 0)",
+      "regions": [
+        "left: 27.1651%; top: 51.8131%; width: 5.11251%; height: 1.76385%;"
+      ]
+    },
+    {
+      "label": "electron-highlight",
+      "expected": "dominant",
+      "beforeUp": {
+        "text": "dominant",
+        "start": 4,
+        "end": 12,
+        "backwards": false
+      },
+      "afterUp": {
+        "text": "dominant",
+        "start": 4,
+        "end": 12,
+        "backwards": false
+      },
+      "copied": "dominant",
+      "a": {
+        "x": 406.61256103515626,
+        "y": 466.625
+      },
+      "b": {
+        "x": 466.1698516845703,
+        "y": 466.625
+      },
+      "metadata": {
+        "textRun": "37",
+        "boundaries": "[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75]",
+        "layoutStart": "647"
+      },
+      "transform": "matrix(0.874817, 0, 0, 1, 0, 0)",
+      "regions": [
+        "left: 26.2825%; top: 51.8131%; width: 6.53142%; height: 1.76385%;"
+      ]
+    },
+    {
+      "label": "electron-question",
+      "expected": "dominant",
+      "beforeUp": {
+        "text": "dominant",
+        "start": 4,
+        "end": 12,
+        "backwards": false
+      },
+      "afterUp": {
+        "text": "dominant",
+        "start": 4,
+        "end": 12,
+        "backwards": false
+      },
+      "copied": "dominant",
+      "a": {
+        "x": 406.61256103515626,
+        "y": 466.625
+      },
+      "b": {
+        "x": 466.1698516845703,
+        "y": 466.625
+      },
+      "metadata": {
+        "textRun": "37",
+        "boundaries": "[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75]",
+        "layoutStart": "647"
+      },
+      "transform": "matrix(0.874817, 0, 0, 1, 0, 0)",
+      "regions": [
+        "left: 26.2825%; top: 51.8131%; width: 6.53142%; height: 1.76385%;"
+      ]
+    }
+  ],
+  "browser-reopened": {
+    "saved": {
+      "provenance": {
+        "coordinateSpace": "rendered-page-normalized-v1",
+        "textSource": "original",
+        "pdfSha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697"
+      },
+      "highlightId": "c03bfbd0-2c9d-4882-97b4-05e56a188e2f",
+      "paperKey": "pdf-c3ab01e47e614fe3cf33bf1941c4e55169af92f6e90001f05b3f23a3f77db72e-bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697",
+      "page": 1,
+      "rects": [
+        {
+          "page": 1,
+          "x": 0.2644314641537874,
+          "y": 0.5195086420725226,
+          "width": 0.06135224052097486,
+          "height": 0.014278777379686865
+        }
+      ],
+      "text": "dominant",
+      "color": "yellow",
+      "note": null,
+      "createdAt": "2026-10-01T03:26:10.556Z",
+      "updatedAt": "2026-10-01T03:26:10.556Z"
+    },
+    "painted": [
+      "left: 26.4431%; top: 51.9509%; width: 6.13522%; height: 1.42788%; background-color: color-mix(in srgb, var(--c-hl-yellow) 75%, transparent);"
+    ]
+  },
+  "browser-quote": "Original passage / region · p.1 · textdominantCurrent original verifiedRemove contextExplain selection",
+  "browser-quote-draft": {
+    "id": 1,
+    "text": "dominant",
+    "page": 1,
+    "from": "source",
+    "rect": {
+      "page": 1,
+      "x": 0.2644314641537874,
+      "y": 0.5195086420725226,
+      "width": 0.06135224052097486,
+      "height": 0.014278777379686865
+    },
+    "kind": "text",
+    "provenance": {
+      "coordinateSpace": "rendered-page-normalized-v1",
+      "textSource": "original",
+      "pdfSha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697"
+    }
+  },
+  "crossPage": {
+    "copied": "[p.1] 3 alpha prose words\n \nRight 1 beta prose words\nRight 2 beta prose words\nRight 3 beta prose words\n[p.2] Rotated",
+    "pages": [
+      "1",
+      "2"
+    ]
+  },
+  "translated": {
+    "native": "Translated",
+    "copied": "Translated",
+    "quote": {
+      "id": 2,
+      "text": "Translated",
+      "page": 1,
+      "from": "translation",
+      "provenance": {
+        "textSource": "translated"
+      }
+    }
+  },
+  "ownedProcess": {
+    "pid": 50284,
+    "executablePath": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\node_modules\\electron\\dist\\electron.exe",
+    "args": [
+      "C:\\WINDOWS\\system32\\cmd.exe",
+      "/d",
+      "/s",
+      "/c",
+      "\"\"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\node_modules\\electron\\dist\\electron.exe\" \"--inspect=0\" \"--remote-debugging-port=0\" \"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\"\""
+    ],
+    "profile": "C:\\Users\\Home\\AppData\\Local\\Temp\\fractal-selection-after-6XOxVi\\electron-profile"
+  },
+  "runtimeIdentity": {
+    "pid": 6908,
+    "executablePath": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\node_modules\\electron\\dist\\electron.exe",
+    "profile": "C:\\Users\\Home\\AppData\\Local\\Temp\\fractal-selection-after-6XOxVi\\electron-profile",
+    "packaged": false,
+    "appPath": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop",
+    "name": "Fractal"
+  },
+  "processIdentity": {
+    "ProcessId": 6908,
+    "ExecutablePath": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\node_modules\\electron\\dist\\electron.exe",
+    "CommandLine": "\"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\node_modules\\electron\\dist\\electron.exe\"  \"--inspect=0\" \"--remote-debugging-port=0\" \"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\"",
+    "CreationDate": "/Date(1790825195582)/"
+  },
+  "listener": "http://127.0.0.1:13650",
+  "electron-reopened": {
+    "saved": {
+      "provenance": {
+        "coordinateSpace": "rendered-page-normalized-v1",
+        "textSource": "original",
+        "pdfSha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697"
+      },
+      "highlightId": "608caa13-c37a-42f6-828c-31f73df273a5",
+      "paperKey": "pdf-c3ab01e47e614fe3cf33bf1941c4e55169af92f6e90001f05b3f23a3f77db72e-bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697",
+      "page": 1,
+      "rects": [
+        {
+          "page": 1,
+          "x": 0.2628252775772758,
+          "y": 0.5181306350643726,
+          "width": 0.06531415192977241,
+          "height": 0.01763848970431907
+        }
+      ],
+      "text": "dominant",
+      "color": "yellow",
+      "note": null,
+      "createdAt": "2026-10-01T03:26:42.673Z",
+      "updatedAt": "2026-10-01T03:26:42.673Z"
+    },
+    "painted": [
+      "left: 26.4431%; top: 51.9509%; width: 6.13522%; height: 1.42788%; background-color: color-mix(in srgb, var(--c-hl-yellow) 75%, transparent);",
+      "left: 26.2825%; top: 51.8131%; width: 6.53142%; height: 1.76385%; background-color: color-mix(in srgb, var(--c-hl-yellow) 75%, transparent);"
+    ]
+  },
+  "electron-quote": "Original passage / region · p.1 · textdominantCurrent original verifiedRemove contextExplain selection",
+  "electron-quote-draft": {
+    "id": 1,
+    "text": "dominant",
+    "page": 1,
+    "from": "source",
+    "rect": {
+      "page": 1,
+      "x": 0.2628252775772758,
+      "y": 0.5181306350643726,
+      "width": 0.06531415192977241,
+      "height": 0.01763848970431907
+    },
+    "kind": "text",
+    "provenance": {
+      "coordinateSpace": "rendered-page-normalized-v1",
+      "textSource": "original",
+      "pdfSha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697"
+    }
+  },
+  "status": "passed",
+  "ownedProcessExited": true,
+  "resourceDisposition": "Owned browser/Electron closed, listener and SQLite stopped; isolated profile and evidence retained for independent QA; no user profiles or other processes touched"
+}

@@ -1,0 +1,432 @@
+{
+  "mode": "before",
+  "source": "2632f91d2f17955f75d2857078f319d7ab99ea19",
+  "directory": "C:\\Users\\Home\\AppData\\Local\\Temp\\fractal-selection-before-33xqNE",
+  "pdfSha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697",
+  "academic": "https://arxiv.org/pdf/1706.03762",
+  "text": "The dominant sequence transduction models are based on complex recurrent or",
+  "run": {
+    "start": 647,
+    "end": 722,
+    "quad": [
+      [
+        0.2345702614379085,
+        0.5342385373737373
+      ],
+      [
+        0.2345702614379085,
+        0.5229928752525252
+      ],
+      [
+        0.765194941771242,
+        0.5229928752525252
+      ],
+      [
+        0.765194941771242,
+        0.5342385373737373
+      ]
+    ],
+    "direction": "ltr",
+    "granularity": "run",
+    "confidence": "approximate",
+    "units": [
+      {
+        "start": 647,
+        "end": 722,
+        "quad": [
+          [
+            0.2345702614379085,
+            0.5342385373737373
+          ],
+          [
+            0.2345702614379085,
+            0.5229928752525252
+          ],
+          [
+            0.765194941771242,
+            0.5229928752525252
+          ],
+          [
+            0.765194941771242,
+            0.5342385373737373
+          ]
+        ]
+      }
+    ],
+    "words": []
+  },
+  "boundaries": [
+    647,
+    722
+  ],
+  "issues": [
+    "font_advance_envelopes_not_glyph_outlines",
+    "run_boundary_fallback"
+  ],
+  "cases": [
+    {
+      "label": "browser-word",
+      "expected": "dominant",
+      "beforeUp": {
+        "text": "dominant",
+        "start": 4,
+        "end": 12,
+        "backwards": false
+      },
+      "afterUp": {
+        "text": "The dominant sequence transduction models are based on complex recurrent or",
+        "start": 0,
+        "end": 75,
+        "backwards": false
+      },
+      "copied": "The dominant sequence transduction models are based on complex recurrent or",
+      "menuCopy": "The dominant sequence transduction models are based on complex recurrent or",
+      "a": {
+        "x": 503.47694702148436,
+        "y": 523.265625
+      },
+      "b": {
+        "x": 559.5889770507813,
+        "y": 523.265625
+      },
+      "metadata": {
+        "textRun": "37",
+        "boundaries": "[0,75]",
+        "layoutStart": "647"
+      },
+      "transform": "matrix(0.916393, 0, 0, 1, 0, 0)",
+      "regions": [
+        "left: 23.4596%; top: 51.9509%; width: 53.063%; height: 1.42788%;"
+      ]
+    },
+    {
+      "label": "browser-partial-backward",
+      "expected": "ominan",
+      "beforeUp": {
+        "text": "ominan",
+        "start": 5,
+        "end": 11,
+        "backwards": true
+      },
+      "afterUp": {
+        "text": "The dominant sequence transduction models are based on complex recurrent or",
+        "start": 0,
+        "end": 75,
+        "backwards": true
+      },
+      "copied": "The dominant sequence transduction models are based on complex recurrent or",
+      "menuCopy": "The dominant sequence transduction models are based on complex recurrent or",
+      "a": {
+        "x": 555.7802551269531,
+        "y": 523.265625
+      },
+      "b": {
+        "x": 511.09447021484374,
+        "y": 523.265625
+      },
+      "metadata": {
+        "textRun": "37",
+        "boundaries": "[0,75]",
+        "layoutStart": "647"
+      },
+      "transform": "matrix(0.916393, 0, 0, 1, 0, 0)",
+      "regions": [
+        "left: 23.4596%; top: 51.9509%; width: 53.063%; height: 1.42788%;"
+      ]
+    },
+    {
+      "label": "browser-highlight",
+      "expected": "dominant",
+      "beforeUp": {
+        "text": "dominant",
+        "start": 4,
+        "end": 12,
+        "backwards": false
+      },
+      "afterUp": {
+        "text": "The dominant sequence transduction models are based on complex recurrent or",
+        "start": 0,
+        "end": 75,
+        "backwards": false
+      },
+      "copied": "The dominant sequence transduction models are based on complex recurrent or",
+      "a": {
+        "x": 503.47694702148436,
+        "y": 523.265625
+      },
+      "b": {
+        "x": 559.5889770507813,
+        "y": 523.265625
+      },
+      "metadata": {
+        "textRun": "37",
+        "boundaries": "[0,75]",
+        "layoutStart": "647"
+      },
+      "transform": "matrix(0.916393, 0, 0, 1, 0, 0)",
+      "regions": [
+        "left: 23.4596%; top: 51.9509%; width: 53.063%; height: 1.42788%;"
+      ]
+    },
+    {
+      "label": "browser-question",
+      "expected": "dominant",
+      "beforeUp": {
+        "text": "dominant",
+        "start": 4,
+        "end": 12,
+        "backwards": false
+      },
+      "afterUp": {
+        "text": "The dominant sequence transduction models are based on complex recurrent or",
+        "start": 0,
+        "end": 75,
+        "backwards": false
+      },
+      "copied": "The dominant sequence transduction models are based on complex recurrent or",
+      "a": {
+        "x": 503.47694702148436,
+        "y": 523.265625
+      },
+      "b": {
+        "x": 559.5889770507813,
+        "y": 523.265625
+      },
+      "metadata": {
+        "textRun": "37",
+        "boundaries": "[0,75]",
+        "layoutStart": "647"
+      },
+      "transform": "matrix(0.916393, 0, 0, 1, 0, 0)",
+      "regions": [
+        "left: 23.4596%; top: 51.9509%; width: 53.063%; height: 1.42788%;"
+      ]
+    },
+    {
+      "label": "electron-word",
+      "expected": "dominant",
+      "beforeUp": {
+        "text": "dominant",
+        "start": 4,
+        "end": 12,
+        "backwards": false
+      },
+      "afterUp": {
+        "text": "The dominant sequence transduction models are based on complex recurrent or",
+        "start": 0,
+        "end": 75,
+        "backwards": false
+      },
+      "copied": "The dominant sequence transduction models are based on complex recurrent or",
+      "menuCopy": "The dominant sequence transduction models are based on complex recurrent or",
+      "a": {
+        "x": 406.49925537109374,
+        "y": 466.625
+      },
+      "b": {
+        "x": 466.1698516845703,
+        "y": 466.625
+      },
+      "metadata": {
+        "textRun": "37",
+        "boundaries": "[0,75]",
+        "layoutStart": "647"
+      },
+      "transform": "matrix(0.874817, 0, 0, 1, 0, 0)",
+      "regions": [
+        "left: 23.4596%; top: 51.8131%; width: 53.0625%; height: 1.76385%;"
+      ]
+    },
+    {
+      "label": "electron-partial-backward",
+      "expected": "ominan",
+      "beforeUp": {
+        "text": "ominan",
+        "start": 5,
+        "end": 11,
+        "backwards": true
+      },
+      "afterUp": {
+        "text": "The dominant sequence transduction models are based on complex recurrent or",
+        "start": 0,
+        "end": 75,
+        "backwards": true
+      },
+      "copied": "The dominant sequence transduction models are based on complex recurrent or",
+      "menuCopy": "The dominant sequence transduction models are based on complex recurrent or",
+      "a": {
+        "x": 461.4348846435547,
+        "y": 466.625
+      },
+      "b": {
+        "x": 414.61864013671874,
+        "y": 466.625
+      },
+      "metadata": {
+        "textRun": "37",
+        "boundaries": "[0,75]",
+        "layoutStart": "647"
+      },
+      "transform": "matrix(0.874817, 0, 0, 1, 0, 0)",
+      "regions": [
+        "left: 23.4596%; top: 51.8131%; width: 53.0625%; height: 1.76385%;"
+      ]
+    },
+    {
+      "label": "electron-highlight",
+      "expected": "dominant",
+      "beforeUp": {
+        "text": "dominant",
+        "start": 4,
+        "end": 12,
+        "backwards": false
+      },
+      "afterUp": {
+        "text": "The dominant sequence transduction models are based on complex recurrent or",
+        "start": 0,
+        "end": 75,
+        "backwards": false
+      },
+      "copied": "The dominant sequence transduction models are based on complex recurrent or",
+      "a": {
+        "x": 406.49925537109374,
+        "y": 466.625
+      },
+      "b": {
+        "x": 466.1698516845703,
+        "y": 466.625
+      },
+      "metadata": {
+        "textRun": "37",
+        "boundaries": "[0,75]",
+        "layoutStart": "647"
+      },
+      "transform": "matrix(0.874817, 0, 0, 1, 0, 0)",
+      "regions": [
+        "left: 23.4596%; top: 51.8131%; width: 53.0625%; height: 1.76385%;"
+      ]
+    },
+    {
+      "label": "electron-question",
+      "expected": "dominant",
+      "beforeUp": {
+        "text": "dominant",
+        "start": 4,
+        "end": 12,
+        "backwards": false
+      },
+      "afterUp": {
+        "text": "The dominant sequence transduction models are based on complex recurrent or",
+        "start": 0,
+        "end": 75,
+        "backwards": false
+      },
+      "copied": "The dominant sequence transduction models are based on complex recurrent or",
+      "a": {
+        "x": 406.49925537109374,
+        "y": 466.625
+      },
+      "b": {
+        "x": 466.1698516845703,
+        "y": 466.625
+      },
+      "metadata": {
+        "textRun": "37",
+        "boundaries": "[0,75]",
+        "layoutStart": "647"
+      },
+      "transform": "matrix(0.874817, 0, 0, 1, 0, 0)",
+      "regions": [
+        "left: 23.4596%; top: 51.8131%; width: 53.0625%; height: 1.76385%;"
+      ]
+    }
+  ],
+  "browser-reopened": {
+    "saved": {
+      "provenance": {
+        "coordinateSpace": "rendered-page-normalized-v1",
+        "textSource": "original",
+        "pdfSha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697",
+        "layoutRange": {
+          "page": 1,
+          "extractionVersion": "pdfjs6-original-advances-v1",
+          "start": 647,
+          "end": 722
+        }
+      },
+      "highlightId": "20d50919-c8bf-4aae-8b42-af72d272bef5",
+      "paperKey": "pdf-c3ab01e47e614fe3cf33bf1941c4e55169af92f6e90001f05b3f23a3f77db72e-bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697",
+      "page": 1,
+      "rects": [
+        {
+          "page": 1,
+          "x": 0.23459578804347825,
+          "y": 0.5195086420725226,
+          "width": 0.5306299624235734,
+          "height": 0.014278777379686865
+        }
+      ],
+      "text": "The dominant sequence transduction models are based on complex recurrent or",
+      "color": "yellow",
+      "note": null,
+      "createdAt": "2026-10-01T03:15:11.724Z",
+      "updatedAt": "2026-10-01T03:15:11.724Z"
+    },
+    "painted": [
+      "left: -11px; top: 51.9509%;"
+    ]
+  },
+  "browser-quote": "Original passage / region · p.1 · textThe dominant sequence transduction models are based on complex recurrent orCurrent original verifiedRemove contextExplain selection",
+  "ownedProcess": {
+    "pid": 47624,
+    "executablePath": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\node_modules\\electron\\dist\\electron.exe",
+    "args": [
+      "C:\\WINDOWS\\system32\\cmd.exe",
+      "/d",
+      "/s",
+      "/c",
+      "\"\"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\node_modules\\electron\\dist\\electron.exe\" \"--inspect=0\" \"--remote-debugging-port=0\" \"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\"\""
+    ],
+    "profile": "C:\\Users\\Home\\AppData\\Local\\Temp\\fractal-selection-before-33xqNE\\electron-profile"
+  },
+  "electron-reopened": {
+    "saved": {
+      "provenance": {
+        "coordinateSpace": "rendered-page-normalized-v1",
+        "textSource": "original",
+        "pdfSha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697",
+        "layoutRange": {
+          "page": 1,
+          "extractionVersion": "pdfjs6-original-advances-v1",
+          "start": 647,
+          "end": 722
+        }
+      },
+      "highlightId": "90fd87e2-b704-432a-834a-ad5a5ab6b60d",
+      "paperKey": "pdf-c3ab01e47e614fe3cf33bf1941c4e55169af92f6e90001f05b3f23a3f77db72e-bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697",
+      "page": 1,
+      "rects": [
+        {
+          "page": 1,
+          "x": 0.23459578804347825,
+          "y": 0.5181306350643726,
+          "width": 0.5306253184442935,
+          "height": 0.01763848970431907
+        }
+      ],
+      "text": "The dominant sequence transduction models are based on complex recurrent or",
+      "color": "yellow",
+      "note": null,
+      "createdAt": "2026-10-01T03:15:19.498Z",
+      "updatedAt": "2026-10-01T03:15:19.498Z"
+    },
+    "painted": [
+      "left: -11px; top: 51.9509%;",
+      "left: -11px; top: 51.8131%;"
+    ]
+  },
+  "electron-quote": "Original passage / region · p.1 · textThe dominant sequence transduction models are based on complex recurrent orCurrent original verifiedRemove contextExplain selection",
+  "status": "passed",
+  "ownedProcessExited": true,
+  "resourceDisposition": "Owned browser/Electron closed, listener and SQLite stopped; isolated profile and evidence retained for independent QA; no user profiles or other processes touched"
+}

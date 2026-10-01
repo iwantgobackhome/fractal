@@ -5,9 +5,12 @@ import hashlib
 import json
 from pathlib import Path
 import struct
+import os
 
 root = Path(__file__).resolve().parents[3]
-output = root / 'docs/implementation/desktop/stage3'
+output = root / os.environ.get('FRACTAL_ICON_OUTPUT', 'docs/implementation/desktop/stage3')
+installer_directory = root / os.environ.get('FRACTAL_INSTALLER_DIRECTORY', 'dist/installer')
+output.mkdir(parents=True, exist_ok=True)
 kernel = ctypes.WinDLL('kernel32', use_last_error=True)
 kernel.LoadLibraryExW.argtypes = [wintypes.LPCWSTR, ctypes.c_void_p, wintypes.DWORD]
 kernel.LoadLibraryExW.restype = ctypes.c_void_p
@@ -64,8 +67,8 @@ def resources(path):
     return groups
 
 evidence = []
-for relative in ['dist/installer/win-unpacked/Fractal.exe', 'dist/installer/Fractal Setup 0.1.0.exe']:
-    path = root / relative
+for relative in ['win-unpacked/Fractal.exe', 'Fractal Setup 0.1.0.exe']:
+    path = installer_directory / relative
     groups = resources(path)
     matching = [group for group in groups if all(item['equalsAcceptedIco'] for item in group['images'])]
     assert matching, f'No accepted branch icon group in {path}'

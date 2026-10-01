@@ -447,7 +447,9 @@ export function PdfPages(props: PdfPaneProps): JSX.Element {
         current.endOffset === saved.endOffset
       );
     };
+    let captureGeneration = 0;
     const captureSelection = () => {
+      const generation = ++captureGeneration;
       const result = nativeSelection(root, getLayout);
       const current = window.getSelection()?.rangeCount ? window.getSelection()!.getRangeAt(0) : null;
       // A DOM Range is live and shifts on virtual-page removal; retain immutable endpoints.
@@ -455,7 +457,7 @@ export function PdfPages(props: PdfPaneProps): JSX.Element {
         ? { startContainer: current.startContainer, startOffset: current.startOffset, endContainer: current.endContainer, endOffset: current.endOffset }
         : null;
       void result.then((selection) => {
-        if (!selection || !sameRange(range)) return;
+        if (generation !== captureGeneration || !selection || !sameRange(range)) return;
         copiedSelection.current = selection;
         copiedRange.current = range;
         onSelectText(selection);
@@ -501,6 +503,8 @@ export function PdfPages(props: PdfPaneProps): JSX.Element {
         return;
       copiedSelection.current = null;
       copiedRange.current = null;
+      ++captureGeneration;
+      cancelAnimationFrame(frame);
       dragging = true;
       point = start = { x: e.clientX, y: e.clientY };
       const caret = document.caretRangeFromPoint(e.clientX, e.clientY),
@@ -513,10 +517,11 @@ export function PdfPages(props: PdfPaneProps): JSX.Element {
       frame = requestAnimationFrame(tick);
     };
     const move = (e: PointerEvent) => {
-      point = { x: e.clientX, y: e.clientY };
+      if (dragging) point = { x: e.clientX, y: e.clientY };
     };
-    const finish = () => {
+    const finish = (e: PointerEvent) => {
       if (!dragging) return;
+      if (e.type === 'pointerup') point = { x: e.clientX, y: e.clientY };
       dragging = false;
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
@@ -551,6 +556,7 @@ export function PdfPages(props: PdfPaneProps): JSX.Element {
     document.addEventListener('pointercancel', finish);
     document.addEventListener('keyup', key);
     return () => {
+      ++captureGeneration;
       cancelAnimationFrame(frame);
       document.removeEventListener('copy', copy);
       document.removeEventListener('pointerdown', down);

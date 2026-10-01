@@ -1,10 +1,17 @@
-import type { OriginalProvenance, PdfTextLayout, PdfTextPage, Region } from '@fractal/shared';
+import type { OriginalProvenance, PdfTextLayout, PdfTextPage, PdfTextRun, Region } from '@fractal/shared';
 import type { PendingSelection } from '../reader/SelectionMenu';
 
 /** Native ranges measure the actual PDF.js font advances, including transforms. */
 export function legalOffset(text: string, offset: number, end: boolean, boundaries?: number[]): number {
-  const legal = boundaries ?? [0, ...Array.from(new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(text), (s) => s.index + s.segment.length)];
+  const graphemes = [0, ...Array.from(new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(text), (s) => s.index + s.segment.length)];
+  const legal = boundaries ? graphemes.filter((n) => boundaries.includes(n)) : graphemes;
   return end ? (legal.find((n) => n >= offset) ?? text.length) : (legal.filter((n) => n <= offset).at(-1) ?? 0);
+}
+
+/** A geometry fallback is not evidence of an indivisible glyph. Keep browser character
+ * precision; only actual glyph-advance units can additionally constrain ligatures. */
+export function nativeTextBoundaries(layout: PdfTextPage, run: PdfTextRun): number[] | undefined {
+  return run.granularity === 'glyph-advance' ? layout.boundaries.filter((n) => n >= run.start && n <= run.end).map((n) => n - run.start) : undefined;
 }
 
 /** Same display-column heuristic as the accepted positional contract; no font geometry is altered. */
@@ -35,17 +42,27 @@ export function orderTextSpans(container: HTMLElement, layout?: PdfTextPage): vo
     flush();
     ordered = result;
   }
-  // Link native nodes to authoritative Unicode boundaries when the exact run exists.
+  // Link geometry offsets separately from native character/ligature boundaries.
   const unused = new Set(layout?.runs ?? []);
+  const reorder = ordered.some((span, index) => span !== spans[index]);
   for (const [index, s] of ordered.entries()) {
     s.dataset.textRun = String(index);
+    delete s.dataset.boundaries;
+    delete s.dataset.layoutStart;
     const run = [...unused].find((r) => layout?.text.slice(r.start, r.end) === s.textContent);
     if (run && layout) {
       unused.delete(run);
-      s.dataset.boundaries = JSON.stringify(layout.boundaries.filter((n) => n >= run.start && n <= run.end).map((n) => n - run.start));
+      const boundaries = nativeTextBoundaries(layout, run);
+      s.dataset.boundaries = JSON.stringify(
+        boundaries ?? [
+          0,
+          ...Array.from(new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(s.textContent ?? ''), (g) => g.index + g.segment.length),
+        ],
+      );
       if (layout.runs.filter((r) => layout.text.slice(r.start, r.end) === s.textContent).length === 1) s.dataset.layoutStart = String(run.start);
     }
-    container.append(s);
+    // Late layout metadata must not detach already ordered nodes during a drag.
+    if (reorder) container.append(s);
   }
   container.querySelectorAll('br').forEach((br) => br.remove());
 }
@@ -79,12 +96,19 @@ export async function nativeSelection(root: HTMLElement, getLayout?: (page: numb
     else range.setStart(node, offset);
   }
   const backwards = selection.anchorNode === selection.getRangeAt(0).endContainer && selection.anchorOffset === selection.getRangeAt(0).endOffset;
-  selection.setBaseAndExtent(
-    backwards ? range.endContainer : range.startContainer,
-    backwards ? range.endOffset : range.startOffset,
-    backwards ? range.startContainer : range.endContainer,
-    backwards ? range.startOffset : range.endOffset,
-  );
+  const original = selection.getRangeAt(0);
+  if (
+    original.startContainer !== range.startContainer ||
+    original.startOffset !== range.startOffset ||
+    original.endContainer !== range.endContainer ||
+    original.endOffset !== range.endOffset
+  )
+    selection.setBaseAndExtent(
+      backwards ? range.endContainer : range.startContainer,
+      backwards ? range.endOffset : range.startOffset,
+      backwards ? range.startContainer : range.endContainer,
+      backwards ? range.startOffset : range.endOffset,
+    );
   const startPage = range.startContainer.parentElement?.closest<HTMLElement>('[data-page]')?.dataset.page;
   const endPage = range.endContainer.parentElement?.closest<HTMLElement>('[data-page]')?.dataset.page;
   if (!startPage || !endPage) return null;
@@ -141,10 +165,14 @@ export async function nativeSelection(root: HTMLElement, getLayout?: (page: numb
   let provenance: OriginalProvenance | undefined;
   if (getLayout && startPage === endPage) {
     const layout = await getLayout(Number(startPage)).catch(() => null);
-    if (layout?.status === 'ready') {
+    if (layout?.status === 'ready' && layout.page.page === Number(startPage) && Number(startPage) <= layout.pageCount) {
       provenance = { coordinateSpace: 'rendered-page-normalized-v1', textSource: 'original', pdfSha256: layout.pdfSha256 };
       const startRun = range.startContainer.parentElement?.dataset.layoutStart,
         endRun = range.endContainer.parentElement?.dataset.layoutStart;
+      const uniqueRun = (node: Node, start: string) => {
+        const matches = layout.page.runs.filter((r) => layout.page.text.slice(r.start, r.end) === node.textContent);
+        return matches.length === 1 && matches[0].start === Number(start);
+      };
       if (
         range.startContainer.nodeType === Node.TEXT_NODE &&
         range.endContainer.nodeType === Node.TEXT_NODE &&
@@ -156,6 +184,8 @@ export async function nativeSelection(root: HTMLElement, getLayout?: (page: numb
         // Unique native runs identify offsets; legal boundaries and the entire selected stream must agree.
         if (
           start < end &&
+          uniqueRun(range.startContainer, startRun) &&
+          uniqueRun(range.endContainer, endRun) &&
           layout.page.boundaries.includes(start) &&
           layout.page.boundaries.includes(end) &&
           layout.page.text.slice(start, end).replace(/\s+/g, ' ').trim() === text.replace(/\s+/g, ' ').trim()
