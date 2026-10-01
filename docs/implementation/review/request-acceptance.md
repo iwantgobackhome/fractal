@@ -1,5 +1,9 @@
 ﻿# Request acceptance map
 
+## Reopened publication PDF acquisition follow-up
+
+The user reports an available PDF still opens only an external publication site. Current source confirms that even a known `oaPdfUrl` is rendered as an external link in both PC and Android; DOI/alternative-location/publisher discovery also has gaps. This new acquisition gate is open. Supervised backend, PC and Android workers are implementing explicit in-app Read without implicit Save or premature Recent, stable catalog/PDF identity, bounded discovery and truthful failure/retry. The packages and acceptance below are the previous verified checkpoints; this follow-up requires accepted integrated source, actual in-app HTTP/native proof and new package identities before delivery. Request14 remains excluded.
+
 ## Current delivery and verification
 
 Requests 1–13 are implemented and reviewed against the accepted owner evidence. The scholarly newspaper/paper direction is retained: serif headings, warm paper surfaces, fine rules and useful publication metadata. Request14, translated-to-original annotation mapping, is excluded.
