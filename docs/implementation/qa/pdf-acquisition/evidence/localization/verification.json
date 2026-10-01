@@ -1,0 +1,204 @@
+{
+  "source": "a9bbc55dbab2c0a5d5c33c778ff86264e86fef53",
+  "startedAt": "2026-10-01T06:05:24.316Z",
+  "profile": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\data\\qa-pdf-acquisition\\localization-1790834724126",
+  "helperIdentity": {
+    "ProcessId": 51256,
+    "ParentProcessId": 8176,
+    "ExecutablePath": "C:\\Program Files\\nodejs\\node.exe",
+    "CommandLine": "\"C:\\Program Files\\nodejs\\node.exe\" --require C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\node_modules\\tsx\\dist\\preflight.cjs --import file:///C:/Users/Home/orca/workspaces/fractal/fractal-pdf-acquisition-qa/node_modules/tsx/dist/loader.mjs docs/implementation/qa/pdf-acquisition/localization-gate.ts",
+    "CreationDate": "/Date(1790834722418)/"
+  },
+  "listenersBefore": "{\"LocalAddress\":\"127.0.0.1\",\"LocalPort\":6907,\"OwningProcess\":51256}",
+  "cases": [
+    {
+      "language": "en",
+      "status": 400,
+      "body": {
+        "error": {
+          "code": "INVALID_INPUT",
+          "message": "The source page did not identify one main PDF. It may require sign-in. Retry, open the publication site, or link your PDF.",
+          "retryable": false
+        }
+      },
+      "alert": "Could not open PDF. The source page did not identify one main PDF. It may require sign-in. Retry, open the publication site, or link your PDF. Retry Read PDF Dismiss",
+      "record": {
+        "id": "pub-7fb4b01752fe7ac7e5c1b502380bc03a3de32c614722c1dfeca9aa3f6476adea",
+        "paperKey": "pub-7fb4b01752fe7ac7e5c1b502380bc03a3de32c614722c1dfeca9aa3f6476adea",
+        "title": "Actual public landing page without a main PDF",
+        "authors": [],
+        "year": null,
+        "venue": null,
+        "doi": null,
+        "arxivId": null,
+        "url": "https://example.org/",
+        "abstract": "A real public HTML source used solely to check truthful PDF acquisition failure.",
+        "tags": [],
+        "collections": [],
+        "addedAt": "2026-10-01T06:05:27.191Z",
+        "updatedAt": "2026-10-01T06:05:27.194Z",
+        "status": "unread",
+        "bibtexKey": "publication3512bf01405e",
+        "publication": {
+          "year": null,
+          "venue": null,
+          "publicationKind": "unknown",
+          "publicationDate": null,
+          "oaAvailability": "unknown",
+          "oaPdfUrl": null
+        },
+        "saved": false,
+        "savedAt": null,
+        "lastReadAt": null,
+        "readProgress": null,
+        "rev": 1,
+        "deviceId": "hub"
+      },
+      "readerOpened": false,
+      "sourceFallbackVisible": true
+    },
+    {
+      "language": "ko",
+      "status": 400,
+      "body": {
+        "error": {
+          "code": "INVALID_INPUT",
+          "message": "원문 페이지에서 논문 PDF를 하나로 확인하지 못했습니다. 로그인이 필요할 수 있습니다. 다시 시도하거나 원문 사이트 또는 PDF 연결을 이용하세요.",
+          "retryable": false
+        }
+      },
+      "alert": "PDF를 열 수 없습니다. 원문 페이지에서 논문 PDF를 하나로 확인하지 못했습니다. 로그인이 필요할 수 있습니다. 다시 시도하거나 원문 사이트 또는 PDF 연결을 이용하세요. PDF 읽기 다시 시도 닫기",
+      "record": {
+        "id": "pub-7fb4b01752fe7ac7e5c1b502380bc03a3de32c614722c1dfeca9aa3f6476adea",
+        "paperKey": "pub-7fb4b01752fe7ac7e5c1b502380bc03a3de32c614722c1dfeca9aa3f6476adea",
+        "title": "Actual public landing page without a main PDF",
+        "authors": [],
+        "year": null,
+        "venue": null,
+        "doi": null,
+        "arxivId": null,
+        "url": "https://example.org/",
+        "abstract": "A real public HTML source used solely to check truthful PDF acquisition failure.",
+        "tags": [],
+        "collections": [],
+        "addedAt": "2026-10-01T06:05:27.191Z",
+        "updatedAt": "2026-10-01T06:05:27.194Z",
+        "status": "unread",
+        "bibtexKey": "publication3512bf01405e",
+        "publication": {
+          "year": null,
+          "venue": null,
+          "publicationKind": "unknown",
+          "publicationDate": null,
+          "oaAvailability": "unknown",
+          "oaPdfUrl": null
+        },
+        "saved": false,
+        "savedAt": null,
+        "lastReadAt": null,
+        "readProgress": null,
+        "rev": 1,
+        "deviceId": "hub"
+      },
+      "readerOpened": false,
+      "sourceFallbackVisible": true
+    }
+  ],
+  "external": [],
+  "pageErrors": [],
+  "successMocked": false,
+  "publicPage": "https://example.org/",
+  "genericValidation": {
+    "status": 400,
+    "body": {
+      "error": {
+        "code": "INVALID_INPUT",
+        "message": "요청 형식이 올바르지 않습니다.",
+        "retryable": false
+      }
+    }
+  },
+  "status": "passed",
+  "helperBeforeStop": {
+    "ProcessId": 51256,
+    "ParentProcessId": 8176,
+    "ExecutablePath": "C:\\Program Files\\nodejs\\node.exe",
+    "CommandLine": "\"C:\\Program Files\\nodejs\\node.exe\" --require C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\node_modules\\tsx\\dist\\preflight.cjs --import file:///C:/Users/Home/orca/workspaces/fractal/fractal-pdf-acquisition-qa/node_modules/tsx/dist/loader.mjs docs/implementation/qa/pdf-acquisition/localization-gate.ts",
+    "CreationDate": "/Date(1790834722418)/"
+  },
+  "listenersBeforeStop": "{\"LocalAddress\":\"127.0.0.1\",\"LocalPort\":6907,\"OwningProcess\":51256}",
+  "browserBeforeStop": [
+    {
+      "ProcessId": 9904,
+      "ParentProcessId": 51256,
+      "ExecutablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+      "CommandLine": "\"C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe\" --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,Translate,AutoDeElevate,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-updater-scheduler --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --user-data-dir=C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\data\\qa-pdf-acquisition\\localization-1790834724126\\browser-profile --remote-debugging-pipe about:blank",
+      "CreationDate": "/Date(1790834726253)/"
+    },
+    {
+      "ProcessId": 27464,
+      "ParentProcessId": 9904,
+      "ExecutablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+      "CommandLine": "\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" --type=crashpad-handler --user-data-dir=C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\data\\qa-pdf-acquisition\\localization-1790834724126\\browser-profile /prefetch:4 --monitor-self-annotation=ptype=crashpad-handler --database=C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\data\\qa-pdf-acquisition\\localization-1790834724126\\browser-profile\\Crashpad --metrics-dir=C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\data\\qa-pdf-acquisition\\localization-1790834724126\\browser-profile --annotation=IsOfficialBuild=1 --annotation=channel= --annotation=chromium-version=154.0.8037.58 \"--annotation=exe=C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" --annotation=plat=Win64 --annotation=prod=Edge --annotation=ver=154.0.4258.37 --initial-client-data=0x180,0x184,0x188,0x15c,0x190,0x7ffbb45c83e0,0x7ffbb45c83f0,0x7ffbb45c8400",
+      "CreationDate": "/Date(1790834726290)/"
+    },
+    {
+      "ProcessId": 52140,
+      "ParentProcessId": 9904,
+      "ExecutablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+      "CommandLine": "\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" --type=gpu-process --gpu-recent-crash-count=0 --no-sandbox --disable-breakpad --headless --enable-unsafe-swiftshader --noerrdialogs --user-data-dir=\"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\data\\qa-pdf-acquisition\\localization-1790834724126\\browser-profile\" --gpu-preferences=WAAAAAAAAADgAAAEAAAAAAAAAAAAAGAAQAAAAAAAAAADAAAAAAAAADgAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAKAAAAAAAAAAoAAAAAAAAAAgAAAAAAAAAEAAAAAIAAAABAAAAAAAAAAgAAAAAAAAACAAAAAAAAAA= --startup-read-main-dll --field-trial-handle=2488,i,9232049381076842872,15515391176124076143,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=2492,i,7207389169219198537,3961499654266920553,4 --trace-process-track-uuid=3190708988185955192 --mojo-platform-channel-handle=2480 /prefetch:2",
+      "CreationDate": "/Date(1790834726449)/"
+    },
+    {
+      "ProcessId": 6532,
+      "ParentProcessId": 9904,
+      "ExecutablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+      "CommandLine": "\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" --type=utility --utility-sub-type=network.mojom.NetworkService --lang=ko --service-sandbox-type=none --no-sandbox --mute-audio --noerrdialogs --user-data-dir=\"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\data\\qa-pdf-acquisition\\localization-1790834724126\\browser-profile\" --startup-read-main-dll --field-trial-handle=2488,i,9232049381076842872,15515391176124076143,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=2492,i,7207389169219198537,3961499654266920553,4 --trace-process-track-uuid=3190708989122997041 --mojo-platform-channel-handle=2428 /prefetch:11",
+      "CreationDate": "/Date(1790834726459)/"
+    },
+    {
+      "ProcessId": 41144,
+      "ParentProcessId": 9904,
+      "ExecutablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+      "CommandLine": "\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" --type=utility --utility-sub-type=storage.mojom.StorageService --lang=ko --service-sandbox-type=service --no-sandbox --mute-audio --noerrdialogs --user-data-dir=\"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\data\\qa-pdf-acquisition\\localization-1790834724126\\browser-profile\" --startup-read-main-dll --field-trial-handle=2488,i,9232049381076842872,15515391176124076143,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=2492,i,7207389169219198537,3961499654266920553,4 --trace-process-track-uuid=3190708990060038890 --mojo-platform-channel-handle=2832 /prefetch:13",
+      "CreationDate": "/Date(1790834726495)/"
+    },
+    {
+      "ProcessId": 34292,
+      "ParentProcessId": 9904,
+      "ExecutablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+      "CommandLine": "\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" --type=renderer --noerrdialogs --user-data-dir=\"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\data\\qa-pdf-acquisition\\localization-1790834724126\\browser-profile\" --pdf-upsell-enabled --no-sandbox --disable-back-forward-cache --disable-background-timer-throttling --disable-breakpad --force-color-profile=srgb --remote-debugging-pipe --allow-pre-commit-input --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --video-capture-use-gpu-memory-buffer --lang=ko --js-flags=--ms-user-locale=ko_KR --device-scale-factor=1 --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=6 --ssd-no-pressure-read-main-dll --launch-time-ticks=51571284555 --field-trial-handle=2488,i,9232049381076842872,15515391176124076143,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=2492,i,7207389169219198537,3961499654266920553,4 --trace-process-track-uuid=3190708991934122588 --mojo-platform-channel-handle=4036 /prefetch:1",
+      "CreationDate": "/Date(1790834726612)/"
+    },
+    {
+      "ProcessId": 46208,
+      "ParentProcessId": 9904,
+      "ExecutablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+      "CommandLine": "\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" --type=renderer --noerrdialogs --user-data-dir=\"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\data\\qa-pdf-acquisition\\localization-1790834724126\\browser-profile\" --pdf-upsell-enabled --no-sandbox --disable-back-forward-cache --disable-background-timer-throttling --disable-breakpad --force-color-profile=srgb --remote-debugging-pipe --allow-pre-commit-input --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --video-capture-use-gpu-memory-buffer --lang=ko --js-flags=--ms-user-locale=ko_KR --device-scale-factor=1 --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=5 --skip-read-main-dll --launch-time-ticks=51571295149 --field-trial-handle=2488,i,9232049381076842872,15515391176124076143,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=2492,i,7207389169219198537,3961499654266920553,4 --trace-process-track-uuid=3190708990997080739 --mojo-platform-channel-handle=4108 /prefetch:1",
+      "CreationDate": "/Date(1790834726623)/"
+    },
+    {
+      "ProcessId": 42800,
+      "ParentProcessId": 9904,
+      "ExecutablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+      "CommandLine": "\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" --type=renderer --noerrdialogs --user-data-dir=\"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\data\\qa-pdf-acquisition\\localization-1790834724126\\browser-profile\" --pdf-upsell-enabled --no-sandbox --disable-back-forward-cache --disable-background-timer-throttling --disable-breakpad --force-color-profile=srgb --remote-debugging-pipe --allow-pre-commit-input --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --video-capture-use-gpu-memory-buffer --lang=ko --js-flags=--ms-user-locale=ko_KR --device-scale-factor=1 --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=7 --skip-read-main-dll --launch-time-ticks=51571391692 --field-trial-handle=2488,i,9232049381076842872,15515391176124076143,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=2492,i,7207389169219198537,3961499654266920553,4 --trace-process-track-uuid=3190708992871164437 --mojo-platform-channel-handle=5300 /prefetch:1",
+      "CreationDate": "/Date(1790834726719)/"
+    },
+    {
+      "ProcessId": 45292,
+      "ParentProcessId": 9904,
+      "ExecutablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+      "CommandLine": "\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" --type=utility --utility-sub-type=edge_collections.mojom.CollectionsDataManager --lang=ko --service-sandbox-type=collections --no-sandbox --mute-audio --video-capture-use-gpu-memory-buffer --noerrdialogs --user-data-dir=\"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\data\\qa-pdf-acquisition\\localization-1790834724126\\browser-profile\" --skip-read-main-dll --field-trial-handle=2488,i,9232049381076842872,15515391176124076143,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=2492,i,7207389169219198537,3961499654266920553,4 --trace-process-track-uuid=3190708995682289984 --mojo-platform-channel-handle=6052 /prefetch:14",
+      "CreationDate": "/Date(1790834727159)/"
+    },
+    {
+      "ProcessId": 27144,
+      "ParentProcessId": 9904,
+      "ExecutablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+      "CommandLine": "\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" --type=utility --utility-sub-type=entity_extraction_service.mojom.Extractor --lang=ko --service-sandbox-type=entity_extraction --no-sandbox --mute-audio --onnx-enabled-for-ee --video-capture-use-gpu-memory-buffer --noerrdialogs --user-data-dir=\"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\data\\qa-pdf-acquisition\\localization-1790834724126\\browser-profile\" --skip-read-main-dll --field-trial-handle=2488,i,9232049381076842872,15515391176124076143,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=2492,i,7207389169219198537,3961499654266920553,4 --trace-process-track-uuid=3190708996619331833 --mojo-platform-channel-handle=6672 /prefetch:14",
+      "CreationDate": "/Date(1790834729779)/"
+    }
+  ],
+  "listenersAfterStop": "",
+  "finishedAt": "2026-10-01T06:05:32.618Z"
+}

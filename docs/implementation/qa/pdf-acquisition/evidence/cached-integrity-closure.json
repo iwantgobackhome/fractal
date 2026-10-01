@@ -1,0 +1,416 @@
+﻿{
+    "source":  "a9bbc55dbab2c0a5d5c33c778ff86264e86fef53",
+    "startedAt":  "2026-10-01T05:59:41.913Z",
+    "paperKey":  "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+    "originalHash":  "46d910177e7c2fb91bee441ec2e36a70dba25e9b728e4b565a9f6abfa18c88bf",
+    "owner":  "backend",
+    "priority":  "P1",
+    "controlledLocalCorruption":  true,
+    "publicOriginalProvenance":  {
+                                     "url":  "https://proceedings.mlr.press/v70/vaswani17a/vaswani17a.pdf",
+                                     "contentType":  "application/pdf",
+                                     "bytes":  1061253,
+                                     "sha256":  "46d910177e7c2fb91bee441ec2e36a70dba25e9b728e4b565a9f6abfa18c88bf",
+                                     "elapsedMs":  58
+                                 },
+    "helperIdentity":  {
+                           "ProcessId":  53496,
+                           "ParentProcessId":  53036,
+                           "ExecutablePath":  "C:\\Program Files\\nodejs\\node.exe",
+                           "CommandLine":  "\"C:\\Program Files\\nodejs\\node.exe\" --require C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\node_modules\\tsx\\dist\\preflight.cjs --import file:///C:/Users/Home/orca/workspaces/fractal/fractal-pdf-acquisition-qa/node_modules/tsx/dist/loader.mjs docs/implementation/qa/pdf-acquisition/cached-integrity.ts --closure",
+                           "CreationDate":  "/Date(1790834380447)/"
+                       },
+    "listenersBefore":  "{\"LocalAddress\":\"127.0.0.1\",\"LocalPort\":3989,\"OwningProcess\":53496}",
+    "alteredHash":  "e16f08cefe1728fdfd37a1c27cc59ab815c5843531ea0fcfcacb389ea9107185",
+    "response":  {
+                     "status":  409,
+                     "body":  {
+                                  "error":  {
+                                                "code":  "SOURCE_CHANGED",
+                                                "message":  "The stored PDF no longer matches its recorded hash. The cached file was not replaced. Check the stored file or open the publication site.",
+                                                "retryable":  false
+                                            }
+                              }
+                 },
+    "served":  {
+                   "status":  200,
+                   "bytes":  1061301,
+                   "sha256":  "e16f08cefe1728fdfd37a1c27cc59ab815c5843531ea0fcfcacb389ea9107185",
+                   "etag":  "\"e16f08cefe1728fdfd37a1c27cc59ab815c5843531ea0fcfcacb389ea9107185\""
+               },
+    "paper":  {
+                  "paperKey":  "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+                  "sourceKind":  "publication",
+                  "catalogKey":  "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+                  "arxivId":  null,
+                  "version":  null,
+                  "title":  "Model-Independent Online Learning for Influence Maximization",
+                  "authors":  [
+                                  "Sharan Vaswani",
+                                  "Branislav Kveton",
+                                  "Zheng Wen",
+                                  "Mohammad Ghavamzadeh",
+                                  "Laks V. S. Lakshmanan",
+                                  "Mark Schmidt"
+                              ],
+                  "sourceUrl":  "https://proceedings.mlr.press/v70/vaswani17a.html",
+                  "pdfSha256":  "46d910177e7c2fb91bee441ec2e36a70dba25e9b728e4b565a9f6abfa18c88bf",
+                  "pageCount":  10,
+                  "extractionVersion":  "pdfjs6-lines-v4",
+                  "status":  "ready",
+                  "coverage":  {
+                                   "totalPages":  10,
+                                   "textPages":  10,
+                                   "unsupportedPages":  [
+
+                                                        ]
+                               },
+                  "createdAt":  "2026-10-01T05:39:08.656Z"
+              },
+    "record":  {
+                   "id":  "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+                   "paperKey":  "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+                   "title":  "Model-Independent Online Learning for Influence Maximization",
+                   "authors":  [
+                                   {
+                                       "given":  "Sharan",
+                                       "family":  "Vaswani"
+                                   },
+                                   {
+                                       "given":  "Branislav",
+                                       "family":  "Kveton"
+                                   },
+                                   {
+                                       "given":  "Zheng",
+                                       "family":  "Wen"
+                                   },
+                                   {
+                                       "given":  "Mohammad",
+                                       "family":  "Ghavamzadeh"
+                                   },
+                                   {
+                                       "given":  "Laks V. S.",
+                                       "family":  "Lakshmanan"
+                                   },
+                                   {
+                                       "given":  "Mark",
+                                       "family":  "Schmidt"
+                                   }
+                               ],
+                   "year":  null,
+                   "venue":  null,
+                   "doi":  null,
+                   "arxivId":  null,
+                   "url":  "https://proceedings.mlr.press/v70/vaswani17a.html",
+                   "abstract":  null,
+                   "tags":  [
+                                "independent-retained-tag"
+                            ],
+                   "collections":  [
+                                       "e8073c44-be5a-4170-9624-c541075a39f6"
+                                   ],
+                   "addedAt":  "2026-10-01T05:39:03.115Z",
+                   "updatedAt":  "2026-10-01T05:39:09.995Z",
+                   "status":  "read",
+                   "bibtexKey":  "retainedUserCitation",
+                   "publication":  {
+                                       "year":  null,
+                                       "venue":  null,
+                                       "publicationKind":  "unknown",
+                                       "publicationDate":  null,
+                                       "oaAvailability":  "unknown",
+                                       "oaPdfUrl":  null
+                                   },
+                   "saved":  true,
+                   "savedAt":  "2026-10-01T05:39:03.118Z",
+                   "lastReadAt":  "2026-10-01T05:39:09.994Z",
+                   "readProgress":  {
+                                        "page":  2,
+                                        "fraction":  0.10003543446592385,
+                                        "scrollOffset":  0.0003543446592385527
+                                    },
+                   "rev":  4,
+                   "deviceId":  "hub"
+               },
+    "expected":  "Cached acquisition must reject bytes whose SHA-256 differs from the canonical Paper hash, without changing the hash/key or saved/read/user state.",
+    "actual":  "Cached acquisition and manual original link return 409 SOURCE_CHANGED without replacing altered bytes; restored original opens successfully with unchanged canonical hash/key and user state.",
+    "reproduced":  false,
+    "manualLink":  {
+                       "status":  409,
+                       "body":  {
+                                    "error":  {
+                                                  "code":  "SOURCE_CHANGED",
+                                                  "message":  "The stored PDF no longer matches its recorded hash. The cached file was not replaced. Check the stored file or open the publication site.",
+                                                  "retryable":  false
+                                              }
+                                }
+                   },
+    "restoredOpen":  {
+                         "status":  200,
+                         "body":  {
+                                      "data":  {
+                                                   "paperKey":  "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+                                                   "record":  {
+                                                                  "id":  "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+                                                                  "paperKey":  "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+                                                                  "title":  "Model-Independent Online Learning for Influence Maximization",
+                                                                  "authors":  [
+                                                                                  {
+                                                                                      "given":  "Sharan",
+                                                                                      "family":  "Vaswani"
+                                                                                  },
+                                                                                  {
+                                                                                      "given":  "Branislav",
+                                                                                      "family":  "Kveton"
+                                                                                  },
+                                                                                  {
+                                                                                      "given":  "Zheng",
+                                                                                      "family":  "Wen"
+                                                                                  },
+                                                                                  {
+                                                                                      "given":  "Mohammad",
+                                                                                      "family":  "Ghavamzadeh"
+                                                                                  },
+                                                                                  {
+                                                                                      "given":  "Laks V. S.",
+                                                                                      "family":  "Lakshmanan"
+                                                                                  },
+                                                                                  {
+                                                                                      "given":  "Mark",
+                                                                                      "family":  "Schmidt"
+                                                                                  }
+                                                                              ],
+                                                                  "year":  null,
+                                                                  "venue":  null,
+                                                                  "doi":  null,
+                                                                  "arxivId":  null,
+                                                                  "url":  "https://proceedings.mlr.press/v70/vaswani17a.html",
+                                                                  "abstract":  null,
+                                                                  "tags":  [
+                                                                               "independent-retained-tag"
+                                                                           ],
+                                                                  "collections":  [
+                                                                                      "e8073c44-be5a-4170-9624-c541075a39f6"
+                                                                                  ],
+                                                                  "addedAt":  "2026-10-01T05:39:03.115Z",
+                                                                  "updatedAt":  "2026-10-01T05:39:09.995Z",
+                                                                  "status":  "read",
+                                                                  "bibtexKey":  "retainedUserCitation",
+                                                                  "publication":  {
+                                                                                      "year":  null,
+                                                                                      "venue":  null,
+                                                                                      "publicationKind":  "unknown",
+                                                                                      "publicationDate":  null,
+                                                                                      "oaAvailability":  "unknown",
+                                                                                      "oaPdfUrl":  null
+                                                                                  },
+                                                                  "saved":  true,
+                                                                  "savedAt":  "2026-10-01T05:39:03.118Z",
+                                                                  "lastReadAt":  "2026-10-01T05:39:09.994Z",
+                                                                  "readProgress":  {
+                                                                                       "page":  2,
+                                                                                       "fraction":  0.10003543446592385,
+                                                                                       "scrollOffset":  0.0003543446592385527
+                                                                                   },
+                                                                  "rev":  4,
+                                                                  "deviceId":  "hub"
+                                                              },
+                                                   "hasPdf":  true,
+                                                   "paper":  {
+                                                                 "paperKey":  "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+                                                                 "sourceKind":  "publication",
+                                                                 "catalogKey":  "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+                                                                 "arxivId":  null,
+                                                                 "version":  null,
+                                                                 "title":  "Model-Independent Online Learning for Influence Maximization",
+                                                                 "authors":  [
+                                                                                 "Sharan Vaswani",
+                                                                                 "Branislav Kveton",
+                                                                                 "Zheng Wen",
+                                                                                 "Mohammad Ghavamzadeh",
+                                                                                 "Laks V. S. Lakshmanan",
+                                                                                 "Mark Schmidt"
+                                                                             ],
+                                                                 "sourceUrl":  "https://proceedings.mlr.press/v70/vaswani17a.html",
+                                                                 "pdfSha256":  "46d910177e7c2fb91bee441ec2e36a70dba25e9b728e4b565a9f6abfa18c88bf",
+                                                                 "pageCount":  10,
+                                                                 "extractionVersion":  "pdfjs6-lines-v4",
+                                                                 "status":  "ready",
+                                                                 "coverage":  {
+                                                                                  "totalPages":  10,
+                                                                                  "textPages":  10,
+                                                                                  "unsupportedPages":  [
+
+                                                                                                       ]
+                                                                              },
+                                                                 "createdAt":  "2026-10-01T05:39:08.656Z"
+                                                             }
+                                               }
+                                  }
+                     },
+    "closure":  "passed: real HTTP cached open and explicit original link refuse altered bytes; restored original succeeds; all saved metadata/history/memo/folders/key/hash/read state identical",
+    "preserved":  {
+                      "paper":  {
+                                    "paperKey":  "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+                                    "sourceKind":  "publication",
+                                    "catalogKey":  "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+                                    "arxivId":  null,
+                                    "version":  null,
+                                    "title":  "Model-Independent Online Learning for Influence Maximization",
+                                    "authors":  [
+                                                    "Sharan Vaswani",
+                                                    "Branislav Kveton",
+                                                    "Zheng Wen",
+                                                    "Mohammad Ghavamzadeh",
+                                                    "Laks V. S. Lakshmanan",
+                                                    "Mark Schmidt"
+                                                ],
+                                    "sourceUrl":  "https://proceedings.mlr.press/v70/vaswani17a.html",
+                                    "pdfSha256":  "46d910177e7c2fb91bee441ec2e36a70dba25e9b728e4b565a9f6abfa18c88bf",
+                                    "pageCount":  10,
+                                    "extractionVersion":  "pdfjs6-lines-v4",
+                                    "status":  "ready",
+                                    "coverage":  {
+                                                     "totalPages":  10,
+                                                     "textPages":  10,
+                                                     "unsupportedPages":  [
+
+                                                                          ]
+                                                 },
+                                    "createdAt":  "2026-10-01T05:39:08.656Z"
+                                },
+                      "record":  {
+                                     "id":  "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+                                     "paperKey":  "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+                                     "title":  "Model-Independent Online Learning for Influence Maximization",
+                                     "authors":  [
+                                                     {
+                                                         "given":  "Sharan",
+                                                         "family":  "Vaswani"
+                                                     },
+                                                     {
+                                                         "given":  "Branislav",
+                                                         "family":  "Kveton"
+                                                     },
+                                                     {
+                                                         "given":  "Zheng",
+                                                         "family":  "Wen"
+                                                     },
+                                                     {
+                                                         "given":  "Mohammad",
+                                                         "family":  "Ghavamzadeh"
+                                                     },
+                                                     {
+                                                         "given":  "Laks V. S.",
+                                                         "family":  "Lakshmanan"
+                                                     },
+                                                     {
+                                                         "given":  "Mark",
+                                                         "family":  "Schmidt"
+                                                     }
+                                                 ],
+                                     "year":  null,
+                                     "venue":  null,
+                                     "doi":  null,
+                                     "arxivId":  null,
+                                     "url":  "https://proceedings.mlr.press/v70/vaswani17a.html",
+                                     "abstract":  null,
+                                     "tags":  [
+                                                  "independent-retained-tag"
+                                              ],
+                                     "collections":  [
+                                                         "e8073c44-be5a-4170-9624-c541075a39f6"
+                                                     ],
+                                     "addedAt":  "2026-10-01T05:39:03.115Z",
+                                     "updatedAt":  "2026-10-01T05:39:09.995Z",
+                                     "status":  "read",
+                                     "bibtexKey":  "retainedUserCitation",
+                                     "publication":  {
+                                                         "year":  null,
+                                                         "venue":  null,
+                                                         "publicationKind":  "unknown",
+                                                         "publicationDate":  null,
+                                                         "oaAvailability":  "unknown",
+                                                         "oaPdfUrl":  null
+                                                     },
+                                     "saved":  true,
+                                     "savedAt":  "2026-10-01T05:39:03.118Z",
+                                     "lastReadAt":  "2026-10-01T05:39:09.994Z",
+                                     "readProgress":  {
+                                                          "page":  2,
+                                                          "fraction":  0.10003543446592385,
+                                                          "scrollOffset":  0.0003543446592385527
+                                                      },
+                                     "rev":  4,
+                                     "deviceId":  "hub"
+                                 },
+                      "history":  [
+                                      {
+                                          "id":  "77bbc0b3-2ee4-4856-8ddf-5d23eaf7059d",
+                                          "paperKey":  "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+                                          "kind":  "question",
+                                          "question":  "Retained independent question",
+                                          "text":  "Retained answer history",
+                                          "status":  "completed",
+                                          "createdAt":  "2026-10-01T05:39:03.150Z",
+                                          "updatedAt":  "2026-10-01T05:39:03.153Z",
+                                          "completedAt":  "2026-10-01T05:39:03.150Z",
+                                          "requestId":  null,
+                                          "context":  {
+
+                                                      },
+                                          "answer":  null,
+                                          "error":  null,
+                                          "rev":  1,
+                                          "deviceId":  "hub",
+                                          "deleted":  false
+                                      }
+                                  ],
+                      "annotations":  [
+                                          {
+                                              "id":  "7e3a50be-af15-4450-9be6-75b83662fe3c",
+                                              "paperKey":  "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+                                              "kind":  "memo",
+                                              "page":  1,
+                                              "text":  "Retained independent memo",
+                                              "rect":  null,
+                                              "quote":  null,
+                                              "updatedAt":  "2026-10-01T05:39:03.150Z",
+                                              "deleted":  false,
+                                              "rev":  1,
+                                              "deviceId":  "hub"
+                                          }
+                                      ],
+                      "folders":  [
+                                      {
+                                          "id":  "e8073c44-be5a-4170-9624-c541075a39f6",
+                                          "name":  "Retained nested child",
+                                          "parentId":  "ffaeb719-c34f-4dc4-a21f-0f1767a1fa6a",
+                                          "updatedAt":  "2026-10-01T05:39:03.137Z",
+                                          "deleted":  false,
+                                          "rev":  1,
+                                          "deviceId":  "hub"
+                                      },
+                                      {
+                                          "id":  "ffaeb719-c34f-4dc4-a21f-0f1767a1fa6a",
+                                          "name":  "Retained parent",
+                                          "parentId":  null,
+                                          "updatedAt":  "2026-10-01T05:39:03.132Z",
+                                          "deleted":  false,
+                                          "rev":  1,
+                                          "deviceId":  "hub"
+                                      }
+                                  ]
+                  },
+    "restoredOriginal":  true,
+    "helperBeforeStop":  {
+                             "ProcessId":  53496,
+                             "ParentProcessId":  53036,
+                             "ExecutablePath":  "C:\\Program Files\\nodejs\\node.exe",
+                             "CommandLine":  "\"C:\\Program Files\\nodejs\\node.exe\" --require C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\node_modules\\tsx\\dist\\preflight.cjs --import file:///C:/Users/Home/orca/workspaces/fractal/fractal-pdf-acquisition-qa/node_modules/tsx/dist/loader.mjs docs/implementation/qa/pdf-acquisition/cached-integrity.ts --closure",
+                             "CreationDate":  "/Date(1790834380447)/"
+                         },
+    "listenersBeforeStop":  "{\"LocalAddress\":\"127.0.0.1\",\"LocalPort\":3989,\"OwningProcess\":53496}",
+    "listenersAfterStop":  "",
+    "finishedAt":  "2026-10-01T05:59:47.112Z"
+}
