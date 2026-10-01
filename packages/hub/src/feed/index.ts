@@ -1,7 +1,8 @@
 import type { FeedDigest, FeedInterests, FeedItem, FeedResponse, FeedSettings, FeedSourceStatus, QuickTranslateRequest } from '@fractal/shared';
 import { feedWeekSchema } from '@fractal/shared';
 import { arxivCategories, type ArxivCategory } from '@fractal/shared';
-import { createHash, randomUUID } from 'node:crypto';
+import { randomUUID } from 'node:crypto';
+import { lookup } from 'node:dns/promises';
 import type { ProviderRegistry } from '../ai/registry';
 import type { SqlitePaperStore } from '../store/sqlite';
 import { invalidInput, notFound } from '../store/errors';
@@ -11,7 +12,7 @@ import { openAlexSource, crossrefSource } from './scholarly-sources';
 import type { PaperAcquirer } from '../api/index';
 import { CachedFetcher, arxivSource, huggingFaceSource, newsSource, recommendationSource, parseArxivAtom, type FeedSource, type RawItem } from './sources';
 import { rankItems } from './ranking';
-import { FeedImageStore, dropSharedImages, firstFigureImage, imageDimensions, ogImage } from './images';
+import { FeedImageStore, dropSharedImages } from './images';
 import { TopicService } from './topics';
 import { ArticleReader } from './article';
 import { QuickTranslator } from './quick-translate';
@@ -81,9 +82,9 @@ export class FeedService {
     const scopedFetch: typeof fetch = (input, init) =>
       fetcher(input, { ...init, signal: init?.signal ? AbortSignal.any([init.signal, this.shutdown.signal]) : this.shutdown.signal });
     this.cache = new CachedFetcher(store, scopedFetch);
-    this.images = imageRoot ? new FeedImageStore(store, imageRoot, scopedFetch) : null;
+    this.images = imageRoot ? new FeedImageStore(store, imageRoot, fetcher, this.shutdown.signal) : null;
     this.topics = new TopicService(store, registry);
-    this.articleReader = new ArticleReader(store, this.images, scopedFetch);
+    this.articleReader = new ArticleReader(store, this.images, fetcher, lookup, this.shutdown.signal);
     this.quick = new QuickTranslator(store, registry, scopedFetch);
   }
   async image(hash: string): Promise<{ body: Buffer; contentType: string } | null> {
@@ -327,33 +328,28 @@ export class FeedService {
         for (const item of retainedNews.filter((candidate) => candidate.categories.includes(field)).slice(0, 8)) newsImages.add(item.id);
       for (const item of retainedNews.filter((candidate) => !fields.some((field) => candidate.categories.includes(field))).slice(0, 12))
         newsImages.add(item.id);
-      const selected = [...retained.filter((item) => item.kind === 'paper').slice(0, 30), ...retainedNews.filter((item) => newsImages.has(item.id))];
+      const papers = retained.filter((item) => item.kind === 'paper').slice(0, 30);
+      const news = retainedNews.filter((item) => newsImages.has(item.id)).slice(0, 40);
+      const selected = Array.from({ length: Math.max(papers.length, news.length) }, (_, index) => [papers[index], news[index]])
+        .flat()
+        .filter((item): item is FeedItem => !!item);
       const fingerprints = new Map<string, string>();
+      // Optional enrichment has one refresh-wide budget; it never downloads PDFs.
+      const imageSignal = AbortSignal.any([this.shutdown.signal, AbortSignal.timeout(20000)]);
       let cursor = 0;
       await Promise.all(
-        Array.from({ length: 5 }, async () => {
+        Array.from({ length: 4 }, async () => {
           while (cursor < selected.length) {
-            if (this.shutdown.signal.aborted) return;
+            if (imageSignal.aborted) return;
             const item = selected[cursor++]!;
             try {
-              let candidate = (item as RawItem).imageCandidate;
-              if (!candidate && item.kind === 'paper' && item.arxivId) {
-                const pageUrl = `https://arxiv.org/html/${encodeURIComponent(item.arxivId)}`;
-                candidate = firstFigureImage(await this.cache.get(pageUrl), pageUrl) ?? undefined;
-              }
-              if (!candidate && item.kind === 'news' && new URL(item.url).hostname !== 'news.google.com') {
-                const article = await this.images!.article(item.url);
-                if (new URL(article.url).hostname !== 'news.google.com') candidate = ogImage(article.html, article.url) ?? undefined;
-              }
-              if (candidate && new URL(candidate).hostname === 'news.google.com') candidate = undefined;
-              const image = candidate ? this.images!.register(candidate) : null;
-              if (image) {
-                const fetched = await this.images!.get(image.url.split('/').at(-1)!);
-                if (fetched) {
-                  item.image = { ...image, ...imageDimensions(fetched.body, fetched.contentType), alt: item.title };
-                  fingerprints.set(item.id, createHash('sha256').update(fetched.body).digest('hex'));
-                }
-              }
+              const selected = await this.images!.thumbnail(
+                item as FeedItem & { imageCandidate?: string },
+                this.articleReader.page.bind(this.articleReader),
+                imageSignal,
+              );
+              item.image = selected?.image ?? null;
+              if (selected) fingerprints.set(item.id, selected.fingerprint);
             } catch {
               item.image = null;
             }

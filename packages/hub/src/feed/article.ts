@@ -4,14 +4,13 @@ import { parseHTML } from 'linkedom';
 import type { Article, ArticleBlock, FeedItem } from '@fractal/shared';
 import type { SqlitePaperStore } from '../store/sqlite';
 import { appError } from '../store/errors';
-import { assertPublicImageUrl, fetchPublicArticle, ogImage, type FeedImageStore } from './images';
+import { assertPublicImageUrl, fetchPublicArticle, articleImageCandidates, imageElementUrls, suitableImageUrl, type FeedImageStore } from './images';
 
 function publicImage(raw: string | null | undefined, pageUrl: string, images: FeedImageStore | null): FeedItem['image'] {
   if (!raw || !images) return null;
   try {
-    const url = new URL(raw, pageUrl);
-    if (url.protocol !== 'https:' || url.hostname === 'news.google.com') return null;
-    return images.register(url.href);
+    const url = suitableImageUrl(raw, pageUrl);
+    return url ? images.register(url) : null;
   } catch {
     return null;
   }
@@ -27,7 +26,7 @@ export function extractArticleHtml(html: string, url: string, originalUrl: strin
     const tag = node.localName;
     if (node.parentElement?.closest('p,h2,h3,blockquote,li')) continue;
     if (tag === 'img') {
-      const image = publicImage(node.getAttribute('src'), url, images);
+      const image = publicImage(imageElementUrls(node as unknown as Element, url)[0], url, images);
       if (image) blocks.push({ type: 'img', image });
     } else {
       const text = node.textContent?.replace(/\s+/g, ' ').trim() ?? '';
@@ -35,7 +34,7 @@ export function extractArticleHtml(html: string, url: string, originalUrl: strin
     }
   }
   if (blocks.length === 0) return null;
-  const leadImage = publicImage(ogImage(html, url), url, images);
+  const leadImage = publicImage(articleImageCandidates(html, url)[0], url, images);
   const publishedAt = document.querySelector('meta[property="article:published_time"]')?.getAttribute('content') ?? undefined;
   return {
     url: originalUrl,
@@ -117,7 +116,22 @@ export class ArticleReader {
     private readonly images: FeedImageStore | null,
     private readonly fetcher: typeof fetch = fetch,
     private readonly resolver: typeof lookup = lookup,
+    private readonly signal?: AbortSignal,
   ) {}
+  async page(url: string, signal?: AbortSignal): Promise<{ html: string; url: string }> {
+    const scoped = this.signal && signal ? AbortSignal.any([this.signal, signal]) : (this.signal ?? signal);
+    let fetched = await fetchPublicArticle(url, this.fetcher, this.resolver, scoped);
+    const rpcFetch: typeof fetch = (input, init) =>
+      this.fetcher(input, {
+        ...init,
+        signal: scoped ? AbortSignal.any([scoped, ...(init?.signal ? [init.signal] : [])]) : init?.signal,
+      });
+    const publisher =
+      publisherLink(fetched.html, fetched.url) ??
+      (new URL(fetched.url).hostname === 'news.google.com' ? await decodeGooglePublisher(fetched.html, fetched.url, rpcFetch) : null);
+    if (publisher) fetched = await fetchPublicArticle(publisher, this.fetcher, this.resolver, scoped);
+    return fetched;
+  }
   async get(url: string): Promise<Article> {
     try {
       await assertPublicImageUrl(url, this.resolver);
@@ -127,14 +141,7 @@ export class ArticleReader {
     const cached = this.store.db.prepare('SELECT data,fetched_at FROM news_articles WHERE url=?').get(url) as { data: string; fetched_at: string } | undefined;
     if (cached && Date.now() - Date.parse(cached.fetched_at) < 86400000) return JSON.parse(cached.data) as Article;
     try {
-      let fetched = await fetchPublicArticle(url, this.fetcher, this.resolver);
-      const publisher =
-        publisherLink(fetched.html, fetched.url) ??
-        (new URL(fetched.url).hostname === 'news.google.com' ? await decodeGooglePublisher(fetched.html, fetched.url, this.fetcher) : null);
-      if (publisher) {
-        await assertPublicImageUrl(publisher, this.resolver);
-        fetched = await fetchPublicArticle(publisher, this.fetcher, this.resolver);
-      }
+      const fetched = await this.page(url);
       const article = extractArticleHtml(fetched.html, fetched.url, url, this.images);
       if (!article) throw new Error('No readable article');
       this.store.db

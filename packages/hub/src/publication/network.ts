@@ -19,6 +19,8 @@ export interface PublicNetworkOptions {
   signal?: AbortSignal;
   timeoutMs?: number;
   maxBytes?: number;
+  /** Optional consumer MIME allowlist, checked before any response body bytes are read. */
+  acceptedContentTypes?: readonly string[];
 }
 const reserved = new BlockList();
 for (const [address, prefix] of [
@@ -136,6 +138,8 @@ export async function publicGet(input: string, options: PublicNetworkOptions = {
         if (response.status === 404) throw new SourceError('NOT_FOUND', '로그인 없이 접근할 수 있는 공개 PDF를 찾지 못했습니다. PDF 직접 주소를 확인하세요.');
         if (response.status !== 200) throw new SourceError('NETWORK', `논문 다운로드 응답 오류 (${response.status}).`, true);
         const contentType = (response.headers['content-type'] ?? '').split(';')[0]!.trim().toLowerCase();
+        if (options.acceptedContentTypes && !options.acceptedContentTypes.includes(contentType))
+          throw new SourceError('INVALID_INPUT', 'Unsupported response content type');
         const limit = contentType === 'text/html' || contentType === 'application/xhtml+xml' ? Math.min(maxBytes, 2 * 1024 * 1024) : maxBytes;
         if (Number(response.headers['content-length']) > limit) throw new SourceError('TOO_LARGE', '논문 다운로드 크기 제한을 초과했습니다.');
         if (response.headers['content-encoding'] && response.headers['content-encoding'] !== 'identity')
