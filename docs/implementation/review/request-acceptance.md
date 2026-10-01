@@ -1,10 +1,10 @@
 # Request acceptance map
 
-Coordinator checkpoint: accepted C stage3 implementation at root `769ac81` plus coordination records. This is a review map, not final product certification. Current packaged certification still requires the accepted Hub shutdown correction and rebuild. Active Android reader/discovery changes remain owner checkpoints until final evidence is accepted. User direction: scholarly newspaper/paper typography, richer useful information, restrained rules and paper surfaces. Requests 1–13 are authorized; request 14 is excluded.
+Coordinator checkpoint: accepted C stage3 implementation, final Windows package with Hub shutdown correction, and independent current desktop review through root `c969598`. This is a review map, not final product certification. Active Android reader/discovery changes remain owner checkpoints until final evidence is accepted. User direction: scholarly newspaper/paper typography, richer useful information, restrained rules and paper surfaces. Requests 1–13 are authorized; request 14 is excluded.
 
 | Request | Accepted evidence | Remaining final gate |
 | --- | --- | --- |
-| 1. PC UI and consistent icons | A scholarly design; C stage1 library; C stage2 reader; C stage3 actual discovery render matrix and preliminary packaged/native icon proof | Current Windows package after shutdown correction; independent final visual review |
+| 1. PC UI and consistent icons | A scholarly design; C stage1 library; C stage2 reader; C stage3 actual discovery render matrix, final packaged/native icon proof and E independent current desktop review | Android final UI and current APK resources; integrated final certification |
 | 2. Selected text/figure question history survives close | B durable generation/history and persisted context/citations; C stage2 real Hub/SSE, close/reopen/restart | D stage3 actual HTTP lifecycle; final integrated history/source status review |
 | 3. Recent vs explicitly saved; folders | B foundation/discovery; C stage1 real library flows; D stage2 Room migration and immutable queue; E accepted actual native HTTP offline/reconnect/CAS/delete bridge | Consistent discovery/save/PDF link states in final platform screens |
 | 4. Custom model/language selectors | C stage1 dynamic keyboard/focus selector; D stage2 custom focus and font captures; B per-request BCP47/auto contract | C/D final reader and discovery controls, per-question language persistence |
