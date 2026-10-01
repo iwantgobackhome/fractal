@@ -77,7 +77,15 @@ jobs:
           APPLE_ID: ${{ matrix.platform == 'darwin' && secrets.APPLE_ID || '' }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ matrix.platform == 'darwin' && secrets.APPLE_APP_SPECIFIC_PASSWORD || '' }}
           APPLE_TEAM_ID: ${{ matrix.platform == 'darwin' && secrets.APPLE_TEAM_ID || '' }}
-        run: npx --no-install electron-builder --config scripts/release-config.cjs ${{ matrix.targets }} --${{ matrix.arch }} --publish never
+        run: |
+          # An empty CSC_LINK is interpreted as a certificate path by electron-builder.
+          if [[ "$CSC_IDENTITY_AUTO_DISCOVERY" != 'true' ]]; then
+            unset CSC_LINK CSC_KEY_PASSWORD
+          fi
+          if [[ -z "${CSC_LINK:-}" || -z "$APPLE_ID" || -z "$APPLE_APP_SPECIFIC_PASSWORD" || -z "$APPLE_TEAM_ID" ]]; then
+            unset APPLE_ID APPLE_APP_SPECIFIC_PASSWORD APPLE_TEAM_ID
+          fi
+          npx --no-install electron-builder --config scripts/release-config.cjs ${{ matrix.targets }} --${{ matrix.arch }} --publish never
       - name: Actual shipped Electron, bundled Hub and native PTY smoke
         run: node scripts/smoke-packaged-release.mjs
       - name: Source, resources, bundle and distribution checksums
@@ -103,6 +111,8 @@ jobs:
           distribution: temurin
           java-version: '17'
       - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
       - name: Install declared SDK
         run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
       - run: node scripts/verify-release-version.mjs

@@ -40,6 +40,9 @@ android = '\n'.join(step.get('run','') for step in jobs['android']['steps'])
 assert android.index('restore-android-debug-key.mjs') < android.index(':app:assembleDebug')
 assert 'verify-android-release.mjs' in android and 'build-tools;35.0.0' in android
 assert 'ANDROID_RELEASE_CERT_SHA256' in Path('.github/workflows/release.yml').read_text()
+sdk_setup = next(step for step in jobs['android']['steps'] if step.get('uses') == 'android-actions/setup-android@v3')
+assert sdk_setup['with']['packages'] == 'platform-tools', 'removed legacy SDK tools package must not be requested'
+assert 'unset CSC_LINK CSC_KEY_PASSWORD' in runs, 'absent signing credentials must be unset, not empty'
 
 pkg = json.loads(Path('package.json').read_text())
 assert pkg['devDependencies']['electron'] == '44.4.5'
