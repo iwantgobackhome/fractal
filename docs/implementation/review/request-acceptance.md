@@ -59,3 +59,23 @@ Scoped final native methods pass on API34. Mixed historical invocations with unr
 Root build and typecheck pass after the PC correction. E independent current browser input proof is distinct from C's actual packaged native execution. Optional development Electron in E's checkout was unavailable and is not reported as executed. The private disposable data, public PDF inputs and isolated profiles remain excluded from release/committed artifacts. Root coordinates accepted source, package identity and exact worker disposition; full chronological decisions are in [orchestration.md](../orchestration.md).
 
 Unexecuted boundaries: physical S Pen, API29 runtime, API35 native cropped/rotated index equivalence, installer installation/pinned taskbar, macOS packaging and live provider/translation quality. Request14 is excluded throughout.
+
+## Published 0.2.0 release — 2026-10-01
+
+The version, scholarly UI documentation and first-content thumbnails are delivered in [Fractal 0.2.0](https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.0), published at 2026-10-01 10:12:52 UTC. The immutable artifact source is `c75ea15f806382f88e7a26e03da17a7f4f505b56`. [Final tagged CI run 36845792076](https://github.com/iwantgobackhome/fractal/actions/runs/36845792076) passed all five platform jobs, aggregate checksums and draft creation; the coordinator promoted the reviewed draft. Later main commits update documentation and evidence only, without rebuilding or changing this tag.
+
+| Platform | Published file |
+| --- | --- |
+| Windows x64 | `Fractal-0.2.0-win-x64.exe` |
+| Linux x64 | `Fractal-0.2.0-linux-x64.AppImage` and `Fractal-0.2.0-linux-x64.deb` |
+| macOS Apple Silicon | `Fractal-0.2.0-mac-arm64.dmg` |
+| macOS Intel | `Fractal-0.2.0-mac-x64.dmg` |
+| Android | `Fractal-0.2.0-android-debug.apk`, versionCode 2 |
+
+All six files and [SHA256SUMS.txt](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.0/SHA256SUMS.txt) are public. The coordinator and independent reviewer separately verified 25 aggregate-listed file hashes, all five full source records, actual native packaged startup/resource records and all 26 uploaded GitHub asset digests/sizes/names. The original 0.1.0 release and both asset hashes remain intact.
+
+Paper discovery tries the first suitable captioned raster figure from public paper HTML; news tries the first suitable article content image, with responsive/lazy candidates and provider fallbacks. Missing images retain text and reading actions. Bulk PDF figure extraction is outside this path. Actual public images and scholarly desktop/Android captures are documented in the four README languages; the older reader illustration retains its explicit historical qualification.
+
+Desktop evidence executes the shipped Electron in Node mode, bundled Hub/UI/library API and native PTY on each corresponding OS and architecture; it does not claim GUI installation. macOS is ad-hoc signed and unnotarized, Windows unsigned, and Android uses the original debug certificate `62e0698d0572e672aa65a999c6e6e4a6669fb2baf4ca0c6f9c2ce7f82bdd7f4f`. Actual SDK35 manifest/signature checks pass. The final APK is byte-identical to the accepted branch CI APK (SHA-256 `dc65d977bbd31d70f390ae648f4dbe9e2e326c9d8f406249663d5e0c16c5f549`); its source/resources/render semantics correspond to the earlier API34 runtime evidence with the explicitly reviewed three generated Compose method differences. No physical-device, stylus or API35 runtime certification is implied.
+
+[Independent final review](../qa/v020/review.md), [tagged payload evidence](../qa/v020/artifact-evidence.tagged.json), [exact tagged/branch APK comparison](../qa/v020/apk-correspondence.tagged.json) and [original-runtime DEX qualification](../qa/v020/apk-dex-review.json) record the executed scope. Request 14 remains excluded.
