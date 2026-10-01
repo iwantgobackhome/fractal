@@ -6,11 +6,14 @@ Status: **pending final integrated runtime and actual CI artifacts**. This is a 
 
 - Initial accepted root: `6080532fe6fad7e40a8dfc262fcdc271a764e339`; accepted backend source is integrated here, with original proof source `d5cbccbd450f7ab1bfd0297b329eeb5c41d46ab2`.
 - Coordinator declared combined client root `fa4304f6698dbdf28675dfe522dff8748ab50f66` at 07:58 UTC; its final 0.2.0 screenshots and actual release outputs are still pending.
+- Corrected accepted root `b5e18a55242e1d523a35602dd6b5cc0c123c04f8` includes release-owner fix `75dd001`; merged for review locally at `45a80dcfda79677954b5bb3b93af65ac0689f1b9`. Relevant product/script source matches declared root; the local merge also retains QA evidence.
 - Preliminary peer client screenshots explicitly report unpackaged app `0.1.0` and source `b6323d1f4b3b00007c7e0f09e7a75545a87301c5`; they are not proof of final integrated 0.2.0 binaries.
 
 ## Reproduced release blocker
 
 At initial accepted source, `scripts/packaged-release-probe.cjs` reads `(await api.json()).papers`. `packages/hub/src/api/index.ts` wraps JSON in `{data: result.data}`, and the papers route supplies `{papers}` inside `data`. An actual independently started isolated Hub returned HTTP 200 with `{data:{papers:[]}}`; the existing smoke expression was false and `Array.isArray(payload.data.papers)` was true. This would fail all four desktop smoke jobs after Hub startup. Routed to coordinator as `msg_5ebe108891af`; release owner correction pending review.
+
+**Resolved in accepted `b5e18a`**: the probe now checks `Array.isArray((await api.json()).data?.papers)`, matching the independently observed real HTTP response. The release owner additionally recorded a production-built Hub envelope probe. Actual packaged execution remains a CI gate.
 
 ## Backend independent evidence
 
@@ -25,6 +28,16 @@ Additional independently executed boundaries passed: captioned figure order and 
 The embedding `startHub({port,indexHtml,allowRealCli,startBackground})`, returned URL and close API match the package probe. Optional PTY exports resolve to a platform `lib/index.js`; configuration includes the platform packages and unpacks their native binaries. Mac bundle traversal explicitly hashes symlink targets instead of skipping framework links. The workflow declares four native desktop hosts plus Android and produces Windows NSIS, Linux AppImage/deb, two Mac DMGs and Android debug APK. Only tag publication has write permission and creates a draft while refusing to replace an existing release.
 
 Version guards cover root/shared/Hub/UI/lockfile and Android 0.2.0/code2. Android signature verification inspects the actual APK and compares the public expected old certificate when configured, requiring that value for tags. Missing stable key configuration fails before building; this review neither accessed nor exported a key or token. Mac signing/notarization claims remain conditional; ad-hoc signing is explicit. Config and source review do not qualify actual Mac/Linux packages or native runtime.
+
+Independently ran SDK 35 `aapt dump badging` and `apksigner verify --verbose --print-certs` against root's archived actual public 0.1 APK. SHA-256 is `60e7766954f0f7d813219a95be0be5a889eb5817e5245a946082017665dac821`; application `app.fractal.reader`, versionName `0.1`, versionCode 1, minSdk29/targetSdk35, valid v2 signature, one Android Debug signer, certificate SHA-256 `62e0698d0572e672aa65a999c6e6e4a6669fb2baf4ca0c6f9c2ce7f82bdd7f4f`. These are public artifact facts, not private-key inspection.
+
+## Accepted client source boundaries
+
+Independently reran the five focused PC image tests on the `b5e18a` product source: all passed, including the 15-second visible stalled-body timeout and stream release. Valid routes are exactly opaque lowercase 64-hex Hub image paths; authenticated fetches reject redirects, per-HubApi caches isolate credentials, leases coalesce, final owner departure cancels, and hidden/failed media leaves text/actions intact. The 16 MiB PC cache is an eviction target for unleased blobs, with 32 entries and 5 MiB per entry providing the overall bound while images remain mounted. Object URLs are revoked on unmount; paper previews use contain, and dossier previews retain full proportions.
+
+Native transport uses a captured credential session, redirect-disabled OkHttp with 15-second call/read budgets, 5 MiB streaming limit and coroutine cancellation. Current credentials and mounted/request guards surround transfer, disk/decode/memory admission and final display. Cache identities include origin/Hub/device/token via one-way hashing, disk is 24 MiB/64 entries, memory is 8 MiB and bitmaps are sampled to at most 1024 pixels per dimension. Source includes an actual delayed authenticated response/cancel/no-stale-disk-admission regression, with separate recorded native execution.
+
+Compatibility limit: backend discovery permits AVIF, but both clients currently accept PNG/JPEG/WebP/GIF. An AVIF-only selected candidate therefore becomes a text fallback. This is a source-dependent omission, not a distorted or broken-image display, and no release blocker is inferred from the optional-image contract.
 
 ## Preliminary visual observations
 
