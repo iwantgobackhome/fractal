@@ -24,7 +24,9 @@ def normalize(text):
             line = re.sub(r'^\[[0-9a-f]+\] ', '', line)
             line = re.sub(r'^[0-9a-f]{4}: ', '', line)
         # Positions/locals contain code offsets; preserve source lines and types.
-        lines.append(re.sub(r'0x[0-9a-f]+', '<offset>', line))
+        if re.match(r'^\s*0x[0-9a-f]+', line):
+            line = re.sub(r'0x[0-9a-f]+', '<offset>', line)
+        lines.append(line)
     return '\n'.join(lines)
 
 
