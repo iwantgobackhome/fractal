@@ -1,0 +1,126 @@
+{
+  "acceptanceStatus": {
+    "android": "accepted software gates",
+    "overall": "withheld: desktop request10 user-reproduced drag expansion; accepted repair/current package required"
+  },
+  "reviewedAcceptedSource": "594f418d6e9ba374b9f2b5a220d0541270a4416b",
+  "androidProductSource": "e690dcabfc150c7c83170a512cf2562166b3a014",
+  "desktopPackagedProductSource": "08af7b3959a3816e8d54d6ea1f9886b253693d79",
+  "screenshotVerification": {
+    "acceptedReader": {
+      "count": 84,
+      "mismatches": []
+    },
+    "acceptedDiscovery": {
+      "count": 104,
+      "mismatches": []
+    }
+  },
+  "discoveryScreenshotApkRevisions": {
+    "3597906a2d8aee3569ecf7a91510c22a51cc2b6e411172fb84ca585519d9999f": 14,
+    "historical-no-recorded-apk-revision": 30,
+    "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba": 60
+  },
+  "captureProfiles": {
+    "phone360-portrait": {
+      "requestedWmPixelsAtDensity160": [
+        360,
+        800
+      ],
+      "fontScale": 1,
+      "language": "en",
+      "theme": "Light"
+    },
+    "phone360-landscape": {
+      "requestedWmPixelsAtDensity160": [
+        800,
+        360
+      ],
+      "fontScale": 1,
+      "language": "en",
+      "theme": "Light"
+    },
+    "tablet800-portrait": {
+      "requestedWmPixelsAtDensity160": [
+        800,
+        1280
+      ],
+      "fontScale": 1,
+      "language": "en",
+      "theme": "Light"
+    },
+    "tablet800-landscape": {
+      "requestedWmPixelsAtDensity160": [
+        1280,
+        800
+      ],
+      "fontScale": 1,
+      "language": "en",
+      "theme": "Light"
+    },
+    "tablet1280-portrait": {
+      "requestedWmPixelsAtDensity160": [
+        1280,
+        1800
+      ],
+      "fontScale": 1,
+      "language": "en",
+      "theme": "Light"
+    },
+    "tablet1280-landscape": {
+      "requestedWmPixelsAtDensity160": [
+        1800,
+        1280
+      ],
+      "fontScale": 1,
+      "language": "en",
+      "theme": "Light"
+    },
+    "phone360-font2-ko": {
+      "requestedWmPixelsAtDensity160": [
+        360,
+        800
+      ],
+      "fontScale": 2,
+      "language": "ko",
+      "theme": "Sepia"
+    },
+    "tablet1280-font2-dark": {
+      "requestedWmPixelsAtDensity160": [
+        1800,
+        1280
+      ],
+      "fontScale": 2,
+      "language": "en",
+      "theme": "Dark"
+    }
+  },
+  "androidUnitTotals": {
+    "tests": 28,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "independentlyInspectedRootDeliveredApk": {
+    "path": "C:\\Users\\Home\\Desktop\\Fractal\\fractal\\dist\\reviewed-builds\\android-e690dca\\Fractal-0.1.0-android-debug.apk",
+    "bytes": 69857944,
+    "sha256": "3597906a2d8aee3569ecf7a91510c22a51cc2b6e411172fb84ca585519d9999f"
+  },
+  "testApkOwnerManifest": {
+    "path": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-android\\apps\\android\\app\\build\\outputs\\apk\\androidTest\\debug\\app-debug-androidTest.apk",
+    "sha256": "00eb13f192d661a8d869b4fa0b5a031ac25d6f6067f237c64311be25fdc960ee",
+    "bytes": 3279207,
+    "immutableDeliveryPath": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-android\\apps\\android\\qa\\stage4-apks\\app-e690dca-debug-androidTest.apk"
+  },
+  "debugSigningOwnerManifest": {
+    "certificateDN": "C=US, O=Android, CN=Android Debug",
+    "certificateSha256": "62e0698d0572e672aa65a999c6e6e4a6669fb2baf4ca0c6f9c2ce7f82bdd7f4f"
+  },
+  "nativeExecutionBoundary": "Owner D emulator-5554/API34; E final review does not operate that device or claim an E final APK installation.",
+  "limits": [
+    "API29 runtime not executed",
+    "API35 native frame/index equivalence not executed",
+    "Physical S Pen/palm/hover/latency not executed",
+    "Windows installer installation/pinned taskbar not observed"
+  ]
+}

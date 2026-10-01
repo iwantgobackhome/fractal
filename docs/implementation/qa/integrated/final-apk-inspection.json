@@ -1,0 +1,18 @@
+{
+  "scope": "Independent E inspection of the root-delivered immutable final APK; no native installation",
+  "sdkBuildTools": "35.0.0",
+  "signatureAndManifest": {
+    "chunk_id": "dc2178",
+    "wall_time_seconds": 3.5186946,
+    "exit_code": 0,
+    "original_token_count": 150,
+    "output": "Signer #1 certificate DN: C=US, O=Android, CN=Android Debug\r\nSigner #1 certificate SHA-256 digest: 62e0698d0572e672aa65a999c6e6e4a6669fb2baf4ca0c6f9c2ce7f82bdd7f4f\r\nSigner #1 certificate SHA-1 digest: 6a5c66031a15995ec98fe7ff526cf2cfe9269241\r\nSigner #1 certificate MD5 digest: 6c758442569dc14df3e04d9202181391\r\n\r\n      E: uses-sdk (line=7)\r\n        A: http://schemas.android.com/apk/res/android:minSdkVersion(0x0101020c)=29\r\n        A: http://schemas.android.com/apk/res/android:targetSdkVersion(0x01010270)=35\r\n        A: http://schemas.android.com/apk/res/android:debuggable(0x0101000f)=true\r\n\r\n\r\n"
+  },
+  "dexAndLauncher": {
+    "chunk_id": "6758ba",
+    "wall_time_seconds": 3.3419216,
+    "exit_code": 0,
+    "original_token_count": 150,
+    "output": "{\r\n  \"apkSha256\": \"3597906a2d8aee3569ecf7a91510c22a51cc2b6e411172fb84ca585519d9999f\",\r\n  \"dexFiles\": [\r\n    \"classes.dex\",\r\n    \"classes10.dex\",\r\n    \"classes9.dex\",\r\n    \"classes7.dex\",\r\n    \"classes2.dex\",\r\n    \"classes5.dex\",\r\n    \"classes3.dex\",\r\n    \"classes6.dex\",\r\n    \"classes4.dex\",\r\n    \"classes8.dex\"\r\n  ],\r\n  \"classDefinitions\": 23210,\r\n  \"qaTestClassDefinitions\": [],\r\n  \"launcherEntries\": [\r\n    \"res/drawable/ic_launcher_background.xml\",\r\n    \"res/drawable/ic_launcher_foreground.xml\",\r\n    \"res/mipmap-anydpi-v26/ic_launcher.xml\",\r\n    \"res/drawable/ic_launcher_legacy.xml\"\r\n  ]\r\n}\r\n"
+  }
+}

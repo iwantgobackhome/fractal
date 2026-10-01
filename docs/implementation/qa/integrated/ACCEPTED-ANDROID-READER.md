@@ -1,5 +1,7 @@
 # Independent accepted Android reader review
 
+Final follow-up: [FINAL-REVIEW.md](FINAL-REVIEW.md) closes E-D4-01 with the accepted actual page-retry log and current Android artifact/visual evidence. The historical pending statements below describe this earlier checkpoint. Overall acceptance is separately withheld for newly user-reproduced desktop request10.
+
 Root supplied clean source `bf0786a0d3eab20dd428a27e5fec2a38ed076749`, accepting D3 owner commits `6a0b724edde41c270f3c9a74072bb26b435d893c` and `02d9388a7d0ab3ca6a0ac49c7eeb738e54f422c8` as `2ac97b7/a991ff2`. This is a bounded independent review of accepted source, actual owner executions and current captures. E did not run D's device or build. Final D4 discovery, the open recovery correction below, and current final APK source/hash remain required before integrated certification. Request14 is excluded.
 
 ## Evidence reviewed
