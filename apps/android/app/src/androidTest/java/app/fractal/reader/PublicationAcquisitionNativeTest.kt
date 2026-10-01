@@ -138,11 +138,15 @@ class PublicationAcquisitionNativeTest {
     }
 
     @Test fun c_oldHubAndLoginHtmlExposeRetryAndExplicitFallbackWithoutExternalLaunch(): Unit = runBlocking {
-        launch(); dossier(failurePaper); control(buildJsonObject { put("oldHub", true) }); native.click("Read PDF")
+        launch(); dossier(failurePaper); capture("metadata-primary-read-action")
+        control(buildJsonObject { put("oldHub", true) }); native.click("Read PDF")
         native.waitFor("old Hub truthful retry") { native.node("Retry Read PDF") != null }
         native.scrollTo("This Hub does not support Read PDF", true); capture("old-hub-explicit-fallback")
         assertNull(row(failurePaper)?.lastReadAt); assertFalse(row(failurePaper)?.saved == true)
-        control(buildJsonObject { put("oldHub", false); put("loginHtml", true) }); native.click("Retry Read PDF")
+        control(buildJsonObject { put("oldHub", false); put("loginHtml", true); put("delayOpen", true) }); native.click("Retry Read PDF")
+        until("accessible progress response held") { control().getValue("blocked").jsonPrimitive.boolean }
+        native.scrollTo("Acquiring and verifying", true); capture("acquisition-accessible-progress")
+        control(buildJsonObject { put("release", true); put("delayOpen", false) })
         native.waitFor("login HTML acquisition finished") { native.node("Retry Read PDF") != null && native.node("Acquiring PDF…") == null }
         native.scrollTo("Use Retry Read PDF", true); capture("login-html-explicit-fallback")
         assertNull(row(failurePaper)?.pdfSha256); assertNull(row(failurePaper)?.lastReadAt); assertFalse(row(failurePaper)?.saved == true)
