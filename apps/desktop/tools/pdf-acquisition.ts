@@ -1,11 +1,11 @@
 /** Actual application/public HTTP gates; metadata fixtures only, never seeded PDF bytes. */
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, realpath, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { createHash, randomUUID } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
-import { chromium, _electron, type Page, type Response as BrowserResponse } from 'playwright-core';
+import { chromium, _electron, type Page } from 'playwright-core';
 import { startService } from '../../../packages/hub/src/main';
 import { isoWeek } from '../../../packages/hub/src/feed/index';
 import { SqlitePaperStore } from '../../../packages/hub/src/store/sqlite';
@@ -56,16 +56,45 @@ const clip: PublicationBookmark = {
 const rejected: PublicationBookmark = {
   title: 'Controlled acquisition failure boundary',
   authors: ['Boundary author'],
-  url: 'https://example.org/failure',
+  url: mode === 'controlled' ? 'https://example.org/failure' : 'https://example.org',
   publication: {
     year: 2026,
     venue: 'Controlled boundary',
     publicationKind: 'unknown',
     publicationDate: null,
     oaAvailability: 'unknown',
-    oaPdfUrl: 'https://example.org/failure.pdf',
+    oaPdfUrl: mode === 'controlled' ? 'https://example.org/failure.pdf' : null,
   },
 };
+const exactPdf = 'https://arxiv.org/pdf/2609.40325v1';
+let exactCase: PublicationBookmark | null = null;
+if (mode !== 'controlled') {
+  const response = await fetch('https://export.arxiv.org/api/query?id_list=2609.40325v1', { signal: AbortSignal.timeout(30_000) });
+  assert.ok(response.ok);
+  const atom = await response.text();
+  await writeFile(join(output, 'exact-user-source.atom'), atom);
+  const entry = atom.match(/<entry>([\s\S]*?)<\/entry>/)?.[1];
+  assert.ok(entry?.includes('2609.40325v1'), 'exact versioned metadata must exist');
+  const title = entry.match(/<title>([\s\S]*?)<\/title>/)?.[1]?.trim();
+  assert.ok(title);
+  exactCase = {
+    title,
+    authors: Array.from(entry.matchAll(/<name>([\s\S]*?)<\/name>/g)).map((match) => match[1].trim()),
+    url: 'https://arxiv.org/abs/2609.40325v1',
+    arxivId: '2609.40325v1',
+    doi: null,
+    abstract: entry.match(/<summary>([\s\S]*?)<\/summary>/)?.[1]?.trim(),
+    publication: {
+      year: 2026,
+      venue: 'arXiv',
+      publicationKind: 'preprint',
+      publicationDate: '2026-09-30',
+      oaAvailability: 'open',
+      oaPdfUrl: exactPdf,
+      sources: ['arxiv'],
+    },
+  };
+}
 const source = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim();
 const evidence: Record<string, any> = {
   mode,
@@ -131,11 +160,11 @@ if (mode === 'electron') {
     deviceId: 'hub',
     deleted: false,
   };
-  store.putHistory(savedHistory);
+  savedHistory = store.putHistory(savedHistory);
 }
 const now = new Date().toISOString(),
   week = isoWeek(new Date());
-for (const [index, item] of [attention, clip, rejected].entries()) {
+for (const [index, item] of [attention, clip, rejected, ...(exactCase ? [exactCase] : [])].entries()) {
   const row = {
     ...item,
     id: `pdf-acquisition-${index}`,
@@ -147,9 +176,10 @@ for (const [index, item] of [attention, clip, rejected].entries()) {
     popularity: 0,
     image: null,
     abstract:
-      index === 2
+      item.abstract ??
+      (index === 2
         ? 'Controlled failure checks are separate from public PDF acquisition.'
-        : 'Original scholarly publication. Read the PDF inside the app; saving metadata is a separate action.',
+        : 'Original scholarly publication. Read the PDF inside the app; saving metadata is a separate action.'),
   };
   store.db.prepare('INSERT INTO feed_items VALUES(?,?,?)').run(week, row.id, JSON.stringify(row));
 }
@@ -171,6 +201,7 @@ let browser: Awaited<ReturnType<typeof chromium.launch>> | undefined;
 let app: Awaited<ReturnType<typeof _electron.launch>> | undefined;
 let page: Page | undefined;
 let ownedPid: number | undefined, listener: string | undefined;
+let browserPid: number | undefined;
 const requestPaths: string[] = [],
   errors: string[] = [];
 const processIdentity = (pid: number) =>
@@ -197,6 +228,7 @@ async function reference(url: string, filename: string) {
 async function openFromDiscovery(index: number, expected: any) {
   const p = page!;
   await p.goto(origin + '/#/home');
+  await p.evaluate('window.__name = (value) => value');
   const row = p.locator(`[data-feed-id="pdf-acquisition-${index}"]`);
   await row.waitFor();
   await p.evaluate(() => document.fonts.ready);
@@ -216,13 +248,18 @@ async function openFromDiscovery(index: number, expected: any) {
     assert.equal(result.paperKey, unsaved.paperKey);
     assert.equal(associated.saved, false);
     assert.equal(associated.lastReadAt, null);
-  } else if (beforeSaved) {
+  } else if (index === 0 && beforeSaved) {
     assert.equal(result.paperKey, beforeSaved.paperKey);
     for (const key of ['saved', 'savedAt', 'tags', 'collections', 'lastReadAt', 'readProgress'])
       assert.deepEqual(associated[key], beforeSaved[key], `preserved ${key}`);
   } else {
     assert.equal(associated.saved, false);
     assert.equal(associated.lastReadAt, null);
+  }
+  if (index === 3) {
+    assert.equal(associated.url, exactCase!.url);
+    assert.equal(result.paper.sourceUrl, exactCase!.url);
+    assert.equal(associated.arxivId, '2609.40325');
   }
   await p.locator('[data-testid="pdf-body"] canvas').first().waitFor({ timeout: 60_000 });
   assert.equal(decodeURIComponent(new URL(p.url()).hash.split('/').at(-1)!), result.paperKey);
@@ -242,9 +279,9 @@ async function openFromDiscovery(index: number, expected: any) {
   assert.equal(readRecord.saved, associated.saved);
   const newPaths = requestPaths.slice(startRequests);
   assert.ok(!newPaths.some((path) => /\/bookmarks$|\/save$/.test(path)), 'Read sends no Save request');
-  await p.screenshot({ path: join(output, index === 0 ? 'attention-reader.png' : 'passive-publisher-reader.png') });
+  await p.screenshot({ path: join(output, index === 0 ? 'attention-reader.png' : index === 3 ? 'exact-user-v1-reader.png' : 'passive-publisher-reader.png') });
   evidence.cases.push({
-    name: index === 0 ? 'explicit-known-public-PDF' : 'passive-publisher-without-PDF-hint',
+    name: index === 0 ? 'explicit-known-public-PDF' : index === 3 ? 'exact-user-2609.40325v1' : 'passive-publisher-without-PDF-hint',
     paperKey: result.paperKey,
     expected,
     actualHash,
@@ -252,7 +289,7 @@ async function openFromDiscovery(index: number, expected: any) {
     readRecord,
     requestPaths: newPaths,
   });
-  if (savedHistory)
+  if (index === 0 && savedHistory)
     assert.deepEqual(
       (await api(`/api/papers/${result.paperKey}/history`)).history.find((h: any) => h.id === savedHistory!.id),
       savedHistory,
@@ -324,10 +361,11 @@ try {
       env: { ...process.env, FRACTAL_DESKTOP_PROFILE: join(directory, 'profile') },
       timeout: 60_000,
     });
-    ownedPid = app.process().pid!;
+    evidence.wrapperIdentity = processIdentity(app.process().pid!);
+    ownedPid = await app.evaluate(() => process.pid);
     evidence.runtimeIdentity = processIdentity(ownedPid);
     assert.equal(evidence.runtimeIdentity.ProcessId, ownedPid);
-    assert.equal(evidence.runtimeIdentity.ExecutablePath.toLowerCase(), executablePath.replaceAll('/', '\\').toLowerCase());
+    assert.equal(evidence.runtimeIdentity.ExecutablePath.toLowerCase(), (await realpath(executablePath)).toLowerCase());
     evidence.isPackaged = await app.evaluate(({ app }) => app.isPackaged);
     assert.equal(evidence.isPackaged, mode === 'packaged');
     page = await app.firstWindow();
@@ -338,6 +376,11 @@ try {
     evidence.listener = origin;
   } else {
     browser = await chromium.launch({ executablePath: 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', headless: true });
+    const processSession = await browser.newBrowserCDPSession();
+    const processes = await processSession.send('SystemInfo.getProcessInfo');
+    browserPid = processes.processInfo.find((item) => item.type === 'browser')!.id;
+    evidence.browserRuntimeIdentity = processIdentity(browserPid!);
+    await processSession.detach();
     const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, permissions: ['clipboard-read', 'clipboard-write'] });
     page = await context.newPage();
   }
@@ -350,6 +393,7 @@ try {
   page.on('popup', (p) => evidence.externalNavigation.push(p.url()));
   await page.addInitScript('window.__name = (value) => value');
   await page.goto(origin + '/#/home');
+  await page.evaluate('window.__name = (value) => value');
   await page.locator('[data-feed-id="pdf-acquisition-0"]').waitFor();
   await page.evaluate(() => document.fonts.ready);
   await page.screenshot({ path: join(output, 'scholarly-discovery.png') });
@@ -451,6 +495,21 @@ try {
     });
     await page.unroute('**/api/publications/open');
     await page.unroute('**/api/feed/refresh');
+    const preferences = await api('/api/preferences');
+    await api('/api/preferences', { ...preferences, uiLanguage: 'ko' }, 'PUT');
+    await page.reload();
+    const koRow = page.locator('[data-feed-id="pdf-acquisition-2"]');
+    await koRow.getByRole('button', { name: 'PDF 읽기', exact: true }).waitFor();
+    await page.route('**/api/publications/open', async (route) => {
+      await route.fulfill({ status: 404, json: null });
+    });
+    await koRow.getByRole('button', { name: 'PDF 읽기', exact: true }).focus();
+    await page.keyboard.press('Enter');
+    await koRow.getByRole('alert').filter({ hasText: '이 Hub는 앱 내 PDF 가져오기를 지원하지 않습니다' }).waitFor();
+    assert.ok(await koRow.getByRole('button', { name: 'PDF 읽기 다시 시도', exact: true }).isVisible());
+    await page.screenshot({ path: join(output, 'error-old-hub-ko.png') });
+    evidence.cases.push({ name: 'controlled-korean-keyboard-fallback', localized: true });
+    await page.unroute('**/api/publications/open');
   } else {
     const [a, c] = await Promise.all([reference(attentionPdf, 'attention-public-reference.pdf'), reference(clipPdf, 'clip-public-reference.pdf')]);
     evidence.references = { attention: a, clip: c };
@@ -458,6 +517,9 @@ try {
     await selection('dominant', false);
     await selection('ominan', true);
     const clipResult = await openFromDiscovery(1, c);
+    const exactReference = await reference(exactPdf, 'exact-user-v1-public-reference.pdf');
+    evidence.references.exactUserCase = exactReference;
+    await openFromDiscovery(3, exactReference);
     await page.goto(origin + '/#/home');
     const reopen = page.locator('[data-feed-id="pdf-acquisition-0"]');
     await reopen.waitFor();
@@ -467,6 +529,29 @@ try {
     assert.equal(decodeURIComponent(new URL(page.url()).hash.split('/').at(-1)!), attentionResult.paperKey);
     assert.ok(!requestPaths.slice(paths).includes('/api/publications/open'), 'cached reopen skips acquisition route');
     evidence.cases.push({ name: 'cached-reopen', paperKey: attentionResult.paperKey, acquisitionSkipped: true });
+    // Real application HTTP and real public non-PDF HTML, with no response override.
+    await page.goto(origin + '/#/home');
+    const failureRow = page.locator('[data-feed-id="pdf-acquisition-2"]');
+    await failureRow.waitFor();
+    const failed = page.waitForResponse((response) => response.url().endsWith('/api/publications/open'));
+    await failureRow.getByRole('button', { name: 'Read PDF', exact: true }).focus();
+    await page.keyboard.press('Enter');
+    const failedResponse = await failed,
+      failurePayload = await failedResponse.json();
+    assert.equal(failedResponse.status(), 400);
+    assert.equal(failurePayload.error.code, 'INVALID_INPUT');
+    assert.match(failurePayload.error.message, /one main PDF/);
+    await failureRow.getByRole('alert').filter({ hasText: 'one main PDF' }).waitFor();
+    assert.equal(new URL(page.url()).hash, '#/home');
+    assert.ok(await failureRow.getByRole('button', { name: 'Retry Read PDF' }).isEnabled());
+    await page.screenshot({ path: join(output, 'real-http-no-main-pdf.png') });
+    evidence.cases.push({
+      name: 'real-public-HTML-failure-over-application-HTTP',
+      url: rejected.url,
+      status: failedResponse.status(),
+      error: failurePayload.error,
+      stayedInApp: true,
+    });
   }
   assert.deepEqual(evidence.externalNavigation, [], 'Read and failure never navigate externally');
   assert.deepEqual(errors, []);
@@ -474,32 +559,42 @@ try {
 } catch (error) {
   evidence.status = 'failed';
   evidence.error = error instanceof Error ? error.stack : String(error);
-  throw error;
+  console.error(evidence.error);
+  process.exitCode = 1;
 } finally {
   if (app) {
     const current = processIdentity(ownedPid!);
     assert.deepEqual(current, evidence.runtimeIdentity, 'owned process identity unchanged before close');
-    evidence.listenerOwnership = execFileSync(
-      'powershell.exe',
-      [
-        '-NoProfile',
-        '-Command',
-        `Get-NetTCPConnection -LocalPort ${listener} -State Listen -ErrorAction SilentlyContinue | Select-Object LocalAddress,LocalPort,OwningProcess | ConvertTo-Json -Compress`,
-      ],
-      { encoding: 'utf8' },
-    ).trim();
+    if (listener)
+      evidence.listenerOwnership = execFileSync(
+        'powershell.exe',
+        [
+          '-NoProfile',
+          '-Command',
+          `Get-NetTCPConnection -LocalPort ${listener} -State Listen -ErrorAction SilentlyContinue | Select-Object LocalAddress,LocalPort,OwningProcess | ConvertTo-Json -Compress`,
+        ],
+        { encoding: 'utf8' },
+      ).trim();
     await app.close();
     evidence.ownedProcessExited = processIdentity(ownedPid!) === null;
     assert.equal(evidence.ownedProcessExited, true);
-    evidence.listenerReleased =
-      execFileSync(
-        'powershell.exe',
-        ['-NoProfile', '-Command', `@(Get-NetTCPConnection -LocalPort ${listener} -State Listen -ErrorAction SilentlyContinue).Count`],
-        { encoding: 'utf8' },
-      ).trim() === '0';
-    assert.equal(evidence.listenerReleased, true);
+    evidence.ownedWrapperExited = processIdentity(evidence.wrapperIdentity.ProcessId) === null;
+    assert.equal(evidence.ownedWrapperExited, true);
+    if (listener)
+      evidence.listenerReleased =
+        execFileSync(
+          'powershell.exe',
+          ['-NoProfile', '-Command', `@(Get-NetTCPConnection -LocalPort ${listener} -State Listen -ErrorAction SilentlyContinue).Count`],
+          { encoding: 'utf8' },
+        ).trim() === '0';
+    if (listener) assert.equal(evidence.listenerReleased, true);
   }
-  await browser?.close();
+  if (browser) {
+    assert.deepEqual(processIdentity(browserPid!), evidence.browserRuntimeIdentity, 'owned browser identity unchanged before close');
+    await browser.close();
+    evidence.ownedBrowserExited = processIdentity(browserPid!) === null;
+    assert.equal(evidence.ownedBrowserExited, true);
+  }
   if (serviceRunning) await service.stop();
   evidence.errors = errors;
   evidence.ownedHandleCleanup = true;

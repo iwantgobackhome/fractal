@@ -1,4 +1,96 @@
 import type { AppError, ErrorCode } from '@fractal/shared';
+import { SourceError } from '../arxiv/index';
+
+const publicationMessages = {
+  cache_changed: {
+    en: 'The stored PDF no longer matches its recorded hash. The cached file was not replaced. Check the stored file or open the publication site.',
+    ko: '저장된 PDF가 기록된 해시와 일치하지 않습니다. 캐시 파일은 교체되지 않았습니다. 저장 파일을 확인하거나 출판물 사이트를 여세요.',
+  },
+  source_changed: {
+    en: 'The PDF bytes differ from this publication’s recorded file. The existing file was not replaced. Check the source before retrying.',
+    ko: 'PDF가 이 출판물의 기록된 파일과 다릅니다. 기존 파일은 교체되지 않았습니다. 원문을 확인한 후 다시 시도하세요.',
+  },
+  no_main_pdf: {
+    en: 'The source page did not identify one main PDF. It may require sign-in. Retry, open the publication site, or link your PDF.',
+    ko: '원문 페이지에서 논문 PDF를 하나로 확인하지 못했습니다. 로그인이 필요할 수 있습니다. 다시 시도하거나 원문 사이트 또는 PDF 연결을 이용하세요.',
+  },
+  non_pdf: {
+    en: 'The source did not return a readable PDF. It may have returned a sign-in page. Use a direct PDF link or link your PDF.',
+    ko: '원문이 읽을 수 있는 PDF를 반환하지 않았습니다. 로그인 페이지가 반환되었을 수 있습니다. PDF 직접 링크 또는 PDF 연결을 이용하세요.',
+  },
+  auth: {
+    en: 'The publication or metadata source requires authorization. Open the source to sign in, or link a PDF you can access.',
+    ko: '출판물 또는 서지 정보 소스에 접근 권한이 필요합니다. 원문에서 로그인하거나 접근 가능한 PDF를 연결하세요.',
+  },
+  missing: {
+    en: 'No publicly downloadable PDF was found for this publication. Retry, open the source, or link your PDF.',
+    ko: '이 출판물에서 공개 다운로드 가능한 PDF를 찾지 못했습니다. 다시 시도하거나 원문 또는 PDF 연결을 이용하세요.',
+  },
+  timeout: {
+    en: 'Publication download exceeded its time limit. Retry, open the source, or link your PDF.',
+    ko: '출판물 다운로드 시간이 초과되었습니다. 다시 시도하거나 원문 또는 PDF 연결을 이용하세요.',
+  },
+  network: {
+    en: 'The publication source could not be reached or rejected the download. Retry, open the source, or link your PDF.',
+    ko: '출판물 소스에 연결할 수 없거나 다운로드가 거부되었습니다. 다시 시도하거나 원문 또는 PDF 연결을 이용하세요.',
+  },
+  quota: {
+    en: 'The publication source is limiting requests. Retry later, open the source, or link your PDF.',
+    ko: '출판물 소스가 요청을 제한하고 있습니다. 나중에 다시 시도하거나 원문 또는 PDF 연결을 이용하세요.',
+  },
+  size: {
+    en: 'The source response exceeds the download size limit. Try a direct PDF link or a supported smaller file.',
+    ko: '원문 응답이 다운로드 크기 제한을 초과했습니다. PDF 직접 링크 또는 지원되는 더 작은 파일을 이용하세요.',
+  },
+  conflict: {
+    en: 'The publication identifiers conflict with the requested paper. No PDF was linked. Check the source or choose the correct PDF.',
+    ko: '출판물 식별자가 요청한 논문과 다릅니다. PDF는 연결되지 않았습니다. 원문을 확인하거나 올바른 PDF를 선택하세요.',
+  },
+  url: {
+    en: 'This publication URL cannot be downloaded here. Use a public HTTPS publication or direct PDF URL.',
+    ko: '이 출판물 주소는 여기에서 다운로드할 수 없습니다. 공개 HTTPS 출판물 또는 PDF 직접 주소를 이용하세요.',
+  },
+};
+// Internal request-scoped annotation, never a new wire field or unbounded raw cause.
+const publicationFailures = new WeakMap<AppError, keyof typeof publicationMessages>();
+export function markPublicationFailure(error: AppError, cause: unknown): void {
+  if (error.code === 'SOURCE_CHANGED') {
+    publicationFailures.set(
+      error,
+      error.message === 'Stored PDF bytes no longer match this publication. The cached file was not replaced.' ? 'cache_changed' : 'source_changed',
+    );
+    return;
+  }
+  if (
+    error.code === 'INVALID_INPUT' &&
+    ((cause instanceof SourceError && cause.reason === 'IDENTIFIER_CONFLICT') || /identifiers? conflict/i.test(error.message))
+  ) {
+    publicationFailures.set(error, 'conflict');
+    return;
+  }
+  if (!(cause instanceof SourceError)) return;
+  const kind =
+    error.code === 'INVALID_INPUT'
+      ? error.message === '이 페이지에서 논문 PDF를 하나로 확인할 수 없습니다. PDF 직접 주소를 입력하세요.'
+        ? 'no_main_pdf'
+        : 'url'
+      : error.code === 'UNSUPPORTED_PDF'
+        ? 'non_pdf'
+        : error.code === 'AUTH_REQUIRED'
+          ? 'auth'
+          : error.code === 'NOT_FOUND'
+            ? 'missing'
+            : error.code === 'NETWORK'
+              ? /time budget|시간을 초과/u.test(error.message)
+                ? 'timeout'
+                : 'network'
+              : error.code === 'QUOTA'
+                ? 'quota'
+                : error.code === 'TOO_LARGE'
+                  ? 'size'
+                  : null;
+  if (kind) publicationFailures.set(error, kind);
+}
 
 const messages: Record<ErrorCode, { ko: string; en: string }> = {
   ARTICLE_UNAVAILABLE: {
@@ -31,6 +123,8 @@ const messages: Record<ErrorCode, { ko: string; en: string }> = {
 };
 
 export function localizeError(error: AppError, language: 'ko' | 'en'): AppError {
+  const publication = publicationFailures.get(error);
+  if (publication) return { ...error, message: publicationMessages[publication][language] };
   if (error.code === 'UNSAFE_RUNTIME') return error;
   return {
     ...error,

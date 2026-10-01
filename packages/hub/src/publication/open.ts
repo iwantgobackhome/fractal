@@ -15,6 +15,7 @@ import {
 import { loadPublication } from './index';
 import { publicGet, validatePublicUrl, type PublicNetworkOptions } from './network';
 import { ProviderFailure, ScholarlyClient } from '../scholarly/client';
+import { sha256 } from '../pdf/index';
 
 /** Service-owned dependencies, never accepted from an HTTP request. */
 export interface PublicationAcquisitionOptions extends PublicNetworkOptions {
@@ -38,7 +39,12 @@ export async function openPublication(
   const catalog = publicationCatalog(store, input);
   const key = catalog.paperKey;
   const paper = store.getPaper(key);
-  if (paper && store.getPdf(key)) return { ...catalog, paper, hasPdf: true };
+  const cached = store.getPdf(key);
+  if (paper && cached) {
+    if (sha256(cached) !== paper.pdfSha256)
+      throw appError('SOURCE_CHANGED', 'Stored PDF bytes no longer match this publication. The cached file was not replaced.');
+    return { ...catalog, paper, hasPdf: true };
+  }
   const jobs = active.get(store) ?? new Map();
   active.set(store, jobs);
   const pending = jobs.get(key);

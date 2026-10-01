@@ -26,7 +26,7 @@ import { isExcludedModel } from '../codex/index';
 import { EXTRACTION_VERSION } from '../pdf/index';
 import { ChatService, RESTARTED_ERROR, type ChatLogEvent } from '../chat/index';
 import { HttpError, toHttp } from './errors';
-import { localizePayload } from './localize';
+import { localizePayload, markPublicationFailure } from './localize';
 import { TOKEN_HEADER, assertLocalRequest, assertRemoteRequest, isLoopbackHost, isLoopbackPeer } from './guard';
 import type { DeviceStore } from '../pairing/store';
 import type { PairingSessions } from '../pairing/session';
@@ -394,6 +394,7 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
   async function handle(request: IncomingMessage, response: ServerResponse): Promise<void> {
     const method = request.method ?? 'GET';
     let route = 'unknown';
+    let publicationFailure = false;
     try {
       const url = new URL(request.url ?? '/', `http://${LOOPBACK}`);
       const segments = url.pathname.split('/').filter((s) => s.length > 0);
@@ -426,6 +427,11 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
         }
       }
 
+      publicationFailure =
+        method === 'POST' &&
+        segments[0] === 'api' &&
+        ((segments.length === 3 && segments[1] === 'publications' && segments[2] === 'open') ||
+          (segments.length === 4 && segments[1] === 'library' && segments[3] === 'pdf'));
       const result = await route_(method, segments, request, { devices: options.devices, pairing: options.pairing, network: options.network, local, url });
       if (result.kind === 'json') {
         send(response, result.status, { data: result.data });
@@ -462,6 +468,7 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
       log({ event: 'http', route, method, status: result.status });
     } catch (cause) {
       const { status, error } = toHttp(cause);
+      if (publicationFailure) markPublicationFailure(error, cause);
       sendError(response, status, error);
       log({ event: 'http', route, method, status, code: error.code });
     }

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createHash } from 'node:crypto';
@@ -103,10 +103,111 @@ async function application(respond: (url: URL, signal: AbortSignal, init?: Reque
     });
     return { status: response.status, ...((await response.json()) as Record<string, any>) };
   };
-  return { store, urls, post, base };
+  return { store, urls, post, base, token: server.token };
 }
 
 describe('publication acquisition over authenticated application HTTP', () => {
+  it.each(['open', 'link'])(
+    'refuses altered cached bytes via %s HTTP without replacing bytes or changing user metadata; restored cache succeeds',
+    async (route) => {
+      const { store, urls, post, base, token } = await application(() => ({ body: bytes }));
+      const opened = await post();
+      const key = opened.data.paperKey;
+      store.putFolder({ id: 'kept-folder', name: 'Kept folder', parentId: null });
+      store.patchLibrary(key, {
+        saved: true,
+        tags: ['kept-tag'],
+        collections: ['kept-folder'],
+        lastReadAt: '2026-09-01T00:00:00.000Z',
+        readProgress: { page: 1, fraction: 0.25 },
+      });
+      const now = new Date().toISOString();
+      store.putHistory({
+        id: 'kept-history',
+        paperKey: key,
+        kind: 'question',
+        question: 'Kept question',
+        text: 'Kept answer',
+        status: 'completed',
+        createdAt: now,
+        updatedAt: now,
+        completedAt: now,
+        requestId: null,
+        context: {},
+        answer: null,
+        error: null,
+        rev: 1,
+        deviceId: 'hub',
+        deleted: false,
+      });
+      const before = store.getLibrary(key),
+        paper = store.getPaper(key),
+        history = store.listHistory(key);
+      expect(await post()).toMatchObject({ status: 200, data: { paperKey: key, hasPdf: true, paper: { pdfSha256: sha(bytes) } } });
+      const path = join(store.root, 'pdfs', `${sha(bytes)}.pdf`),
+        altered = Buffer.concat([bytes, Buffer.from('\n% altered local cache\n')]);
+      writeFileSync(path, altered);
+      const served = await fetch(`${base}/api/papers/${key}/pdf`);
+      expect(sha(Buffer.from(await served.arrayBuffer()))).toBe(sha(altered));
+      const link =
+        route === 'link'
+          ? await fetch(`${base}/api/library/${key}/pdf`, {
+              method: 'POST',
+              headers: { [TOKEN_HEADER]: token, origin: base, 'content-type': 'application/pdf' },
+              body: new Uint8Array(bytes),
+            })
+          : null;
+      const rejected = link ? { status: link.status, ...(await link.json()) } : await post();
+      expect(rejected).toMatchObject({ status: 409, error: { code: 'SOURCE_CHANGED', retryable: false } });
+      expect(rejected.error.message).toContain('캐시 파일은 교체되지 않았습니다');
+      expect(rejected.data).toBeUndefined();
+      expect(store.getPdf(key)).toEqual(altered);
+      expect(store.getLibrary(key)).toEqual(before);
+      expect(store.getPaper(key)).toEqual(paper);
+      expect(store.listHistory(key)).toEqual(history);
+      expect(urls).toHaveLength(1);
+      writeFileSync(path, bytes);
+      expect(await post()).toMatchObject({ status: 200, data: { paperKey: key, hasPdf: true, paper: { pdfSha256: sha(bytes) } } });
+      expect(store.getPdf(key)).toEqual(bytes);
+      expect(store.getLibrary(key)).toEqual(before);
+      expect(store.listHistory(key)).toEqual(history);
+      expect(urls).toHaveLength(1);
+    },
+  );
+  it.each(['en', 'ko'] as const)('returns specific bounded acquisition causes in %s while unrelated validation stays generic', async (language) => {
+    const cases = [
+      {
+        code: 'INVALID_INPUT',
+        reply: { type: 'text/html', body: '<html><form>Sign in: password private-secret</form></html>' },
+        expected: { en: 'one main PDF', ko: '논문 PDF를 하나로 확인' },
+      },
+      { code: 'AUTH_REQUIRED', reply: { status: 403, body: 'private-secret' }, expected: { en: 'source requires authorization', ko: '접근 권한이 필요' } },
+      { code: 'NOT_FOUND', reply: { status: 404, body: 'private-secret' }, expected: { en: 'No publicly downloadable PDF', ko: '공개 다운로드 가능한 PDF' } },
+      { code: 'NETWORK', reply: { status: 503, body: '<html>private-secret</html>' }, expected: { en: 'rejected the download', ko: '다운로드가 거부' } },
+    ];
+    for (const item of cases) {
+      const { store, post } = await application(() => item.reply);
+      store.putPreferences({ ...store.getPreferences(), uiLanguage: language });
+      const result = await post();
+      expect(result.error.code).toBe(item.code);
+      expect(result.error.message).toContain(item.expected[language]);
+      expect(result.error.message.length).toBeLessThan(240);
+      expect(result.error.message).not.toMatch(/private-secret|<html>|password|stack/);
+      expect(result.error).not.toHaveProperty('reason');
+      const generic = await post({ title: '' });
+      expect(generic.error.message).toBe(language === 'en' ? 'Invalid request.' : '요청 형식이 올바르지 않습니다.');
+    }
+    const login = await application((url) =>
+      url.pathname === '/paper'
+        ? { type: 'text/html', body: '<meta name="citation_pdf_url" content="/pdf">' }
+        : { type: 'text/html', body: '<html>Sign in private-secret</html>' },
+    );
+    login.store.putPreferences({ ...login.store.getPreferences(), uiLanguage: language });
+    const result = await login.post();
+    expect(result.error.code).toBe('UNSUPPORTED_PDF');
+    expect(result.error.message).toContain(language === 'en' ? 'sign-in page' : '로그인 페이지');
+    expect(result.error.message).not.toContain('private-secret');
+  });
   it('coalesces identical opens, stores real PDF bytes under stable unsaved catalog identity and records Recent only on read', async () => {
     const { store, urls, post, base } = await application(async () => {
       await new Promise((r) => setTimeout(r, 20));

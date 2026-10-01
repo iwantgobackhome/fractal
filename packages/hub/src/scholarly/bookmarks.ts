@@ -94,7 +94,10 @@ async function linkOnce(store: SqlitePaperStore, key: string, bytes: Buffer, has
   const existing = store.getPaper(key);
   if (existing) {
     if (existing.pdfSha256 !== hash) throw appError('SOURCE_CHANGED', 'This publication already has a different PDF');
-    if (!store.getPdf(key)) store.savePdf(key, bytes);
+    const cached = store.getPdf(key);
+    if (cached && sha(cached) !== existing.pdfSha256)
+      throw appError('SOURCE_CHANGED', 'Stored PDF bytes no longer match this publication. The cached file was not replaced.');
+    if (!cached) store.savePdf(key, bytes);
     return { paperKey: key, paper: existing, record: store.getLibrary(key)!, hasPdf: !!store.getPdf(key) };
   }
   // Reserved reader keys keep their original identity rules. Legacy safe catalog keys
