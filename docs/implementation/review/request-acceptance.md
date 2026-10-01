@@ -1,12 +1,19 @@
 ﻿# Request acceptance map
 
-## Reopened publication PDF acquisition follow-up
+## Publication PDF acquisition follow-up
 
 The user reported that an available PDF opened only an external publication site. That external-only action and DOI/alternative-location/publisher discovery gaps are repaired. PC and Android now have explicit in-app Read without implicit Save or premature Recent, stable catalog/PDF identity, bounded discovery and truthful failure/retry. Independent certification of the final follow-up artifacts remains pending; the packages below are previous verified checkpoints. Request14 remains excluded.
 
-Accepted source includes backend5280a87, PC51149 and cached GET/readable409 repair6d447165, plus Android IO cache verification16ac. User's exact arXiv2609.40325v1 has real public download, 45-page PC/Android reader and cached/offline proof:49,668,700 bytes, SHA256 `d9fdc657534201a7e1df44080ae52fb1c168b791b56581ebf2ddf35d0b087901`. The current GET package proves a real public PDF and cache refusal/restoration without repeating that large unchanged-path download. Independent QA is closing the actual cached GET/Read path. Root visual review also requires a truthful localized failure heading and human context in place of the existing internal key; a narrow final presentation package is pending.
+Accepted source includes backend5280a87, PC51149 and cached GET/readable409 repair6d447165, plus Android IO cache verification16ac. User's exact arXiv2609.40325v1 has real public download, 45-page PC/Android reader and cached/offline proof:49,668,700 bytes, SHA256 `d9fdc657534201a7e1df44080ae52fb1c168b791b56581ebf2ddf35d0b087901`. Independent actual HTTP/keyboard proof closes QA-PDF-1: changed canonical bytes are refused across acquisition, manual link and full/Range/conditional GET, with no PDF/Recent or saved metadata/history/folder mutation; restored original renders under the same identity. The final c0a01b88 package also corrects the inherited Ready-to-read/internal-key failure screen with truthful Korean/English headings, bounded cause and retry. Independent source/bilingual owner-proof review closes QA-PDF-2; final artifact inspection has passed and formal overall QA settlement is pending.
 
-Final Android debug APK is copied and independently inspected at `dist/reviewed-builds/android-pdf-b940fd0/Fractal-0.1.0-android-debug.apk`,69,961,372 bytes/SHA256 `086b78bebf11f48012efe3f59356dce86e648fd800d4c55ac559315ecd24c842`. Signature, canonical source, resources, native evidence and owner cleanup pass. Current native proof uses backend733be and is explicitly separate from the later GET guard; no physical device, API35, installation or release-signing claim. Current Windows6d installer/source/resource/native gates pass but will be superseded by the final failure presentation package. Windows51149 remains historical interim, not final delivery.
+Final Android debug APK is copied and independently inspected. Signature, canonical source, resources, native evidence and owner cleanup pass. Current native proof uses backend733be and is explicitly separate from the later GET guard; no physical device, API35, installation or release-signing claim. Final Windows c0a01b88 source/UI and actual packaged real-public Read, bilingual corruption refusal/no key/no canvas/no Recent/full preservation and restored original pass;176 shipped resources/207 canonical product inputs, native icons and source/delivered NSIS hashes match. Owner runtime7924/wrapper51856/listener7195 are independently absent. Windows51149/6d and selection0efa remain historical intermediate evidence, not final follow-up delivery.
+
+| Final follow-up delivery | Exact identity |
+| --- | --- |
+| Windows installer | `dist/reviewed-builds/desktop-pdf-c0a01b8/Fractal Setup 0.1.0.exe`; product source `c0a01b88a6f0141c57fb427344cb0e86ef011141`;117592673 bytes;SHA256 `f886937cd5c520ef818e9cbbe40b8c1f4828c7ead678fde4a6d21e9368f7393a` |
+| Android debug APK | `dist/reviewed-builds/android-pdf-b940fd0/Fractal-0.1.0-android-debug.apk`; frozen APK source `b940fd06d5874412fac29921326c7055f31f99a1`;69961372 bytes;SHA256 `086b78bebf11f48012efe3f59356dce86e648fd800d4c55ac559315ecd24c842` |
+
+Source/delivered copies match exact sizes and SHA256; no prior artifact was overwritten. [Backend acquisition](../backend/pdf-acquisition/acceptance.md), [initial desktop acquisition and exact version proof](../desktop/pdf-acquisition/REPORT.md), [canonical cached Read repair](../desktop/pdf-cached-read/REPORT.md), [final Windows presentation/package](../desktop/pdf-reader-failure/REPORT.md), [Android final source/native/artifact proof](../../../apps/android/qa/pdf-acquisition/final-report.md), and [independent follow-up review](../qa/pdf-acquisition/REVIEW.md) distinguish executed versus reviewed boundaries. Exact-v1 Windows51149 proof is qualified historical unchanged acquisition-path evidence; final c0 independently executes a real public Attention PDF, without repeating49.7MB. Current Android IO-cache/offline exact-v1 proof is separately recorded. Root integrated build/typecheck pass on accepted GET source; final UI source typecheck/build and packaged bundled Hub/source bindings pass. No broader test matrix was repeated for the two-line failure presentation correction.
 
 ## Previous delivery and verification
 
@@ -16,8 +23,8 @@ The latest PC correction has been reproduced with an actual public academic PDF 
 
 | Delivery | Exact identity |
 | --- | --- |
-| Current Windows installer | `dist/reviewed-builds/desktop-0efa96c/Fractal Setup 0.1.0.exe`; source `0efa96c7575435d9ce408c4dcc2ce427134e9141`;117588001 bytes;SHA256 `63ee8767cf28671a1d140dada62502b51ebddfb9f2e515c7cc020714cb52b986` |
-| Current Android debug APK | `dist/reviewed-builds/android-e690dca/Fractal-0.1.0-android-debug.apk`; source `e690dcabfc150c7c83170a512cf2562166b3a014`;69857944 bytes;SHA256 `3597906a2d8aee3569ecf7a91510c22a51cc2b6e411172fb84ca585519d9999f` |
+| Previous Windows installer | `dist/reviewed-builds/desktop-0efa96c/Fractal Setup 0.1.0.exe`; source `0efa96c7575435d9ce408c4dcc2ce427134e9141`;117588001 bytes;SHA256 `63ee8767cf28671a1d140dada62502b51ebddfb9f2e515c7cc020714cb52b986` |
+| Previous Android debug APK | `dist/reviewed-builds/android-e690dca/Fractal-0.1.0-android-debug.apk`; source `e690dcabfc150c7c83170a512cf2562166b3a014`;69857944 bytes;SHA256 `3597906a2d8aee3569ecf7a91510c22a51cc2b6e411172fb84ca585519d9999f` |
 
 The old Windows08af7b3 package is historical and is superseded by the current selection repair. Both current delivered copies were checked against their owner artifacts by size and SHA256; no installer was installed over the user's profile. Android is a debug/test APK, not a release-signed package.
 
