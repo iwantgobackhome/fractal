@@ -1,0 +1,143 @@
+{
+  "proof": {
+    "sourceCommit": "d5cbccbd450f7ab1bfd0297b329eeb5c41d46ab2",
+    "capturedAt": "2026-10-01T07:42:55.268Z",
+    "scope": "controlled metadata seeds with actual public HTML/image discovery and production authenticated HTTP cache routes",
+    "pid": 44800,
+    "executable": "C:\\Program Files\\nodejs\\node.exe",
+    "command": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-v020-thumbnails-backend\\docs\\implementation\\backend\\v020-thumbnails\\prove-hub.ts"
+    ],
+    "profile": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-v020-thumbnails-backend\\docs\\implementation\\backend\\v020-thumbnails\\data\\hub-profile-1790840574525",
+    "hub": "http://127.0.0.1:13790",
+    "refreshMs": 345,
+    "images": [
+      {
+        "kind": "paper",
+        "itemId": "arxiv:2609.40325",
+        "article": "https://arxiv.org/abs/2609.40325v1",
+        "image": {
+          "url": "/api/feed/images/734f8081f3e1980309cce54586072b22a95053ee1c0d8c3e89971b13fbaabab0",
+          "width": 1920,
+          "height": 1150,
+          "alt": "WorldAuditBench: Interactive 3D World Auditing with Multimodal Agents"
+        },
+        "source": "https://arxiv.org/html/2609.40325v1/anomaly_taxonomy.png",
+        "finalURL": "https://arxiv.org/html/2609.40325v1/anomaly_taxonomy.png",
+        "contentType": "image/png",
+        "byteLength": 3086692,
+        "sha256": "c4b29afc943f6b8cd2ada156874b70e4967a8f3d5f2951ccb23ce94ca3fa2e84",
+        "matchesCapturedPublicBytes": true,
+        "repeatMatches": true,
+        "unauthenticatedStatus": 200
+      },
+      {
+        "kind": "news",
+        "itemId": "news:mit-dmd-public-probe",
+        "article": "https://news.mit.edu/2024/ai-generates-high-quality-images-30-times-faster-single-step-0321",
+        "image": {
+          "url": "/api/feed/images/bc175c6d20a54ddc9589ed4d2ca6032a2ba78dc14159b8e59a3a7b71dd74c861",
+          "width": 900,
+          "height": 600,
+          "alt": "AI generates high-quality images 30 times faster in a single step"
+        },
+        "source": "https://news.mit.edu/sites/default/files/styles/news_article__image_gallery/public/images/202403/MIT-DMD.png?itok=oIzEyXxR",
+        "finalURL": "https://news.mit.edu/sites/default/files/styles/news_article__image_gallery/public/images/202403/MIT-DMD.png?itok=oIzEyXxR",
+        "contentType": "image/png",
+        "byteLength": 678963,
+        "sha256": "ac64b89e3b693917a13f75d638e6c7ce5c6816bb3118d8b22b4d451abafd470c",
+        "matchesCapturedPublicBytes": true,
+        "repeatMatches": true,
+        "unauthenticatedStatus": 200
+      }
+    ],
+    "identity": {
+      "refreshChangedLibrary": false,
+      "repeatedSaveSamePaperKey": true,
+      "repeatedSaveChangedLibrary": false,
+      "savedPaperKey": "pub-32fc1d3ce5ab760587b23fe492bdf6abf032f3adcc5f8a1e0ae8f7e01d18f01f",
+      "recentCount": 0,
+      "pdfDownloaded": false,
+      "unauthenticatedSaveStatus": 403
+    }
+  },
+  "imageOrder": [
+    {
+      "kind": "paper",
+      "html": "https://arxiv.org/html/2609.40325v1",
+      "selectedElement": "figure#S0.F1 img",
+      "documentImageIndex": 3,
+      "figureNumber": 1,
+      "rejectedEarlierImages": ["announcement SVG", "arXiv logo SVG", "17x17 uncaptioned worldaudit logo"],
+      "sourceAttribute": "src",
+      "sourceValue": "2609.40325v1/anomaly_taxonomy.png",
+      "visuallyInspected": true
+    },
+    {
+      "kind": "news",
+      "selectedElement": "first article image",
+      "documentImageIndex": 0,
+      "sourceAttribute": "data-src",
+      "srcPlaceholderRejected": true,
+      "relatedStoryImagesRejected": true,
+      "ogIsLaterCandidate": true,
+      "visuallyInspected": true
+    }
+  ],
+  "processBeforeCleanup": {
+    "capturedAt": "2026-10-01T07:43:43.5040478Z",
+    "pid": 44800,
+    "executable": "C:\\Program Files\\nodejs\\node.exe",
+    "started": "2026-10-01T07:42:52.9592230Z",
+    "commandLine": "\"C:\\Program Files\\nodejs\\node.exe\" --import tsx docs/implementation/backend/v020-thumbnails/prove-hub.ts ",
+    "listeners": [
+      {
+        "LocalAddress": "127.0.0.1",
+        "LocalPort": 13790,
+        "State": 2,
+        "OwningProcess": 44800
+      }
+    ]
+  },
+  "cleanup": {
+    "capturedAt": "2026-10-01T07:46:05.1421282Z",
+    "pid": 44800,
+    "processExists": false,
+    "listenerCount": 0,
+    "artifactsRetained": true
+  },
+  "earlierSuccessfulProcess": {
+    "capturedAt": "2026-10-01T07:37:12.6563284Z",
+    "pid": 45676,
+    "executable": "C:\\Program Files\\nodejs\\node.exe",
+    "started": "2026-10-01T07:36:44.4293680Z",
+    "commandLine": "\"C:\\Program Files\\nodejs\\node.exe\" --import tsx docs/implementation/backend/v020-thumbnails/prove-hub.ts ",
+    "listeners": [
+      {
+        "LocalAddress": "127.0.0.1",
+        "LocalPort": 13342,
+        "State": 2,
+        "OwningProcess": 45676
+      }
+    ]
+  },
+  "earlierSuccessfulCleanup": {
+    "capturedAt": "2026-10-01T07:38:50.4319722Z",
+    "pid": 45676,
+    "processExists": false,
+    "listenerCount": 0,
+    "gracefulStopMarker": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-v020-thumbnails-backend\\docs\\implementation\\backend\\v020-thumbnails\\data\\hub-profile-1790840205831\\stop",
+    "artifactsRetained": true
+  },
+  "checks": {
+    "hubTypecheck": "passed",
+    "hubBuild": "passed",
+    "focusedFeedTests": 38,
+    "allHubTests": 234,
+    "allHubFiles": 28,
+    "publicationAcquisitionTests": 39,
+    "sharedContractChanged": false
+  },
+  "captures": "Ignored data/ contains public HTML, image bytes, served bytes, profiles and logs; no credentials are included in this durable evidence."
+}
