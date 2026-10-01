@@ -5,13 +5,13 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
-const [input, acceptedCommit] = process.argv.slice(2);
+const [input, acceptedCommit, expectedRunId] = process.argv.slice(2);
 assert.ok(input && /^[a-f0-9]{40}$/.test(acceptedCommit), 'Supply actual artifact directory and accepted full commit');
 const directory = resolve(input);
 const labels = ['win32-x64', 'linux-x64', 'darwin-arm64', 'darwin-x64', 'android'];
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 const json = name => JSON.parse(readFileSync(join(directory, name), 'utf8'));
-const report = { acceptedCommit, inspectedAt: new Date().toISOString(), directory, scope: 'downloaded actual CI payloads and manifests; no installation or desktop GUI runtime claim', checksums: [], jobs: [], distributions: [] };
+const report = { acceptedCommit, expectedRunId: expectedRunId ?? null, inspectedAt: new Date().toISOString(), directory, scope: 'downloaded actual CI payloads and manifests; no installation or desktop GUI runtime claim', checksums: [], jobs: [], distributions: [] };
 const verified = new Map();
 for (const label of labels) {
   for (const line of readFileSync(join(directory, `SHA256SUMS-${label}.txt`), 'utf8').trim().split(/\r?\n/)) {
@@ -42,10 +42,15 @@ for (const path of sourcePaths) {
   const crlf = text ? Buffer.from(bytes.toString('utf8').replace(/\r?\n/g, '\r\n')) : bytes;
   expectedFiles.set(path, { sha256: sha(bytes), bytes: bytes.length, crlfSha256: sha(crlf), crlfBytes: crlf.length });
 }
+let runId;
 for (const label of labels) {
   const source = json(`source-${label}.json`);
   assert.equal(source.commit, acceptedCommit, `${label} commit`);
   assert.equal(source.version, '0.2.0');
+  assert.match(source.runId ?? '', /^\d+$/, `${label} must identify an actual CI run`);
+  runId ??= source.runId;
+  assert.equal(source.runId, runId, 'all five artifacts must come from one actual run');
+  if (expectedRunId) assert.equal(source.runId, expectedRunId);
   assert.deepEqual(source.files.map(f => f.path).sort(), [...sourcePaths].sort(), `${label} tracked source paths`);
   const translations = [];
   for (const file of source.files) {
@@ -60,6 +65,7 @@ for (const label of labels) {
     const smoke = json(`smoke-${label}.json`), bundle = json(`package-${label}.json`);
     assert.equal(bundle.commit, acceptedCommit); assert.equal(bundle.version, '0.2.0');
     assert.equal(smoke.version, '0.2.0'); assert.equal(`${smoke.platform}-${smoke.arch}`, label);
+    assert.ok(smoke.nativeEntry.replaceAll('\\', '/').includes(`@lydell/node-pty-${label}/`));
     assert.ok(smoke.hubStarted && smoke.uiServed && smoke.libraryApi && smoke.ptySpawn);
     assert.ok(smoke.binaries.some(p => /node-pty.*\.node$/.test(p)));
     const resources = new Map(smoke.resources.map(f => [f.path.replaceAll('\\', '/'), f]));
@@ -82,6 +88,7 @@ for (const label of labels) {
   } else {
     const apk = json('android-verification.json');
     assert.equal(apk.version, '0.2.0'); assert.equal(apk.versionCode, 2); assert.equal(apk.applicationId, 'app.fractal.reader');
+    assert.equal(apk.minSdk, 29); assert.equal(apk.targetSdk, 35);
     assert.equal(apk.certificateSha256, '62e0698d0572e672aa65a999c6e6e4a6669fb2baf4ca0c6f9c2ce7f82bdd7f4f');
     assert.ok(apk.signatureVerified && apk.debugSigned && apk.previousReleaseCertificateMatched);
     assert.equal(apk.runtimeVerified, false);
