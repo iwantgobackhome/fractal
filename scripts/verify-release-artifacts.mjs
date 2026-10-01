@@ -1,0 +1,58 @@
+import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
+import { readFile, readdir, writeFile } from 'node:fs/promises';
+import { join, resolve } from 'node:path';
+
+const directory = resolve(process.argv[2] ?? 'dist/release-all');
+const version = JSON.parse(await readFile('package.json', 'utf8')).version;
+const labels = ['win32-x64', 'linux-x64', 'darwin-arm64', 'darwin-x64', 'android'];
+const files = await readdir(directory);
+const payloads = [`Fractal-${version}-win-x64.exe`, `Fractal-${version}-linux-x64.AppImage`, `Fractal-${version}-linux-x64.deb`, `Fractal-${version}-mac-arm64.dmg`, `Fractal-${version}-mac-x64.dmg`, `Fractal-${version}-android-debug.apk`];
+for (const name of payloads) assert.ok(files.includes(name), `missing ${name}`);
+const verified = new Map();
+let commit;
+for (const label of labels) {
+  const manifest = await readFile(join(directory, `SHA256SUMS-${label}.txt`), 'utf8');
+  const listed = new Set();
+  for (const line of manifest.trim().split('\n')) {
+    const match = /^([a-f0-9]{64})  ([^/\\]+)$/.exec(line);
+    assert.ok(match, `invalid checksum row: ${line}`);
+    const [, hash, name] = match;
+    assert.ok(!verified.has(name), `duplicate artifact ${name}`);
+    const bytes = await readFile(join(directory, name));
+    assert.equal(createHash('sha256').update(bytes).digest('hex'), hash, name);
+    verified.set(name, hash);
+    listed.add(name);
+  }
+  assert.ok(listed.has(`source-${label}.json`));
+  const source = JSON.parse(await readFile(join(directory, `source-${label}.json`), 'utf8'));
+  assert.equal(source.version, version);
+  commit ??= source.commit;
+  assert.equal(source.commit, commit, 'all jobs must build one source commit');
+  if (process.env.GITHUB_SHA) assert.equal(source.commit, process.env.GITHUB_SHA);
+  if (label !== 'android') {
+    assert.ok(listed.has(`smoke-${label}.json`) && listed.has(`package-${label}.json`));
+    const smoke = JSON.parse(await readFile(join(directory, `smoke-${label}.json`), 'utf8'));
+    assert.equal(smoke.version, version);
+    assert.equal(`${smoke.platform}-${smoke.arch}`, label);
+    assert.ok(smoke.hubStarted && smoke.uiServed && smoke.libraryApi && smoke.ptySpawn);
+  } else {
+    assert.ok(listed.has('android-verification.json'));
+    const apk = JSON.parse(await readFile(join(directory, 'android-verification.json'), 'utf8'));
+    assert.equal(apk.version, version);
+    assert.equal(apk.versionCode, 2);
+    assert.equal(apk.applicationId, 'app.fractal.reader');
+    assert.ok(apk.debugSigned && apk.signatureVerified);
+    assert.match(apk.certificateSha256, /^[a-f0-9]{64}$/);
+    if (process.env.GITHUB_REF_TYPE === 'tag') assert.ok(apk.previousReleaseCertificateMatched, 'published APK must preserve previous signature');
+  }
+}
+for (const name of payloads) assert.ok(verified.has(name), `unverified distribution ${name}`);
+for (const name of files) assert.ok(verified.has(name) || /^SHA256SUMS-(win32-x64|linux-x64|darwin-arm64|darwin-x64|android)\.txt$/.test(name), `unexpected file ${name}`);
+const lines = [];
+for (const name of files.sort()) {
+  const hash = createHash('sha256').update(await readFile(join(directory, name))).digest('hex');
+  lines.push(`${hash}  ${name}`);
+}
+await writeFile(join(directory, 'SHA256SUMS.txt'), lines.join('\n') + '\n');
+console.log(`All five native jobs and six distribution files verified at ${commit}`);

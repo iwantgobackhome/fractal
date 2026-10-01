@@ -1,0 +1,24 @@
+import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
+import { mkdir, readdir, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
+
+const sdk = process.env.ANDROID_HOME ?? process.env.ANDROID_SDK_ROOT;
+assert.ok(sdk, 'Android SDK is required');
+const tools = join(sdk, 'build-tools', '35.0.0');
+assert.ok((await readdir(join(sdk, 'build-tools'))).includes('35.0.0'));
+const apk = 'apps/android/app/build/outputs/apk/debug/app-debug.apk';
+const badging = execFileSync(join(tools, process.platform === 'win32' ? 'aapt.exe' : 'aapt'), ['dump', 'badging', apk], { encoding: 'utf8' });
+assert.match(badging, /package: name='app\.fractal\.reader' versionCode='2' versionName='0\.2\.0'/);
+assert.match(badging, /sdkVersion:'29'/);
+assert.match(badging, /targetSdkVersion:'35'/);
+const signer = execFileSync(join(tools, process.platform === 'win32' ? 'apksigner.bat' : 'apksigner'), ['verify', '--verbose', '--print-certs', apk], { encoding: 'utf8', shell: process.platform === 'win32' });
+assert.match(signer, /CN=Android Debug/);
+const certificateSha256 = signer.match(/Signer #1 certificate SHA-256 digest: ([a-fA-F0-9]+)/)?.[1]?.toLowerCase();
+assert.match(certificateSha256 ?? '', /^[a-f0-9]{64}$/);
+const expected = process.env.EXPECT_ANDROID_CERT_SHA256?.replaceAll(':', '').toLowerCase();
+if (process.env.GITHUB_REF_TYPE === 'tag') assert.ok(expected, 'Configure ANDROID_RELEASE_CERT_SHA256 with the previous public release certificate');
+if (expected) assert.equal(certificateSha256, expected, 'APK must preserve the previous release signing identity');
+await mkdir('dist/release/android', { recursive: true });
+await writeFile('dist/release/android/android-verification.json', JSON.stringify({ version: '0.2.0', versionCode: 2, applicationId: 'app.fractal.reader', minSdk: 29, targetSdk: 35, debugSigned: true, signatureVerified: true, certificateSha256, previousReleaseCertificateMatched: Boolean(expected), badging, signer, runtimeVerified: false }, null, 2) + '\n');
+console.log('APK manifest and actual debug signature verified; no installation/runtime claim');

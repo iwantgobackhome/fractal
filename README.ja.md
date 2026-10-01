@@ -8,7 +8,7 @@
 
 <p align="center">
   <img alt="Apache 2.0 ライセンス" src="https://img.shields.io/badge/license-Apache--2.0-3b625b">
-  <img alt="Windows、macOS、Android 対応" src="https://img.shields.io/badge/platforms-Windows%20%7C%20macOS%20%7C%20Android-3b625b">
+  <img alt="Windows、Linux、macOS、Android のビルド対象" src="https://img.shields.io/badge/platforms-Windows%20%7C%20Linux%20%7C%20macOS%20%7C%20Android-3b625b">
   <img alt="Node.js 22.12 以降" src="https://img.shields.io/badge/Node.js-%E2%89%A522.12-3b625b">
   <img alt="Electron と React" src="https://img.shields.io/badge/desktop-Electron%20%2B%20React-3b625b">
   <img alt="Kotlin と Compose" src="https://img.shields.io/badge/Android-Kotlin%20%2B%20Compose-3b625b">
@@ -23,24 +23,32 @@
   <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="最新リリース" src="https://img.shields.io/github/v/release/iwantgobackhome/fractal?style=for-the-badge&color=3b625b"></a>
 </p>
 
-![英語表示、ダークテーマの Fractal ホーム画面](docs/assets/readme/home-en-dark.png)
+![Fractal の学術発見画面](docs/implementation/desktop/stage3/discovery-1280-light-en.png)
 
 **今読んでいる論文から、次に読むべき論文まで。** 原文 PDF と忠実な翻訳を並べて読み、疑問は論文に質問できます。回答に付いたページの引用から原文へ戻れます。専門分野の論文やニュースを追い、大切な資料は書庫に保存。現在利用している Codex または Claude CLI のサブスクリプションで接続でき、API キーの入力は不要です。
 
 ## 主な機能
 
+### 0.2.0 の研究ワークスペース
+
+デスクトップとネイティブ Android の画面を、論文の読解と発見に合わせて整えました。Saved と Recent で保存済み資料と最近の読書を区別し、階層フォルダー、タグ、検索で書庫を整理します。質問と説明は状態や文脈を含む研究履歴として保存されます。ハイライト、手書き、移動できる付箋も論文に紐づいて残ります。
+
+原文 PDF や訳文で必要な文字だけを正確に選択できます。公開 PDF が利用できる場合は主な読む操作から出版物の PDF をアプリ内で開きます。取得や抽出に失敗した場合は配信元ページを明示的な代替操作として提供します。原文、翻訳、並列表示で読書の文脈を保ちます。Android にはネイティブの News・Topics 画面と、記事の原文・訳文の分割表示もあります。
+
+発見画面は情報源が提供する論文や記事の画像を表示できます。画像の有無は情報源によって異なり、画像がなくても論文や PDF がないとは限りません。配布形式と機能の範囲は [0.2.0 リリースノート](docs/releases/0.2.0.md) を参照してください。
+
+![デスクトップリーダーで開いた出版物 PDF](docs/implementation/desktop/pdf-reader-failure/packaged-public-original-read.png)
+
 ### 原文を見失わないリーダー
 
 | 原文と翻訳                                                                                             | 論文への質問                                                                             |
 | ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
-| ![原文 PDF と翻訳を並べたリーダー](docs/assets/readme/reader-split-translation.png)                    | ![ページ引用付きの回答](docs/assets/readme/reader-ask.png)                               |
 | 原文と訳文を連動スクロールで読み進められます。翻訳先を切り替えても、別の言語で完了した翻訳は残ります。 | ページ引用を確かめながら質問できます。図・表・数式を選び、その部分の説明も求められます。 |
 
 ハイライト、メモ、ペンや蛍光ペンによる書き込みにも対応。デスクトップアプリから訳文のみ、または原文と訳文を並べた PDF を書き出せます。書庫からは BibTeX、CSL-JSON、Markdown も出力できます。
 
 | 詳細を理解する                                                            | 関連研究を探す                                                                           |
 | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| ![リーダー内の数式の説明](docs/assets/readme/reader-explain-equation.png) | ![リーダーに表示された関連論文](docs/assets/readme/reader-related-en-dark.png)           |
 | 読んでいる箇所で説明を開けます。                                          | 参考文献、引用文献、関連研究をたどれます。結果は外部の学術サービスの状態に左右されます。 |
 
 ### 使い続けられる書庫
@@ -49,23 +57,19 @@ arXiv ID、DOI、公開論文の URL、手元の PDF を開けます。保存し
 
 ### 専門分野の動きを追う
 
-![arXiv の全分野を検索し、独自の関心分野を追加する画面](docs/assets/readme/interests-search.png)
-
 ホームには arXiv、Hugging Face Daily Papers、分野別ニュース、書庫に基づくおすすめが集まります。arXiv の全カテゴリ、著者、独自の検索分野をフォローできます。分野内では用意されたトピックや自分で作ったトピックを選び、関連ニュースを確認できます。
 
 | 分野・トピック別ニュース                                         | 記事リーダー                                                                                                                             |
 | ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| ![Fractal でフォロー中のトピック](docs/assets/readme/topics.png) | 対応する公開記事を読みやすいテキスト表示で開き、見出しや本文をすばやく翻訳できます。配信元の制限により本文を取得できない場合があります。 |
+| 各分野で既存または個人のトピックをフォローできます。 | 対応する公開記事を読みやすいテキスト表示で開き、見出しや本文をすばやく翻訳できます。配信元の制限により本文を取得できない場合があります。 |
 
 ### いつもの AI アカウントを使う
-
-![Codex と Claude のセットアップ画面](docs/assets/readme/welcome-ai-setup.png)
 
 Fractal は公式の Codex・Claude CLI を通じて接続します。アプリからサインインを始めるか、ターミナルで使用中のログインを利用できます。管理対象の別アカウントを追加し、プロバイダーごとに有効なアカウントを切り替えることも可能です。対応する環境ではアプリから CLI のインストールとサインインを開始でき、非対応の環境では手動コマンドを案内します。既定モデルと機能別モデルも選べます。5 時間・週間の使用量はプロバイダーから取得できる場合に表示し、取得できなければその旨を示します。
 
 ### Android でも続きを読む
 
-![Android タブレットで開いた Fractal リーダー](docs/assets/readme/android-tablet-reader.png)
+<p align="center"><img src="apps/android/qa/pdf-acquisition/screens/phone360-current/exact-user-current-verified-offline-reader.png" width="360" alt="Android 原文 PDF リーダー"></p>
 
 QR コードで Kotlin/Compose アプリをデスクトップのハブにペアリングします。信頼できる LAN または Tailscale 経由で、書庫や手書きを含む注釈を同期し、キャッシュ済み PDF を読めます。AI と発見機能はデスクトップのハブが担います。
 
@@ -90,12 +94,18 @@ flowchart LR
 
 ### ダウンロード
 
-[Releases](https://github.com/iwantgobackhome/fractal/releases/latest) から最新ビルドを入手できます。ビルドツールは不要です。
+公開済みビルドは [Releases](https://github.com/iwantgobackhome/fractal/releases/latest) から入手できます。0.2.0 のパイプラインは下記のファイルを準備し、各プラットフォームの検証とリリース承認後に公開します。既存の 0.1.0 リリースは維持されます。
 
-| ファイル                        | プラットフォーム                   | 注意                                                                                                                        |
-| ------------------------------- | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `Fractal-Setup-<version>.exe`   | Windows 10/11 (x64)                | まだコード署名がありません。「Windows によって PC が保護されました」と表示されたら **詳細情報 → 実行** を選んでください。   |
-| `Fractal-<version>-android.apk` | Android スマートフォン・タブレット | デバッグ署名です。提供元不明のアプリのインストールを許可し、デスクトップ版の **設定 → デバイス** でペアリングしてください。 |
+| ファイル | プラットフォーム | 配布形式 |
+| --- | --- | --- |
+| `Fractal-0.2.0-win-x64.exe` | Windows x64 | NSIS インストーラー・未署名 |
+| `Fractal-0.2.0-linux-x64.AppImage` | Linux x64 | ポータブル AppImage |
+| `Fractal-0.2.0-linux-x64.deb` | Linux x64 | Debian パッケージ |
+| `Fractal-0.2.0-mac-arm64.dmg` | macOS Apple Silicon | 個別 DMG・標準では ad-hoc 署名 |
+| `Fractal-0.2.0-mac-x64.dmg` | macOS Intel | 個別 DMG・標準では ad-hoc 署名 |
+| `Fractal-0.2.0-android-debug.apk` | Android 10+ | デバッグ署名・versionCode 2 |
+
+macOS の正式署名と公証には設定済みのリリース認証情報が必要です。ad-hoc ビルドは公証済みではありません。検証済みの配布には `SHA256SUMS.txt` が付属します。各 OS のビルドと検証は [配布手順](docs/RELEASING.md) を参照してください。
 
 ### ソースからビルド
 
@@ -108,7 +118,7 @@ npm ci
 npm run desktop
 ```
 
-`npm run desktop` はアプリをビルドし、Windows または macOS で開きます。Windows では `npm run desktop:dist` で NSIS インストーラーを作成でき、出力先は `dist/installer/` です。macOS DMG のターゲットも設定されていますが、このコマンドが作るのは Windows 用です。
+`npm run desktop` は Windows、macOS、Linux でアプリをビルドして開きます。各 OS のホストで `npm run desktop:dist:win`、`npm run desktop:dist:linux`、`npm run desktop:dist:mac` を実行してください。出力先は `dist/installer/` でビルダーは `--publish never` を使用します。Mac のコマンドはホストのアーキテクチャをビルドし、CI は arm64 と x64 の個別 DMG を各アーキテクチャのホストでビルド・検証します。
 
 デスクトップ画面を使わず、ハブとブラウザー画面を動かす場合:
 

@@ -1,0 +1,50 @@
+# Building and reviewing a Fractal release
+
+The release workflow builds one reviewed source commit on Windows x64, Linux x64, macOS arm64, macOS x64 and an Android build host. It does not publish automatically: a matching `v<version>` tag can create a draft only after all jobs and the aggregate checksum job succeed. Branch and manual validation upload Actions artifacts without creating a release. The coordinator owns pushes, tags, CI dispatches and the final release decision.
+
+## Versions and source gate
+
+Use Node.js 22.12 or newer (CI pins 22.23.1), `npm ci`, `npm run release:verify`, `npm run build -w @fractal/shared`, `npm run typecheck`, and `npm run desktop:build`. The shared package must be built before Hub/UI typechecking on a clean checkout. The root, shared, Hub and UI manifests and lockfile must agree. Android must have `versionName 0.2.0` and `versionCode 2`; the tag must be exactly `v0.2.0`. A higher historical Android code would require a reviewed monotonic increment before changing this gate.
+
+The workflow accepts `release/**` pushes, `v*` tags and manual dispatches on a release branch or version tag. Choose one trigger for the final source to avoid duplicate matrix runs. Do not overwrite main or the existing 0.1.0 release. Validate YAML with actionlint and inspect native host architecture assertions before any external operation.
+
+## Native desktop packages
+
+| Host | Command | Expected files under `dist/installer/` |
+| --- | --- | --- |
+| Windows x64 | `npm run desktop:dist:win` | `Fractal-0.2.0-win-x64.exe` |
+| Linux x64 | `npm run desktop:dist:linux` | `Fractal-0.2.0-linux-x64.AppImage`, `Fractal-0.2.0-linux-x64.deb` |
+| macOS Apple Silicon | `npm run desktop:dist:mac` | `Fractal-0.2.0-mac-arm64.dmg` |
+| macOS Intel | `npm run desktop:dist:mac` | `Fractal-0.2.0-mac-x64.dmg` |
+
+CI uses `windows-2025`, `ubuntu-24.04`, `macos-15` (Apple Silicon) and `macos-15-intel`, checks the actual Node host architecture, and builds each Mac architecture on its native runner. The local macOS command builds only the host architecture, matching npm's installed optional PTY package; produce the second DMG on a host of that architecture. Local cross-architecture packaging cannot establish native runtime success. Every builder passes `--publish never`.
+
+The accepted Windows branch icons are preserved. `generate-distribution-icons.mjs` rasterizes the established icon SVG into Linux PNG and a multi-resolution macOS ICNS; no new visual is generated. The package includes all `@lydell/node-pty-*` optional platform packages installed for the host and unpacks their native files from ASAR. Do not use `npm ci --omit=optional` or copy `node_modules` across OS/architectures.
+
+After packaging, run `node scripts/smoke-packaged-release.mjs`, then `node scripts/release-manifest.mjs <platform>-<arch>`. The smoke uses the shipped Electron executable in Node mode, imports its ASAR Hub, serves its UI/library API and spawns a terminal through its shipped PTY. It records real unpacked native binary and resource hashes. Package manifests hash the complete app bundle and distribution manifests hash files submitted for release. This proves bundled startup, not a GUI installation or every product feature.
+
+## Signing
+
+Without configured Mac credentials, `release-config.cjs` selects an ad-hoc identity (`-`), disables Hardened Runtime and skips notarization. This is not Developer ID signing or notarization and may require the user to approve opening an application in macOS security settings. The two DMGs are not universal builds.
+
+Optional Mac Actions secrets are `MAC_CSC_LINK`, `MAC_CSC_KEY_PASSWORD`, `APPLE_ID`, `APPLE_APP_SPECIFIC_PASSWORD`, and `APPLE_TEAM_ID`. Real certificate credentials enable signing; all three Apple notarization credentials plus signing enable notarization. Configured signing/notarization failures must fail the job rather than be represented as successful signed outputs. Windows signing credentials are not configured by this pipeline.
+
+## Android debug distribution
+
+CI uses JDK 17, SDK platform 35 and build-tools 35.0.0, then runs `bash gradlew --no-daemon :app:assembleDebug` in `apps/android`. It restores the stable debug keystore from the private `ANDROID_DEBUG_KEYSTORE_BASE64` Actions secret before the build. A missing key fails explicitly, avoiding a fresh random debug identity that cannot update an earlier install. The coordinator must confirm that this key matches the prior public release; never commit the key or upload it in artifacts.
+
+Set the public repository variable `ANDROID_RELEASE_CERT_SHA256` to the prior APK certificate SHA-256 (hex, colons optional). `verify-android-release.mjs` checks the actual APK application ID, version/code, min/target SDK, debug signature and certificate; a final tag requires the prior certificate comparison. The report contains only public certificate information. `release-manifest.mjs android` copies the APK as `Fractal-0.2.0-android-debug.apk` and hashes the payload. No new release keystore or SDK credentials are needed for this debug distribution. These checks make no emulator, physical-device or API 35 runtime claim.
+
+## Aggregate review and draft publication
+
+Each of the five platform jobs uploads a uniquely named artifact. The aggregate job requires all native jobs to succeed, checks six distribution files, verifies every per-platform checksum, checks one source commit and positive desktop Hub/PTY smoke results, and writes `SHA256SUMS.txt`. Only the publication job has `contents: write`; it rechecks versions and the aggregate manifest and refuses to mutate an existing release. It creates a draft with `gh release create --verify-tag --draft`.
+
+Before promoting that draft, download and verify the files and manifests, inspect each platform's native evidence, compare the reviewed source and bundled resources, and record the actual Actions run URL/commit. Check the Android certificate against 0.1.0 and inspect actual Mac signing results. A prepared configuration, a Windows source run, or a cross-build is not evidence that Mac/Linux native startup passed. Keep final evidence and unresolved limitations separate from preparation checks.
+
+## Primary references
+
+- [GitHub hosted runner OS and architecture labels](https://docs.github.com/en/actions/reference/runners/github-hosted-runners)
+- [electron-builder v26 configuration](https://www.electron.build/v26/docs/configuration/)
+- [electron-builder v26 macOS and notarization environment](https://www.electron.build/v26/docs/mac/)
+- [electron-builder v26 Linux targets](https://www.electron.build/v26/docs/linux/)
+- [actionlint 1.7.12](https://github.com/rhysd/actionlint/releases/tag/v1.7.12)

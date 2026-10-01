@@ -1,0 +1,179 @@
+name: Fractal release validation
+
+on:
+  push:
+    branches: ['release/**']
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  versions:
+    runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.1'
+      - id: version
+        run: node scripts/verify-release-version.mjs
+
+  desktop:
+    needs: versions
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-2025
+            platform: win32
+            arch: x64
+            targets: --win nsis
+          - os: ubuntu-24.04
+            platform: linux
+            arch: x64
+            targets: --linux AppImage deb
+          - os: macos-15
+            platform: darwin
+            arch: arm64
+            targets: --mac dmg
+          - os: macos-15-intel
+            platform: darwin
+            arch: x64
+            targets: --mac dmg
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 35
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.1'
+          cache: npm
+      - name: Verify native host architecture
+        env:
+          EXPECT_PLATFORM: ${{ matrix.platform }}
+          EXPECT_ARCH: ${{ matrix.arch }}
+        run: node -e 'require("node:assert/strict").equal(process.platform,process.env.EXPECT_PLATFORM);require("node:assert/strict").equal(process.arch,process.env.EXPECT_ARCH)'
+      - run: npm ci --no-audit --no-fund
+      - run: npm run release:verify
+      - run: npm run build -w @fractal/shared
+      - run: npm run typecheck
+      - run: npm run desktop:build
+      - name: Package on native host (never publish from builders)
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: ${{ matrix.platform == 'darwin' && secrets.MAC_CSC_LINK != '' && secrets.MAC_CSC_KEY_PASSWORD != '' && 'true' || 'false' }}
+          CSC_LINK: ${{ matrix.platform == 'darwin' && secrets.MAC_CSC_LINK || '' }}
+          CSC_KEY_PASSWORD: ${{ matrix.platform == 'darwin' && secrets.MAC_CSC_KEY_PASSWORD || '' }}
+          APPLE_ID: ${{ matrix.platform == 'darwin' && secrets.APPLE_ID || '' }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ matrix.platform == 'darwin' && secrets.APPLE_APP_SPECIFIC_PASSWORD || '' }}
+          APPLE_TEAM_ID: ${{ matrix.platform == 'darwin' && secrets.APPLE_TEAM_ID || '' }}
+        run: npx --no-install electron-builder --config scripts/release-config.cjs ${{ matrix.targets }} --${{ matrix.arch }} --publish never
+      - name: Actual shipped Electron, bundled Hub and native PTY smoke
+        run: node scripts/smoke-packaged-release.mjs
+      - name: Source, resources, bundle and distribution checksums
+        run: node scripts/release-manifest.mjs ${{ matrix.platform }}-${{ matrix.arch }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ matrix.platform }}-${{ matrix.arch }}
+          path: dist/release/${{ matrix.platform }}-${{ matrix.arch }}/*
+          if-no-files-found: error
+          retention-days: 30
+
+  android:
+    needs: versions
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.1'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - name: Install declared SDK
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - run: node scripts/verify-release-version.mjs
+      - name: Restore stable debug signing identity (never log or upload key)
+        env:
+          ANDROID_DEBUG_KEYSTORE_BASE64: ${{ secrets.ANDROID_DEBUG_KEYSTORE_BASE64 }}
+        run: node scripts/restore-android-debug-key.mjs
+      - name: Build debug companion
+        working-directory: apps/android
+        run: bash gradlew --no-daemon :app:assembleDebug
+      - name: Verify manifest, signature and previous release certificate
+        env:
+          EXPECT_ANDROID_CERT_SHA256: ${{ vars.ANDROID_RELEASE_CERT_SHA256 }}
+        run: node scripts/verify-android-release.mjs
+      - run: node scripts/release-manifest.mjs android
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-android
+          path: dist/release/android/*
+          if-no-files-found: error
+          retention-days: 30
+
+  checksums:
+    needs: [versions, desktop, android]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.1'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: release-*
+          path: dist/release-all
+          merge-multiple: true
+      - run: node scripts/verify-release-version.mjs
+      - run: node scripts/verify-release-artifacts.mjs dist/release-all
+      - uses: actions/upload-artifact@v4
+        with:
+          name: verified-release
+          path: dist/release-all/*
+          if-no-files-found: error
+          retention-days: 30
+
+  publication:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [versions, desktop, android, checksums]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.1'
+      - uses: actions/download-artifact@v4
+        with:
+          name: verified-release
+          path: dist/release-all
+      - run: node scripts/verify-release-version.mjs
+      - name: Verify aggregated checksum manifest again
+        working-directory: dist/release-all
+        run: sha256sum --check SHA256SUMS.txt
+      - name: Create draft only; preserve all existing releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_VERSION: ${{ needs.versions.outputs.version }}
+        run: |
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            echo 'Release already exists; refusing to replace assets or mutate it.' >&2
+            exit 1
+          fi
+          gh release create "$RELEASE_TAG" dist/release-all/* --verify-tag --draft --title "Fractal $RELEASE_VERSION" --notes-file "docs/releases/$RELEASE_VERSION.md"

@@ -1,0 +1,4 @@
+Release versions verified: 0.2.0; Android code 2
+  • loaded configuration  file=C:\Users\Home\orca\workspaces\fractal\fractal-v020-release\scripts\release-config.cjs
+electron-builder CJS load/schema passed
+PASS: workflow permissions/native matrix, version branch/tag negative gates, artifact names, stable signing failure, icon identity/containers, multilingual links and v26 schema

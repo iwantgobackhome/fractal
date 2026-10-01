@@ -8,7 +8,7 @@
 
 <p align="center">
   <img alt="Apache 2.0 license" src="https://img.shields.io/badge/license-Apache--2.0-3b625b">
-  <img alt="Windows, macOS, and Android" src="https://img.shields.io/badge/platforms-Windows%20%7C%20macOS%20%7C%20Android-3b625b">
+  <img alt="Windows, Linux, macOS, and Android build targets" src="https://img.shields.io/badge/platforms-Windows%20%7C%20Linux%20%7C%20macOS%20%7C%20Android-3b625b">
   <img alt="Node.js 22.12 or newer" src="https://img.shields.io/badge/Node.js-%E2%89%A522.12-3b625b">
   <img alt="Electron and React" src="https://img.shields.io/badge/desktop-Electron%20%2B%20React-3b625b">
   <img alt="Kotlin and Compose" src="https://img.shields.io/badge/Android-Kotlin%20%2B%20Compose-3b625b">
@@ -23,24 +23,32 @@
   <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/iwantgobackhome/fractal?style=for-the-badge&color=3b625b"></a>
 </p>
 
-![Fractal home feed in English, dark theme](docs/assets/readme/home-en-dark.png)
+![Scholarly discovery in Fractal](docs/implementation/desktop/stage3/discovery-1280-light-en.png)
 
 **From the paper in front of you to the next one worth reading.** Put the original PDF beside a faithful translation. Ask questions and follow answers back to cited pages. Track papers and news in your fields, then save what matters. Fractal uses the Codex or Claude CLI sign-in tied to your existing subscription; you do not need to supply an API key.
 
 ## Features
 
+### A scholarly workspace in 0.2.0
+
+The scholarly desktop and native Android interfaces bring reading and discovery into one workspace. Saved and Recent distinguish bookmarks from reading activity; nested folders, tags and search keep the library organized. Questions and explanations have persistent research history, including their status and context. Highlights, ink and movable sticky notes stay attached to the paper.
+
+Select the exact characters you need in the original PDF or translation. Open an available publication PDF inside Fractal from its primary Read action; a publisher page remains an explicit fallback when access or extraction fails. Original, translation and side-by-side modes preserve the reading context. Android also has native News and Topics views and source/translation article split reading.
+
+Discovery can show source-provided paper or article images when available. Image coverage depends on the source; a missing image does not imply a missing paper or PDF. See the [0.2.0 release notes](docs/releases/0.2.0.md) for distribution and capability boundaries.
+
+![In-app publication PDF in the desktop reader](docs/implementation/desktop/pdf-reader-failure/packaged-public-original-read.png)
+
 ### Read with the source in sight
 
 | Original and translation                                                                                                                             | Ask the paper                                                                                                  |
 | ---------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| ![Original PDF beside translated pages](docs/assets/readme/reader-split-translation.png)                                                             | ![Question answered with page citations](docs/assets/readme/reader-ask.png)                                    |
 | Keep the PDF and translation side by side, with linked scrolling. Change the translation language without losing completed work in another language. | Ask about the paper and inspect page citations. Select a figure, table, or equation for a focused explanation. |
 
 Highlight passages, attach notes, and draw with pen or highlighter ink. Export a translated PDF, including a side-by-side layout, from the desktop app. The library also exports BibTeX, CSL-JSON, and paper notes as Markdown.
 
 | Explain a detail                                                                            | Find the next paper                                                                                  |
 | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| ![Explanation of an equation in the reader](docs/assets/readme/reader-explain-equation.png) | ![Related papers beside the reader](docs/assets/readme/reader-related-en-dark.png)                   |
 | Open an explanation where you are reading.                                                  | Browse references, citations, and related work; availability depends on external scholarly services. |
 
 ### Keep a useful library
@@ -49,23 +57,19 @@ Open an arXiv ID, DOI, public paper URL, or local PDF. Search saved papers, grou
 
 ### Follow your field
 
-![Search the full arXiv category list and add your own interests](docs/assets/readme/interests-search.png)
-
 The home feed brings together arXiv papers, Hugging Face Daily Papers, field news, and recommendations informed by your library. Follow the full arXiv category taxonomy, authors, and your own search fields. Within a field, follow curated or personal topics and see topic-specific news.
 
 | Field and topic news                                         | Article reading                                                                                                                                      |
 | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ![Followed topics in Fractal](docs/assets/readme/topics.png) | Open supported public articles in a plain-text reading view and quickly translate titles or passages. Publisher restrictions can prevent extraction. |
+| Follow curated or personal topics within your fields. | Open supported public articles in a plain-text reading view and quickly translate titles or passages. Publisher restrictions can prevent extraction. |
 
 ### Use your AI accounts
-
-![Codex and Claude setup screen](docs/assets/readme/welcome-ai-setup.png)
 
 Fractal connects through the official Codex and Claude CLIs. Sign in from the app or use an existing terminal login; add separate managed accounts and switch the active account for each provider. The setup screen can install supported CLIs and start sign-in; manual commands are shown where automatic installation is unavailable. Choose a default model and feature-specific overrides. Five-hour and weekly usage bars show provider-reported limits when available, and say so when they are not.
 
 ### Continue on Android
 
-![Fractal reader on an Android tablet](docs/assets/readme/android-tablet-reader.png)
+<p align="center"><img src="apps/android/qa/pdf-acquisition/screens/phone360-current/exact-user-current-verified-offline-reader.png" width="360" alt="Android original PDF reader"></p>
 
 Pair the Kotlin/Compose companion with a desktop hub by scanning a QR code. Read cached PDFs and sync the library and annotations, including pen strokes, over a trusted LAN or Tailscale. The desktop hub remains the source for AI and discovery features.
 
@@ -90,12 +94,18 @@ The desktop app runs the hub and UI together. You can also run the hub and open 
 
 ### Download
 
-Get the latest build from [Releases](https://github.com/iwantgobackhome/fractal/releases/latest) — no build tools needed.
+Published builds are on the [Releases page](https://github.com/iwantgobackhome/fractal/releases/latest). The 0.2.0 pipeline prepares the files below; downloads follow successful platform verification and release approval. The existing 0.1.0 release remains available.
 
-| File                            | Platform             | Notes                                                                                                         |
-| ------------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `Fractal-Setup-<version>.exe`   | Windows 10/11 (x64)  | Not code-signed yet: if SmartScreen says "Windows protected your PC", choose **More info → Run anyway**.      |
-| `Fractal-<version>-android.apk` | Android phone/tablet | Debug-signed: allow installs from unknown sources. Pair it with the desktop app under **Settings → Devices**. |
+| File | Platform | Distribution |
+| --- | --- | --- |
+| `Fractal-0.2.0-win-x64.exe` | Windows x64 | NSIS installer; unsigned |
+| `Fractal-0.2.0-linux-x64.AppImage` | Linux x64 | Portable AppImage |
+| `Fractal-0.2.0-linux-x64.deb` | Linux x64 | Debian package |
+| `Fractal-0.2.0-mac-arm64.dmg` | macOS Apple Silicon | Separate DMG; ad-hoc signed by default |
+| `Fractal-0.2.0-mac-x64.dmg` | macOS Intel | Separate DMG; ad-hoc signed by default |
+| `Fractal-0.2.0-android-debug.apk` | Android 10+ | Debug-signed companion; versionCode 2 |
+
+macOS signing and notarization require configured release credentials; an ad-hoc build is not notarized. Verified releases include `SHA256SUMS.txt`. See [release builds](docs/RELEASING.md) for native host commands and verification.
 
 ### Build from source
 
@@ -108,7 +118,7 @@ npm ci
 npm run desktop
 ```
 
-`npm run desktop` builds and opens the Electron app on Windows or macOS. To build the **Windows NSIS installer** on Windows, run `npm run desktop:dist`; output goes to `dist/installer/`. A macOS DMG target is configured, but this command builds the Windows installer only.
+`npm run desktop` builds and opens the app on Windows, macOS or Linux. On the corresponding native host, use `npm run desktop:dist:win`, `npm run desktop:dist:linux`, or `npm run desktop:dist:mac`. Outputs go to `dist/installer/`; builders use `--publish never`. The Mac command builds its host architecture; CI builds and tests separate arm64 and x64 DMGs on matching hosts.
 
 For the hub and browser UI without the desktop shell:
 

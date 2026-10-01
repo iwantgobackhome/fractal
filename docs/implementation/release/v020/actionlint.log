@@ -1,0 +1,4 @@
+1.7.12
+installed by downloading from release page
+built with go1.26.1 compiler for windows/amd64
+PASS .github/workflows/release.yml (shellcheck/pyflakes disabled; workflow syntax and expressions checked)

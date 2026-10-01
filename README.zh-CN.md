@@ -8,7 +8,7 @@
 
 <p align="center">
   <img alt="Apache 2.0 许可证" src="https://img.shields.io/badge/license-Apache--2.0-3b625b">
-  <img alt="支持 Windows、macOS 和 Android" src="https://img.shields.io/badge/platforms-Windows%20%7C%20macOS%20%7C%20Android-3b625b">
+  <img alt="Windows、Linux、macOS 和 Android 构建目标" src="https://img.shields.io/badge/platforms-Windows%20%7C%20Linux%20%7C%20macOS%20%7C%20Android-3b625b">
   <img alt="Node.js 22.12 或更高版本" src="https://img.shields.io/badge/Node.js-%E2%89%A522.12-3b625b">
   <img alt="Electron 和 React" src="https://img.shields.io/badge/desktop-Electron%20%2B%20React-3b625b">
   <img alt="Kotlin 和 Compose" src="https://img.shields.io/badge/Android-Kotlin%20%2B%20Compose-3b625b">
@@ -23,24 +23,32 @@
   <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="最新版本" src="https://img.shields.io/github/v/release/iwantgobackhome/fractal?style=for-the-badge&color=3b625b"></a>
 </p>
 
-![英文深色主题的 Fractal 首页](docs/assets/readme/home-en-dark.png)
+![Fractal 学术发现界面](docs/implementation/desktop/stage3/discovery-1280-light-en.png)
 
 **从正在读的论文，走向下一篇有价值的研究。** 将原始 PDF 与忠实译文并排阅读；向论文提问，再根据回答中的页码回到原文。关注领域内的新论文和新闻，把重要资料收进文献库。Fractal 使用你已登录的 Codex 或 Claude CLI 订阅，无须另填 API 密钥。
 
 ## 主要功能
 
+### 0.2.0 的学术工作空间
+
+桌面端和原生 Android 界面围绕论文阅读与发现重新组织。Saved 与 Recent 区分已收藏资料和最近阅读，用嵌套文件夹、标签及搜索整理文献库。提问和解释会以研究历史保存，包含状态及上下文。高亮、手写批注和可移动便笺也随论文保留。
+
+可以在原始 PDF 或译文中精确选择所需字符。存在可用的公开 PDF 时，主要阅读操作会在应用内打开出版物 PDF；无法访问或提取时，出版方页面作为明确的备用操作提供。原文、译文与并排模式保留阅读上下文。Android 还提供原生 News、Topics 页面，以及文章原文与译文的分屏阅读。
+
+发现页面可显示来源提供的论文或文章图片。图片覆盖取决于来源，没有图片不代表没有论文或 PDF。分发形式与功能范围请参阅 [0.2.0 发行说明](docs/releases/0.2.0.md)。
+
+![桌面阅读器中的应用内出版物 PDF](docs/implementation/desktop/pdf-reader-failure/packaged-public-original-read.png)
+
 ### 对照原文阅读
 
 | 原文与译文                                                                  | 向论文提问                                                       |
 | --------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| ![原始 PDF 与译文并排显示](docs/assets/readme/reader-split-translation.png) | ![带有页码引用的论文问答](docs/assets/readme/reader-ask.png)     |
 | 并排阅读时可以联动滚动。切换目标语言，也不会丢失其他语言已完成的译文。      | 查看回答中的页码引用；选中图、表或公式，还可以针对该处请求解释。 |
 
 可以高亮文字、添加笔记，或用笔和荧光笔批注。桌面应用支持将译文导出为 PDF，也能导出原文与译文并排的版本。文献库还支持 BibTeX、CSL-JSON 和 Markdown 导出。
 
 | 看懂细节                                                              | 延伸阅读                                                                 |
 | --------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| ![阅读器中的公式解释](docs/assets/readme/reader-explain-equation.png) | ![阅读器旁显示的相关论文](docs/assets/readme/reader-related-en-dark.png) |
 | 在阅读位置直接打开解释。                                              | 查阅参考文献、引用论文和相关研究；结果取决于外部学术服务是否可用。       |
 
 ### 真正用得起来的文献库
@@ -49,23 +57,19 @@
 
 ### 跟进自己的研究领域
 
-![搜索完整 arXiv 分类并添加自定义兴趣领域](docs/assets/readme/interests-search.png)
-
 首页汇集 arXiv 论文、Hugging Face Daily Papers、领域新闻，以及参考文献库生成的推荐。你可以关注完整 arXiv 分类体系中的领域、作者和自定义搜索领域；在各领域内还可关注预设或自建主题，查看对应的主题新闻。
 
 | 领域和主题新闻                                             | 文章阅读                                                                                                 |
 | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| ![Fractal 中关注的研究主题](docs/assets/readme/topics.png) | 在应用内以简洁的纯文本视图阅读受支持的公开文章，并快速翻译标题或段落。出版方的限制可能导致正文无法提取。 |
+| 在各领域内关注预设或自建主题。 | 在应用内以简洁的纯文本视图阅读受支持的公开文章，并快速翻译标题或段落。出版方的限制可能导致正文无法提取。 |
 
 ### 使用已有的 AI 账号
-
-![Codex 与 Claude 安装登录界面](docs/assets/readme/welcome-ai-setup.png)
 
 Fractal 通过官方 Codex 和 Claude CLI 连接服务。可以在应用中发起登录，也可以沿用终端中现有的登录；还可以添加独立管理的账号，按服务商切换当前账号。支持的环境可从应用内启动 CLI 安装和登录，否则会显示手动安装命令。你可以设置默认模型和各功能专用模型。5 小时与每周用量仅在服务商提供数据时显示；获取不到时，界面会如实说明。
 
 ### 在 Android 上接着读
 
-![Android 平板上的 Fractal 阅读器](docs/assets/readme/android-tablet-reader.png)
+<p align="center"><img src="apps/android/qa/pdf-acquisition/screens/phone360-current/exact-user-current-verified-offline-reader.png" width="360" alt="Android 原始 PDF 阅读器"></p>
 
 扫描二维码，将 Kotlin/Compose 应用与桌面中枢配对。通过可信的局域网或 Tailscale 同步文献库和批注（包括手写笔迹），并阅读已缓存的 PDF。AI 与发现功能仍由桌面中枢提供。
 
@@ -90,12 +94,18 @@ flowchart LR
 
 ### 下载
 
-从 [Releases](https://github.com/iwantgobackhome/fractal/releases/latest) 获取最新构建，无需任何开发工具。
+公开构建可从 [Releases](https://github.com/iwantgobackhome/fractal/releases/latest) 获取。0.2.0 流水线准备下列文件，各平台验证并批准发行后才提供下载。现有 0.1.0 版本继续保留。
 
-| 文件                            | 平台                | 说明                                                                                 |
-| ------------------------------- | ------------------- | ------------------------------------------------------------------------------------ |
-| `Fractal-Setup-<version>.exe`   | Windows 10/11 (x64) | 尚未进行代码签名。如果出现“Windows 已保护你的电脑”，请选择 **更多信息 → 仍要运行**。 |
-| `Fractal-<version>-android.apk` | Android 手机/平板   | 使用调试签名：请允许安装未知来源应用，并在桌面端 **设置 → 设备** 中配对。            |
+| 文件 | 平台 | 分发形式 |
+| --- | --- | --- |
+| `Fractal-0.2.0-win-x64.exe` | Windows x64 | NSIS 安装程序，未签名 |
+| `Fractal-0.2.0-linux-x64.AppImage` | Linux x64 | 便携 AppImage |
+| `Fractal-0.2.0-linux-x64.deb` | Linux x64 | Debian 软件包 |
+| `Fractal-0.2.0-mac-arm64.dmg` | macOS Apple Silicon | 独立 DMG，默认 ad-hoc 签名 |
+| `Fractal-0.2.0-mac-x64.dmg` | macOS Intel | 独立 DMG，默认 ad-hoc 签名 |
+| `Fractal-0.2.0-android-debug.apk` | Android 10+ | 调试签名，versionCode 2 |
+
+macOS 正式签名和公证需要配置发行凭据；ad-hoc 构建并未经过公证。验证后的分发附带 `SHA256SUMS.txt`。各系统构建与验证命令参见 [发行构建说明](docs/RELEASING.md)。
 
 ### 从源码构建
 
@@ -108,7 +118,7 @@ npm ci
 npm run desktop
 ```
 
-`npm run desktop` 会构建并在 Windows 或 macOS 上打开 Electron 应用。在 Windows 上运行 `npm run desktop:dist` 可生成 NSIS 安装包，输出到 `dist/installer/`。项目也配置了 macOS DMG 目标，但该命令只构建 Windows 安装包。
+`npm run desktop` 在 Windows、macOS 或 Linux 上构建并打开应用。请在对应系统的主机上运行 `npm run desktop:dist:win`、`npm run desktop:dist:linux` 或 `npm run desktop:dist:mac`。输出目录是 `dist/installer/`，构建器使用 `--publish never`。Mac 命令构建主机架构，CI 在相应架构的主机上分别构建和验证独立的 arm64 与 x64 DMG。
 
 如果只需要中枢和浏览器界面：
 

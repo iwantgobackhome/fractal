@@ -8,7 +8,7 @@
 
 <p align="center">
   <img alt="Apache 2.0 라이선스" src="https://img.shields.io/badge/license-Apache--2.0-3b625b">
-  <img alt="Windows, macOS, Android 지원" src="https://img.shields.io/badge/platforms-Windows%20%7C%20macOS%20%7C%20Android-3b625b">
+  <img alt="Windows, Linux, macOS, Android 빌드 대상" src="https://img.shields.io/badge/platforms-Windows%20%7C%20Linux%20%7C%20macOS%20%7C%20Android-3b625b">
   <img alt="Node.js 22.12 이상" src="https://img.shields.io/badge/Node.js-%E2%89%A522.12-3b625b">
   <img alt="Electron과 React" src="https://img.shields.io/badge/desktop-Electron%20%2B%20React-3b625b">
   <img alt="Kotlin과 Compose" src="https://img.shields.io/badge/Android-Kotlin%20%2B%20Compose-3b625b">
@@ -23,24 +23,32 @@
   <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="최신 릴리스" src="https://img.shields.io/github/v/release/iwantgobackhome/fractal?style=for-the-badge&color=3b625b"></a>
 </p>
 
-![한국어로 표시된 Fractal 홈 화면](docs/assets/readme/home-ko.png)
+![Fractal 학술 탐색 화면](docs/implementation/desktop/stage3/discovery-1280-light-en.png)
 
 **눈앞의 논문에서 다음에 읽을 논문까지.** 원문 PDF와 충실한 번역을 나란히 놓고 읽으세요. 궁금한 점은 논문에 묻고, 답변의 페이지 인용을 따라 원문을 확인하세요. 관심 분야의 논문과 뉴스를 살펴보고 중요한 자료는 서재에 담을 수 있습니다. 이미 이용 중인 Codex 또는 Claude CLI 구독 계정으로 연결하며, API 키를 따로 입력할 필요가 없습니다.
 
 ## 주요 기능
 
+### 0.2.0의 학술 작업 공간
+
+데스크톱과 네이티브 Android 화면을 학술 읽기와 탐색에 맞춰 구성했습니다. 저장됨(Saved)과 최근 읽음(Recent)을 구분하고 중첩 폴더·태그·검색으로 서재를 정리합니다. 질문과 설명은 상태와 문맥을 포함한 연구 기록으로 영구 보관합니다. 하이라이트, 필기, 이동 가능한 스티키 노트도 논문에 연결해 저장합니다.
+
+원문 PDF나 번역문에서 필요한 글자만 정확히 선택할 수 있습니다. 공개 PDF가 있으면 기본 읽기 동작으로 앱 안에서 출판물 PDF를 엽니다. 접근이나 추출에 실패하면 발행처 페이지는 명시적인 대체 동작으로 제공됩니다. 원문·번역·나란히 보기에서도 읽기 문맥을 유지합니다. Android에는 네이티브 뉴스·주제 화면과 기사 원문·번역 분할 읽기도 있습니다.
+
+탐색에서는 출처가 제공하는 논문·기사 이미지를 표시할 수 있습니다. 이미지 제공 여부는 출처에 따라 다르며, 이미지가 없다고 논문이나 PDF도 없는 것은 아닙니다. 배포 대상과 기능 범위는 [0.2.0 릴리스 노트](docs/releases/0.2.0.md)를 참고하세요.
+
+![데스크톱 리더의 앱 내 출판물 PDF](docs/implementation/desktop/pdf-reader-failure/packaged-public-original-read.png)
+
 ### 원문을 놓치지 않는 리더
 
 | 원문과 번역을 함께                                                                                 | 논문에 질문하기                                                                                  |
 | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| ![원문 PDF와 번역 페이지를 나란히 보여 주는 리더](docs/assets/readme/reader-split-translation.png) | ![페이지 인용이 달린 논문 질문 답변](docs/assets/readme/reader-ask.png)                          |
 | 두 화면의 스크롤을 맞춰 읽습니다. 번역 언어를 바꾸어도 다른 언어로 완료한 번역은 보존됩니다.       | 답변에 달린 페이지 인용을 확인하고, 그림·표·수식을 선택해 해당 부분의 설명을 요청할 수 있습니다. |
 
 중요한 구절을 형광펜으로 표시하고 메모를 남기거나 펜으로 필기할 수 있습니다. 데스크톱에서는 번역문만, 또는 원문과 번역문을 나란히 담은 PDF로 내보낼 수 있습니다. 서재에서는 BibTeX, CSL-JSON, Markdown도 내보냅니다.
 
 | 수식과 그림 이해하기                                                       | 관련 연구 이어 읽기                                                                                         |
 | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| ![리더에 표시된 수식 설명](docs/assets/readme/reader-explain-equation.png) | ![리더 옆에 표시된 관련 논문](docs/assets/readme/reader-related-en-dark.png)                                |
 | 읽던 자리에서 바로 설명을 펼칩니다.                                        | 참고문헌, 인용 논문, 관련 연구를 살펴봅니다. 외부 학술 서비스의 응답 상태에 따라 결과가 달라질 수 있습니다. |
 
 ### 쌓아 두는 데 그치지 않는 서재
@@ -49,23 +57,19 @@ arXiv ID, DOI, 공개 논문 주소, 로컬 PDF를 열 수 있습니다. 저장�
 
 ### 내 연구 분야 따라가기
 
-![전체 arXiv 분야를 검색하고 직접 관심 분야를 추가하는 화면](docs/assets/readme/interests-search.png)
-
 홈 피드에서 arXiv 논문, Hugging Face Daily Papers, 분야별 뉴스와 서재를 바탕으로 한 추천을 모아 봅니다. arXiv 전체 분류에서 관심 분야를 고르거나 저자와 직접 만든 검색 분야를 팔로우하세요. 분야 안에서는 기본 제공 주제와 나만의 주제를 따라가며 주제별 뉴스를 볼 수 있습니다.
 
 | 분야와 주제별 뉴스                                                 | 기사 읽기                                                                                                                                  |
 | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| ![Fractal에서 팔로우하는 연구 주제](docs/assets/readme/topics.png) | 공개 기사를 앱 안의 간결한 텍스트 화면에서 읽고 제목과 본문을 빠르게 번역할 수 있습니다. 언론사 제한으로 본문을 가져오지 못할 수 있습니다. |
+| 관심 분야에서 기본 제공 주제와 개인 주제를 팔로우합니다. | 공개 기사를 앱 안의 간결한 텍스트 화면에서 읽고 제목과 본문을 빠르게 번역할 수 있습니다. 언론사 제한으로 본문을 가져오지 못할 수 있습니다. |
 
 ### 쓰던 AI 계정 그대로
-
-![Codex와 Claude 설치 및 로그인 화면](docs/assets/readme/welcome-ai-setup.png)
 
 Fractal은 공식 Codex·Claude CLI로 연결합니다. 앱에서 로그인을 시작하거나 터미널의 기존 로그인을 사용할 수 있고, 별도 관리 계정을 추가해 제공자별 활성 계정을 바꿀 수 있습니다. 지원되는 환경에서는 설치와 로그인을 앱에서 시작하며, 자동 설치가 안 되면 직접 실행할 명령을 안내합니다. 기본 모델과 기능별 모델을 고를 수 있습니다. 5시간·주간 사용량은 제공자가 알려 줄 때만 표시하고, 확인할 수 없으면 그대로 알립니다.
 
 ### Android 태블릿에서도 이어서
 
-![Android 태블릿의 Fractal 논문 리더](docs/assets/readme/android-tablet-reader.png)
+<p align="center"><img src="apps/android/qa/pdf-acquisition/screens/phone360-current/exact-user-current-verified-offline-reader.png" width="360" alt="Android 원문 PDF 리더"></p>
 
 QR 코드를 스캔해 Kotlin/Compose 앱을 데스크톱 허브에 연결합니다. 신뢰할 수 있는 LAN 또는 Tailscale을 통해 서재와 펜 필기를 포함한 주석을 동기화하고, 캐시된 PDF를 읽을 수 있습니다. AI와 탐색 기능은 데스크톱 허브에서 처리합니다.
 
@@ -90,12 +94,18 @@ flowchart LR
 
 ### 내려받기
 
-[릴리스](https://github.com/iwantgobackhome/fractal/releases/latest)에서 최신 빌드를 받으세요. 개발 도구는 필요 없습니다.
+공개 빌드는 [릴리스 페이지](https://github.com/iwantgobackhome/fractal/releases/latest)에서 받습니다. 0.2.0 파이프라인은 아래 파일을 준비하며 플랫폼 검증과 릴리스 승인 후 내려받을 수 있습니다. 기존 0.1.0 릴리스는 유지됩니다.
 
-| 파일                         | 플랫폼                | 참고                                                                                                                            |
-| ---------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `Fractal-Setup-<버전>.exe`   | Windows 10/11 (x64)   | 아직 코드 서명이 없습니다. "Windows의 PC 보호" 창이 뜨면 **추가 정보 → 실행**을 누르세요.                                       |
-| `Fractal-<버전>-android.apk` | Android 휴대폰·태블릿 | 테스트용(디버그) 서명입니다. 출처를 알 수 없는 앱 설치를 허용한 뒤 설치하고, 데스크톱 앱의 **설정 → 기기 연결**에서 연결하세요. |
+| 파일 | 플랫폼 | 배포 형식 |
+| --- | --- | --- |
+| `Fractal-0.2.0-win-x64.exe` | Windows x64 | NSIS 설치 파일 · 서명 없음 |
+| `Fractal-0.2.0-linux-x64.AppImage` | Linux x64 | 포터블 AppImage |
+| `Fractal-0.2.0-linux-x64.deb` | Linux x64 | Debian 패키지 |
+| `Fractal-0.2.0-mac-arm64.dmg` | macOS Apple Silicon | 별도 DMG · 기본 ad-hoc 서명 |
+| `Fractal-0.2.0-mac-x64.dmg` | macOS Intel | 별도 DMG · 기본 ad-hoc 서명 |
+| `Fractal-0.2.0-android-debug.apk` | Android 10+ | 디버그 서명 앱 · versionCode 2 |
+
+macOS 정식 서명·공증에는 설정된 릴리스 자격 증명이 필요하며 ad-hoc 빌드는 공증되지 않습니다. 검증된 배포에는 `SHA256SUMS.txt`가 포함됩니다. 플랫폼별 빌드·검증은 [배포 안내](docs/RELEASING.md)를 참고하세요.
 
 ### 소스에서 빌드하기
 
@@ -108,7 +118,7 @@ npm ci
 npm run desktop
 ```
 
-`npm run desktop`은 앱을 빌드해 Windows 또는 macOS에서 엽니다. Windows에서 `npm run desktop:dist`를 실행하면 NSIS 설치 파일이 `dist/installer/`에 생성됩니다. macOS DMG 대상도 설정돼 있지만 이 명령은 Windows 설치 파일을 빌드합니다.
+`npm run desktop`은 Windows·macOS·Linux에서 앱을 빌드하고 엽니다. 해당 운영체제의 호스트에서 `npm run desktop:dist:win`, `npm run desktop:dist:linux`, `npm run desktop:dist:mac`을 사용하세요. 출력은 `dist/installer/`에 생성되며 빌더는 `--publish never`를 사용합니다. Mac 명령은 호스트 아키텍처를 빌드하고 CI는 arm64·x64 DMG를 각각 해당 아키텍처의 호스트에서 빌드·검증합니다.
 
 데스크톱 창 없이 허브와 브라우저 화면만 실행하려면:
 
