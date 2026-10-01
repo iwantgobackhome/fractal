@@ -11,6 +11,8 @@ import { TRANSLATION_LANGUAGES } from './preferences';
 import { PublicationActions, PublicationMeta, useCatalog } from './PublicationControls';
 import { matchPublication, providerName, sourceNames, uniqueFeedPapers } from './publication-model';
 import { SourceStatus } from './SourceStatus';
+import { FeedPicture } from './FeedPicture';
+import { PublicationDossier } from './PublicationDossier';
 import { NewsBoard, ReadContext } from './NewsBoard';
 import type { FeedEntry, HubApi, Interests } from './hub-api';
 
@@ -43,6 +45,7 @@ export function DiscoveryDesk({
     [topic, setTopic] = useState('all'),
     [topics, setTopics] = useState<FieldTopic[]>([]),
     [topicsLoading, setTopicsLoading] = useState(false);
+  const [dossier, setDossier] = useState<FeedEntry | null>(null);
   const [reading, setReading] = useState<FeedEntry | null>(null),
     [managing, setManaging] = useState(false),
     [sourcesOpen, setSourcesOpen] = useState(false);
@@ -415,10 +418,11 @@ export function DiscoveryDesk({
                       {String(index + 1).padStart(2, '0')}
                     </span>
                     <div className="research-entry__body">
+                      <FeedPicture hub={hub} image={item.image} onOpen={() => setDossier(item)} label={item.title} />
                       <PublicationMeta publication={item.publication} source={item.source} />
-                      <a className="research-title" href={item.url} target="_blank" rel="noreferrer noopener">
+                      <button type="button" className="research-title research-title--button" onClick={() => setDossier(item)}>
                         {item.title}
-                      </a>
+                      </button>
                       <p className="research-authors">{item.authors.join(', ') || say('Authors unknown', '저자 미상')}</p>
                       {item.abstract ? <p className="research-summary">{item.abstract}</p> : null}
                       <p className="discovery-reason">
@@ -438,7 +442,7 @@ export function DiscoveryDesk({
             </ol>
           </>
         ) : null}
-        {(tab === 'news' || tab === 'topics') && news.length ? <NewsBoard items={news} /> : null}
+        {(tab === 'news' || tab === 'topics') && news.length ? <NewsBoard hub={hub} items={news} /> : null}
         {tab === 'news' && !loading && !news.length ? (
           <div className="index-state">
             <h2>{say('No news for this field yet.', '아직 이 분야의 뉴스가 없습니다.')}</h2>
@@ -451,6 +455,7 @@ export function DiscoveryDesk({
         <footer className="index-footer">
           Fractal · {visible.length} {say('papers', '논문')} · {news.length} {say('stories', '소식')}
         </footer>
+        {dossier ? <PublicationDossier hub={hub} item={dossier} record={matchPublication(dossier, records)} hasPdf={papers.some((p) => p.paperKey === matchPublication(dossier, records)?.paperKey && !!p.pdfSha256)} onOpen={onOpen} onClose={() => setDossier(null)} /> : null}
         {reading ? <ArticleView hub={hub} item={reading} onClose={() => setReading(null)} /> : null}
         {managing && field !== 'all' ? (
           <TopicManager

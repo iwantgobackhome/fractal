@@ -34,6 +34,7 @@ import type {
 } from '@fractal/shared';
 import { TOKEN_HEADER } from '../lib/api';
 import { t } from '../i18n';
+import { FeedImages } from './feed-images';
 
 /*
  * Client for the hub's library, AI, network and pairing endpoints. Responses
@@ -249,6 +250,10 @@ export interface ExplainRequest {
 }
 
 export class HubApi {
+  readonly feedImages = new FeedImages((path, signal) => this.fetchImpl(path, {
+    headers: this.token === null ? {} : { [TOKEN_HEADER]: this.token },
+    credentials: 'same-origin', redirect: 'error', signal,
+  }));
   private relatedCache = new Map<string, RelatedPapersResponse>();
   private relatedPending = new Map<string, Promise<RelatedPapersResponse | null>>();
   private publicationPending = new Map<string, Promise<PublicationPdfLinkResult | null>>();

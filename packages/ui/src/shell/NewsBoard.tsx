@@ -1,6 +1,8 @@
 import { createContext, useContext, useState, type JSX, type MouseEvent } from 'react';
 import { t } from '../i18n';
-import type { FeedEntry } from './hub-api';
+import { FeedPicture } from './FeedPicture';
+import { feedImagePath } from './feed-images';
+import type { FeedEntry, HubApi } from './hub-api';
 
 function relative(iso: string | null): string {
   if (iso === null) return '';
@@ -12,19 +14,7 @@ function relative(iso: string | null): string {
   return t('home.daysAgo', { count: Math.round(hours / 24) });
 }
 
-/** A paper's first figure or a story's picture, if the hub found one; nothing otherwise. */
-function Picture({ item, kind }: { item: FeedEntry; kind: 'figure' | 'photo' }): JSX.Element | null {
-  const [failed, setFailed] = useState(false);
-  const image = item.image;
-  if (image === undefined || image === null || failed) return null;
-  return (
-    <span className={`picture picture--${kind}`}>
-      <img src={image.url} alt={image.alt ?? ''} width={image.width} height={image.height} loading="lazy" decoding="async" onError={() => setFailed(true)} />
-    </span>
-  );
-}
-
-const hasImage = (item: FeedEntry): boolean => item.image !== undefined && item.image !== null;
+const hasImage = (item: FeedEntry): boolean => !!feedImagePath(item.image?.url);
 
 /** Opens a story in the reading sheet; a modified click (new tab, window) still goes to the site. */
 export const ReadContext = createContext<(item: FeedEntry) => void>(() => undefined);
@@ -55,12 +45,12 @@ function NewsTitle({ item, className }: { item: FeedEntry; className: string }):
 }
 
 /** A news story: picture, headline, outlet and age. Opens inside Fractal. */
-function Story({ item, withPicture }: { item: FeedEntry; withPicture: boolean }): JSX.Element {
+function Story({ hub, item, withPicture }: { hub: HubApi; item: FeedEntry; withPicture: boolean }): JSX.Element {
   const read = useReader(item);
   return (
     <li className="story" data-picture={withPicture && hasImage(item)}>
       <a href={item.url} target="_blank" rel="noreferrer noopener" className="story__link" onClick={read}>
-        {withPicture ? <Picture item={item} kind="photo" /> : null}
+        {withPicture ? <FeedPicture hub={hub} image={item.image} kind="photo" /> : null}
         <NewsTitle item={item} className="story__title" />
       </a>
       <span className="story__meta">
@@ -75,12 +65,12 @@ function Story({ item, withPicture }: { item: FeedEntry; withPicture: boolean })
 const BOARD_SHOWN = 8;
 
 /** One story on the news board: picture on top when there is one. */
-function NewsCard({ item }: { item: FeedEntry }): JSX.Element {
+function NewsCard({ hub, item }: { hub: HubApi; item: FeedEntry }): JSX.Element {
   const read = useReader(item);
   return (
     <article className="news-card" data-picture={hasImage(item)}>
       <a href={item.url} target="_blank" rel="noreferrer noopener" className="news-card__link" onClick={read}>
-        <Picture item={item} kind="photo" />
+        <FeedPicture hub={hub} image={item.image} kind="photo" />
         <NewsTitle item={item} className="news-card__title" />
       </a>
       <span className="story__meta">
@@ -93,7 +83,7 @@ function NewsCard({ item }: { item: FeedEntry }): JSX.Element {
 }
 
 /** Science and technology news beyond the reader's fields. */
-export function NewsBoard({ items }: { items: FeedEntry[] }): JSX.Element {
+export function NewsBoard({ hub, items }: { hub: HubApi; items: FeedEntry[] }): JSX.Element {
   const [open, setOpen] = useState(false);
   const cards = items.slice(0, BOARD_SHOWN);
   const rest = items.slice(BOARD_SHOWN);
@@ -104,7 +94,7 @@ export function NewsBoard({ items }: { items: FeedEntry[] }): JSX.Element {
       </h2>
       <div className="news-board__grid">
         {cards.map((item) => (
-          <NewsCard key={item.id} item={item} />
+          <NewsCard hub={hub} key={item.id} item={item} />
         ))}
       </div>
       {rest.length > 0 ? (
@@ -112,7 +102,7 @@ export function NewsBoard({ items }: { items: FeedEntry[] }): JSX.Element {
           {open ? (
             <ul className="stories news-board__rest">
               {rest.map((item) => (
-                <Story key={item.id} item={item} withPicture />
+                <Story hub={hub} key={item.id} item={item} withPicture />
               ))}
             </ul>
           ) : null}

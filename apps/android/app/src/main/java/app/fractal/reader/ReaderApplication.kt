@@ -20,6 +20,7 @@ class ReaderApplication : Application() {
     val database by lazy { FractalDatabase.get(this) }
     val credentials by lazy { HubCredentialStore(this) }
     val client by lazy { HubClient(credentials) }
+    internal val discoveryImages by lazy { DiscoveryImages(this) }
     val sync by lazy { SyncEngine(database, client) }
     val discovery by lazy { app.fractal.sync.DiscoveryRepository(database, client, sync) {
         app.fractal.sync.discoveryScope(credentials.load())

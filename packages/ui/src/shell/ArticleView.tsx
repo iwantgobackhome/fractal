@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type JSX } from 'react';
 import type { ArticleBlock } from '@fractal/shared';
 import { getLanguage, locale, t } from '../i18n';
+import { FeedPicture } from './FeedPicture';
 import type { Article, FeedEntry, HubApi } from './hub-api';
 
 type Load = { state: 'loading' } | { state: 'ready'; article: Article } | { state: 'failed'; message: string };
@@ -18,12 +19,12 @@ function when(iso: string | undefined): string | null {
   return Number.isNaN(date.getTime()) ? null : new Intl.DateTimeFormat(locale(), { year: 'numeric', month: 'long', day: 'numeric' }).format(date);
 }
 
-function Block({ block, text }: { block: ArticleBlock; text: string | undefined }): JSX.Element | null {
+function Block({ hub, block, text }: { hub: HubApi; block: ArticleBlock; text: string | undefined }): JSX.Element | null {
   if (block.type === 'img') {
     if (block.image === undefined) return null;
     return (
       <figure className="article__figure">
-        <img src={block.image.url} alt={block.image.alt ?? ''} loading="lazy" decoding="async" />
+        <FeedPicture hub={hub} image={block.image} kind="photo" detail />
         {block.image.alt ? <figcaption>{block.image.alt}</figcaption> : null}
       </figure>
     );
@@ -150,12 +151,12 @@ export function ArticleView({ hub, item, onClose }: { hub: HubApi; item: FeedEnt
               {translation.state === 'on' ? <p className="article__note">{t('article.machineNote')}</p> : null}
               {load.article.leadImage !== undefined ? (
                 <figure className="article__figure article__figure--lead">
-                  <img src={load.article.leadImage.url} alt={load.article.leadImage.alt ?? ''} />
+                  <FeedPicture hub={hub} image={load.article.leadImage} kind="photo" detail />
                 </figure>
               ) : null}
               {load.article.blocks.map((block, index) =>
                 block.type === 'img' && block.image?.url === load.article.leadImage?.url ? null : (
-                  <Block key={index} block={block} text={translation.state === 'on' ? (translation.blocks[index] ?? block.text) : block.text} />
+                  <Block hub={hub} key={index} block={block} text={translation.state === 'on' ? (translation.blocks[index] ?? block.text) : block.text} />
                 ),
               )}
             </article>

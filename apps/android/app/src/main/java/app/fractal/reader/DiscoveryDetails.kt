@@ -126,6 +126,7 @@ import java.util.Locale
     LazyColumn(Modifier.fillMaxSize().background(colors.paper), state = state, contentPadding = PaddingValues(bottom = 24.dp)) {
         item { DeskHeading(libraryText("Paper dossier", "논문 상세"), onBack, libraryText("Back", "뒤로"))
             SelectionContainer { Column(Modifier.padding(16.dp)) {
+                DiscoveryImage(app, paper.image, detail = true)
                 Text(paper.title, fontFamily = ScholarlySerif, fontSize = 27.sp, lineHeight = 35.sp, color = colors.ink)
                 Text(paper.authors.joinToString(", ").ifBlank { libraryText("Author not reported", "저자 정보 없음") }, Modifier.padding(top = 12.dp), fontSize = 15.sp, lineHeight = 23.sp, color = colors.inkSoft)
                 Text(listOf(publicationLabel(paper.publication?.publicationKind), paper.publication?.venue ?: paper.venue ?: libraryText("Venue unknown", "발행처 미상"),
@@ -191,7 +192,7 @@ import java.util.Locale
         }
         itemsIndexed(related?.items.orEmpty().filter { relation.isBlank() || relation in it.relations || it.relation == relation }, key = { index, item -> publicationFingerprint(item) + ":$index" }) { _, item ->
             val row = library.firstOrNull { matchesPublication(item, it) }
-            DiscoveryIndexRow(item, row, intents.any { it.kind == "bookmark" && it.resource == publicationFingerprint(item) }, { onOpenPaper(item) }, { action {
+            DiscoveryIndexRow(app, item, row, intents.any { it.kind == "bookmark" && it.resource == publicationFingerprint(item) }, { onOpenPaper(item) }, { action {
                 if (row != null) {
                     app.metadata.save(row.paperKey, !row.saved)
                     SyncScheduler.now(app, app.settings.getBoolean("wifiOnly", false)); app.sync.syncOnce()
@@ -247,6 +248,7 @@ private fun titleTranslationResource(title: String, target: String): String = "t
         item {
             DeskHeading(libraryText("News article", "뉴스 기사"), onBack, libraryText("Back", "뒤로"))
             SelectionContainer { Column(Modifier.padding(16.dp)) {
+                DiscoveryImage(app, article?.leadImage ?: paper.image, news = true, detail = true)
                 Text(if (showingTranslation) translatedText!!.first() else article?.title ?: paper.title, fontFamily = ScholarlySerif, fontSize = 27.sp, lineHeight = 35.sp, color = colors.ink)
                 if (showingTranslation) Text(article?.title ?: paper.title, fontSize = 14.sp, lineHeight = 21.sp, color = colors.inkSoft)
                 val sourceLabel = article?.siteName?.takeIf { it.isNotBlank() }

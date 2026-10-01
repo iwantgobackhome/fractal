@@ -2,6 +2,12 @@ package app.fractal.sync
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.suspendCancellableCoroutine
+import okhttp3.Call
+import okhttp3.Callback
+import java.io.ByteArrayOutputStream
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
@@ -26,6 +32,7 @@ interface HubDataClient {
 interface HubPdfSession : HubDataClient {
     fun executePdf(path: String, headers: Map<String, String>): Response
     fun executeLink(key: String, bytes: ByteArray): Response
+    suspend fun feedImage(path: String): ByteArray = throw IOException("Hub images unavailable")
 }
 interface HubHistoryClient : HubDataClient {
     suspend fun attachHistory(path: String, body: JsonObject): String
@@ -54,6 +61,8 @@ class HubClient(private val credentials: HubCredentialStore) : HubHistoryClient 
     // and JSON processing after that, without extending unrelated Hub requests.
     private val publicationHttp = http.newBuilder().readTimeout(90, TimeUnit.SECONDS)
         .callTimeout(100, TimeUnit.SECONDS).retryOnConnectionFailure(false).build()
+    private val imageHttp = http.newBuilder().followRedirects(false).followSslRedirects(false)
+        .callTimeout(15, TimeUnit.SECONDS).readTimeout(15, TimeUnit.SECONDS).build()
     private fun transport(path: String, method: String) = when {
         method == "POST" && path.substringBefore('?') == "/api/feed/topics" -> admissionHttp
         method == "POST" && path.substringBefore('?') == "/api/publications/open" -> publicationHttp
@@ -109,6 +118,48 @@ class HubClient(private val credentials: HubCredentialStore) : HubHistoryClient 
             override fun executePdf(path: String, headers: Map<String, String>): Response {
                 ensureCurrent()
                 return http.newCall(request(paired.url, path, token = paired.token, headers = headers)).execute()
+            }
+            override suspend fun feedImage(path: String): ByteArray {
+                require(Regex("^/api/feed/images/[0-9a-f]{64}$").matches(path)) { "Invalid Hub image" }
+                ensureCurrent()
+                return suspendCancellableCoroutine { continuation ->
+                    val call = imageHttp.newCall(request(paired.url, path, token = paired.token))
+                    continuation.invokeOnCancellation { call.cancel() }
+                    call.enqueue(object : Callback {
+                        override fun onFailure(call: Call, error: IOException) {
+                            if (continuation.isActive) continuation.resumeWithException(error)
+                        }
+                        override fun onResponse(call: Call, response: Response) {
+                            try {
+                                val bytes = response.use {
+                                    ensureCurrent()
+                                    check(it.isSuccessful) { "Image unavailable" }
+                                    val body = it.body ?: error("Image unavailable")
+                                    check(body.contentType()?.let { type -> type.type == "image" && type.subtype in listOf("png", "jpeg", "webp", "gif") } == true)
+                                    check(body.contentLength() <= 5L * 1024 * 1024)
+                                    body.byteStream().use { input ->
+                                        val output = ByteArrayOutputStream()
+                                        val buffer = ByteArray(8192)
+                                        while (true) {
+                                            check(continuation.isActive) { "Image cancelled" }
+                                            ensureCurrent()
+                                            val count = input.read(buffer)
+                                            if (count < 0) break
+                                            check(output.size() + count <= 5 * 1024 * 1024) { "Image too large" }
+                                            output.write(buffer, 0, count)
+                                        }
+                                        check(output.size() > 0)
+                                        output.toByteArray()
+                                    }
+                                }
+                                ensureCurrent()
+                                if (continuation.isActive) continuation.resume(bytes)
+                            } catch (error: Exception) {
+                                if (continuation.isActive) continuation.resumeWithException(error)
+                            }
+                        }
+                    })
+                }
             }
             override fun executeLink(key: String, bytes: ByteArray): Response {
                 ensureCurrent()

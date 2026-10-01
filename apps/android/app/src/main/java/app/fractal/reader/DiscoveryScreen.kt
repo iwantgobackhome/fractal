@@ -162,7 +162,7 @@ internal fun DiscoveryScreen(app: ReaderApplication, destination: String, onSett
             if (topics.isEmpty()) item { StatusParagraph(libraryText("No cached topics for this field. Connect and refresh, or choose another field.", "이 분야의 캐시된 주제가 없습니다. 연결 후 새로 고침하거나 다른 분야를 선택하세요.")) }
         } else {
             items(visible, key = { it.id }) { paper ->
-                DiscoveryIndexRow(paper, library.firstOrNull { matchesPublication(paper, it) }, intents.any { it.kind == "bookmark" && it.resource == publicationFingerprint(paper) },
+                DiscoveryIndexRow(app, paper, library.firstOrNull { matchesPublication(paper, it) }, intents.any { it.kind == "bookmark" && it.resource == publicationFingerprint(paper) },
                     onOpen = { trail = listOf(WireJson.format.encodeToString(paper)) }, onSave = { action {
                         val row = library.firstOrNull { matchesPublication(paper, it) }
                         if (row != null) {
@@ -232,9 +232,10 @@ internal fun matchesPublication(paper: DiscoveryPaper, row: LibraryEntity): Bool
         (paper.publication?.year ?: paper.year) == row.year
 }
 
-@Composable internal fun DiscoveryIndexRow(paper: DiscoveryPaper, saved: LibraryEntity?, pending: Boolean, onOpen: () -> Unit, onSave: () -> Unit) {
+@Composable internal fun DiscoveryIndexRow(app: ReaderApplication, paper: DiscoveryPaper, saved: LibraryEntity?, pending: Boolean, onOpen: () -> Unit, onSave: () -> Unit) {
     val colors = LocalFractalColors.current
     Column(Modifier.fillMaxWidth().padding(16.dp)) {
+        DiscoveryImage(app, paper.image, news = paper.kind == "news", onOpen = onOpen, title = paper.title)
         TextButton(onClick = onOpen, shape = androidx.compose.ui.graphics.RectangleShape,
             contentPadding = PaddingValues(0.dp), modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
             Text(paper.titleTranslated ?: paper.title, Modifier.fillMaxWidth(), fontFamily = ScholarlySerif, fontSize = 22.sp, lineHeight = 29.sp, color = colors.ink)
