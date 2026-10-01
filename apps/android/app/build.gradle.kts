@@ -16,6 +16,17 @@ android {
         versionName = "0.2.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+    val ciDebugKeystorePath = providers.environmentVariable("FRACTAL_ANDROID_KEYSTORE_PATH").orNull
+    if (System.getenv("GITHUB_ACTIONS") == "true") {
+        require(!ciDebugKeystorePath.isNullOrBlank()) { "CI must provide the verified debug signing store path" }
+    }
+    if (!ciDebugKeystorePath.isNullOrBlank()) {
+        val ciDebugKeystore = file(ciDebugKeystorePath)
+        require(ciDebugKeystore.isAbsolute && ciDebugKeystore.isFile) { "Verified CI debug signing store is missing" }
+        signingConfigs.getByName("debug") {
+            storeFile = ciDebugKeystore
+        }
+    }
     buildFeatures { compose = true }
     testOptions { unitTests.isReturnDefaultValues = true }
     compileOptions {

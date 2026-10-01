@@ -40,6 +40,10 @@ android = '\n'.join(step.get('run','') for step in jobs['android']['steps'])
 assert android.index('restore-android-debug-key.mjs') < android.index(':app:assembleDebug')
 assert 'verify-android-release.mjs' in android and 'build-tools;35.0.0' in android
 assert 'ANDROID_RELEASE_CERT_SHA256' in Path('.github/workflows/release.yml').read_text()
+restore = next(step for step in jobs['android']['steps'] if step.get('run') == 'node scripts/restore-android-debug-key.mjs')
+assert restore['env']['EXPECT_ANDROID_CERT_SHA256'] == '${{ vars.ANDROID_RELEASE_CERT_SHA256 }}'
+assemble = next(step for step in jobs['android']['steps'] if ':app:assembleDebug' in step.get('run', ''))
+assert restore['env']['FRACTAL_ANDROID_KEYSTORE_PATH'] == assemble['env']['FRACTAL_ANDROID_KEYSTORE_PATH'] == '${{ runner.temp }}/fractal-android-signing/debug.keystore'
 sdk_setup = next(step for step in jobs['android']['steps'] if step.get('uses') == 'android-actions/setup-android@v3')
 assert sdk_setup['with']['packages'] == 'platform-tools', 'removed legacy SDK tools package must not be requested'
 assert 'unset CSC_LINK CSC_KEY_PASSWORD' in runs, 'absent signing credentials must be unset, not empty'

@@ -118,10 +118,14 @@ jobs:
       - run: node scripts/verify-release-version.mjs
       - name: Restore stable debug signing identity (never log or upload key)
         env:
+          FRACTAL_ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/fractal-android-signing/debug.keystore
           ANDROID_DEBUG_KEYSTORE_BASE64: ${{ secrets.ANDROID_DEBUG_KEYSTORE_BASE64 }}
+          EXPECT_ANDROID_CERT_SHA256: ${{ vars.ANDROID_RELEASE_CERT_SHA256 }}
         run: node scripts/restore-android-debug-key.mjs
       - name: Build debug companion
         working-directory: apps/android
+        env:
+          FRACTAL_ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/fractal-android-signing/debug.keystore
         run: bash gradlew --no-daemon :app:assembleDebug
       - name: Verify manifest, signature and previous release certificate
         env:
