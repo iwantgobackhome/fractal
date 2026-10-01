@@ -26,6 +26,7 @@ const input = {
   publication: { year: 2017, venue: 'NeurIPS', publicationKind: 'conference', publicationDate: null, oaAvailability: 'open', oaPdfUrl: pdfUrl, sources: ['user'] },
 };
 const sha = (b: Buffer) => createHash('sha256').update(b).digest('hex');
+const compact = (state: any) => ({ ...state, paper: { paper: state.paper.paper, blocks: { count: state.paper.blocks.length, sha256: sha(Buffer.from(JSON.stringify(state.paper.blocks))) }, translations: state.paper.translations, job: state.paper.job }, fullStateSha256: sha(Buffer.from(JSON.stringify(state))) });
 const identity = (pid: number) => JSON.parse(execFileSync('powershell.exe', ['-NoProfile', '-Command', `Get-CimInstance Win32_Process -Filter "ProcessId = ${pid}" | Select-Object ProcessId,ParentProcessId,ExecutablePath,CommandLine,CreationDate | ConvertTo-Json -Compress`], { encoding: 'utf8' }).trim() || 'null');
 const listeners = (port: string) => JSON.parse(execFileSync('powershell.exe', ['-NoProfile', '-Command', `ConvertTo-Json -Compress -InputObject @(Get-NetTCPConnection -LocalPort ${port} -State Listen -ErrorAction SilentlyContinue | Select-Object LocalAddress,LocalPort,OwningProcess)`], { encoding: 'utf8' }).trim());
 const evidence: any = { mode, source, directory, output, seededPdfBytes: false, externalNavigation: [], cases: [] };
@@ -52,8 +53,8 @@ try {
   assert.ok(reference.ok); const bytes = Buffer.from(await reference.arrayBuffer());
   assert.ok(bytes.subarray(0, 1024).includes(Buffer.from('%PDF-')));
   await writeFile(join(output, 'public-reference.pdf'), bytes);
-  const opened = await api('/api/publications/open', input), key = opened.paperKey;
-  assert.equal(opened.paper.pdfSha256, sha(bytes));
+  const opened = await api(mode === 'browser' ? '/api/publications/open' : '/api/library/bookmarks', input), key = opened.paperKey;
+  if (mode === 'browser') assert.equal(opened.paper.pdfSha256, sha(bytes));
   evidence.reference = { url: reference.url, bytes: bytes.length, sha256: sha(bytes), paperKey: key };
   store.putFolder({ id: 'parent', name: 'Preserved parent', parentId: null });
   store.putFolder({ id: 'child', name: 'Preserved child', parentId: 'parent' });
@@ -84,7 +85,19 @@ try {
     await page.goto(origin + '/#/home');
     await page.locator('[data-feed-id="cached-read-attention"]').getByRole('button', { name: 'Read PDF', exact: true }).click();
   }
-  const before = await snapshot(); evidence.before = before;
+  if (mode !== 'browser') {
+    const acquired = page.waitForResponse(r => r.url().endsWith('/api/publications/open'), { timeout: 120_000 });
+    await primaryRead(); const response = await acquired; assert.ok(response.ok());
+    const acquiredData = (await response.json()).data; assert.equal(acquiredData.paper.pdfSha256, sha(bytes));
+    await page.locator('[data-testid="pdf-body"] canvas').first().waitFor({ timeout: 60_000 });
+    await page.waitForTimeout(1600);
+    evidence.cases.push({ name: 'actual-runtime-public-acquisition-Read', runtime: mode, canonicalHash: sha(bytes), mountedPdf: true });
+    await page.screenshot({ path: join(output, 'public-original-read.png') });
+    await page.goto(origin + '/#/home');
+    await api(`/api/library/${key}`, { lastReadAt: null, readProgress: { page: 1, fraction: 0.1 } }, 'PATCH');
+    evidence.baselineMetadataSetup = 'Cleared own first-read Recent/progress before corruption comparison; public bytes unchanged.';
+  }
+  const before = await snapshot(); evidence.before = compact(before);
   await writeFile(pdfPath, altered);
   for (const headers of [{}, { range: 'bytes=0-31' }, { 'if-none-match': `"${sha(altered)}"` }] as Record<string, string>[]) {
     const rejected = await request(`/api/papers/${key}/pdf`, undefined, 'GET', headers);
@@ -112,8 +125,33 @@ try {
   assert.ok(after.library[0].lastReadAt);
   for (const field of ['paperKey', 'saved', 'savedAt', 'tags', 'collections', 'title', 'url']) assert.deepEqual(after.library[0][field], before.library[0][field]);
   assert.deepEqual(after.history, before.history); assert.deepEqual(after.folders, before.folders); assert.deepEqual(after.paper, before.paper);
-  evidence.after = after; evidence.cases.push({ name: 'restored-primary-Read', exactOriginalHash: sha(bytes), mountedPdf: true, recentAfterActualRead: true, retainedMetadataPreserved: true });
+  evidence.after = compact(after); evidence.cases.push({ name: 'restored-primary-Read', exactOriginalHash: sha(bytes), mountedPdf: true, recentAfterActualRead: true, retainedMetadataPreserved: true });
   await page.screenshot({ path: join(output, 'restored-primary-read.png') });
+  if (mode === 'packaged') {
+    await page.locator('.reader-bar__views button').first().click();
+    await page.getByRole('button', { name: 'T', exact: true }).click();
+    await page.locator('[data-testid="text-layer-1"] span[data-boundaries]').first().waitFor();
+    await page.evaluate(() => document.fonts.ready);
+    const points = await page.evaluate(() => {
+      const span = Array.from(document.querySelectorAll<HTMLElement>('[data-testid="text-layer-1"] span[data-boundaries]')).find(s => s.textContent?.includes('dominant'))!;
+      span.scrollIntoView({ block: 'center' });
+      const text = span.textContent!, start = text.indexOf('dominant');
+      const point = (offset: number) => {
+        const range = document.createRange(); range.setStart(span.firstChild!, offset); range.setEnd(span.firstChild!, offset + 1);
+        const r = range.getBoundingClientRect();
+        const candidates = [[0.1, 0.5], [0.1, 0.1], [0.5, 0.1], [0.9, 0.1], [0.9, 0.5]].map(([x, y]) => ({ x: r.left + r.width * x, y: r.top + r.height * y }));
+        return candidates.find(p => { const caret = document.caretRangeFromPoint(p.x, p.y); return caret?.startContainer === span.firstChild && caret.startOffset === offset; }) ?? candidates[0];
+      };
+      return { a: point(start), b: point(start + 'dominant'.length), text, start };
+    });
+    await page.mouse.move(points.a.x, points.a.y); await page.mouse.down(); await page.mouse.move(points.b.x, points.b.y, { steps: 14 });
+    const beforeUp = await page.evaluate(() => window.getSelection()?.toString()); await page.mouse.up();
+    await page.locator('.selection-menu').waitFor(); const selected = await page.evaluate(() => window.getSelection()?.toString());
+    assert.equal(beforeUp, 'dominant'); assert.equal(selected, 'dominant');
+    await page.keyboard.press('Control+C'); const clipboard = await app!.evaluate(({ clipboard }) => clipboard.readText()); assert.equal(clipboard, 'dominant');
+    evidence.cases.push({ name: 'actual-native-word-drag', points, beforeUp, selected, clipboard, seededSelection: false });
+    await page.screenshot({ path: join(output, 'native-word-drag.png') });
+  }
   assert.deepEqual(evidence.externalNavigation, []); assert.deepEqual(errors, []); evidence.status = 'passed';
 } catch (error) { evidence.status = 'failed'; evidence.error = error instanceof Error ? error.stack : String(error); console.error(evidence.error); process.exitCode = 1; }
 finally {
