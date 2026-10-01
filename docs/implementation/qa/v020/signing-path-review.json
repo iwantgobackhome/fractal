@@ -1,0 +1,35 @@
+﻿{
+    "acceptedSource":  "a0810e273865c2587c673aea0408420f6f50705b",
+    "actualRun":  "36839666433",
+    "scope":  "public installed JAR bytecode and source trace only; no key read, Gradle execution or confirmed host-environment diagnosis",
+    "inspectedAt":  "2026-10-01T09:19:02.2165962Z",
+    "publicJars":  [
+                       {
+                           "component":  "AGP",
+                           "version":  "8.9.1",
+                           "path":  "C:/Users/Home/.gradle/caches/modules-2/files-2.1/com.android.tools.build/gradle/8.9.1\\4e50fe7802406421df7b7165d5a8bcbb2762ff0f\\gradle-8.9.1.jar",
+                           "sha256":  "8aeaa7fa7bfbc9ade7746eb86d37dd5990118fbede400c9ebadc63d13cc6c880"
+                       },
+                       {
+                           "component":  "Android common",
+                           "version":  "31.9.1",
+                           "path":  "C:/Users/Home/.gradle/caches/modules-2/files-2.1/com.android.tools/common/31.9.1\\62aafb25bd2550ba593d3ebcc564666e4798a9a1\\common-31.9.1.jar",
+                           "sha256":  "23d3da3f5d341d7c660cd241a6199eafcdb6f48e89d730def4b78da256930416"
+                       },
+                       {
+                           "component":  "Android sdk-common",
+                           "version":  "31.9.1",
+                           "path":  "C:/Users/Home/.gradle/caches/modules-2/files-2.1/com.android.tools/sdk-common/31.9.1\\f8319636e0f0fb7fb345ceb68985619f7482488\\sdk-common-31.9.1.jar",
+                           "sha256":  "8943a58b67ac7fb1a0321e7a52a87cfaaec248d3912536c3d728a8dc071fff24"
+                       }
+                   ],
+    "methods":  [
+                    "LegacyVariantInputManager -\u003e GradleKeystoreHelper.getDefaultDebugKeystoreLocation -\u003e SigningConfigFactory debug storeFile",
+                    "KeystoreHelper.defaultDebugKeystoreLocation -\u003e AndroidLocationsProvider.prefsLocation/debug.keystore",
+                    "AbstractAndroidLocations.computeAndroidFolder -\u003e explicit Android preference variables, then TEST_TMPDIR/XDG_CONFIG_HOME/user.home/HOME + .android"
+                ],
+    "restorePath":  "Node homedir/.android/debug.keystore",
+    "conclusion":  "possible divergence under host preference/home overrides; actual CI inherited values unknown",
+    "privateKeyAccess":  false,
+    "expectedCertificateGate":  "preserved"
+}
