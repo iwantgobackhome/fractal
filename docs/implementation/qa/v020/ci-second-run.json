@@ -1,0 +1,85 @@
+﻿{
+    "runId":  "36839666433",
+    "source":  "a0810e273865c2587c673aea0408420f6f50705b",
+    "url":  "https://github.com/iwantgobackhome/fractal/actions/runs/36839666433",
+    "status":  "completed",
+    "conclusion":  "failure",
+    "inspectedAt":  "2026-10-01T09:09:52.5440950Z",
+    "scope":  "actual job status and direct public Android log; no artifact download or installation",
+    "jobs":  [
+                 {
+                     "name":  "versions",
+                     "id":  110295476016,
+                     "conclusion":  "success",
+                     "failedSteps":  [
+
+                                     ]
+                 },
+                 {
+                     "name":  "desktop (windows-2025, win32, x64, --win nsis)",
+                     "id":  110295565306,
+                     "conclusion":  "success",
+                     "failedSteps":  [
+
+                                     ]
+                 },
+                 {
+                     "name":  "desktop (macos-15-intel, darwin, x64, --mac dmg)",
+                     "id":  110295565330,
+                     "conclusion":  "success",
+                     "failedSteps":  [
+
+                                     ]
+                 },
+                 {
+                     "name":  "desktop (ubuntu-24.04, linux, x64, --linux AppImage deb)",
+                     "id":  110295565367,
+                     "conclusion":  "success",
+                     "failedSteps":  [
+
+                                     ]
+                 },
+                 {
+                     "name":  "android",
+                     "id":  110295565409,
+                     "conclusion":  "failure",
+                     "failedSteps":  [
+                                         "Verify manifest, signature and previous release certificate"
+                                     ]
+                 },
+                 {
+                     "name":  "desktop (macos-15, darwin, arm64, --mac dmg)",
+                     "id":  110295565520,
+                     "conclusion":  "success",
+                     "failedSteps":  [
+
+                                     ]
+                 },
+                 {
+                     "name":  "checksums",
+                     "id":  110297385077,
+                     "conclusion":  "skipped",
+                     "failedSteps":  [
+
+                                     ]
+                 },
+                 {
+                     "name":  "publication",
+                     "id":  110297385663,
+                     "conclusion":  "skipped",
+                     "failedSteps":  [
+
+                                     ]
+                 }
+             ],
+    "android":  {
+                    "build":  "success",
+                    "actualCertificate":  "f1cc53c542b21a9a55edb713c549eb3ba8d69e06d76cdecc8562be313eb6721b",
+                    "requiredOldRuntimeCertificate":  "62e0698d0572e672aa65a999c6e6e4a6669fb2baf4ca0c6f9c2ce7f82bdd7f4f",
+                    "continuity":  "FAIL",
+                    "privateDiagnosis":  "root-owned; no key inspected"
+                },
+    "productionSourceChangesFromRuntime":  [
+
+                                           ]
+}
