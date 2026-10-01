@@ -25,7 +25,7 @@ for (const label of labels) {
     report.checksums.push({ name, sha256: expected, bytes: bytes.length });
   }
 }
-const sourcePaths = execFileSync('git', ['ls-tree', '-r', '--name-only', acceptedCommit], { encoding: 'utf8' }).trim().split('\n');
+const sourcePaths = execFileSync('git', ['ls-tree', '-r', '--name-only', '-z', acceptedCommit], { encoding: 'utf8' }).split('\0').filter(Boolean);
 const batch = execFileSync('git', ['cat-file', '--batch'], { input: sourcePaths.map(p => `${acceptedCommit}:${p}\n`).join(''), maxBuffer: 512 * 1024 * 1024 });
 const expectedFiles = new Map();
 let offset = 0;
