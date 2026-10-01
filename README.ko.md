@@ -20,6 +20,8 @@
 <p align="center">
   <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="Windows 설치 파일 내려받기" src="https://img.shields.io/badge/%EB%82%B4%EB%A0%A4%EB%B0%9B%EA%B8%B0-Windows%20%EC%84%A4%EC%B9%98%20%ED%8C%8C%EC%9D%BC-2f6b45?style=for-the-badge&logo=windows&logoColor=white"></a>
   <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="Android APK 내려받기" src="https://img.shields.io/badge/%EB%82%B4%EB%A0%A4%EB%B0%9B%EA%B8%B0-Android%20APK-2f6b45?style=for-the-badge&logo=android&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="Linux AppImage·Debian 릴리스 파일과 배포 상태" src="https://img.shields.io/badge/Releases-Linux%20x64-2f6b45?style=for-the-badge&logo=linux&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="macOS Apple Silicon·Intel 릴리스 파일과 배포 상태" src="https://img.shields.io/badge/Releases-macOS%20arm64%20%7C%20x64-2f6b45?style=for-the-badge&logo=apple&logoColor=white"></a>
   <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="최신 릴리스" src="https://img.shields.io/github/v/release/iwantgobackhome/fractal?style=for-the-badge&color=3b625b"></a>
 </p>
 
@@ -35,7 +37,7 @@
 
 원문 PDF나 번역문에서 필요한 글자만 정확히 선택할 수 있습니다. 공개 PDF가 있으면 기본 읽기 동작으로 앱 안에서 출판물 PDF를 엽니다. 접근이나 추출에 실패하면 발행처 페이지는 명시적인 대체 동작으로 제공됩니다. 원문·번역·나란히 보기에서도 읽기 문맥을 유지합니다. Android에는 네이티브 뉴스·주제 화면과 기사 원문·번역 분할 읽기도 있습니다.
 
-탐색에서는 출처가 제공하는 논문·기사 이미지를 표시할 수 있습니다. 이미지 제공 여부는 출처에 따라 다르며, 이미지가 없다고 논문이나 PDF도 없는 것은 아닙니다. 배포 대상과 기능 범위는 [0.2.0 릴리스 노트](docs/releases/0.2.0.md)를 참고하세요.
+탐색에서는 논문 HTML의 첫 적합한 캡션 그림이나 뉴스 기사의 첫 적합한 본문 이미지를 먼저 시도합니다. 후보를 가져오지 못하면 뒤의 적합한 이미지와 출처 썸네일을 시도합니다. 로고와 자리표시자는 제외하고 검증된 이미지 바이트를 로컬에 캐시합니다. 사용 가능한 이미지가 없으면 텍스트와 읽기 동작을 그대로 제공합니다. 이미지 제공 여부는 출처에 따라 다르며, 이미지가 없다고 논문이나 PDF도 없는 것은 아닙니다. 배포 대상과 기능 범위는 [0.2.0 릴리스 노트](docs/releases/0.2.0.md)를 참고하세요.
 
 ![데스크톱 리더의 앱 내 출판물 PDF](docs/implementation/desktop/pdf-reader-failure/packaged-public-original-read.png)
 

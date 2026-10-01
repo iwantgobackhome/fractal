@@ -1,6 +1,6 @@
 # Fractal Android
 
-Fractal Android 0.2.0 (`versionCode 2`) is the native Kotlin/Compose reader companion. It uses the scholarly interface, Saved/Recent and folders, persistent question/explanation history, annotations, ink and sticky notes. Native News and Topics screens include article source/translation split reading. Exact PDF text selection and available publication PDFs open in the reader; publisher links are explicit fallbacks when a PDF cannot be acquired. Discovery images depend on source availability.
+Fractal Android 0.2.0 (`versionCode 2`) is the native Kotlin/Compose reader companion. It uses the scholarly interface, Saved/Recent and folders, persistent question/explanation history, annotations, ink and sticky notes. Native News and Topics screens include article source/translation split reading. Exact PDF text selection and available publication PDFs open in the reader; publisher links are explicit fallbacks when a PDF cannot be acquired. Discovery uses the Hub's suitable paper-figure/article-content image selection and cache, with text and reading actions retained when no usable image is available.
 
 Open `apps/android` in Android Studio with JDK 17 and SDK 35. The app requires Android 10 (API 29) or newer and targets API 35. Build the companion with `./gradlew :app:assembleDebug` (`gradlew.bat` on Windows); the APK is `app/build/outputs/apk/debug/app-debug.apk`. The `:inkdemo` application remains a tablet pen test; `:design` and `:ink` are reader libraries.
 

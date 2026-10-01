@@ -20,6 +20,8 @@
 <p align="center">
   <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="下载 Windows 安装程序" src="https://img.shields.io/badge/%E4%B8%8B%E8%BD%BD-Windows%20%E5%AE%89%E8%A3%85%E7%A8%8B%E5%BA%8F-2f6b45?style=for-the-badge&logo=windows&logoColor=white"></a>
   <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="下载 Android APK" src="https://img.shields.io/badge/%E4%B8%8B%E8%BD%BD-Android%20APK-2f6b45?style=for-the-badge&logo=android&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="Linux AppImage、Debian 发行文件与可用状态" src="https://img.shields.io/badge/Releases-Linux%20x64-2f6b45?style=for-the-badge&logo=linux&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="macOS Apple Silicon、Intel 发行文件与可用状态" src="https://img.shields.io/badge/Releases-macOS%20arm64%20%7C%20x64-2f6b45?style=for-the-badge&logo=apple&logoColor=white"></a>
   <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="最新版本" src="https://img.shields.io/github/v/release/iwantgobackhome/fractal?style=for-the-badge&color=3b625b"></a>
 </p>
 
@@ -35,7 +37,7 @@
 
 可以在原始 PDF 或译文中精确选择所需字符。存在可用的公开 PDF 时，主要阅读操作会在应用内打开出版物 PDF；无法访问或提取时，出版方页面作为明确的备用操作提供。原文、译文与并排模式保留阅读上下文。Android 还提供原生 News、Topics 页面，以及文章原文与译文的分屏阅读。
 
-发现页面可显示来源提供的论文或文章图片。图片覆盖取决于来源，没有图片不代表没有论文或 PDF。分发形式与功能范围请参阅 [0.2.0 发行说明](docs/releases/0.2.0.md)。
+发现页面会先尝试论文 HTML 中第一张合适的带说明图，或新闻正文中第一张合适的内容图片。候选获取失败时，会继续尝试后续合适的图片及来源缩略图。标志和占位图会被排除，验证后的图片数据缓存在本机。没有可用图片时，条目保留文字和阅读操作。图片覆盖取决于来源，没有图片不代表没有论文或 PDF。分发形式与功能范围请参阅 [0.2.0 发行说明](docs/releases/0.2.0.md)。
 
 ![桌面阅读器中的应用内出版物 PDF](docs/implementation/desktop/pdf-reader-failure/packaged-public-original-read.png)
 

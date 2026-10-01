@@ -20,6 +20,8 @@
 <p align="center">
   <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="Download the Windows installer" src="https://img.shields.io/badge/Download-Windows%20installer-2f6b45?style=for-the-badge&logo=windows&logoColor=white"></a>
   <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="Download the Android APK" src="https://img.shields.io/badge/Download-Android%20APK-2f6b45?style=for-the-badge&logo=android&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="Linux AppImage and Debian release assets and availability" src="https://img.shields.io/badge/Releases-Linux%20x64-2f6b45?style=for-the-badge&logo=linux&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="macOS Apple Silicon and Intel release assets and availability" src="https://img.shields.io/badge/Releases-macOS%20arm64%20%7C%20x64-2f6b45?style=for-the-badge&logo=apple&logoColor=white"></a>
   <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/iwantgobackhome/fractal?style=for-the-badge&color=3b625b"></a>
 </p>
 
@@ -35,7 +37,7 @@ The scholarly desktop and native Android interfaces bring reading and discovery 
 
 Select the exact characters you need in the original PDF or translation. Open an available publication PDF inside Fractal from its primary Read action; a publisher page remains an explicit fallback when access or extraction fails. Original, translation and side-by-side modes preserve the reading context. Android also has native News and Topics views and source/translation article split reading.
 
-Discovery can show source-provided paper or article images when available. Image coverage depends on the source; a missing image does not imply a missing paper or PDF. See the [0.2.0 release notes](docs/releases/0.2.0.md) for distribution and capability boundaries.
+Discovery tries the first suitable captioned figure from a paper's HTML, or the first suitable content image from a news article. If a candidate fails, it tries later suitable images and source thumbnails. It excludes logos and placeholders and caches verified image bytes locally. When no usable image is available, the row keeps its text and reading actions. Image coverage depends on the source; a missing image does not imply a missing paper or PDF. See the [0.2.0 release notes](docs/releases/0.2.0.md) for distribution and capability boundaries.
 
 ![In-app publication PDF in the desktop reader](docs/implementation/desktop/pdf-reader-failure/packaged-public-original-read.png)
 

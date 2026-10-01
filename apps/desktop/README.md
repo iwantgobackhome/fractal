@@ -1,6 +1,6 @@
 # Desktop app
 
-Fractal 0.2.0 runs the scholarly React reader and embedded Hub in an Electron shell. Saved/Recent, nested folders and tags organize the library; research history, annotations, ink and sticky notes persist with the paper. The reader supports exact character selection, original/translation/side-by-side modes and in-app reading of available publication PDFs. Discovery has Papers, News and Topics; source-provided images appear when available, with text remaining usable when an image is absent.
+Fractal 0.2.0 runs the scholarly React reader and embedded Hub in an Electron shell. Saved/Recent, nested folders and tags organize the library; research history, annotations, ink and sticky notes persist with the paper. The reader supports exact character selection, original/translation/side-by-side modes and in-app reading of available publication PDFs. Discovery has Papers, News and Topics. It tries suitable captioned paper figures or article content images before source thumbnails, caches verified images, and keeps text and reading actions usable when no image is available.
 
 `npm run desktop` builds and opens the shell. Closing or minimizing the window hides it in the tray while the Hub keeps running. The tray offers Open, Pairing, and Quit. `electron . --headless` starts the Hub without a window.
 

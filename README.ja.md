@@ -20,6 +20,8 @@
 <p align="center">
   <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="Windows インストーラーをダウンロード" src="https://img.shields.io/badge/%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89-Windows%20%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%A9%E3%83%BC-2f6b45?style=for-the-badge&logo=windows&logoColor=white"></a>
   <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="Android APK をダウンロード" src="https://img.shields.io/badge/%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89-Android%20APK-2f6b45?style=for-the-badge&logo=android&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="Linux AppImage・Debian のリリースファイルと公開状況" src="https://img.shields.io/badge/Releases-Linux%20x64-2f6b45?style=for-the-badge&logo=linux&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="macOS Apple Silicon・Intel のリリースファイルと公開状況" src="https://img.shields.io/badge/Releases-macOS%20arm64%20%7C%20x64-2f6b45?style=for-the-badge&logo=apple&logoColor=white"></a>
   <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="最新リリース" src="https://img.shields.io/github/v/release/iwantgobackhome/fractal?style=for-the-badge&color=3b625b"></a>
 </p>
 
@@ -35,7 +37,7 @@
 
 原文 PDF や訳文で必要な文字だけを正確に選択できます。公開 PDF が利用できる場合は主な読む操作から出版物の PDF をアプリ内で開きます。取得や抽出に失敗した場合は配信元ページを明示的な代替操作として提供します。原文、翻訳、並列表示で読書の文脈を保ちます。Android にはネイティブの News・Topics 画面と、記事の原文・訳文の分割表示もあります。
 
-発見画面は情報源が提供する論文や記事の画像を表示できます。画像の有無は情報源によって異なり、画像がなくても論文や PDF がないとは限りません。配布形式と機能の範囲は [0.2.0 リリースノート](docs/releases/0.2.0.md) を参照してください。
+発見画面では、論文 HTML の最初の適切なキャプション付き図、またはニュース本文の最初の適切な画像を試します。取得できない場合は後続の適切な画像や情報源のサムネイルを試します。ロゴやプレースホルダーを除外し、検証済みの画像データをローカルに保存します。利用できる画像がなければ、テキストと読む操作を保ちます。画像の有無は情報源によって異なり、画像がなくても論文や PDF がないとは限りません。配布形式と機能の範囲は [0.2.0 リリースノート](docs/releases/0.2.0.md) を参照してください。
 
 ![デスクトップリーダーで開いた出版物 PDF](docs/implementation/desktop/pdf-reader-failure/packaged-public-original-read.png)
 
