@@ -1,0 +1,25 @@
+{
+  "reviewedCorrection": "014a91b76a6f0b0dbd1bd7e78ba9d7db2a7e7d20",
+  "acceptedSource": "c75ea15f806382f88e7a26e03da17a7f4f505b56",
+  "localAcceptedMerge": "baf380a576c16c0b747a84d16bdafbe1fff6e7e2",
+  "actualCiRun": "36842896212",
+  "scope": "independent exact-blob synthetic restore execution and source review; owner-reported actual Gradle configuration evidence reviewed; no duplicate Gradle/build or user-key access",
+  "independentExecutedChecks": {
+    "realJdkPublicCertificateMatch": "PASS disposable synthetic key only",
+    "mismatchNewFileRemoval": "PASS",
+    "existingFilePreserved": "PASS",
+    "missingExpectedCertificateBeforeWrite": "PASS",
+    "temporarySyntheticKeysRemoved": true
+  },
+  "sourceChecks": {
+    "sharedAbsoluteRunnerTempPath": true,
+    "debugStoreExplicitlyBound": true,
+    "githubActionsWithoutPathFails": true,
+    "localDefaultWithoutCiVariablePreserved": true,
+    "finalActualApkVerifierUnchanged": true,
+    "applicationSourceAndResourcesUnchangedFromRuntime": true
+  },
+  "actualArtifactGate": "pending",
+  "userKeyAccess": false,
+  "installedApk": false
+}
