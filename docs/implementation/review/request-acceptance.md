@@ -4,7 +4,7 @@
 
 Requests 1–13 are implemented and reviewed against the accepted owner evidence. The scholarly newspaper/paper direction is retained: serif headings, warm paper surfaces, fine rules and useful publication metadata. Request14, translated-to-original annotation mapping, is excluded.
 
-The latest PC correction has been reproduced with an actual public academic PDF and repaired. Coarse PDF geometry previously expanded a chosen word or partial word into its entire text run. The reader now preserves the native selected substring while omitting unsupported precise geometry offsets. Actual browser, Electron and packaged Windows pointer, clipboard, persisted highlight and quote checks pass. E independently passes the focused actual Edge/Hub/PDF.js/SQLite input flow; its final integrated report and resource disposition are pending.
+The latest PC correction has been reproduced with an actual public academic PDF and repaired. Coarse PDF geometry previously expanded a chosen word or partial word into its entire text run. The reader now preserves the native selected substring while omitting unsupported precise geometry offsets. Actual browser, Electron and packaged Windows pointer, clipboard, persisted highlight and quote checks pass. E independently passes the focused actual Edge/Hub/PDF.js/SQLite input flow and reviews the current packaged native proof. Final integrated software acceptance is complete in E commit `6663316751d9aa9d9580ceb90968a134f569f0b8`, accepted as root `6cafe71130b59bec6a55e81a0146b3c2c7379748`; owned QA resources are closed, with user-controlled terminals preserved.
 
 | Delivery | Exact identity |
 | --- | --- |
