@@ -153,4 +153,31 @@ class PublicationAcquisitionNativeTest {
         }
         Log.i("PdfAcquisitionQA", "PASS actual HTTP same-Hub device/account change and superseded request; no late Room/download/navigation")
     }
+
+    @Test fun e_actualHttpResponsePreservesConcurrentDirtyMetadataAndAnnotations(): Unit = runBlocking {
+        val db = Room.inMemoryDatabaseBuilder(app, FractalDatabase::class.java).build()
+        val remote = app.client.data("/api/library").jsonArray.map { it.jsonObject }.first { it.text("title") == available.title }
+        val key = remote.text("paperKey")!!; val sync = SyncEngine(db, app.client); sync.acceptPaper(remote)
+        val acquisition = PublicationAcquisition(app.client, sync, { discoveryScope(app.credentials.load()) }) { k, sha, session, guard ->
+            app.downloader.download(k, sha, session as HubPdfSession, guard)
+        }
+        try {
+            control(buildJsonObject { put("delayOpen", true) })
+            val pending = async(Dispatchers.IO) { acquisition.open(available) }
+            until("concurrent-edit response blocked") { control().getValue("blocked").jsonPrimitive.boolean }
+            val metadata = MetadataStore(db) { "owned-concurrent-device" }
+            metadata.save(key, true)
+            metadata.patchPaper(key, buildJsonObject {
+                put("tags", JsonArray(listOf(JsonPrimitive("concurrent-offline-tag")))); put("collections", JsonArray(listOf(JsonPrimitive("owned-nested-folder"))))
+            })
+            val memo = WireJson.annotationEntity(WireJson.format.parseToJsonElement("""{"id":"concurrent-retained-memo","paperKey":"$key","kind":"memo","page":1,"text":"Concurrent complete body","quote":"Concurrent quote","rev":1,"deleted":false}""").jsonObject, true)
+            db.annotations().upsert(memo); val intent = db.metadata().pending()
+            control(buildJsonObject { put("release", true); put("delayOpen", false) }); assertEquals(key, pending.await())
+            val row = db.library().get(key)!!; val record = WireJson.format.decodeFromString<LibraryRecord>(row.json)
+            assertTrue(row.saved); assertTrue(row.dirty); assertEquals(listOf("concurrent-offline-tag"), record.tags)
+            assertEquals(listOf("owned-nested-folder"), record.collections); assertEquals(intent, db.metadata().pending())
+            assertEquals(memo, db.annotations().get(memo.id)); assertEquals(remote.text("lastReadAt"), row.lastReadAt)
+        } finally { db.close() }
+        Log.i("PdfAcquisitionQA", "PASS actual delayed HTTP admission preserves concurrent saved/tags/nested membership/memo/dirty queue without new Recent")
+    }
 }

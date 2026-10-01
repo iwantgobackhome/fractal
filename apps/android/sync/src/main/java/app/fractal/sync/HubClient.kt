@@ -25,6 +25,7 @@ interface HubDataClient {
 }
 interface HubPdfSession : HubDataClient {
     fun executePdf(path: String, headers: Map<String, String>): Response
+    fun executeLink(key: String, bytes: ByteArray): Response
 }
 interface HubHistoryClient : HubDataClient {
     suspend fun attachHistory(path: String, body: JsonObject): String
@@ -109,6 +110,13 @@ class HubClient(private val credentials: HubCredentialStore) : HubHistoryClient 
                 ensureCurrent()
                 return http.newCall(request(paired.url, path, token = paired.token, headers = headers)).execute()
             }
+            override fun executeLink(key: String, bytes: ByteArray): Response {
+                ensureCurrent()
+                val upload = Request.Builder().url(paired.url.trimEnd('/') + "/api/library/${keyPath(key)}/pdf")
+                    .header("Authorization", "Bearer ${paired.token}")
+                    .post(bytes.toRequestBody("application/pdf".toMediaType())).build()
+                return http.newCall(upload).execute()
+            }
             override suspend fun data(path: String, method: String, body: JsonElement?): JsonElement = withContext(Dispatchers.IO) {
                 ensureCurrent()
                 transport(path, method).newCall(request(paired.url, path, method, body, paired.token)).execute().use {
@@ -121,15 +129,11 @@ class HubClient(private val credentials: HubCredentialStore) : HubHistoryClient 
     }
 
     /** Explicit user-selected association. No URL fetching, catalog identity derivation or read event. */
-    suspend fun linkPdf(key: String, bytes: ByteArray): JsonObject = withContext(Dispatchers.IO) {
+    suspend fun linkPdf(key: String, bytes: ByteArray, session: HubPdfSession = captured()): JsonObject = withContext(Dispatchers.IO) {
         require(bytes.size in 1..(50 * 1024 * 1024)) { "Choose a PDF no larger than 50 MiB." }
-        val paired = credentials.load() ?: throw IOException("Hub is not paired")
-        val request = Request.Builder().url(paired.url.trimEnd('/') + "/api/library/${keyPath(key)}/pdf")
-            .header("Authorization", "Bearer ${paired.token}")
-            .post(bytes.toRequestBody("application/pdf".toMediaType())).build()
-        http.newCall(request).execute().use {
+        session.executeLink(key, bytes).use {
             if (!it.isSuccessful) throw hubFailure(it)
-            check(credentials.load() == paired) { "Hub changed while linking the PDF; reconnect to reconcile." }
+            session.ensureCurrent()
             WireJsonAdapter.data(it.body?.string() ?: "").jsonObject
         }
     }

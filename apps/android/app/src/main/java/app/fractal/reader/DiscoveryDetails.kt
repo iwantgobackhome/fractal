@@ -113,7 +113,8 @@ import java.util.Locale
                     output.toByteArray()
                 } ?: error("Selected document is unavailable")
             }
-            val result = app.client.linkPdf(saved.paperKey, bytes)
+            guard()
+            val result = app.client.linkPdf(saved.paperKey, bytes, session)
             guard()
             check(result.text("paperKey") == saved.paperKey) { "Hub changed catalog identity" }
             app.sync.acceptPaper(result.getValue("record").jsonObject, guard)
