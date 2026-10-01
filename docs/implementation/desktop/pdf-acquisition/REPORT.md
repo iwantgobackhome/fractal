@@ -6,7 +6,7 @@ The accepted scholarly index and compact reader remain in place. Owned publicati
 
 ## Source and client checks
 
-Client commits: `ec20e1bf801ead847a8cdc9dac2475d8f6dd6678` and corrected `95e7a478d490923353250fdc7eb1d3b8accc5633`. The coordinator supplied accepted integrated backend/client source at clean `cfc3290d994d1b19e4437c9be6dc7df9c4cfaf32`; the initial real application gates passed on that source. Independent QA then found the two concrete defects below. The final committed repair/runtime/package checkpoints are recorded separately after coordinator acceptance.
+Client commits: `ec20e1bf801ead847a8cdc9dac2475d8f6dd6678` and corrected `95e7a478d490923353250fdc7eb1d3b8accc5633`. The coordinator supplied accepted integrated backend/client source at clean `cfc3290d994d1b19e4437c9be6dc7df9c4cfaf32`; the initial real application gates passed on that source. Independent QA then found the two concrete defects below. Repair commit `51149adbc5d0cee77252d1e9372e272623d3f1a8` is the clean accepted Windows product source, integrated by the coordinator as `bc70f9dd0c158bdde83f06015e832231b3ac1e2f`. The final report changes documentation only; the package is bound to the accepted repair source.
 
 ## Coordinator-routed dependency repairs
 
@@ -43,7 +43,19 @@ Ignored evidence root: `C:/Users/Home/orca/workspaces/fractal/fractal-desktop/di
 
 ## Windows package gate
 
-**Pending:** the coordinator must explicitly declare accepted integrated product source and its clean boundary before a fresh NSIS build. No new package has been built or installed at this checkpoint. The delivery path will be `dist/installer-pdf-acquisition`; historical `dist/installer-selection-repair` remains byte-identical to its recorded previous hashes. Final packaged Read, native icons, shipped resource/source binding, artifact hashes and cleanup evidence will be appended after that authorized gate.
+**Passed.** Coordinator declaration `msg_56f2335fc2d4` explicitly accepted clean `51149adbc5d0cee77252d1e9372e272623d3f1a8` as the Windows product/package source and authorized a fresh NSIS build after the focused current native gate. The rebuilt source Electron gate passed on that exact commit, including real acquisition, cached reopening, native substring selection and a real public HTML failure over application HTTP. That failure now displays the bounded no-main-PDF/sign-in cause with Retry and site/manual alternatives. `package-authorization.json` records the declaration and clean boundary; no installer existed at the new output path before this authorized build.
+
+The first fresh NSIS build succeeded in `dist/installer-pdf-acquisition`. The actual packaged `Fractal.exe` (`app.isPackaged=true`) then passed primary keyboard Read through its own bundled Hub for all three real public PDFs and hashes above, exact `2609.40325v1` rendering, cached reopen, native forward `dominant`/backward `ominan` and Ctrl+C, and the real public HTML failure with no external navigation. The original unsaved package run is retained in `packaged-unsaved/`; `packaged/verification.json` adds the focused existing-saved-record gate. Saved state, tags, folder, original progress and history are preserved on acquisition; CLIP and the newly associated exact-user paper remain unsaved, with Recent recorded only after actual reading. The isolated saved-state harness changes metadata setup only, not product source or PDF/selection input. Its initial fixture-expectation mismatch happened before Read, was corrected, and is retained separately in `packaged-preserved-state-instrumentation-failure/`; cleanup passed for that run too.
+
+| New artifact (relative to `dist/installer-pdf-acquisition/`) |       Bytes | SHA-256                                                            |
+| ------------------------------------------------------------ | ----------: | ------------------------------------------------------------------ |
+| `Fractal Setup 0.1.0.exe`                                    | 117,592,923 | `4183b52a77e767755b04816783c6fbfb02fd47e70173d8ab231dfdcd94add97f` |
+| `win-unpacked/Fractal.exe`                                   | 246,032,896 | `ec0ccd91a298bbb17d2c36e602ce2b231663dc4d83c582931191c311768a9ccf` |
+| `win-unpacked/resources/app.asar`                            |  13,208,999 | `993910967f021d82c9a8ea8aaa5d42303c07ead2223a4860b087ceb15cc1d65b` |
+
+`package-resources.json` binds **176 shipped resources** byte-for-byte to the accepted built main/preload, bundled Hub/PDF worker, complete UI assets and desktop icons, plus hashes **207 product source files**. The archive excludes verification tools, reports, fixtures and test PDFs. Native PE `RT_GROUP_ICON`/`RT_ICON` checks pass for the EXE and NSIS installer against every accepted ICO entry, including 32×32. `native-icons.json`, `package-build.log`, `package-resources.log`, `packaged.log` and `packaged-preserved-state.log` retain the evidence. The actual scholarly destination, compact exact-user reader and character-selection captures are in `packaged/`; the reader and selection captures were visually reviewed.
+
+The package was launched with fresh isolated data/profile `C:/Users/Home/AppData/Local/Temp/fractal-pdf-acquisition-packaged-nGRvR7`. Verification records full PID/executable/creation/command identity and listener ownership before closing only the owned app. Its main process, launch wrapper and listener all exited/released; the isolated profile is retained. The NSIS installer was **not installed**. `historical-after.json` confirms all three historical `installer-selection-repair` installer/EXE/ASAR hashes remain identical to `historical-before.json`; user and peer resources were preserved.
 
 ## Owned resources
 
