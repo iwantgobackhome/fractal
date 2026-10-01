@@ -1,0 +1,19 @@
+
+>     resource 0x7f07004f drawable/branch_mark
+>       () (file) res/drawable/branch_mark.xml type=XML
+      resource 0x7f070050 drawable/btn_checkbox_checked_mtrl
+        () (file) res/drawable/btn_checkbox_checked_mtrl.xml type=XML
+      resource 0x7f070051 drawable/btn_checkbox_checked_to_unchecked_mtrl_animation
+>     resource 0x7f070073 drawable/ic_launcher_background
+>       () (file) res/drawable/ic_launcher_background.xml type=XML
+>     resource 0x7f070074 drawable/ic_launcher_foreground
+>       () (file) res/drawable/ic_launcher_foreground.xml type=XML
+>     resource 0x7f070075 drawable/ic_launcher_legacy
+>       () (file) res/drawable/ic_launcher_legacy.xml type=XML
+      resource 0x7f070076 drawable/notification_action_background
+        () (file) res/drawable-v21/notification_action_background.xml type=XML
+      resource 0x7f070077 drawable/notification_bg
+>     resource 0x7f0d0000 mipmap/ic_launcher
+        (anydpi) (file) res/mipmap-anydpi-v26/ic_launcher.xml type=XML
+    type string id=0e entryCount=250
+      resource 0x7f0e0000 string/abc_action_bar_home_description

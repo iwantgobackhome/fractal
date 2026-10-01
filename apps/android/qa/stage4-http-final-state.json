@@ -1,0 +1,5777 @@
+{
+  "wire": [
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:02:56.114Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:02:56.266Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:02:56.341Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/settings",
+      "method": "GET",
+      "at": "2026-10-01T02:02:56.442Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/preferences",
+      "method": "GET",
+      "at": "2026-10-01T02:02:56.463Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/preferences",
+      "method": "PUT",
+      "at": "2026-10-01T02:02:56.480Z",
+      "bytes": 98
+    },
+    {
+      "path": "/api/feed/settings",
+      "method": "PUT",
+      "at": "2026-10-01T02:02:56.494Z",
+      "bytes": 209
+    },
+    {
+      "path": "/api/feed/refresh",
+      "method": "POST",
+      "at": "2026-10-01T02:02:56.532Z",
+      "bytes": 2
+    },
+    {
+      "path": "/api/sync/pull?since=111",
+      "method": "GET",
+      "at": "2026-10-01T02:03:08.856Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:03:09.325Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:03:09.527Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:03:09.552Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:03:09.582Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/news/article?url=https%3A%2F%2Fjmlr.org%2Fqa-fractal-field-report",
+      "method": "GET",
+      "at": "2026-10-01T02:03:09.942Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/translate/quick",
+      "method": "POST",
+      "at": "2026-10-01T02:03:10.023Z",
+      "bytes": 181
+    },
+    {
+      "path": "/api/translate/quick",
+      "method": "POST",
+      "at": "2026-10-01T02:03:11.868Z",
+      "bytes": 181
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:03:12.977Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/news/article?url=https%3A%2F%2Fjmlr.org%2Fqa-fractal-field-report",
+      "method": "GET",
+      "at": "2026-10-01T02:03:12.995Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:03:13.135Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/preferences",
+      "method": "PUT",
+      "at": "2026-10-01T02:03:14.035Z",
+      "bytes": 98
+    },
+    {
+      "path": "/api/feed/settings",
+      "method": "PUT",
+      "at": "2026-10-01T02:03:14.052Z",
+      "bytes": 210
+    },
+    {
+      "path": "/api/feed/refresh",
+      "method": "POST",
+      "at": "2026-10-01T02:03:14.102Z",
+      "bytes": 2
+    },
+    {
+      "path": "/api/sync/pull?since=111",
+      "method": "GET",
+      "at": "2026-10-01T02:05:05.625Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:05:06.085Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:05:06.282Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:05:08.239Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:05:08.342Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/news/article?url=https%3A%2F%2Fjmlr.org%2Fqa-fractal-field-report",
+      "method": "GET",
+      "at": "2026-10-01T02:05:08.541Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/pull?since=111",
+      "method": "GET",
+      "at": "2026-10-01T02:05:09.659Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/papers/pub-5ce41086a48328a9823f1948a07a7ac1729e8e5429f8124d44f4d3688f1aab53",
+      "method": "GET",
+      "at": "2026-10-01T02:05:10.340Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/papers/pub-5ce41086a48328a9823f1948a07a7ac1729e8e5429f8124d44f4d3688f1aab53/text-layout?page=2",
+      "method": "GET",
+      "at": "2026-10-01T02:05:11.019Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/papers/pub-5ce41086a48328a9823f1948a07a7ac1729e8e5429f8124d44f4d3688f1aab53/text-layout?page=1",
+      "method": "GET",
+      "at": "2026-10-01T02:05:11.023Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:07:12.747Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:07:12.822Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:07:12.864Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/pull?since=111",
+      "method": "GET",
+      "at": "2026-10-01T02:07:12.957Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:07:12.960Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:07:13.008Z",
+      "bytes": 1092
+    },
+    {
+      "path": "/api/sync/pull?since=111",
+      "method": "GET",
+      "at": "2026-10-01T02:07:13.106Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:07:13.145Z",
+      "bytes": 1094
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:07:13.180Z",
+      "bytes": 931
+    },
+    {
+      "path": "/api/sync/pull?since=111",
+      "method": "GET",
+      "at": "2026-10-01T02:07:13.256Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:07:13.277Z",
+      "bytes": 789
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:07:13.295Z",
+      "bytes": 1093
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:07:13.326Z",
+      "bytes": 851
+    },
+    {
+      "path": "/api/sync/pull?since=111",
+      "method": "GET",
+      "at": "2026-10-01T02:07:13.380Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:07:13.427Z",
+      "bytes": 802
+    },
+    {
+      "path": "/api/sync/pull?since=111",
+      "method": "GET",
+      "at": "2026-10-01T02:07:13.530Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:07:13.623Z",
+      "bytes": 800
+    },
+    {
+      "path": "/api/sync/pull?since=113",
+      "method": "GET",
+      "at": "2026-10-01T02:07:13.708Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:07:13.752Z",
+      "bytes": 802
+    },
+    {
+      "path": "/api/sync/pull?since=113",
+      "method": "GET",
+      "at": "2026-10-01T02:07:13.834Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:07:13.936Z",
+      "bytes": 800
+    },
+    {
+      "path": "/api/sync/pull?since=115",
+      "method": "GET",
+      "at": "2026-10-01T02:07:14.008Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:07:14.066Z",
+      "bytes": 802
+    },
+    {
+      "path": "/api/sync/pull?since=115",
+      "method": "GET",
+      "at": "2026-10-01T02:07:14.137Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:07:14.218Z",
+      "bytes": 800
+    },
+    {
+      "path": "/api/sync/pull?since=117",
+      "method": "GET",
+      "at": "2026-10-01T02:07:15.544Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:07:15.862Z",
+      "bytes": 802
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:07:16.090Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:07:16.275Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:07:16.311Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:07:16.336Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/papers/pub-c1653fea9d14fa2b5af8d5a8a091e52ca28a1aeda05bfcc8b32c4cc51edc99b0/related",
+      "method": "GET",
+      "at": "2026-10-01T02:07:17.391Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:07:18.360Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:07:18.489Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:07:18.518Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:07:18.580Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/news/article?url=https%3A%2F%2Fjmlr.org%2Fqa-fractal-field-report",
+      "method": "GET",
+      "at": "2026-10-01T02:07:19.338Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:07:20.496Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:07:20.630Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:07:20.651Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:07:20.669Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AR",
+      "method": "GET",
+      "at": "2026-10-01T02:07:22.408Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/pull?since=117",
+      "method": "GET",
+      "at": "2026-10-01T02:07:23.273Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:07:23.370Z",
+      "bytes": 541
+    },
+    {
+      "path": "/api/sync/pull?since=119",
+      "method": "GET",
+      "at": "2026-10-01T02:07:23.420Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:07:23.508Z",
+      "bytes": 542
+    },
+    {
+      "path": "/api/sync/pull?since=119",
+      "method": "GET",
+      "at": "2026-10-01T02:07:23.594Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:07:23.698Z",
+      "bytes": 541
+    },
+    {
+      "path": "/api/sync/pull?since=120",
+      "method": "GET",
+      "at": "2026-10-01T02:07:23.743Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:07:23.770Z",
+      "bytes": 542
+    },
+    {
+      "path": "/api/sync/pull?since=120",
+      "method": "GET",
+      "at": "2026-10-01T02:07:23.809Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:07:23.884Z",
+      "bytes": 541
+    },
+    {
+      "path": "/api/sync/pull?since=121",
+      "method": "GET",
+      "at": "2026-10-01T02:07:23.924Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:07:23.949Z",
+      "bytes": 542
+    },
+    {
+      "path": "/api/sync/pull?since=121",
+      "method": "GET",
+      "at": "2026-10-01T02:07:23.988Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:07:24.058Z",
+      "bytes": 541
+    },
+    {
+      "path": "/api/sync/pull?since=122",
+      "method": "GET",
+      "at": "2026-10-01T02:07:24.097Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:07:24.120Z",
+      "bytes": 542
+    },
+    {
+      "path": "/api/sync/pull?since=122",
+      "method": "GET",
+      "at": "2026-10-01T02:07:24.158Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:07:24.222Z",
+      "bytes": 541
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:07:27.770Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:07:27.838Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:07:27.873Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:07:27.923Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:07:28.069Z",
+      "bytes": 931
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:07:28.119Z",
+      "bytes": 789
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:07:28.179Z",
+      "bytes": 851
+    },
+    {
+      "path": "/api/sync/pull?since=123",
+      "method": "GET",
+      "at": "2026-10-01T02:07:29.913Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:07:30.106Z",
+      "bytes": 542
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:07:30.559Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:07:30.724Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:07:30.745Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:07:30.774Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/papers/pub-c1653fea9d14fa2b5af8d5a8a091e52ca28a1aeda05bfcc8b32c4cc51edc99b0/related",
+      "method": "GET",
+      "at": "2026-10-01T02:07:32.692Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:07:33.694Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:07:33.802Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:07:33.827Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:07:33.858Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/news/article?url=https%3A%2F%2Fjmlr.org%2Fqa-fractal-field-report",
+      "method": "GET",
+      "at": "2026-10-01T02:07:34.705Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:10:59.270Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:10:59.356Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:10:59.392Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:10:59.446Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:10:59.588Z",
+      "bytes": 931
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:10:59.643Z",
+      "bytes": 789
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:10:59.692Z",
+      "bytes": 851
+    },
+    {
+      "path": "/api/sync/pull?since=123",
+      "method": "GET",
+      "at": "2026-10-01T02:11:01.384Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:11:01.612Z",
+      "bytes": 567
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:11:01.952Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:11:02.135Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:11:02.154Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:11:02.226Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/papers/pub-c1653fea9d14fa2b5af8d5a8a091e52ca28a1aeda05bfcc8b32c4cc51edc99b0/related",
+      "method": "GET",
+      "at": "2026-10-01T02:11:04.009Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:11:05.033Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:11:05.142Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:11:05.164Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:11:05.189Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/news/article?url=https%3A%2F%2Fjmlr.org%2Fqa-fractal-field-report",
+      "method": "GET",
+      "at": "2026-10-01T02:11:06.050Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:11:13.532Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:11:13.649Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:11:13.676Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:11:13.727Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/pull?since=124",
+      "method": "GET",
+      "at": "2026-10-01T02:11:14.383Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:11:14.451Z",
+      "bytes": 567
+    },
+    {
+      "path": "/api/sync/pull?since=124",
+      "method": "GET",
+      "at": "2026-10-01T02:11:14.499Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:11:14.528Z",
+      "bytes": 568
+    },
+    {
+      "path": "/api/sync/pull?since=124",
+      "method": "GET",
+      "at": "2026-10-01T02:11:14.566Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:11:14.623Z",
+      "bytes": 541
+    },
+    {
+      "path": "/api/sync/pull?since=125",
+      "method": "GET",
+      "at": "2026-10-01T02:11:14.665Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:11:14.700Z",
+      "bytes": 542
+    },
+    {
+      "path": "/api/sync/pull?since=125",
+      "method": "GET",
+      "at": "2026-10-01T02:11:14.741Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:11:14.806Z",
+      "bytes": 541
+    },
+    {
+      "path": "/api/sync/pull?since=126",
+      "method": "GET",
+      "at": "2026-10-01T02:11:14.845Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:11:14.875Z",
+      "bytes": 542
+    },
+    {
+      "path": "/api/sync/pull?since=126",
+      "method": "GET",
+      "at": "2026-10-01T02:11:14.915Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:11:14.991Z",
+      "bytes": 541
+    },
+    {
+      "path": "/api/sync/pull?since=127",
+      "method": "GET",
+      "at": "2026-10-01T02:11:15.045Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:11:15.072Z",
+      "bytes": 542
+    },
+    {
+      "path": "/api/sync/pull?since=127",
+      "method": "GET",
+      "at": "2026-10-01T02:11:15.103Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:11:15.151Z",
+      "bytes": 541
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:14:57.775Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:14:57.867Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:14:57.905Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:14:57.964Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:14:58.128Z",
+      "bytes": 931
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:14:58.200Z",
+      "bytes": 789
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:14:58.263Z",
+      "bytes": 851
+    },
+    {
+      "path": "/api/sync/pull?since=128",
+      "method": "GET",
+      "at": "2026-10-01T02:15:00.355Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:15:00.623Z",
+      "bytes": 542
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:15:00.860Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:15:01.040Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:15:01.057Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:15:01.149Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/papers/pub-c1653fea9d14fa2b5af8d5a8a091e52ca28a1aeda05bfcc8b32c4cc51edc99b0/related",
+      "method": "GET",
+      "at": "2026-10-01T02:15:02.167Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:15:03.173Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:15:03.303Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:15:03.324Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:15:03.367Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/news/article?url=https%3A%2F%2Fjmlr.org%2Fqa-fractal-field-report",
+      "method": "GET",
+      "at": "2026-10-01T02:15:04.216Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:15:10.685Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:15:10.798Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:15:10.818Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:15:10.873Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AR",
+      "method": "GET",
+      "at": "2026-10-01T02:15:12.449Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/pull?since=128",
+      "method": "GET",
+      "at": "2026-10-01T02:15:13.119Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:15:13.216Z",
+      "bytes": 567
+    },
+    {
+      "path": "/api/sync/pull?since=129",
+      "method": "GET",
+      "at": "2026-10-01T02:15:13.267Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:15:13.368Z",
+      "bytes": 568
+    },
+    {
+      "path": "/api/sync/pull?since=129",
+      "method": "GET",
+      "at": "2026-10-01T02:15:13.407Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:15:13.484Z",
+      "bytes": 541
+    },
+    {
+      "path": "/api/sync/pull?since=130",
+      "method": "GET",
+      "at": "2026-10-01T02:15:13.546Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:15:13.573Z",
+      "bytes": 542
+    },
+    {
+      "path": "/api/sync/pull?since=130",
+      "method": "GET",
+      "at": "2026-10-01T02:15:13.615Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:15:13.671Z",
+      "bytes": 541
+    },
+    {
+      "path": "/api/sync/pull?since=131",
+      "method": "GET",
+      "at": "2026-10-01T02:15:13.704Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:15:13.731Z",
+      "bytes": 542
+    },
+    {
+      "path": "/api/sync/pull?since=131",
+      "method": "GET",
+      "at": "2026-10-01T02:15:13.761Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:15:13.822Z",
+      "bytes": 541
+    },
+    {
+      "path": "/api/sync/pull?since=132",
+      "method": "GET",
+      "at": "2026-10-01T02:15:13.855Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:15:13.882Z",
+      "bytes": 542
+    },
+    {
+      "path": "/api/sync/pull?since=132",
+      "method": "GET",
+      "at": "2026-10-01T02:15:13.917Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:15:13.967Z",
+      "bytes": 567
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:15:17.360Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:15:17.450Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:15:17.490Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:15:17.548Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:15:17.695Z",
+      "bytes": 931
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:15:17.747Z",
+      "bytes": 789
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:15:17.794Z",
+      "bytes": 851
+    },
+    {
+      "path": "/api/sync/pull?since=133",
+      "method": "GET",
+      "at": "2026-10-01T02:15:19.573Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:15:19.847Z",
+      "bytes": 568
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:15:20.301Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:15:20.478Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:15:20.516Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:15:20.533Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/papers/pub-c1653fea9d14fa2b5af8d5a8a091e52ca28a1aeda05bfcc8b32c4cc51edc99b0/related",
+      "method": "GET",
+      "at": "2026-10-01T02:15:22.434Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:15:23.404Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:15:23.522Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:15:23.568Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:15:23.589Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/news/article?url=https%3A%2F%2Fjmlr.org%2Fqa-fractal-field-report",
+      "method": "GET",
+      "at": "2026-10-01T02:15:24.433Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:15:31.894Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:15:32.025Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:15:32.049Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:15:32.087Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/pull?since=133",
+      "method": "GET",
+      "at": "2026-10-01T02:15:32.759Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:15:32.863Z",
+      "bytes": 541
+    },
+    {
+      "path": "/api/sync/pull?since=134",
+      "method": "GET",
+      "at": "2026-10-01T02:15:32.903Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:15:32.933Z",
+      "bytes": 542
+    },
+    {
+      "path": "/api/sync/pull?since=134",
+      "method": "GET",
+      "at": "2026-10-01T02:15:33.190Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:15:33.339Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:15:33.913Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:15:34.036Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:15:34.085Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:15:34.180Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:15:34.241Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:15:34.312Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:15:34.400Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:15:34.467Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:15:34.521Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:15:34.573Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:15:34.612Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:15:34.664Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:15:39.465Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:15:39.606Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:15:39.642Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:15:39.697Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:15:39.841Z",
+      "bytes": 931
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:15:39.911Z",
+      "bytes": 789
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:15:39.963Z",
+      "bytes": 851
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:15:41.781Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:15:42.176Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:15:42.405Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:15:42.475Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:18:47.526Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:18:47.617Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:18:47.656Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:18:47.721Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:18:47.872Z",
+      "bytes": 931
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:18:47.954Z",
+      "bytes": 789
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:18:48.039Z",
+      "bytes": 851
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:18:50.174Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:18:50.420Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:18:50.564Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:18:50.833Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:18:51.057Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:18:51.077Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:18:51.110Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/papers/pub-c1653fea9d14fa2b5af8d5a8a091e52ca28a1aeda05bfcc8b32c4cc51edc99b0/related",
+      "method": "GET",
+      "at": "2026-10-01T02:18:52.149Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:18:53.140Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:18:53.217Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:18:53.315Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:18:53.350Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/news/article?url=https%3A%2F%2Fjmlr.org%2Fqa-fractal-field-report",
+      "method": "GET",
+      "at": "2026-10-01T02:18:54.214Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:19:00.715Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:19:00.832Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:19:00.848Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:19:00.878Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AR",
+      "method": "GET",
+      "at": "2026-10-01T02:19:02.493Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:19:03.148Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:19:03.225Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:19:03.260Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:19:03.285Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:19:03.388Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:19:03.418Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:19:03.478Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:19:03.519Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:19:03.553Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:19:03.585Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:19:03.608Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:19:03.648Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:19:03.672Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:19:03.700Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:19:03.724Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:19:03.750Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:19:03.772Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:19:03.798Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:19:07.912Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:19:07.989Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:19:08.026Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:19:08.089Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:19:08.229Z",
+      "bytes": 931
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:19:08.284Z",
+      "bytes": 789
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:19:08.353Z",
+      "bytes": 851
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:19:10.086Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:19:10.268Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:19:10.323Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:19:10.388Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:19:10.768Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:19:10.903Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:19:10.921Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:19:10.944Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/papers/pub-c1653fea9d14fa2b5af8d5a8a091e52ca28a1aeda05bfcc8b32c4cc51edc99b0/related",
+      "method": "GET",
+      "at": "2026-10-01T02:19:12.810Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:19:13.796Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:19:13.909Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:19:13.931Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:19:13.959Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/news/article?url=https%3A%2F%2Fjmlr.org%2Fqa-fractal-field-report",
+      "method": "GET",
+      "at": "2026-10-01T02:19:14.780Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:19:22.197Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:19:22.291Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:19:22.308Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:19:22.360Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:19:23.085Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:19:23.159Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:19:23.183Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:19:23.212Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:19:23.240Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:19:23.463Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:19:23.571Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:19:23.837Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:19:23.921Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:19:24.078Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:19:24.195Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:19:24.328Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:19:24.361Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:19:24.400Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:19:24.434Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:19:24.475Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:19:24.503Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:19:24.535Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:19:29.997Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:19:30.130Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:19:30.191Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:19:30.284Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:19:30.454Z",
+      "bytes": 931
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:19:30.511Z",
+      "bytes": 789
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:19:30.573Z",
+      "bytes": 851
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:19:32.361Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:19:32.706Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:19:32.793Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:19:32.978Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:19:33.184Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:19:33.209Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:19:33.238Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/papers/pub-c1653fea9d14fa2b5af8d5a8a091e52ca28a1aeda05bfcc8b32c4cc51edc99b0/related",
+      "method": "GET",
+      "at": "2026-10-01T02:19:34.419Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:19:35.352Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:19:35.424Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:19:35.610Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:19:35.642Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/news/article?url=https%3A%2F%2Fjmlr.org%2Fqa-fractal-field-report",
+      "method": "GET",
+      "at": "2026-10-01T02:19:36.535Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:19:42.539Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:19:42.722Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:19:42.737Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:19:42.771Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:19:43.439Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:19:43.610Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:19:43.688Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:19:43.837Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:19:43.872Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:19:43.904Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:19:43.927Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:19:43.955Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:19:43.977Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:19:44.005Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:19:44.028Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:19:44.056Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:19:44.092Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:19:44.122Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:19:44.147Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:19:44.176Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:19:44.199Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:19:44.228Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:19:47.555Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:19:47.633Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:19:47.671Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:19:47.729Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:19:47.879Z",
+      "bytes": 931
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:19:47.940Z",
+      "bytes": 789
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:19:47.987Z",
+      "bytes": 851
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:19:49.818Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:19:50.188Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:19:50.368Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:19:50.592Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:19:50.774Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:19:50.805Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:19:50.860Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/papers/pub-c1653fea9d14fa2b5af8d5a8a091e52ca28a1aeda05bfcc8b32c4cc51edc99b0/related",
+      "method": "GET",
+      "at": "2026-10-01T02:19:51.936Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:19:52.941Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:19:53.081Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:19:53.104Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:19:53.151Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/news/article?url=https%3A%2F%2Fjmlr.org%2Fqa-fractal-field-report",
+      "method": "GET",
+      "at": "2026-10-01T02:19:53.989Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:20:00.603Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:20:00.771Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:20:00.797Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:20:00.846Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:01.509Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:01.600Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:01.643Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:01.749Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:01.844Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:01.910Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:01.941Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:01.971Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:01.997Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:02.027Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:02.050Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:02.081Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:02.103Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:02.132Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:02.155Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:02.185Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:02.207Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:02.232Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:20:05.754Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:20:05.827Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:20:05.867Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:20:05.926Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:20:06.087Z",
+      "bytes": 931
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:20:06.154Z",
+      "bytes": 789
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:20:06.209Z",
+      "bytes": 851
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:08.114Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:08.688Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:20:08.919Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:20:09.176Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:20:09.195Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:20:09.219Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/papers/pub-c1653fea9d14fa2b5af8d5a8a091e52ca28a1aeda05bfcc8b32c4cc51edc99b0/related",
+      "method": "GET",
+      "at": "2026-10-01T02:20:10.445Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:20:11.447Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:20:11.686Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:20:11.708Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:20:11.737Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/news/article?url=https%3A%2F%2Fjmlr.org%2Fqa-fractal-field-report",
+      "method": "GET",
+      "at": "2026-10-01T02:20:12.676Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:20:18.845Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:20:19.038Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:20:19.062Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:20:19.108Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:19.784Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:20.005Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:20.103Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:20.179Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:20.237Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:20.278Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:20.299Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:20.326Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:20.349Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:20.374Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:20.394Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:20.419Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:20.443Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:20.467Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:20.494Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:20.521Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:20.541Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:20.567Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:20:24.310Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:20:24.381Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:20:24.418Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:20:24.475Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:20:24.617Z",
+      "bytes": 931
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:20:24.678Z",
+      "bytes": 789
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:20:24.728Z",
+      "bytes": 851
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:26.639Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:27.105Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:27.131Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:20:27.357Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:20:27.602Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:20:27.641Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:20:27.664Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/papers/pub-c1653fea9d14fa2b5af8d5a8a091e52ca28a1aeda05bfcc8b32c4cc51edc99b0/related",
+      "method": "GET",
+      "at": "2026-10-01T02:20:28.759Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:20:29.793Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:20:29.978Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:20:30.004Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:20:30.054Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/news/article?url=https%3A%2F%2Fjmlr.org%2Fqa-fractal-field-report",
+      "method": "GET",
+      "at": "2026-10-01T02:20:30.993Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:20:37.055Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:20:37.209Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:20:37.241Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:20:37.273Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:37.989Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:38.193Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:38.272Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:38.353Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:38.401Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:38.444Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:38.469Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:38.503Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:38.532Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:38.566Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:38.589Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:38.619Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:38.644Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:38.673Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:38.698Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:38.727Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:38.750Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:38.778Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:20:44.283Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:20:44.416Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:20:44.480Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:20:44.571Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:20:44.738Z",
+      "bytes": 931
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:20:44.796Z",
+      "bytes": 789
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:20:44.845Z",
+      "bytes": 851
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:46.893Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:47.185Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:47.258Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:47.307Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:47.344Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:47.391Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:47.445Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:47.479Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:47.507Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:47.538Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:47.564Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:47.591Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:47.624Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:47.659Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:47.687Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:47.719Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:20:47.745Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:20:47.774Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:23:55.056Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:23:55.133Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:23:55.170Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:23:55.228Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:23:55.378Z",
+      "bytes": 931
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:23:55.442Z",
+      "bytes": 789
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:23:55.488Z",
+      "bytes": 851
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:23:57.508Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:23:57.809Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:23:58.290Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:23:58.437Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:23:58.505Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:23:58.715Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:23:58.878Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:23:58.904Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:23:59.005Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/papers/pub-c1653fea9d14fa2b5af8d5a8a091e52ca28a1aeda05bfcc8b32c4cc51edc99b0/related",
+      "method": "GET",
+      "at": "2026-10-01T02:24:01.145Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:24:02.116Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:24:02.248Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:24:02.273Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:24:02.317Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/news/article?url=https%3A%2F%2Fjmlr.org%2Fqa-fractal-field-report",
+      "method": "GET",
+      "at": "2026-10-01T02:24:03.137Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:24:17.932Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:24:18.049Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:24:18.072Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:24:18.109Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:24:18.795Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:24:18.887Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:24:18.922Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:24:18.952Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:24:19.051Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:24:19.083Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:24:19.140Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:24:19.196Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:24:19.240Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:24:19.268Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:24:19.296Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:24:19.324Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:24:19.345Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:24:19.370Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:24:19.392Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:24:19.416Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:24:19.436Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:24:19.465Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:31:54.643Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:31:54.736Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:31:54.774Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:32:42.430Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:32:42.511Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:32:42.551Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:32:44.617Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:32:44.844Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:32:44.900Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:32:44.941Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:32:44.975Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:32:45.013Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:32:45.044Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:32:45.082Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:32:45.108Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:32:45.141Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:32:45.221Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:32:45.271Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:32:45.300Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:32:45.329Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:32:45.355Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:32:45.388Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:32:45.415Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:32:45.445Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:32:45.775Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:32:45.958Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:32:45.984Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:32:46.025Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/news/article?url=https%3A%2F%2Fjmlr.org%2Fqa-fractal-field-report",
+      "method": "GET",
+      "at": "2026-10-01T02:32:46.427Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:33:00.699Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:33:00.875Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:33:00.941Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:33:00.998Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:33:01.153Z",
+      "bytes": 931
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:33:01.218Z",
+      "bytes": 789
+    },
+    {
+      "path": "/api/library/bookmarks",
+      "method": "POST",
+      "at": "2026-10-01T02:33:01.268Z",
+      "bytes": 851
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:33:03.149Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:33:03.487Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:33:03.537Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:33:03.872Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:33:04.105Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:33:04.141Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:33:04.167Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:33:04.193Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:33:04.220Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:33:04.246Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:33:04.415Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:33:04.607Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:33:04.637Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:33:04.666Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/papers/pub-c1653fea9d14fa2b5af8d5a8a091e52ca28a1aeda05bfcc8b32c4cc51edc99b0/related",
+      "method": "GET",
+      "at": "2026-10-01T02:33:05.878Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:33:07.007Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:33:07.153Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:33:07.186Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:33:07.209Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/news/article?url=https%3A%2F%2Fjmlr.org%2Fqa-fractal-field-report",
+      "method": "GET",
+      "at": "2026-10-01T02:33:08.091Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:33:14.820Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:33:14.963Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:33:14.988Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:33:15.036Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:33:15.746Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:33:15.875Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:33:15.904Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:33:16.011Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:33:16.063Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:33:16.112Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:33:16.142Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:33:16.171Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:33:16.194Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:33:16.221Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:33:16.240Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:33:16.267Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:33:16.288Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:33:16.313Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:33:16.337Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:33:16.363Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:33:16.386Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:33:16.413Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:34:54.147Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:34:54.235Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:34:54.287Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:34:56.461Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:34:57.035Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:34:57.251Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:34:57.276Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:34:57.312Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:34:57.341Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:34:57.372Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:34:57.402Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:34:57.573Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:34:57.654Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:34:57.789Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/topics?field=cs.AI",
+      "method": "GET",
+      "at": "2026-10-01T02:34:57.815Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/news/article?url=https%3A%2F%2Fjmlr.org%2Fqa-fractal-field-report",
+      "method": "GET",
+      "at": "2026-10-01T02:34:58.156Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/categories",
+      "method": "GET",
+      "at": "2026-10-01T02:38:22.338Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed/interests",
+      "method": "GET",
+      "at": "2026-10-01T02:38:22.518Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/feed",
+      "method": "GET",
+      "at": "2026-10-01T02:38:22.590Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:38:25.447Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:38:25.703Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:38:25.795Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:38:26.186Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:38:26.430Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:38:26.461Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:38:26.494Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:38:26.524Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:38:26.558Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:38:26.588Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:38:26.616Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:38:26.650Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:38:26.679Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:38:26.706Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:38:26.744Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:38:26.770Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:38:26.803Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:38:26.827Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:38:26.857Z",
+      "bytes": 296
+    },
+    {
+      "path": "/api/sync/pull?since=135",
+      "method": "GET",
+      "at": "2026-10-01T02:38:26.886Z",
+      "bytes": 0
+    },
+    {
+      "path": "/api/sync/push",
+      "method": "POST",
+      "at": "2026-10-01T02:38:26.919Z",
+      "bytes": 296
+    }
+  ],
+  "providerCalls": [
+    {
+      "host": "export.arxiv.org",
+      "path": "/api/query",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:22.999Z"
+    },
+    {
+      "host": "api.openalex.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:23.003Z"
+    },
+    {
+      "host": "api.openalex.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:24.008Z"
+    },
+    {
+      "host": "api.openalex.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:25.018Z"
+    },
+    {
+      "host": "api.openalex.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:26.025Z"
+    },
+    {
+      "host": "api.openalex.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:27.035Z"
+    },
+    {
+      "host": "api.openalex.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:28.048Z"
+    },
+    {
+      "host": "api.openalex.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:29.059Z"
+    },
+    {
+      "host": "api.openalex.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:30.067Z"
+    },
+    {
+      "host": "api.crossref.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:30.069Z"
+    },
+    {
+      "host": "api.crossref.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:31.073Z"
+    },
+    {
+      "host": "api.crossref.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:32.080Z"
+    },
+    {
+      "host": "api.crossref.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.089Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/headlines/section/topic/SCIENCE",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.092Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/headlines/section/topic/TECHNOLOGY",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.092Z"
+    },
+    {
+      "host": "research.google",
+      "path": "/blog/rss/",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.092Z"
+    },
+    {
+      "host": "deepmind.google",
+      "path": "/blog/rss.xml",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.092Z"
+    },
+    {
+      "host": "openai.com",
+      "path": "/news/rss.xml",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.092Z"
+    },
+    {
+      "host": "bair.berkeley.edu",
+      "path": "/blog/feed.xml",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.092Z"
+    },
+    {
+      "host": "thegradient.pub",
+      "path": "/rss/",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.092Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.093Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.093Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.093Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.093Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.093Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.093Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.093Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.093Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.093Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.093Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.094Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.094Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.094Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.094Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.094Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.094Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.094Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.094Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.094Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.094Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.094Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.095Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.095Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.095Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.095Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.095Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.095Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.095Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.095Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.095Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.095Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.095Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.095Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.096Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.096Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.096Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.096Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:01:33.096Z"
+    },
+    {
+      "host": "export.arxiv.org",
+      "path": "/api/query",
+      "mode": "ready",
+      "at": "2026-10-01T02:02:56.535Z"
+    },
+    {
+      "host": "api.openalex.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:02:56.536Z"
+    },
+    {
+      "host": "api.openalex.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:02:57.536Z"
+    },
+    {
+      "host": "api.openalex.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:02:58.543Z"
+    },
+    {
+      "host": "api.openalex.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:02:59.548Z"
+    },
+    {
+      "host": "api.openalex.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:00.559Z"
+    },
+    {
+      "host": "api.openalex.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:01.561Z"
+    },
+    {
+      "host": "api.openalex.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:02.565Z"
+    },
+    {
+      "host": "api.openalex.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:03.572Z"
+    },
+    {
+      "host": "api.crossref.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:03.574Z"
+    },
+    {
+      "host": "api.crossref.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:04.576Z"
+    },
+    {
+      "host": "api.crossref.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:05.585Z"
+    },
+    {
+      "host": "api.crossref.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.593Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/headlines/section/topic/SCIENCE",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.594Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/headlines/section/topic/TECHNOLOGY",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.594Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/headlines/section/topic/SCIENCE",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.594Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/headlines/section/topic/TECHNOLOGY",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.594Z"
+    },
+    {
+      "host": "rss.etnews.com",
+      "path": "/Section901.xml",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.594Z"
+    },
+    {
+      "host": "it.donga.com",
+      "path": "/feeds/rss/news/",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.594Z"
+    },
+    {
+      "host": "www.hellodd.com",
+      "path": "/rss/allArticle.xml",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.594Z"
+    },
+    {
+      "host": "research.google",
+      "path": "/blog/rss/",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.594Z"
+    },
+    {
+      "host": "deepmind.google",
+      "path": "/blog/rss.xml",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.595Z"
+    },
+    {
+      "host": "openai.com",
+      "path": "/news/rss.xml",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.595Z"
+    },
+    {
+      "host": "bair.berkeley.edu",
+      "path": "/blog/feed.xml",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.595Z"
+    },
+    {
+      "host": "thegradient.pub",
+      "path": "/rss/",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.595Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.595Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.595Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.595Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.595Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.595Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.595Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.595Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.595Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.596Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.596Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.596Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.596Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.596Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.596Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.596Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.596Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.596Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.596Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.597Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.597Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.597Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.597Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.597Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.597Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.597Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.597Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.597Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.597Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.597Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.597Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.597Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.597Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.598Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.598Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.598Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.598Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.598Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:06.598Z"
+    },
+    {
+      "host": "translate.googleapis.com",
+      "path": "/translate_a/single",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:11.872Z"
+    },
+    {
+      "host": "export.arxiv.org",
+      "path": "/api/query",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:14.105Z"
+    },
+    {
+      "host": "api.openalex.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:14.106Z"
+    },
+    {
+      "host": "api.openalex.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:15.111Z"
+    },
+    {
+      "host": "api.openalex.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:16.120Z"
+    },
+    {
+      "host": "api.openalex.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:17.131Z"
+    },
+    {
+      "host": "api.openalex.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:18.135Z"
+    },
+    {
+      "host": "api.openalex.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:19.138Z"
+    },
+    {
+      "host": "api.openalex.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:20.140Z"
+    },
+    {
+      "host": "api.openalex.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:21.151Z"
+    },
+    {
+      "host": "api.crossref.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:21.152Z"
+    },
+    {
+      "host": "api.crossref.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:22.158Z"
+    },
+    {
+      "host": "api.crossref.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:23.166Z"
+    },
+    {
+      "host": "api.crossref.org",
+      "path": "/works",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.172Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/headlines/section/topic/SCIENCE",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.174Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/headlines/section/topic/TECHNOLOGY",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.174Z"
+    },
+    {
+      "host": "research.google",
+      "path": "/blog/rss/",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.174Z"
+    },
+    {
+      "host": "deepmind.google",
+      "path": "/blog/rss.xml",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.174Z"
+    },
+    {
+      "host": "openai.com",
+      "path": "/news/rss.xml",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.174Z"
+    },
+    {
+      "host": "bair.berkeley.edu",
+      "path": "/blog/feed.xml",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.174Z"
+    },
+    {
+      "host": "thegradient.pub",
+      "path": "/rss/",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.174Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.174Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.174Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.174Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.175Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.175Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.175Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.175Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.175Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.175Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.175Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.175Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.175Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.175Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.175Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.175Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.175Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.176Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.176Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.176Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.176Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.176Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.176Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.176Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.176Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.176Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.176Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.176Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.176Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.176Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.177Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.177Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.177Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.177Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.177Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.177Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.177Z"
+    },
+    {
+      "host": "news.google.com",
+      "path": "/rss/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.177Z"
+    },
+    {
+      "host": "www.bing.com",
+      "path": "/news/search",
+      "mode": "ready",
+      "at": "2026-10-01T02:03:24.177Z"
+    },
+    {
+      "host": "api.semanticscholar.org",
+      "path": "/graph/v1/paper/DOI%3A10.48550%2Farxiv.2106.09685",
+      "mode": "ready",
+      "at": "2026-10-01T02:07:17.395Z"
+    },
+    {
+      "host": "api.semanticscholar.org",
+      "path": "/graph/v1/paper/DOI%3A10.48550%2Farxiv.2106.09685",
+      "mode": "ready",
+      "at": "2026-10-01T02:07:32.696Z"
+    },
+    {
+      "host": "api.semanticscholar.org",
+      "path": "/graph/v1/paper/DOI%3A10.48550%2Farxiv.2106.09685",
+      "mode": "ready",
+      "at": "2026-10-01T02:11:04.012Z"
+    },
+    {
+      "host": "api.semanticscholar.org",
+      "path": "/graph/v1/paper/DOI%3A10.48550%2Farxiv.2106.09685",
+      "mode": "ready",
+      "at": "2026-10-01T02:15:02.170Z"
+    },
+    {
+      "host": "api.semanticscholar.org",
+      "path": "/graph/v1/paper/DOI%3A10.48550%2Farxiv.2106.09685",
+      "mode": "ready",
+      "at": "2026-10-01T02:15:22.437Z"
+    },
+    {
+      "host": "api.semanticscholar.org",
+      "path": "/graph/v1/paper/DOI%3A10.48550%2Farxiv.2106.09685",
+      "mode": "ready",
+      "at": "2026-10-01T02:18:52.153Z"
+    },
+    {
+      "host": "api.semanticscholar.org",
+      "path": "/graph/v1/paper/DOI%3A10.48550%2Farxiv.2106.09685",
+      "mode": "ready",
+      "at": "2026-10-01T02:19:12.813Z"
+    },
+    {
+      "host": "api.semanticscholar.org",
+      "path": "/graph/v1/paper/DOI%3A10.48550%2Farxiv.2106.09685",
+      "mode": "ready",
+      "at": "2026-10-01T02:19:34.422Z"
+    },
+    {
+      "host": "api.semanticscholar.org",
+      "path": "/graph/v1/paper/DOI%3A10.48550%2Farxiv.2106.09685",
+      "mode": "ready",
+      "at": "2026-10-01T02:19:51.940Z"
+    },
+    {
+      "host": "api.semanticscholar.org",
+      "path": "/graph/v1/paper/DOI%3A10.48550%2Farxiv.2106.09685",
+      "mode": "ready",
+      "at": "2026-10-01T02:20:10.449Z"
+    },
+    {
+      "host": "api.semanticscholar.org",
+      "path": "/graph/v1/paper/DOI%3A10.48550%2Farxiv.2106.09685",
+      "mode": "ready",
+      "at": "2026-10-01T02:20:28.762Z"
+    },
+    {
+      "host": "api.semanticscholar.org",
+      "path": "/graph/v1/paper/DOI%3A10.48550%2Farxiv.2106.09685",
+      "mode": "ready",
+      "at": "2026-10-01T02:24:01.148Z"
+    },
+    {
+      "host": "api.semanticscholar.org",
+      "path": "/graph/v1/paper/DOI%3A10.48550%2Farxiv.2106.09685",
+      "mode": "ready",
+      "at": "2026-10-01T02:33:05.881Z"
+    }
+  ],
+  "library": [
+    {
+      "id": "D-lifecycle-fixture",
+      "paperKey": "D-lifecycle-fixture",
+      "title": "D continuous reader lifecycle",
+      "authors": [],
+      "year": null,
+      "venue": null,
+      "doi": null,
+      "arxivId": null,
+      "url": null,
+      "abstract": null,
+      "tags": [],
+      "collections": [],
+      "addedAt": "2026-10-01T00:00:00Z",
+      "updatedAt": "2026-10-01T02:07:15.865Z",
+      "status": "unread",
+      "bibtexKey": "D-lifecycle-fixture",
+      "saved": true,
+      "savedAt": "2026-10-01T01:35:18.628Z",
+      "lastReadAt": "2026-09-30T23:45:51.340Z",
+      "readProgress": {
+        "page": 1,
+        "scrollOffset": 0.43478260869565216
+      },
+      "rev": 26,
+      "deviceId": "62e5636d-0475-4490-9a71-212ff100c615"
+    },
+    {
+      "id": "D-stage4-retry",
+      "paperKey": "D-stage4-retry",
+      "title": "D mounted original text recovery fixture",
+      "authors": [],
+      "year": null,
+      "venue": null,
+      "doi": null,
+      "arxivId": null,
+      "url": "https://example.org/D-stage4-retry",
+      "abstract": null,
+      "tags": [],
+      "collections": [],
+      "addedAt": "2026-10-01T01:00:11.361Z",
+      "updatedAt": "2026-10-01T01:43:28.005Z",
+      "status": "unread",
+      "bibtexKey": "D-stage4-retry",
+      "saved": true,
+      "savedAt": "2026-10-01T01:00:11.390Z",
+      "lastReadAt": "2026-10-01T01:14:08.442Z",
+      "readProgress": {
+        "page": 1,
+        "scrollOffset": 0
+      },
+      "rev": 10,
+      "deviceId": "9b3c6e21-9388-4ffb-b66c-a051dd2acaff"
+    },
+    {
+      "id": "gesture-fixture",
+      "paperKey": "gesture-fixture",
+      "title": "D retained input fixture",
+      "authors": [],
+      "year": null,
+      "venue": null,
+      "doi": null,
+      "arxivId": null,
+      "url": null,
+      "abstract": null,
+      "tags": [],
+      "collections": [],
+      "addedAt": "2026-10-01T00:00:00Z",
+      "updatedAt": "2026-10-01T01:36:45.635Z",
+      "status": "unread",
+      "bibtexKey": "gesture-fixture",
+      "saved": true,
+      "savedAt": "2026-10-01T01:35:18.608Z",
+      "lastReadAt": null,
+      "readProgress": null,
+      "rev": 2,
+      "deviceId": "hub"
+    },
+    {
+      "id": "pub-16cd15559df04768de7a7b59b137bbc5a3986a61d84fba3cc5c27a66a0c4c115",
+      "paperKey": "pub-16cd15559df04768de7a7b59b137bbc5a3986a61d84fba3cc5c27a66a0c4c115",
+      "title": "Scikit-learn: Machine Learning in Python",
+      "authors": [
+        {
+          "given": "Fabian",
+          "family": "Pedregosa"
+        },
+        {
+          "given": "Gaël",
+          "family": "Varoquaux"
+        },
+        {
+          "given": "Alexandre",
+          "family": "Gramfort"
+        },
+        {
+          "given": "Vincent",
+          "family": "Michel"
+        },
+        {
+          "given": "Bertrand",
+          "family": "Thirion"
+        },
+        {
+          "given": "Olivier",
+          "family": "Grisel"
+        },
+        {
+          "given": "Mathieu",
+          "family": "Blondel"
+        },
+        {
+          "given": "Peter",
+          "family": "Prettenhofer"
+        },
+        {
+          "given": "Ron",
+          "family": "Weiss"
+        },
+        {
+          "given": "Vincent",
+          "family": "Dubourg"
+        },
+        {
+          "given": "Jake",
+          "family": "Vanderplas"
+        },
+        {
+          "given": "Alexandre",
+          "family": "Passos"
+        },
+        {
+          "given": "David",
+          "family": "Cournapeau"
+        },
+        {
+          "given": "Matthieu",
+          "family": "Brucher"
+        },
+        {
+          "given": "Matthieu",
+          "family": "Perrot"
+        },
+        {
+          "given": "Édouard",
+          "family": "Duchesnay"
+        }
+      ],
+      "year": 2011,
+      "venue": "Journal of Machine Learning Research",
+      "doi": null,
+      "arxivId": null,
+      "url": "https://jmlr.org/papers/v12/pedregosa11a.html",
+      "abstract": "QA paraphrase of the reported abstract: The Python library brings supervised and unsupervised learning methods together behind consistent interfaces. Documentation, performance and accessibility support researchers and practitioners. The article reports the package’s minimal dependencies and permissive licensing.",
+      "tags": [],
+      "collections": [],
+      "addedAt": "2026-10-01T01:23:27.966Z",
+      "updatedAt": "2026-10-01T01:23:27.967Z",
+      "status": "unread",
+      "bibtexKey": "publicatione69a58cefaa7",
+      "publication": {
+        "year": 2011,
+        "venue": "Journal of Machine Learning Research",
+        "publicationKind": "unknown",
+        "publicationDate": null,
+        "sources": [
+          "semanticScholar"
+        ],
+        "oaAvailability": "unknown",
+        "oaPdfUrl": null
+      },
+      "saved": true,
+      "savedAt": "2026-10-01T01:23:27.966Z",
+      "lastReadAt": null,
+      "readProgress": null,
+      "rev": 1,
+      "deviceId": "hub"
+    },
+    {
+      "id": "pub-5ce41086a48328a9823f1948a07a7ac1729e8e5429f8124d44f4d3688f1aab53",
+      "paperKey": "pub-5ce41086a48328a9823f1948a07a7ac1729e8e5429f8124d44f4d3688f1aab53",
+      "title": "Attention Is All You Need",
+      "authors": [
+        {
+          "given": "Ashish",
+          "family": "Vaswani"
+        },
+        {
+          "given": "Noam",
+          "family": "Shazeer"
+        },
+        {
+          "given": "Niki",
+          "family": "Parmar"
+        },
+        {
+          "given": "Jakob",
+          "family": "Uszkoreit"
+        },
+        {
+          "given": "Llion",
+          "family": "Jones"
+        },
+        {
+          "given": "Aidan N.",
+          "family": "Gomez"
+        },
+        {
+          "given": "Łukasz",
+          "family": "Kaiser"
+        },
+        {
+          "given": "Illia",
+          "family": "Polosukhin"
+        }
+      ],
+      "year": 2017,
+      "venue": "Advances in Neural Information Processing Systems 30 (NIPS 2017)",
+      "doi": "10.48550/arxiv.1706.03762",
+      "arxivId": "1706.03762",
+      "url": "https://doi.org/10.48550/arxiv.1706.03762",
+      "abstract": "QA paraphrase of the reported abstract: An attention-based encoder and decoder replace recurrent sequence computation. Parallel training and translation experiments motivate the architecture. The dossier retains the original publication year and conference venue rather than treating this historical work as a new release.",
+      "tags": [
+        "D representative"
+      ],
+      "collections": [
+        "7f95a731-41e8-40de-8450-61a665eadb58"
+      ],
+      "addedAt": "2026-10-01T01:23:10.003Z",
+      "updatedAt": "2026-10-01T02:07:13.300Z",
+      "status": "unread",
+      "bibtexKey": "publicatione6cec53db98d",
+      "publication": {
+        "year": 2017,
+        "venue": "Advances in Neural Information Processing Systems 30 (NIPS 2017)",
+        "publicationKind": "conference",
+        "publicationDate": "2017-06-12",
+        "sources": [
+          "openAlex"
+        ],
+        "oaAvailability": "open",
+        "oaPdfUrl": null
+      },
+      "saved": true,
+      "savedAt": "2026-10-01T01:26:15.933Z",
+      "lastReadAt": "2026-10-01T02:05:04.904Z",
+      "readProgress": {
+        "page": 1,
+        "scrollOffset": 0
+      },
+      "rev": 14,
+      "deviceId": "ec6f2131-300c-496f-982b-170711e9c53f"
+    },
+    {
+      "id": "pub-c1653fea9d14fa2b5af8d5a8a091e52ca28a1aeda05bfcc8b32c4cc51edc99b0",
+      "paperKey": "pub-c1653fea9d14fa2b5af8d5a8a091e52ca28a1aeda05bfcc8b32c4cc51edc99b0",
+      "title": "LoRA: Low-Rank Adaptation of Large Language Models",
+      "authors": [
+        {
+          "given": "Edward J.",
+          "family": "Hu"
+        },
+        {
+          "given": "Yelong",
+          "family": "Shen"
+        },
+        {
+          "given": "Phillip",
+          "family": "Wallis"
+        },
+        {
+          "given": "Zeyuan",
+          "family": "Allen-Zhu"
+        },
+        {
+          "given": "Yuanzhi",
+          "family": "Li"
+        },
+        {
+          "given": "Shean",
+          "family": "Wang"
+        },
+        {
+          "given": "Lu",
+          "family": "Wang"
+        },
+        {
+          "given": "Weizhu",
+          "family": "Chen"
+        }
+      ],
+      "year": 2021,
+      "venue": "arXiv",
+      "doi": "10.48550/arxiv.2106.09685",
+      "arxivId": "2106.09685",
+      "url": "https://doi.org/10.48550/arxiv.2106.09685",
+      "abstract": "QA paraphrase of the reported abstract: A pretrained language model keeps its original weights while trainable low-rank matrices adapt attention layers. The approach reduces the number of task-specific parameters and memory requirements. Comparative experiments examine quality, throughput and inference latency.",
+      "tags": [],
+      "collections": [],
+      "addedAt": "2026-10-01T01:14:09.453Z",
+      "updatedAt": "2026-10-01T01:48:08.061Z",
+      "status": "unread",
+      "bibtexKey": "publicationbdeecbfc3309",
+      "publication": {
+        "year": 2021,
+        "venue": "arXiv",
+        "publicationKind": "preprint",
+        "publicationDate": "2021-06-17",
+        "sources": [
+          "openAlex"
+        ],
+        "oaAvailability": "open",
+        "oaPdfUrl": null
+      },
+      "saved": true,
+      "savedAt": "2026-10-01T01:48:08.061Z",
+      "lastReadAt": null,
+      "readProgress": null,
+      "rev": 17,
+      "deviceId": "9b3c6e21-9388-4ffb-b66c-a051dd2acaff"
+    },
+    {
+      "id": "stage3-reader-fixture",
+      "paperKey": "stage3-reader-fixture",
+      "title": "Original text and translation: a reproducible research reading fixture",
+      "authors": [],
+      "year": null,
+      "venue": null,
+      "doi": null,
+      "arxivId": null,
+      "url": null,
+      "abstract": null,
+      "tags": [],
+      "collections": [],
+      "addedAt": "2026-10-01T00:00:00Z",
+      "updatedAt": "2026-10-01T02:15:32.936Z",
+      "status": "unread",
+      "bibtexKey": "stage3-reader-fixture",
+      "saved": true,
+      "savedAt": "2026-10-01T01:35:18.644Z",
+      "lastReadAt": "2026-10-01T00:13:41.312Z",
+      "readProgress": {
+        "page": 1,
+        "scrollOffset": 0
+      },
+      "rev": 42,
+      "deviceId": "62e5636d-0475-4490-9a71-212ff100c615"
+    }
+  ],
+  "topics": [
+    {
+      "id": "curated:cs.CL:3e6d81a1a791",
+      "field": "cs.CL",
+      "label": "large language models",
+      "query": "large language models",
+      "origin": "curated",
+      "followed": true
+    },
+    {
+      "id": "curated:cs.CL:c857d09db23e",
+      "field": "cs.CL",
+      "label": "Claude",
+      "query": "Claude",
+      "origin": "curated",
+      "followed": true
+    },
+    {
+      "id": "curated:cs.CL:60965168ce76",
+      "field": "cs.CL",
+      "label": "ChatGPT",
+      "query": "ChatGPT",
+      "origin": "curated",
+      "followed": true
+    },
+    {
+      "id": "curated:cs.CL:5d72436256ad",
+      "field": "cs.CL",
+      "label": "Gemini",
+      "query": "Gemini",
+      "origin": "curated",
+      "followed": true
+    },
+    {
+      "id": "curated:cs.CL:fc5a1047f591",
+      "field": "cs.CL",
+      "label": "Llama",
+      "query": "Llama",
+      "origin": "curated",
+      "followed": true
+    },
+    {
+      "id": "curated:cs.CL:031abfa15d71",
+      "field": "cs.CL",
+      "label": "retrieval augmented generation",
+      "query": "retrieval augmented generation",
+      "origin": "curated",
+      "followed": true
+    },
+    {
+      "id": "curated:cs.CL:e9a83351be4a",
+      "field": "cs.CL",
+      "label": "machine translation",
+      "query": "machine translation",
+      "origin": "curated",
+      "followed": false
+    },
+    {
+      "id": "curated:cs.CL:d74bfbb10dde",
+      "field": "cs.CL",
+      "label": "speech recognition",
+      "query": "speech recognition",
+      "origin": "curated",
+      "followed": false
+    },
+    {
+      "id": "user:942aad43-2115-47ce-888f-6467d8db847d",
+      "field": "cs.CL",
+      "label": "D reproducible language models f5454731",
+      "query": "language models",
+      "origin": "user",
+      "followed": false
+    },
+    {
+      "id": "user:e9d94f06-370c-4bff-b58c-8ab46593a217",
+      "field": "cs.CL",
+      "label": "D admission 3429d7c6",
+      "query": "language models",
+      "origin": "user",
+      "followed": true
+    },
+    {
+      "id": "user:89b4c165-dfa0-4b3c-85b9-17bf30b2d310",
+      "field": "cs.CL",
+      "label": "D reproducible language models b43db7a0",
+      "query": "language models",
+      "origin": "user",
+      "followed": false
+    },
+    {
+      "id": "user:a8d2355a-ccb2-4402-ab07-f77acfa526ec",
+      "field": "cs.CL",
+      "label": "D admission 59829a27",
+      "query": "language models",
+      "origin": "user",
+      "followed": true
+    },
+    {
+      "id": "user:3153e47b-ef19-416d-8d03-1c51a0eb9339",
+      "field": "cs.CL",
+      "label": "D reproducible language models 7292bc20",
+      "query": "language models",
+      "origin": "user",
+      "followed": false
+    },
+    {
+      "id": "user:04af1361-0b50-4591-a60c-1d27f59c4ea4",
+      "field": "cs.CL",
+      "label": "D admission 9a8685e6",
+      "query": "language models",
+      "origin": "user",
+      "followed": true
+    },
+    {
+      "id": "user:7ab58c2b-6ad9-49ea-892c-d78c49d646c2",
+      "field": "cs.CL",
+      "label": "D reproducible language models 81fa45eb",
+      "query": "language models",
+      "origin": "user",
+      "followed": false
+    },
+    {
+      "id": "user:1b31af02-a2ea-4f9c-800c-03061f5e9a11",
+      "field": "cs.CL",
+      "label": "D admission 31c12c97",
+      "query": "language models",
+      "origin": "user",
+      "followed": true
+    },
+    {
+      "id": "user:33461770-6bab-46ef-addb-14b60a21596e",
+      "field": "cs.CL",
+      "label": "D reproducible language models 2ff6d5c8",
+      "query": "language models",
+      "origin": "user",
+      "followed": false
+    },
+    {
+      "id": "user:68b79ec9-f3cf-4441-99a8-2987f2b7f42a",
+      "field": "cs.CL",
+      "label": "D admission 4f25c783",
+      "query": "language models",
+      "origin": "user",
+      "followed": true
+    }
+  ],
+  "exitedAt": "2026-10-01T02:40:03.248Z"
+}

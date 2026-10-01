@@ -1,0 +1,16 @@
+{
+  "apk": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-android\\apps\\android\\app\\build\\outputs\\apk\\debug\\app-debug.apk",
+  "sha256": "3597906a2d8aee3569ecf7a91510c22a51cc2b6e411172fb84ca585519d9999f",
+  "launcherEntries": [
+    "res/drawable/branch_mark.xml",
+    "res/drawable/ic_launcher_background.xml",
+    "res/drawable/ic_launcher_foreground.xml",
+    "res/mipmap-anydpi-v26/ic_launcher.xml",
+    "res/drawable/ic_launcher_legacy.xml"
+  ],
+  "bundledFonts": [
+    "res/font/pretendard_variable.ttf",
+    "res/font/source_serif_four.ttf"
+  ],
+  "qaArticleHardcodedInAppDex": false
+}

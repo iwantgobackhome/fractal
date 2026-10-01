@@ -1,0 +1,1537 @@
+{
+  "productSourceSha": "e690dcabfc150c7c83170a512cf2562166b3a014",
+  "scope": "Android debug application + debug instrumentation APK; min29/target35/compile35; actual emulator API34 only",
+  "apks": [
+    {
+      "path": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-android\\apps\\android\\app\\build\\outputs\\apk\\debug\\app-debug.apk",
+      "sha256": "3597906a2d8aee3569ecf7a91510c22a51cc2b6e411172fb84ca585519d9999f",
+      "bytes": 69857944,
+      "immutableDeliveryPath": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-android\\apps\\android\\qa\\stage4-apks\\app-e690dca-debug.apk"
+    },
+    {
+      "path": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-android\\apps\\android\\app\\build\\outputs\\apk\\androidTest\\debug\\app-debug-androidTest.apk",
+      "sha256": "00eb13f192d661a8d869b4fa0b5a031ac25d6f6067f237c64311be25fdc960ee",
+      "bytes": 3279207,
+      "immutableDeliveryPath": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-android\\apps\\android\\qa\\stage4-apks\\app-e690dca-debug-androidTest.apk"
+    }
+  ],
+  "debugSigning": {
+    "certificateDN": "C=US, O=Android, CN=Android Debug",
+    "certificateSha256": "62e0698d0572e672aa65a999c6e6e4a6669fb2baf4ca0c6f9c2ce7f82bdd7f4f"
+  },
+  "unitSuites": [
+    {
+      "module": "app",
+      "suite": "app.fractal.reader.DiscoveryIdentityTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "app",
+      "suite": "app.fractal.reader.ReaderContextTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "app",
+      "suite": "app.fractal.reader.ReaderModelTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "app",
+      "suite": "app.fractal.reader.ReaderProvenanceTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "data",
+      "suite": "app.fractal.data.MergeRulesTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "data",
+      "suite": "app.fractal.data.MetadataMergeTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "data",
+      "suite": "app.fractal.data.OriginalTextGeometryTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "sync",
+      "suite": "app.fractal.sync.WireTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "ink",
+      "suite": "app.fractal.ink.InkEngineTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "unitTotals": {
+    "tests": 28,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "captureProfiles": {
+    "phone360-portrait": {
+      "requestedWmPixelsAtDensity160": [
+        360,
+        800
+      ],
+      "fontScale": 1,
+      "language": "en",
+      "theme": "Light"
+    },
+    "phone360-landscape": {
+      "requestedWmPixelsAtDensity160": [
+        800,
+        360
+      ],
+      "fontScale": 1,
+      "language": "en",
+      "theme": "Light"
+    },
+    "tablet800-portrait": {
+      "requestedWmPixelsAtDensity160": [
+        800,
+        1280
+      ],
+      "fontScale": 1,
+      "language": "en",
+      "theme": "Light"
+    },
+    "tablet800-landscape": {
+      "requestedWmPixelsAtDensity160": [
+        1280,
+        800
+      ],
+      "fontScale": 1,
+      "language": "en",
+      "theme": "Light"
+    },
+    "tablet1280-portrait": {
+      "requestedWmPixelsAtDensity160": [
+        1280,
+        1800
+      ],
+      "fontScale": 1,
+      "language": "en",
+      "theme": "Light"
+    },
+    "tablet1280-landscape": {
+      "requestedWmPixelsAtDensity160": [
+        1800,
+        1280
+      ],
+      "fontScale": 1,
+      "language": "en",
+      "theme": "Light"
+    },
+    "phone360-font2-ko": {
+      "requestedWmPixelsAtDensity160": [
+        360,
+        800
+      ],
+      "fontScale": 2,
+      "language": "ko",
+      "theme": "Sepia"
+    },
+    "tablet1280-font2-dark": {
+      "requestedWmPixelsAtDensity160": [
+        1800,
+        1280
+      ],
+      "fontScale": 2,
+      "language": "en",
+      "theme": "Dark"
+    }
+  },
+  "screenshots": [
+    {
+      "path": "stage4-screens/disposition/native-test-end-411x683-font1.0.png",
+      "profile": "disposition",
+      "scene": "native-test-end",
+      "pixels": [
+        1080,
+        1920
+      ],
+      "sha256": "738be93aedee8f2eb4dedb8ff8cc6df24647e7c24d20b3c3c9813ad8ff4a916a",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "3597906a2d8aee3569ecf7a91510c22a51cc2b6e411172fb84ca585519d9999f",
+      "scope": "current final source"
+    },
+    {
+      "path": "stage4-screens/disposition/restored-owned-profile-411x683-font1.0.png",
+      "profile": "disposition",
+      "scene": "restored-owned-profile",
+      "pixels": [
+        1080,
+        1920
+      ],
+      "sha256": "d8335c517cf75460f44b305838c4adc247e828657153ba474f57dfb5f149edda",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "3597906a2d8aee3569ecf7a91510c22a51cc2b6e411172fb84ca585519d9999f",
+      "scope": "current final source"
+    },
+    {
+      "path": "stage4-screens/native/discover-dossier-411x683-font1.0.png",
+      "profile": "native",
+      "scene": "discover-dossier",
+      "pixels": [
+        1080,
+        1920
+      ],
+      "sha256": "09210ce538acdde9f52d062ffe54274a79778429d1774beb08e539fae4505cb9",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": null,
+      "scope": "earlier stage4 native/review proof; exact APK hash not retained"
+    },
+    {
+      "path": "stage4-screens/native/discover-index-411x683-font1.0.png",
+      "profile": "native",
+      "scene": "discover-index",
+      "pixels": [
+        1080,
+        1920
+      ],
+      "sha256": "a0f076fa2c6181cc150add63fc286b40228ffdbbb02864bcedef2de2f7e1c68c",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": null,
+      "scope": "earlier stage4 native/review proof; exact APK hash not retained"
+    },
+    {
+      "path": "stage4-screens/native/discovery-offline-411x683-font1.0.png",
+      "profile": "native",
+      "scene": "discovery-offline",
+      "pixels": [
+        1080,
+        1920
+      ],
+      "sha256": "8195f460cd3f69673cac5bbb984dff8dffc183534e7d1361f4d1a437a5c5c097",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": null,
+      "scope": "earlier stage4 native/review proof; exact APK hash not retained"
+    },
+    {
+      "path": "stage4-screens/native/library-index-411x683-font1.0.png",
+      "profile": "native",
+      "scene": "library-index",
+      "pixels": [
+        1080,
+        1920
+      ],
+      "sha256": "3c086627d02da97d0f8e9839c62ba34c487c76311723b153975023ad7fb1a9e1",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": null,
+      "scope": "earlier stage4 native/review proof; exact APK hash not retained"
+    },
+    {
+      "path": "stage4-screens/native/metadata-only-dossier-411x683-font1.0.png",
+      "profile": "native",
+      "scene": "metadata-only-dossier",
+      "pixels": [
+        1080,
+        1920
+      ],
+      "sha256": "dad1df82b0378ca689f87ace62fc2b1ed69a2909be36efd17219ea4ace9ae478",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": null,
+      "scope": "earlier stage4 native/review proof; exact APK hash not retained"
+    },
+    {
+      "path": "stage4-screens/native/native-test-end-360x752-font1.0.png",
+      "profile": "native",
+      "scene": "native-test-end",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "c85e00bf4e63f4b99761242ff6aaac91fa2fb83445dc454c3f731bd613036c19",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": null,
+      "scope": "earlier stage4 native/review proof; exact APK hash not retained"
+    },
+    {
+      "path": "stage4-screens/native/native-test-end-411x683-font1.0.png",
+      "profile": "native",
+      "scene": "native-test-end",
+      "pixels": [
+        1080,
+        1920
+      ],
+      "sha256": "8195f460cd3f69673cac5bbb984dff8dffc183534e7d1361f4d1a437a5c5c097",
+      "latestCopiedSceneVariant": false,
+      "observedAppApkSha256": null,
+      "scope": "earlier stage4 native/review proof; exact APK hash not retained"
+    },
+    {
+      "path": "stage4-screens/native/news-article-411x683-font1.0.png",
+      "profile": "native",
+      "scene": "news-article",
+      "pixels": [
+        1080,
+        1920
+      ],
+      "sha256": "63823f0cceaa260bdeb9a6ce97f5c4d6cc2ffecf5ff0eebccd0bfda20c2b87f9",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": null,
+      "scope": "earlier stage4 native/review proof; exact APK hash not retained"
+    },
+    {
+      "path": "stage4-screens/native/news-index-411x683-font1.0.png",
+      "profile": "native",
+      "scene": "news-index",
+      "pixels": [
+        1080,
+        1920
+      ],
+      "sha256": "11bf37926b8dc1fab8078a7917aa53e8f3ec13a254739e17a26828360f11f1da",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": null,
+      "scope": "earlier stage4 native/review proof; exact APK hash not retained"
+    },
+    {
+      "path": "stage4-screens/native/news-machine-translated-411x683-font1.0.png",
+      "profile": "native",
+      "scene": "news-machine-translated",
+      "pixels": [
+        1080,
+        1920
+      ],
+      "sha256": "157b2c8cec04a2ef841e8326bb71df0d82436cc5f7d421c4b0f9410170b36595",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": null,
+      "scope": "earlier stage4 native/review proof; exact APK hash not retained"
+    },
+    {
+      "path": "stage4-screens/native/news-offline-recreated-411x683-font1.0.png",
+      "profile": "native",
+      "scene": "news-offline-recreated",
+      "pixels": [
+        1080,
+        1920
+      ],
+      "sha256": "127a876bd0ef1df196b65f6589664828a6deab8093808648fefb227a5597663e",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": null,
+      "scope": "earlier stage4 native/review proof; exact APK hash not retained"
+    },
+    {
+      "path": "stage4-screens/native/news-title-only-ja-360x752-font1.0.png",
+      "profile": "native",
+      "scene": "news-title-only-ja",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "3abdaf4da249242d2965414be7ce181d87a6cc491f255486cd75b1c137d7ecdd",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": null,
+      "scope": "earlier stage4 native/review proof; exact APK hash not retained"
+    },
+    {
+      "path": "stage4-screens/native/news-title-only-ja-offline-360x752-font1.0.png",
+      "profile": "native",
+      "scene": "news-title-only-ja-offline",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "1202142e688ffd950b3a67f2e5f0114ce2d884c25f77812989e4e569c3ced542",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": null,
+      "scope": "earlier stage4 native/review proof; exact APK hash not retained"
+    },
+    {
+      "path": "stage4-screens/native/news-title-only-ko-360x752-font1.0.png",
+      "profile": "native",
+      "scene": "news-title-only-ko",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "b66c179873b924fb293e2e7dbaaa43d9e6374f73394f1418b40ad067965c79cc",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": null,
+      "scope": "earlier stage4 native/review proof; exact APK hash not retained"
+    },
+    {
+      "path": "stage4-screens/native/reader-real-publication-offline-411x683-font1.0.png",
+      "profile": "native",
+      "scene": "reader-real-publication-offline",
+      "pixels": [
+        1080,
+        1920
+      ],
+      "sha256": "3ab288624de861bae699a2c588236ee23f4b4301ccc0dcdbab67bfe8317367f6",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": null,
+      "scope": "earlier stage4 native/review proof; exact APK hash not retained"
+    },
+    {
+      "path": "stage4-screens/native/reader-real-publication-recreated-411x683-font1.0.png",
+      "profile": "native",
+      "scene": "reader-real-publication-recreated",
+      "pixels": [
+        1080,
+        1920
+      ],
+      "sha256": "3ab288624de861bae699a2c588236ee23f4b4301ccc0dcdbab67bfe8317367f6",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": null,
+      "scope": "earlier stage4 native/review proof; exact APK hash not retained"
+    },
+    {
+      "path": "stage4-screens/native/reader-recovered-quote-411x683-font1.0.png",
+      "profile": "native",
+      "scene": "reader-recovered-quote",
+      "pixels": [
+        1080,
+        1920
+      ],
+      "sha256": "e881b27076b33178ce1dbefd5b5db3e3f2d34b3b5ffcd4b51a3557c9d5cd4008",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": null,
+      "scope": "earlier stage4 native/review proof; exact APK hash not retained"
+    },
+    {
+      "path": "stage4-screens/native/reader-text-unavailable-411x683-font1.0.png",
+      "profile": "native",
+      "scene": "reader-text-unavailable",
+      "pixels": [
+        1080,
+        1920
+      ],
+      "sha256": "4c8642f28da5eab5fb321e18ca6978bae84dee9b049d2a427b9474516a53157a",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": null,
+      "scope": "earlier stage4 native/review proof; exact APK hash not retained"
+    },
+    {
+      "path": "stage4-screens/native/topics-index-411x683-font1.0.png",
+      "profile": "native",
+      "scene": "topics-index",
+      "pixels": [
+        1080,
+        1920
+      ],
+      "sha256": "8f4893d706303e4125c1964afe587c5ef3a15cd8d3497c4d9a0a704fbcb7cf95",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": null,
+      "scope": "earlier stage4 native/review proof; exact APK hash not retained"
+    },
+    {
+      "path": "stage4-screens/phone360-font2-ko/discover-dossier-360x752-font2.0.png",
+      "profile": "phone360-font2-ko",
+      "scene": "discover-dossier",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "4a1bc44ab91ab6913979469b07774b8ac1b16f12d00265dc5215f93d3c827644",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/phone360-font2-ko/discover-index-360x752-font2.0.png",
+      "profile": "phone360-font2-ko",
+      "scene": "discover-index",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "a86b3ddc3e9b8f42fa8b2d4157c0acd97e8ab880da293f9b47a1de0caff1ac00",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/phone360-font2-ko/library-index-360x752-font2.0.png",
+      "profile": "phone360-font2-ko",
+      "scene": "library-index",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "f44bca6d6116805fc06ac1d5d5a80de185580046d1ee08fde5545a3779d6c83b",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/phone360-font2-ko/native-test-end-360x744-font2.0.png",
+      "profile": "phone360-font2-ko",
+      "scene": "native-test-end",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "f9d867ef1a4be1d4235aefabbbb6ec1a265c48f00686fd877c82debea7fb24c1",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/phone360-font2-ko/native-test-end-360x752-font2.0.png",
+      "profile": "phone360-font2-ko",
+      "scene": "native-test-end",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "286c5b6d329ef01d41a45ad445131a68503adf85ea435afb32a2ebf877294699",
+      "latestCopiedSceneVariant": false,
+      "observedAppApkSha256": null,
+      "scope": "earlier stage4 native/review proof; exact APK hash not retained"
+    },
+    {
+      "path": "stage4-screens/phone360-font2-ko/news-article-360x752-font2.0.png",
+      "profile": "phone360-font2-ko",
+      "scene": "news-article",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "cdcfdb1f36affaaf3aa3d11a5f4d6d6ded3bf451974a380ac7c4263a4b8013f5",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/phone360-font2-ko/news-article-body-360x752-font2.0.png",
+      "profile": "phone360-font2-ko",
+      "scene": "news-article-body",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "d13f87d7d5c1cb72f42e89ea6ab0c0868d286e65470a3bde215d1877a55618dc",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/phone360-font2-ko/news-article-translated-360x752-font2.0.png",
+      "profile": "phone360-font2-ko",
+      "scene": "news-article-translated",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "59d4187ea05f622e639acad71d1de23892ee5c043aac2d41fa0af6d450f7fc99",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/phone360-font2-ko/news-article-translated-body-360x752-font2.0.png",
+      "profile": "phone360-font2-ko",
+      "scene": "news-article-translated-body",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "59d4187ea05f622e639acad71d1de23892ee5c043aac2d41fa0af6d450f7fc99",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/phone360-font2-ko/news-article-translated-body-final-360x744-font2.0.png",
+      "profile": "phone360-font2-ko",
+      "scene": "news-article-translated-body-final",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "f9d867ef1a4be1d4235aefabbbb6ec1a265c48f00686fd877c82debea7fb24c1",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "3597906a2d8aee3569ecf7a91510c22a51cc2b6e411172fb84ca585519d9999f",
+      "scope": "current final source"
+    },
+    {
+      "path": "stage4-screens/phone360-font2-ko/news-article-translated-body-final-360x752-font2.0.png",
+      "profile": "phone360-font2-ko",
+      "scene": "news-article-translated-body-final",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "286c5b6d329ef01d41a45ad445131a68503adf85ea435afb32a2ebf877294699",
+      "latestCopiedSceneVariant": false,
+      "observedAppApkSha256": "3597906a2d8aee3569ecf7a91510c22a51cc2b6e411172fb84ca585519d9999f",
+      "scope": "current final source"
+    },
+    {
+      "path": "stage4-screens/phone360-font2-ko/news-article-translated-source-final-360x744-font2.0.png",
+      "profile": "phone360-font2-ko",
+      "scene": "news-article-translated-source-final",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "f7fbfa1a95f63ba6b00c2965a6ef3e2b153eb870988d3c9c5114fcd8c05a0744",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "3597906a2d8aee3569ecf7a91510c22a51cc2b6e411172fb84ca585519d9999f",
+      "scope": "current final source"
+    },
+    {
+      "path": "stage4-screens/phone360-font2-ko/news-article-translated-source-final-360x752-font2.0.png",
+      "profile": "phone360-font2-ko",
+      "scene": "news-article-translated-source-final",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "bd45304608b0c32064d0ea77dd3bfd4350f33ceb63931cafda6e8bbe546b155f",
+      "latestCopiedSceneVariant": false,
+      "observedAppApkSha256": "3597906a2d8aee3569ecf7a91510c22a51cc2b6e411172fb84ca585519d9999f",
+      "scope": "current final source"
+    },
+    {
+      "path": "stage4-screens/phone360-font2-ko/news-index-360x752-font2.0.png",
+      "profile": "phone360-font2-ko",
+      "scene": "news-index",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "3b282f0fcd4cae083ddc8453b1a6db00ecef65d334aec4ad4df5290426d8b2a3",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/phone360-font2-ko/topics-index-360x752-font2.0.png",
+      "profile": "phone360-font2-ko",
+      "scene": "topics-index",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "6af603d88d7a14dca81592b0b0900bc399f482d7055e5da050918a49fd975dda",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/phone360-landscape/discover-dossier-800x312-font1.0.png",
+      "profile": "phone360-landscape",
+      "scene": "discover-dossier",
+      "pixels": [
+        800,
+        360
+      ],
+      "sha256": "cb419ad9ea34d5dd5581ee9925c7107db411cab25fbbc21a7ee6943fb7b00a57",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/phone360-landscape/discover-index-800x312-font1.0.png",
+      "profile": "phone360-landscape",
+      "scene": "discover-index",
+      "pixels": [
+        800,
+        360
+      ],
+      "sha256": "635ec34be2ff53fd7b56f914f06df27f35341b355dec286b14e9ec2b2269a02f",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/phone360-landscape/library-index-800x312-font1.0.png",
+      "profile": "phone360-landscape",
+      "scene": "library-index",
+      "pixels": [
+        800,
+        360
+      ],
+      "sha256": "04c393717c9afea45f7716234f4c7e28341a4d21ed8b08b2945bcf68a690e555",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/phone360-landscape/native-test-end-800x312-font1.0.png",
+      "profile": "phone360-landscape",
+      "scene": "native-test-end",
+      "pixels": [
+        800,
+        360
+      ],
+      "sha256": "3be41b208c8aa23893e817cdfca2f8167cebfad87a2facd9b8206b905d5d8467",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/phone360-landscape/news-article-800x312-font1.0.png",
+      "profile": "phone360-landscape",
+      "scene": "news-article",
+      "pixels": [
+        800,
+        360
+      ],
+      "sha256": "0329b8dfd84d888007894a3f47ef46d1e0882dc3bb5c824255c2837561756a0b",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/phone360-landscape/news-article-body-800x312-font1.0.png",
+      "profile": "phone360-landscape",
+      "scene": "news-article-body",
+      "pixels": [
+        800,
+        360
+      ],
+      "sha256": "989262239c743b1c7cf5555a5792b6363792d99eae9c63aa6a7b34aa7c72dafb",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/phone360-landscape/news-index-800x312-font1.0.png",
+      "profile": "phone360-landscape",
+      "scene": "news-index",
+      "pixels": [
+        800,
+        360
+      ],
+      "sha256": "bfc44299c974ab7de99504d470ae36ae95fb8fc7c2c09802344fad0faeaaecba",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/phone360-landscape/topics-index-800x312-font1.0.png",
+      "profile": "phone360-landscape",
+      "scene": "topics-index",
+      "pixels": [
+        800,
+        360
+      ],
+      "sha256": "ecd902ec2382b8fd613cb204490f737087e9ee2317bf0b1ea1f972c8b5c63011",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/phone360-portrait/discover-dossier-360x744-font1.0.png",
+      "profile": "phone360-portrait",
+      "scene": "discover-dossier",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "c8d2879631b6a0bd786335c74f0697c14c9ee16417cdad2d6978aca38a6dd83c",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/phone360-portrait/discover-dossier-360x752-font1.0.png",
+      "profile": "phone360-portrait",
+      "scene": "discover-dossier",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "6840f8eed290199067a902820f69dbefe16598bcf9dbb74d49c77ccb420caa02",
+      "latestCopiedSceneVariant": false,
+      "observedAppApkSha256": null,
+      "scope": "earlier stage4 native/review proof; exact APK hash not retained"
+    },
+    {
+      "path": "stage4-screens/phone360-portrait/discover-index-360x744-font1.0.png",
+      "profile": "phone360-portrait",
+      "scene": "discover-index",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "e4f0c34b7c12e7b4898c8058ceb00321ea3a7208a440f4a463d665368e365ae3",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/phone360-portrait/discover-index-360x752-font1.0.png",
+      "profile": "phone360-portrait",
+      "scene": "discover-index",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "e832bb870f6d0f5ff260e98ea34df07dfdbcea8d2e3ec2d256d65a57eb5573ff",
+      "latestCopiedSceneVariant": false,
+      "observedAppApkSha256": null,
+      "scope": "earlier stage4 native/review proof; exact APK hash not retained"
+    },
+    {
+      "path": "stage4-screens/phone360-portrait/field-selector-selected-360x744-font1.0.png",
+      "profile": "phone360-portrait",
+      "scene": "field-selector-selected",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "3994ca7221fdbaf741e27eb7b4388870c1ee79ac1273aa1c6765358818605461",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/phone360-portrait/field-selector-selected-360x752-font1.0.png",
+      "profile": "phone360-portrait",
+      "scene": "field-selector-selected",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "d9cfd4063326b1c9c30cfc82cacf787aa119e9808992e2f7facf3d3752910e4a",
+      "latestCopiedSceneVariant": false,
+      "observedAppApkSha256": null,
+      "scope": "earlier stage4 native/review proof; exact APK hash not retained"
+    },
+    {
+      "path": "stage4-screens/phone360-portrait/library-index-360x744-font1.0.png",
+      "profile": "phone360-portrait",
+      "scene": "library-index",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "45407247b488a640706e7222459a43e27060b056b28f10511e168a3a911b85c6",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/phone360-portrait/library-index-360x752-font1.0.png",
+      "profile": "phone360-portrait",
+      "scene": "library-index",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "a234f7e0c88947ed20fa6927a946e0fc4ef68d8de31b33959b47abac5839b82c",
+      "latestCopiedSceneVariant": false,
+      "observedAppApkSha256": null,
+      "scope": "earlier stage4 native/review proof; exact APK hash not retained"
+    },
+    {
+      "path": "stage4-screens/phone360-portrait/native-test-end-360x744-font1.0.png",
+      "profile": "phone360-portrait",
+      "scene": "native-test-end",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "45407247b488a640706e7222459a43e27060b056b28f10511e168a3a911b85c6",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/phone360-portrait/native-test-end-360x752-font1.0.png",
+      "profile": "phone360-portrait",
+      "scene": "native-test-end",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "a234f7e0c88947ed20fa6927a946e0fc4ef68d8de31b33959b47abac5839b82c",
+      "latestCopiedSceneVariant": false,
+      "observedAppApkSha256": null,
+      "scope": "earlier stage4 native/review proof; exact APK hash not retained"
+    },
+    {
+      "path": "stage4-screens/phone360-portrait/news-article-360x744-font1.0.png",
+      "profile": "phone360-portrait",
+      "scene": "news-article",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "fa94d77669bd155858e53aa8af5f45a32f552220781b4eaaae948d5a6185e062",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/phone360-portrait/news-article-360x752-font1.0.png",
+      "profile": "phone360-portrait",
+      "scene": "news-article",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "9433a6f58cca1cbfe6d0f69dcdaf3978b48881c851439b3827df6d9ad3e95c6f",
+      "latestCopiedSceneVariant": false,
+      "observedAppApkSha256": null,
+      "scope": "earlier stage4 native/review proof; exact APK hash not retained"
+    },
+    {
+      "path": "stage4-screens/phone360-portrait/news-article-body-360x744-font1.0.png",
+      "profile": "phone360-portrait",
+      "scene": "news-article-body",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "fa94d77669bd155858e53aa8af5f45a32f552220781b4eaaae948d5a6185e062",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/phone360-portrait/news-article-body-360x752-font1.0.png",
+      "profile": "phone360-portrait",
+      "scene": "news-article-body",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "9433a6f58cca1cbfe6d0f69dcdaf3978b48881c851439b3827df6d9ad3e95c6f",
+      "latestCopiedSceneVariant": false,
+      "observedAppApkSha256": null,
+      "scope": "earlier stage4 native/review proof; exact APK hash not retained"
+    },
+    {
+      "path": "stage4-screens/phone360-portrait/news-index-360x744-font1.0.png",
+      "profile": "phone360-portrait",
+      "scene": "news-index",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "82888359c59ee5c05d9784e3fe923de0a09dcf232ab1cbaa2549c7f5587ff374",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/phone360-portrait/news-index-360x752-font1.0.png",
+      "profile": "phone360-portrait",
+      "scene": "news-index",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "fd9c59964c93bf470aa1ae0f73b6565deeb57c8ec6b319f9ea73cf46f7d19144",
+      "latestCopiedSceneVariant": false,
+      "observedAppApkSha256": null,
+      "scope": "earlier stage4 native/review proof; exact APK hash not retained"
+    },
+    {
+      "path": "stage4-screens/phone360-portrait/topics-index-360x744-font1.0.png",
+      "profile": "phone360-portrait",
+      "scene": "topics-index",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "d74de5544822c9d20bc807ebf9bf289f8edf7ce0488d4b82705e04fbc88fb4b6",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/phone360-portrait/topics-index-360x752-font1.0.png",
+      "profile": "phone360-portrait",
+      "scene": "topics-index",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "f99603bcd62ee63f31d890c68a4b4c01cd57e3f66ef013aee30d1fb484830e50",
+      "latestCopiedSceneVariant": false,
+      "observedAppApkSha256": null,
+      "scope": "earlier stage4 native/review proof; exact APK hash not retained"
+    },
+    {
+      "path": "stage4-screens/phone360-portrait/topics-keyboard-selected-360x744-font1.0.png",
+      "profile": "phone360-portrait",
+      "scene": "topics-keyboard-selected",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "cc028a7581c6199ce26e45d0b0243191b1c12b6932b9eea39e8a737d18965261",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/phone360-portrait/topics-keyboard-selected-360x752-font1.0.png",
+      "profile": "phone360-portrait",
+      "scene": "topics-keyboard-selected",
+      "pixels": [
+        360,
+        800
+      ],
+      "sha256": "595ae39ecddeaa55bfe17926f1917a23aed6efcf6d7235a0f225c738c1adca43",
+      "latestCopiedSceneVariant": false,
+      "observedAppApkSha256": null,
+      "scope": "earlier stage4 native/review proof; exact APK hash not retained"
+    },
+    {
+      "path": "stage4-screens/tablet1280-font2-dark/discover-dossier-1800x1224-font2.0.png",
+      "profile": "tablet1280-font2-dark",
+      "scene": "discover-dossier",
+      "pixels": [
+        1800,
+        1280
+      ],
+      "sha256": "d2212f7718f60b77881bea9a0359959b8cd321094e555a046a50f383303dbac3",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "3597906a2d8aee3569ecf7a91510c22a51cc2b6e411172fb84ca585519d9999f",
+      "scope": "current final source"
+    },
+    {
+      "path": "stage4-screens/tablet1280-font2-dark/discover-index-1800x1224-font2.0.png",
+      "profile": "tablet1280-font2-dark",
+      "scene": "discover-index",
+      "pixels": [
+        1800,
+        1280
+      ],
+      "sha256": "a24ad644d41c901dbf41e386550c2efd2ddbd50bd9fa4426693e09492d22b435",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "3597906a2d8aee3569ecf7a91510c22a51cc2b6e411172fb84ca585519d9999f",
+      "scope": "current final source"
+    },
+    {
+      "path": "stage4-screens/tablet1280-font2-dark/library-index-1800x1224-font2.0.png",
+      "profile": "tablet1280-font2-dark",
+      "scene": "library-index",
+      "pixels": [
+        1800,
+        1280
+      ],
+      "sha256": "5c5b17703dc5ecbb8bece8f66100fb68dfcf3ddf00ea955b1fa59ce01d9ac0eb",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "3597906a2d8aee3569ecf7a91510c22a51cc2b6e411172fb84ca585519d9999f",
+      "scope": "current final source"
+    },
+    {
+      "path": "stage4-screens/tablet1280-font2-dark/native-test-end-1800x1224-font2.0.png",
+      "profile": "tablet1280-font2-dark",
+      "scene": "native-test-end",
+      "pixels": [
+        1800,
+        1280
+      ],
+      "sha256": "5c5b17703dc5ecbb8bece8f66100fb68dfcf3ddf00ea955b1fa59ce01d9ac0eb",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "3597906a2d8aee3569ecf7a91510c22a51cc2b6e411172fb84ca585519d9999f",
+      "scope": "current final source"
+    },
+    {
+      "path": "stage4-screens/tablet1280-font2-dark/news-article-1800x1224-font2.0.png",
+      "profile": "tablet1280-font2-dark",
+      "scene": "news-article",
+      "pixels": [
+        1800,
+        1280
+      ],
+      "sha256": "bc1437e49aac99687218d079e933c76c583ea8ae4e671296339476578c1df36e",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "3597906a2d8aee3569ecf7a91510c22a51cc2b6e411172fb84ca585519d9999f",
+      "scope": "current final source"
+    },
+    {
+      "path": "stage4-screens/tablet1280-font2-dark/news-article-body-1800x1224-font2.0.png",
+      "profile": "tablet1280-font2-dark",
+      "scene": "news-article-body",
+      "pixels": [
+        1800,
+        1280
+      ],
+      "sha256": "bc1437e49aac99687218d079e933c76c583ea8ae4e671296339476578c1df36e",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "3597906a2d8aee3569ecf7a91510c22a51cc2b6e411172fb84ca585519d9999f",
+      "scope": "current final source"
+    },
+    {
+      "path": "stage4-screens/tablet1280-font2-dark/news-index-1800x1224-font2.0.png",
+      "profile": "tablet1280-font2-dark",
+      "scene": "news-index",
+      "pixels": [
+        1800,
+        1280
+      ],
+      "sha256": "c0561bc74c33e86bee181ba981df9b67152a069459fe7450db1cd6173d23bba2",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "3597906a2d8aee3569ecf7a91510c22a51cc2b6e411172fb84ca585519d9999f",
+      "scope": "current final source"
+    },
+    {
+      "path": "stage4-screens/tablet1280-font2-dark/topics-index-1800x1224-font2.0.png",
+      "profile": "tablet1280-font2-dark",
+      "scene": "topics-index",
+      "pixels": [
+        1800,
+        1280
+      ],
+      "sha256": "e306c6998e9343bae964c64481cdd1466f4ba1c91c40ddd2ddd7533f341754ea",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "3597906a2d8aee3569ecf7a91510c22a51cc2b6e411172fb84ca585519d9999f",
+      "scope": "current final source"
+    },
+    {
+      "path": "stage4-screens/tablet1280-landscape/discover-dossier-1800x1224-font1.0.png",
+      "profile": "tablet1280-landscape",
+      "scene": "discover-dossier",
+      "pixels": [
+        1800,
+        1280
+      ],
+      "sha256": "f54622839324bcd563e0dbce6b4712c75e954fd41111773a9c128bce8e8d0012",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/tablet1280-landscape/discover-index-1800x1224-font1.0.png",
+      "profile": "tablet1280-landscape",
+      "scene": "discover-index",
+      "pixels": [
+        1800,
+        1280
+      ],
+      "sha256": "98f48491a80f56d80c5bf8eb4653305021f65427a67ba08f7587e31c9dcc7622",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/tablet1280-landscape/library-index-1800x1224-font1.0.png",
+      "profile": "tablet1280-landscape",
+      "scene": "library-index",
+      "pixels": [
+        1800,
+        1280
+      ],
+      "sha256": "898f85ba7d6719b84085d368e6324385abd26194b5a3a1ed9fb45699736e4ad1",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/tablet1280-landscape/native-test-end-1800x1224-font1.0.png",
+      "profile": "tablet1280-landscape",
+      "scene": "native-test-end",
+      "pixels": [
+        1800,
+        1280
+      ],
+      "sha256": "898f85ba7d6719b84085d368e6324385abd26194b5a3a1ed9fb45699736e4ad1",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/tablet1280-landscape/news-article-1800x1224-font1.0.png",
+      "profile": "tablet1280-landscape",
+      "scene": "news-article",
+      "pixels": [
+        1800,
+        1280
+      ],
+      "sha256": "acbf5a0effe0557428e50ad904d208814da73cc3376d5069a43dc7968c8f830d",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/tablet1280-landscape/news-article-body-1800x1224-font1.0.png",
+      "profile": "tablet1280-landscape",
+      "scene": "news-article-body",
+      "pixels": [
+        1800,
+        1280
+      ],
+      "sha256": "acbf5a0effe0557428e50ad904d208814da73cc3376d5069a43dc7968c8f830d",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/tablet1280-landscape/news-index-1800x1224-font1.0.png",
+      "profile": "tablet1280-landscape",
+      "scene": "news-index",
+      "pixels": [
+        1800,
+        1280
+      ],
+      "sha256": "31280a22b5e75e90fab59bb1e8bf2e47621a2db7a6d3690a6336a0a9f44d5c9f",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/tablet1280-landscape/topics-index-1800x1224-font1.0.png",
+      "profile": "tablet1280-landscape",
+      "scene": "topics-index",
+      "pixels": [
+        1800,
+        1280
+      ],
+      "sha256": "35affd62972b7cee29d009af132330d2f299539daf95071bb6214f04f11960bc",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/tablet1280-portrait/discover-dossier-1280x1744-font1.0.png",
+      "profile": "tablet1280-portrait",
+      "scene": "discover-dossier",
+      "pixels": [
+        1280,
+        1800
+      ],
+      "sha256": "5fea261368e51fc2088e39d4b3a74d8f0f2bcf60563ef785720cb2871a8fb1e2",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/tablet1280-portrait/discover-index-1280x1744-font1.0.png",
+      "profile": "tablet1280-portrait",
+      "scene": "discover-index",
+      "pixels": [
+        1280,
+        1800
+      ],
+      "sha256": "675a138d2fa21fd3d1fdb6871c7d016b9f02953849099f0f3f34e692b63dc475",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/tablet1280-portrait/library-index-1280x1744-font1.0.png",
+      "profile": "tablet1280-portrait",
+      "scene": "library-index",
+      "pixels": [
+        1280,
+        1800
+      ],
+      "sha256": "12d741f3111f7d1e261a48a76ac77919e1dd80fa27a0d56821a49ccfcb8ba94f",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/tablet1280-portrait/native-test-end-1280x1744-font1.0.png",
+      "profile": "tablet1280-portrait",
+      "scene": "native-test-end",
+      "pixels": [
+        1280,
+        1800
+      ],
+      "sha256": "12d741f3111f7d1e261a48a76ac77919e1dd80fa27a0d56821a49ccfcb8ba94f",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/tablet1280-portrait/news-article-1280x1744-font1.0.png",
+      "profile": "tablet1280-portrait",
+      "scene": "news-article",
+      "pixels": [
+        1280,
+        1800
+      ],
+      "sha256": "802c98911c18bf306286a1b05edf79e97f8cb6634326898f79920cfad959b8fe",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/tablet1280-portrait/news-article-body-1280x1744-font1.0.png",
+      "profile": "tablet1280-portrait",
+      "scene": "news-article-body",
+      "pixels": [
+        1280,
+        1800
+      ],
+      "sha256": "802c98911c18bf306286a1b05edf79e97f8cb6634326898f79920cfad959b8fe",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/tablet1280-portrait/news-index-1280x1744-font1.0.png",
+      "profile": "tablet1280-portrait",
+      "scene": "news-index",
+      "pixels": [
+        1280,
+        1800
+      ],
+      "sha256": "760f06b7b8711f42a7efa5d10344373270ea0f66bc01daf64bfc561fab59a611",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/tablet1280-portrait/topics-index-1280x1744-font1.0.png",
+      "profile": "tablet1280-portrait",
+      "scene": "topics-index",
+      "pixels": [
+        1280,
+        1800
+      ],
+      "sha256": "c2fe5af36bb89cf873cac14c175d3371b9c1c2c1eddb084c8345c7f235de0ede",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/tablet800-landscape/discover-dossier-1280x744-font1.0.png",
+      "profile": "tablet800-landscape",
+      "scene": "discover-dossier",
+      "pixels": [
+        1280,
+        800
+      ],
+      "sha256": "3d73d5a5d89ed9f71e2b0d5016ee0be364ff3a6bedd266f4f3ea0561f9ea1dfc",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/tablet800-landscape/discover-index-1280x744-font1.0.png",
+      "profile": "tablet800-landscape",
+      "scene": "discover-index",
+      "pixels": [
+        1280,
+        800
+      ],
+      "sha256": "5b4c9b13a05de8cc82063d5e180e81d341c021c2af03fba0101ffb93a45c5abe",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/tablet800-landscape/library-index-1280x744-font1.0.png",
+      "profile": "tablet800-landscape",
+      "scene": "library-index",
+      "pixels": [
+        1280,
+        800
+      ],
+      "sha256": "26d5df74ce0f63d77d0617999750b3341c8d9fc17488a09cad9a3ee8b04bd838",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/tablet800-landscape/native-test-end-1280x744-font1.0.png",
+      "profile": "tablet800-landscape",
+      "scene": "native-test-end",
+      "pixels": [
+        1280,
+        800
+      ],
+      "sha256": "26d5df74ce0f63d77d0617999750b3341c8d9fc17488a09cad9a3ee8b04bd838",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/tablet800-landscape/news-article-1280x744-font1.0.png",
+      "profile": "tablet800-landscape",
+      "scene": "news-article",
+      "pixels": [
+        1280,
+        800
+      ],
+      "sha256": "c6486e336d5ac4115aba1a3fb7bd8a4f5d6b61e2eccb8da07133fee2c9a179d2",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/tablet800-landscape/news-article-body-1280x744-font1.0.png",
+      "profile": "tablet800-landscape",
+      "scene": "news-article-body",
+      "pixels": [
+        1280,
+        800
+      ],
+      "sha256": "c6486e336d5ac4115aba1a3fb7bd8a4f5d6b61e2eccb8da07133fee2c9a179d2",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/tablet800-landscape/news-index-1280x744-font1.0.png",
+      "profile": "tablet800-landscape",
+      "scene": "news-index",
+      "pixels": [
+        1280,
+        800
+      ],
+      "sha256": "085bc08ab2efa9c345de9efedcb0b91f7e66d2b07218557182041af5fd72e82b",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/tablet800-landscape/topics-index-1280x744-font1.0.png",
+      "profile": "tablet800-landscape",
+      "scene": "topics-index",
+      "pixels": [
+        1280,
+        800
+      ],
+      "sha256": "5fe36c5a7480db7dd220c2992142d3e724f4256828c7506873ee2dac89b39f35",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/tablet800-portrait/discover-dossier-800x1224-font1.0.png",
+      "profile": "tablet800-portrait",
+      "scene": "discover-dossier",
+      "pixels": [
+        800,
+        1280
+      ],
+      "sha256": "9cbf4e92e63cc339941661b7dd87fc5a1ad6f8dd36a850f2812f925e8c7c2a04",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/tablet800-portrait/discover-index-800x1224-font1.0.png",
+      "profile": "tablet800-portrait",
+      "scene": "discover-index",
+      "pixels": [
+        800,
+        1280
+      ],
+      "sha256": "fe52c56f55372866a5c44e1d42ae2b048e13a0a6aa43d238abc9b09ca3c17f4f",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/tablet800-portrait/library-index-800x1224-font1.0.png",
+      "profile": "tablet800-portrait",
+      "scene": "library-index",
+      "pixels": [
+        800,
+        1280
+      ],
+      "sha256": "3c1179e57c01797c8414f9d40d3c968e3054898cf70eeaa0876d283742e0f056",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/tablet800-portrait/native-test-end-800x1224-font1.0.png",
+      "profile": "tablet800-portrait",
+      "scene": "native-test-end",
+      "pixels": [
+        800,
+        1280
+      ],
+      "sha256": "3c1179e57c01797c8414f9d40d3c968e3054898cf70eeaa0876d283742e0f056",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/tablet800-portrait/news-article-800x1224-font1.0.png",
+      "profile": "tablet800-portrait",
+      "scene": "news-article",
+      "pixels": [
+        800,
+        1280
+      ],
+      "sha256": "a7865a8cba64642eb5765595062439b4879fdbd16ba246ec88944169ac9e0921",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/tablet800-portrait/news-article-body-800x1224-font1.0.png",
+      "profile": "tablet800-portrait",
+      "scene": "news-article-body",
+      "pixels": [
+        800,
+        1280
+      ],
+      "sha256": "a7865a8cba64642eb5765595062439b4879fdbd16ba246ec88944169ac9e0921",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/tablet800-portrait/news-index-800x1224-font1.0.png",
+      "profile": "tablet800-portrait",
+      "scene": "news-index",
+      "pixels": [
+        800,
+        1280
+      ],
+      "sha256": "2de91f0f3d2c739a76fd65d876206f183c69f067e5465daa0e5b699fee841450",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    },
+    {
+      "path": "stage4-screens/tablet800-portrait/topics-index-800x1224-font1.0.png",
+      "profile": "tablet800-portrait",
+      "scene": "topics-index",
+      "pixels": [
+        800,
+        1280
+      ],
+      "sha256": "8ec9ca1bc741a6c4208be4d89bf335aea1dc58a7492b65113805e199ea6fdcbb",
+      "latestCopiedSceneVariant": true,
+      "observedAppApkSha256": "064567774c180cd784a8886ecfabafb2e14f8ecd2e4c08105aa1364a7cfda0ba",
+      "scope": "pre-news-source-label capture; other product layout unchanged"
+    }
+  ],
+  "captureScope": "Eight actual native profiles passed. Standard six and initial KO profile precede only the final concise article source/date label. Final dark tablet and targeted KO article/source/body use the final app APK. No unchanged matrix repeated solely for that narrow label fix. Raw system/status/navigation bars are retained.",
+  "limitations": [
+    "No physical Galaxy Tab/S Pen",
+    "No API29/API35 runtime run",
+    "Outbound provider graphs/news/translation are controlled QA boundaries; actual Hub API/storage and Android rendering",
+    "Process-cold offline JUnit proof retained; its separate capture directory was not copied before scoped emulator closure"
+  ]
+}

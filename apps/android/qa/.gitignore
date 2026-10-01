@@ -1,0 +1,4 @@
+# Local intermediate Android stage4 build/driver diagnostics; final evidence is tracked.
+stage4-work/
+# Immutable local delivery copies are identified by SHA256 in the tracked manifest.
+stage4-apks/

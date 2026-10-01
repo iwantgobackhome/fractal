@@ -1,0 +1,97 @@
+﻿{
+    "emulatorLauncherExited":  true,
+    "emulatorQemuExited":  true,
+    "closedOwnedPorts":  [
+                             7427,
+                             6274,
+                             6275,
+                             5554,
+                             5555,
+                             5822,
+                             4919
+                         ],
+    "peer5560ListenersAfter":  [
+
+                               ],
+    "preserved":  [
+                      "owned ignored QA SQLite/PDF profile",
+                      "ignored private device credentials",
+                      "application database and preferences; no reset",
+                      "AVD; no deletion",
+                      "global adb server and all peer processes"
+                  ],
+    "closedAt":  "2026-10-01T02:40:06.4459355Z",
+    "before":  {
+                   "emulator":  {
+                                    "ProcessId":  47840,
+                                    "ParentProcessId":  39496,
+                                    "ExecutablePath":  "C:\\Users\\Home\\AppData\\Local\\Android\\Sdk\\emulator\\emulator.exe",
+                                    "CommandLine":  "\"C:\\Users\\Home\\AppData\\Local\\Android\\Sdk\\emulator\\emulator.exe\" -avd Pixel_2_API_34 -port 5554 -read-only -no-window -no-audio -no-snapshot -no-boot-anim -gpu swiftshader_indirect ",
+                                    "startedUtc":  "2026-09-30T21:20:37.8108490Z"
+                                },
+                   "qemu":  {
+                                "ProcessId":  37140,
+                                "ParentProcessId":  47840,
+                                "ExecutablePath":  "C:\\Users\\Home\\AppData\\Local\\Android\\Sdk\\emulator\\qemu\\windows-x86_64\\qemu-system-x86_64-headless.exe",
+                                "CommandLine":  "C:\\Users\\Home\\AppData\\Local\\Android\\Sdk\\emulator\\qemu\\windows-x86_64\\qemu-system-x86_64-headless.exe -avd Pixel_2_API_34 -port 5554 -read-only -no-window -no-audio -no-snapshot -no-boot-anim -gpu swiftshader_indirect",
+                                "startedUtc":  "2026-09-30T21:20:37.9381340Z"
+                            },
+                   "consoleListeners":  [
+                                            {
+                                                "LocalAddress":  "::1",
+                                                "LocalPort":  5555,
+                                                "OwningProcess":  37140
+                                            },
+                                            {
+                                                "LocalAddress":  "::1",
+                                                "LocalPort":  5554,
+                                                "OwningProcess":  37140
+                                            },
+                                            {
+                                                "LocalAddress":  "127.0.0.1",
+                                                "LocalPort":  5555,
+                                                "OwningProcess":  37140
+                                            },
+                                            {
+                                                "LocalAddress":  "127.0.0.1",
+                                                "LocalPort":  5554,
+                                                "OwningProcess":  37140
+                                            }
+                                        ],
+                   "peer5560Listeners":  [
+
+                                         ],
+                   "helper":  {
+                                  "ProcessId":  44380,
+                                  "ParentProcessId":  44112,
+                                  "ExecutablePath":  "C:\\Program Files\\nodejs\\node.exe",
+                                  "CommandLine":  "\"C:\\Program Files\\nodejs\\node.exe\" apps/android/qa/discovery-http/server.bundle.mjs ",
+                                  "startedUtc":  "2026-10-01T02:01:22.2782470Z"
+                              },
+                   "helperListeners":  [
+                                           {
+                                               "LocalAddress":  "127.0.0.1",
+                                               "LocalPort":  7427,
+                                               "OwningProcess":  44380
+                                           },
+                                           {
+                                               "LocalAddress":  "127.0.0.1",
+                                               "LocalPort":  6275,
+                                               "OwningProcess":  44380
+                                           },
+                                           {
+                                               "LocalAddress":  "127.0.0.1",
+                                               "LocalPort":  6274,
+                                               "OwningProcess":  44380
+                                           }
+                                       ],
+                   "restoredProfile":  {
+                                           "productLocaleThemeRestore":  "stage4-resource-profile-restore.log: actual MainActivity, en/Light/font1",
+                                           "fontScale":  "1.0",
+                                           "size":  "Physical size: 1080x1920",
+                                           "density":  "Physical density: 420"
+                                       },
+                   "verifiedAt":  "2026-10-01T02:40:03.0413480Z"
+               },
+    "helperExited":  true
+}
