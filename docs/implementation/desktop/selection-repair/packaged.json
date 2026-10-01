@@ -1,0 +1,322 @@
+{
+  "mode": "packaged",
+  "source": "0efa96c7575435d9ce408c4dcc2ce427134e9141",
+  "directory": "C:\\Users\\Home\\AppData\\Local\\Temp\\fractal-selection-packaged-FaSSSx",
+  "pdfSha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697",
+  "academic": "https://arxiv.org/pdf/1706.03762",
+  "text": "The dominant sequence transduction models are based on complex recurrent or",
+  "run": {
+    "start": 647,
+    "end": 722,
+    "quad": [
+      [
+        0.2345702614379085,
+        0.5342385373737373
+      ],
+      [
+        0.2345702614379085,
+        0.5229928752525252
+      ],
+      [
+        0.765194941771242,
+        0.5229928752525252
+      ],
+      [
+        0.765194941771242,
+        0.5342385373737373
+      ]
+    ],
+    "direction": "ltr",
+    "granularity": "run",
+    "confidence": "approximate",
+    "units": [
+      {
+        "start": 647,
+        "end": 722,
+        "quad": [
+          [
+            0.2345702614379085,
+            0.5342385373737373
+          ],
+          [
+            0.2345702614379085,
+            0.5229928752525252
+          ],
+          [
+            0.765194941771242,
+            0.5229928752525252
+          ],
+          [
+            0.765194941771242,
+            0.5342385373737373
+          ]
+        ]
+      }
+    ],
+    "words": []
+  },
+  "boundaries": [
+    647,
+    722
+  ],
+  "issues": [
+    "font_advance_envelopes_not_glyph_outlines",
+    "run_boundary_fallback"
+  ],
+  "cases": [
+    {
+      "label": "electron-word",
+      "expected": "dominant",
+      "beforeUp": {
+        "text": "dominant",
+        "start": 4,
+        "end": 12,
+        "backwards": false
+      },
+      "afterUp": {
+        "text": "dominant",
+        "start": 4,
+        "end": 12,
+        "backwards": false
+      },
+      "copied": "dominant",
+      "menuCopy": "dominant",
+      "a": {
+        "x": 406.61256103515626,
+        "y": 466.625
+      },
+      "b": {
+        "x": 466.1698516845703,
+        "y": 466.625
+      },
+      "metadata": {
+        "textRun": "37",
+        "boundaries": "[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75]",
+        "layoutStart": "647"
+      },
+      "transform": "matrix(0.874817, 0, 0, 1, 0, 0)",
+      "regions": [
+        "left: 26.2825%; top: 51.8131%; width: 6.53142%; height: 1.76385%;"
+      ]
+    },
+    {
+      "label": "electron-partial-backward",
+      "expected": "ominan",
+      "beforeUp": {
+        "text": "ominan",
+        "start": 5,
+        "end": 11,
+        "backwards": true
+      },
+      "afterUp": {
+        "text": "ominan",
+        "start": 5,
+        "end": 11,
+        "backwards": true
+      },
+      "copied": "ominan",
+      "menuCopy": "ominan",
+      "a": {
+        "x": 461.4348846435547,
+        "y": 466.625
+      },
+      "b": {
+        "x": 414.71417846679685,
+        "y": 466.625
+      },
+      "metadata": {
+        "textRun": "37",
+        "boundaries": "[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75]",
+        "layoutStart": "647"
+      },
+      "transform": "matrix(0.874817, 0, 0, 1, 0, 0)",
+      "regions": [
+        "left: 27.1651%; top: 51.8131%; width: 5.11251%; height: 1.76385%;"
+      ]
+    },
+    {
+      "label": "electron-highlight",
+      "expected": "dominant",
+      "beforeUp": {
+        "text": "dominant",
+        "start": 4,
+        "end": 12,
+        "backwards": false
+      },
+      "afterUp": {
+        "text": "dominant",
+        "start": 4,
+        "end": 12,
+        "backwards": false
+      },
+      "copied": "dominant",
+      "a": {
+        "x": 406.61256103515626,
+        "y": 466.625
+      },
+      "b": {
+        "x": 466.1698516845703,
+        "y": 466.625
+      },
+      "metadata": {
+        "textRun": "37",
+        "boundaries": "[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75]",
+        "layoutStart": "647"
+      },
+      "transform": "matrix(0.874817, 0, 0, 1, 0, 0)",
+      "regions": [
+        "left: 26.2825%; top: 51.8131%; width: 6.53142%; height: 1.76385%;"
+      ]
+    },
+    {
+      "label": "electron-question",
+      "expected": "dominant",
+      "beforeUp": {
+        "text": "dominant",
+        "start": 4,
+        "end": 12,
+        "backwards": false
+      },
+      "afterUp": {
+        "text": "dominant",
+        "start": 4,
+        "end": 12,
+        "backwards": false
+      },
+      "copied": "dominant",
+      "a": {
+        "x": 406.61256103515626,
+        "y": 466.625
+      },
+      "b": {
+        "x": 466.1698516845703,
+        "y": 466.625
+      },
+      "metadata": {
+        "textRun": "37",
+        "boundaries": "[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75]",
+        "layoutStart": "647"
+      },
+      "transform": "matrix(0.874817, 0, 0, 1, 0, 0)",
+      "regions": [
+        "left: 26.2825%; top: 51.8131%; width: 6.53142%; height: 1.76385%;"
+      ]
+    }
+  ],
+  "ownedProcess": {
+    "pid": 40832,
+    "executablePath": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\dist\\installer-selection-repair\\win-unpacked\\Fractal.exe",
+    "args": [
+      "C:\\WINDOWS\\system32\\cmd.exe",
+      "/d",
+      "/s",
+      "/c",
+      "\"\"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\dist\\installer-selection-repair\\win-unpacked\\Fractal.exe\" \"--inspect=0\" \"--remote-debugging-port=0\"\""
+    ],
+    "profile": "C:\\Users\\Home\\AppData\\Local\\Temp\\fractal-selection-packaged-FaSSSx\\electron-profile"
+  },
+  "runtimeIdentity": {
+    "pid": 3952,
+    "executablePath": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\dist\\installer-selection-repair\\win-unpacked\\Fractal.exe",
+    "profile": "C:\\Users\\Home\\AppData\\Local\\Temp\\fractal-selection-packaged-FaSSSx\\electron-profile",
+    "packaged": true,
+    "appPath": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\dist\\installer-selection-repair\\win-unpacked\\resources\\app.asar",
+    "name": "Fractal"
+  },
+  "processIdentity": {
+    "ProcessId": 3952,
+    "ExecutablePath": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\dist\\installer-selection-repair\\win-unpacked\\Fractal.exe",
+    "CommandLine": "\"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\dist\\installer-selection-repair\\win-unpacked\\Fractal.exe\"  \"--inspect=0\" \"--remote-debugging-port=0\"",
+    "CreationDate": "/Date(1790825558229)/"
+  },
+  "listener": "http://127.0.0.1:14751",
+  "assets": {
+    "windowIcon": {
+      "width": 256,
+      "height": 256
+    },
+    "trayIcon": {
+      "width": 32,
+      "height": 32
+    }
+  },
+  "artifacts": [
+    {
+      "path": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\dist\\installer-selection-repair\\win-unpacked\\Fractal.exe",
+      "bytes": 246032896,
+      "sha256": "053eb6d3931cee208b54154cb0840fc22f4ffe9a47d6663f7635b189e8fbd9c1"
+    },
+    {
+      "path": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\dist\\installer-selection-repair\\Fractal Setup 0.1.0.exe",
+      "bytes": 117588001,
+      "sha256": "63ee8767cf28671a1d140dada62502b51ebddfb9f2e515c7cc020714cb52b986"
+    },
+    {
+      "path": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\dist\\installer-selection-repair\\win-unpacked\\resources\\app.asar",
+      "bytes": 13186982,
+      "sha256": "c0f5e32e378d15dd92e7e84ba8d344e1745991a85a854503cfe0cf671a341ed1"
+    },
+    {
+      "path": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\apps\\desktop\\assets\\fractal.ico",
+      "bytes": 15480,
+      "sha256": "fbe027c730fe0bee700d1d48832e3c3133a6a261e5d78bdcc658d55192ab8d8d"
+    },
+    {
+      "path": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\docs\\implementation\\design\\assets\\branch-master.svg",
+      "bytes": 452,
+      "sha256": "ed1047a4eca5dcc9ad6dd16fd27a541ac392dcf2842d881e2dac0e160230543d"
+    }
+  ],
+  "electron-reopened": {
+    "saved": {
+      "provenance": {
+        "coordinateSpace": "rendered-page-normalized-v1",
+        "textSource": "original",
+        "pdfSha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697"
+      },
+      "highlightId": "b4a70824-2803-4a7c-8d1d-54b950b658e5",
+      "paperKey": "pdf-c3ab01e47e614fe3cf33bf1941c4e55169af92f6e90001f05b3f23a3f77db72e-bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697",
+      "page": 1,
+      "rects": [
+        {
+          "page": 1,
+          "x": 0.2628252775772758,
+          "y": 0.5181306350643726,
+          "width": 0.06531415192977241,
+          "height": 0.01763848970431907
+        }
+      ],
+      "text": "dominant",
+      "color": "yellow",
+      "note": null,
+      "createdAt": "2026-10-01T03:32:45.507Z",
+      "updatedAt": "2026-10-01T03:32:45.507Z"
+    },
+    "painted": [
+      "left: 26.2825%; top: 51.8131%; width: 6.53142%; height: 1.76385%; background-color: color-mix(in srgb, var(--c-hl-yellow) 75%, transparent);"
+    ]
+  },
+  "electron-quote": "Original passage / region · p.1 · textdominantCurrent original verifiedRemove contextExplain selection",
+  "electron-quote-draft": {
+    "id": 1,
+    "text": "dominant",
+    "page": 1,
+    "from": "source",
+    "rect": {
+      "page": 1,
+      "x": 0.2628252775772758,
+      "y": 0.5181306350643726,
+      "width": 0.06531415192977241,
+      "height": 0.01763848970431907
+    },
+    "kind": "text",
+    "provenance": {
+      "coordinateSpace": "rendered-page-normalized-v1",
+      "textSource": "original",
+      "pdfSha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697"
+    }
+  },
+  "status": "passed",
+  "ownedProcessExited": true,
+  "resourceDisposition": "Owned browser/Electron closed, listener and SQLite stopped; isolated profile and evidence retained for independent QA; no user profiles or other processes touched"
+}
