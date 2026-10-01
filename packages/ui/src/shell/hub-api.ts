@@ -251,12 +251,13 @@ export interface ExplainRequest {
 export class HubApi {
   private relatedCache = new Map<string, RelatedPapersResponse>();
   private relatedPending = new Map<string, Promise<RelatedPapersResponse | null>>();
+  private publicationPending = new Map<string, Promise<PublicationPdfLinkResult | null>>();
   constructor(
     private readonly token: string | null,
     private readonly fetchImpl: typeof fetch = (input, init) => globalThis.fetch(input, init),
   ) {}
 
-  private async call<T>(path: string, init: { method?: string; body?: BodyInit | object; contentType?: string } = {}): Promise<T | null> {
+  private async call<T>(path: string, init: { method?: string; body?: BodyInit | object; contentType?: string; signal?: AbortSignal } = {}): Promise<T | null> {
     const method = init.method ?? 'GET';
     const headers: Record<string, string> = { accept: 'application/json' };
     if (this.token !== null) headers[TOKEN_HEADER] = this.token;
@@ -268,7 +269,7 @@ export class HubApi {
       body = JSON.stringify(init.body);
       headers['content-type'] = 'application/json';
     }
-    const response = await this.fetchImpl(path, { method, headers, body, credentials: 'same-origin' });
+    const response = await this.fetchImpl(path, { method, headers, body, credentials: 'same-origin', signal: init.signal });
     if (response.status === 404 || response.status === 405 || response.status === 501) return null;
     const payload: unknown = await response.json().catch(() => null);
     if (payload !== null && typeof payload === 'object' && 'error' in payload) {
@@ -428,6 +429,51 @@ export class HubApi {
     const result = await this.call<PublicationBookmarkResult>('/api/library/bookmarks', { method: 'POST', body: publication });
     if (result && typeof window !== 'undefined') window.dispatchEvent(new Event('fractal:catalog-changed'));
     return result;
+  }
+
+  /** Explicit reading acquires bytes without changing the publication's saved state. */
+  openPublication(publication: PublicationBookmark): Promise<PublicationPdfLinkResult | null> {
+    // Send only the shared contract, even when a discovery entry includes feed fields.
+    const body: PublicationBookmark = {
+      title: publication.title,
+      authors: publication.authors,
+      url: publication.url,
+      doi: publication.doi,
+      arxivId: publication.arxivId,
+      abstract: publication.abstract,
+      publication: publication.publication,
+    };
+    const identity = JSON.stringify(body);
+    const pending = this.publicationPending.get(identity);
+    if (pending) return pending;
+    const controller = new AbortController();
+    let timer: ReturnType<typeof setTimeout>;
+    const deadline = new Promise<never>((_, reject) => {
+      timer = setTimeout(() => {
+        reject(Object.assign(new Error('PDF acquisition timed out'), { code: 'pdf_open_timeout' }));
+        controller.abort();
+      }, 90_000);
+    });
+    const request = Promise.race([this.call<PublicationPdfLinkResult>('/api/publications/open', { method: 'POST', body, signal: controller.signal }), deadline])
+      .then((result) => {
+        if (result === null) return null;
+        if (
+          !result?.hasPdf ||
+          !result.paperKey ||
+          result.record?.paperKey !== result.paperKey ||
+          result.paper?.paperKey !== result.paperKey ||
+          !result.paper.pdfSha256
+        )
+          throw Object.assign(new Error('The Hub did not return a readable PDF'), { code: 'pdf_open_invalid' });
+        if (typeof window !== 'undefined') window.dispatchEvent(new Event('fractal:catalog-changed'));
+        return result;
+      })
+      .finally(() => {
+        clearTimeout(timer);
+        if (this.publicationPending.get(identity) === request) this.publicationPending.delete(identity);
+      });
+    this.publicationPending.set(identity, request);
+    return request;
   }
 
   async linkPdf(key: string, file: File): Promise<PublicationPdfLinkResult | null> {

@@ -80,6 +80,21 @@
   color: var(--c-accent);
   overflow-wrap: anywhere;
 }
+.publication-actions .publication-read {
+  background: var(--c-ink);
+  color: var(--c-paper);
+  border-color: var(--c-ink);
+}
+.publication-actions button:disabled {
+  opacity: 0.65;
+  cursor: progress;
+}
+.publication-actions button:focus-visible,
+.publication-actions a:focus-visible,
+.publication-error:focus {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 3px;
+}
 .publication-hint {
   display: block;
   width: 100%;
