@@ -1,0 +1,29 @@
+{
+  "commit": "e19e721298e787c316521187d81406cec6e48ccb",
+  "bundleSha256": "69e0a6345007379dcb6256cb957e661b4a10daec005a114f9d65c7409f401625",
+  "process": {
+    "pid": 40068,
+    "executable": "C:\\Program Files\\nodejs\\node.exe",
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-v020-release\\docs\\implementation\\release\\v020\\verify-built-hub-envelope.mjs"
+    ],
+    "osIdentity": {
+      "ProcessId": 40068,
+      "ExecutablePath": "C:\\Program Files\\nodejs\\node.exe",
+      "CreationDate": "/Date(1790841488256)/",
+      "CommandLine": "\"C:\\Program Files\\nodejs\\node.exe\" docs/implementation/release/v020/verify-built-hub-envelope.mjs"
+    }
+  },
+  "packaged": false,
+  "listener": "http://127.0.0.1:3334",
+  "httpStatus": 200,
+  "body": {
+    "data": {
+      "papers": []
+    }
+  },
+  "assertionPassed": true,
+  "hubClosed": true,
+  "ownedProfileRemoved": true
+}

@@ -67,7 +67,7 @@ const { createHash } = require('node:crypto');
     }
     const api = await fetch(hub.url + '/api/papers');
     assert.equal(api.status, 200);
-    assert.ok(Array.isArray((await api.json()).papers), 'bundled Hub must serve actual library API');
+    assert.ok(Array.isArray((await api.json()).data?.papers), 'bundled Hub must serve actual library API success envelope');
     fs.writeFileSync(output, JSON.stringify({ version: pkg.version, platform: process.platform, arch: process.arch, executable: process.execPath, ptyEntry, nativeEntry, binaries, hubStarted: true, uiServed: true, libraryApi: true, ptySpawn: true, resources: hashes }, null, 2) + '\n');
   } finally { await hub.close(); }
 })().catch((error) => { console.error(error); process.exitCode = 1; });
