@@ -18,10 +18,10 @@
 <p align="center"><a href="#クイックスタート">クイックスタート</a> · <a href="#主な機能">主な機能</a> · <a href="docs/">ドキュメント</a></p>
 
 <p align="center">
-  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="Windows インストーラーをダウンロード" src="https://img.shields.io/badge/%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89-Windows%20%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%A9%E3%83%BC-2f6b45?style=for-the-badge&logo=windows&logoColor=white"></a>
-  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="Android APK をダウンロード" src="https://img.shields.io/badge/%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89-Android%20APK-2f6b45?style=for-the-badge&logo=android&logoColor=white"></a>
-  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="Linux AppImage・Debian のリリースファイルと公開状況" src="https://img.shields.io/badge/Releases-Linux%20x64-2f6b45?style=for-the-badge&logo=linux&logoColor=white"></a>
-  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="macOS Apple Silicon・Intel のリリースファイルと公開状況" src="https://img.shields.io/badge/Releases-macOS%20arm64%20%7C%20x64-2f6b45?style=for-the-badge&logo=apple&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.0"><img alt="Windows インストーラーをダウンロード" src="https://img.shields.io/badge/%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89-Windows%20%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%A9%E3%83%BC-2f6b45?style=for-the-badge&logo=windows&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.0"><img alt="Android APK をダウンロード" src="https://img.shields.io/badge/%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89-Android%20APK-2f6b45?style=for-the-badge&logo=android&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.0"><img alt="Linux AppImage・Debian のリリースファイルと公開状況" src="https://img.shields.io/badge/Releases-Linux%20x64-2f6b45?style=for-the-badge&logo=linux&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.0"><img alt="macOS Apple Silicon・Intel のリリースファイルと公開状況" src="https://img.shields.io/badge/Releases-macOS%20arm64%20%7C%20x64-2f6b45?style=for-the-badge&logo=apple&logoColor=white"></a>
   <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="最新リリース" src="https://img.shields.io/github/v/release/iwantgobackhome/fractal?style=for-the-badge&color=3b625b"></a>
 </p>
 
@@ -104,18 +104,18 @@ flowchart LR
 
 ### ダウンロード
 
-公開済みビルドは [Releases](https://github.com/iwantgobackhome/fractal/releases/latest) から入手できます。0.2.0 のパイプラインは下記のファイルを準備し、各プラットフォームの検証とリリース承認後に公開します。既存の 0.1.0 リリースは維持されます。
+Fractal 0.2.0 は [リリースページ](https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.0) からダウンロードできます。下記からお使いの OS に合うファイルを選んでください。既存の [0.1.0 リリース](https://github.com/iwantgobackhome/fractal/releases/tag/v0.1.0)も維持されます。
 
 | ファイル | プラットフォーム | 配布形式 |
 | --- | --- | --- |
-| `Fractal-0.2.0-win-x64.exe` | Windows x64 | NSIS インストーラー・未署名 |
-| `Fractal-0.2.0-linux-x64.AppImage` | Linux x64 | ポータブル AppImage |
-| `Fractal-0.2.0-linux-x64.deb` | Linux x64 | Debian パッケージ |
-| `Fractal-0.2.0-mac-arm64.dmg` | macOS Apple Silicon | 個別 DMG・標準では ad-hoc 署名 |
-| `Fractal-0.2.0-mac-x64.dmg` | macOS Intel | 個別 DMG・標準では ad-hoc 署名 |
-| `Fractal-0.2.0-android-debug.apk` | Android 10+ | デバッグ署名・versionCode 2 |
+| [Fractal-0.2.0-win-x64.exe](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.0/Fractal-0.2.0-win-x64.exe) | Windows x64 | NSIS インストーラー・未署名 |
+| [Fractal-0.2.0-linux-x64.AppImage](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.0/Fractal-0.2.0-linux-x64.AppImage) | Linux x64 | ポータブル AppImage |
+| [Fractal-0.2.0-linux-x64.deb](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.0/Fractal-0.2.0-linux-x64.deb) | Linux x64 | Debian パッケージ |
+| [Fractal-0.2.0-mac-arm64.dmg](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.0/Fractal-0.2.0-mac-arm64.dmg) | macOS Apple Silicon | 個別 DMG・ad-hoc 署名・公証なし |
+| [Fractal-0.2.0-mac-x64.dmg](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.0/Fractal-0.2.0-mac-x64.dmg) | macOS Intel | 個別 DMG・ad-hoc 署名・公証なし |
+| [Fractal-0.2.0-android-debug.apk](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.0/Fractal-0.2.0-android-debug.apk) | Android 10+ | デバッグ署名・versionCode 2 |
 
-macOS の正式署名と公証には設定済みのリリース認証情報が必要です。ad-hoc ビルドは公証済みではありません。検証済みの配布には `SHA256SUMS.txt` が付属します。各 OS のビルドと検証は [配布手順](docs/RELEASING.md) を参照してください。
+Windows は未署名です。Mac アプリは ad-hoc 署名で公証されておらず、Apple Silicon と Intel 用のファイルを個別に提供します。Android は 0.1.0 と同じデバッグ署名証明書を使用します。[SHA256SUMS.txt](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.0/SHA256SUMS.txt) でダウンロードを確認してください。検証の範囲は [配布手順](docs/RELEASING.md) を参照してください。
 
 ### ソースからビルド
 

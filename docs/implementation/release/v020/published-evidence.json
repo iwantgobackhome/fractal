@@ -1,0 +1,154 @@
+{
+  "version": "0.2.0",
+  "publication": {
+    "releaseId": 400840376,
+    "url": "https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.0",
+    "draft": false,
+    "prerelease": false,
+    "publishedAt": "2026-10-01T10:12:52Z",
+    "coordinatorConfirmation": "msg_145785187747",
+    "uploadedAssetCount": 26
+  },
+  "build": {
+    "sourceCommit": "c75ea15f806382f88e7a26e03da17a7f4f505b56",
+    "runId": "36845792076",
+    "runUrl": "https://github.com/iwantgobackhome/fractal/actions/runs/36845792076",
+    "tag": "v0.2.0",
+    "nativeJobCount": 5,
+    "aggregateJobSucceeded": true
+  },
+  "verificationOrigin": "Coordinator and independent QA verified actual final downloads, all 25 aggregate rows and 26 GitHub uploaded asset names/sizes/digests before public promotion; this worker transcribed those public artifact records without rebuilding or remote mutation.",
+  "payloads": [
+    {
+      "name": "Fractal-0.2.0-android-debug.apk",
+      "sha256": "dc65d977bbd31d70f390ae648f4dbe9e2e326c9d8f406249663d5e0c16c5f549",
+      "bytes": 68509034,
+      "url": "https://github.com/iwantgobackhome/fractal/releases/download/v0.2.0/Fractal-0.2.0-android-debug.apk"
+    },
+    {
+      "name": "Fractal-0.2.0-linux-x64.AppImage",
+      "sha256": "941a92ac533b7750394a1dcf8e573ca4c5b479088ddf48dff8a83812f8401490",
+      "bytes": 131357147,
+      "url": "https://github.com/iwantgobackhome/fractal/releases/download/v0.2.0/Fractal-0.2.0-linux-x64.AppImage"
+    },
+    {
+      "name": "Fractal-0.2.0-linux-x64.deb",
+      "sha256": "ffd8eba4979b528c60b1cbe9b23a529f82bdf27c9b55d952858bf63356ae3872",
+      "bytes": 104936776,
+      "url": "https://github.com/iwantgobackhome/fractal/releases/download/v0.2.0/Fractal-0.2.0-linux-x64.deb"
+    },
+    {
+      "name": "Fractal-0.2.0-mac-arm64.dmg",
+      "sha256": "0f205d5ed48765bd64714d78be66ac65dc2693acdf45084eda7b0b6ac83c84b2",
+      "bytes": 134132186,
+      "url": "https://github.com/iwantgobackhome/fractal/releases/download/v0.2.0/Fractal-0.2.0-mac-arm64.dmg"
+    },
+    {
+      "name": "Fractal-0.2.0-mac-x64.dmg",
+      "sha256": "4833d6c120755cdfc254a8e701b24be0e1c0bee180d590030e333bf18165c5f0",
+      "bytes": 139596776,
+      "url": "https://github.com/iwantgobackhome/fractal/releases/download/v0.2.0/Fractal-0.2.0-mac-x64.dmg"
+    },
+    {
+      "name": "Fractal-0.2.0-win-x64.exe",
+      "sha256": "0e8c4d711fc4cc90736e63e4c040f55132b351e001207162b0ac88c0bc08be9b",
+      "bytes": 117656431,
+      "url": "https://github.com/iwantgobackhome/fractal/releases/download/v0.2.0/Fractal-0.2.0-win-x64.exe"
+    }
+  ],
+  "sources": {
+    "win32-x64": {
+      "commit": "c75ea15f806382f88e7a26e03da17a7f4f505b56",
+      "runId": "36845792076",
+      "manifestSha256": "9204da464d59bd0110be2dd52d203b692acfe028e0ec17fed24d03d0c331ad75"
+    },
+    "linux-x64": {
+      "commit": "c75ea15f806382f88e7a26e03da17a7f4f505b56",
+      "runId": "36845792076",
+      "manifestSha256": "25e1600075fa69d16bd504269be65e99a12113bb1c20b91aaa2b5d4b49dcb696"
+    },
+    "darwin-arm64": {
+      "commit": "c75ea15f806382f88e7a26e03da17a7f4f505b56",
+      "runId": "36845792076",
+      "manifestSha256": "25e1600075fa69d16bd504269be65e99a12113bb1c20b91aaa2b5d4b49dcb696"
+    },
+    "darwin-x64": {
+      "commit": "c75ea15f806382f88e7a26e03da17a7f4f505b56",
+      "runId": "36845792076",
+      "manifestSha256": "25e1600075fa69d16bd504269be65e99a12113bb1c20b91aaa2b5d4b49dcb696"
+    },
+    "android": {
+      "commit": "c75ea15f806382f88e7a26e03da17a7f4f505b56",
+      "runId": "36845792076",
+      "manifestSha256": "25e1600075fa69d16bd504269be65e99a12113bb1c20b91aaa2b5d4b49dcb696"
+    }
+  },
+  "nativeSmokes": {
+    "win32-x64": {
+      "platform": "win32",
+      "arch": "x64",
+      "hubStarted": true,
+      "uiServed": true,
+      "libraryApi": true,
+      "ptySpawn": true,
+      "nativeEntry": "D:\\a\\fractal\\fractal\\dist\\installer\\win-unpacked\\resources\\app.asar\\node_modules\\@lydell\\node-pty-win32-x64\\lib\\index.js",
+      "binaries": [
+        "D:\\a\\fractal\\fractal\\dist\\installer\\win-unpacked\\resources\\app.asar\\node_modules\\@lydell\\node-pty-win32-x64\\prebuilds\\win32-x64\\conpty.node"
+      ],
+      "manifestSha256": "4061bc66a8608db580b9f87692dd74329629e1c237d35e6349ffbe54c732e260"
+    },
+    "linux-x64": {
+      "platform": "linux",
+      "arch": "x64",
+      "hubStarted": true,
+      "uiServed": true,
+      "libraryApi": true,
+      "ptySpawn": true,
+      "nativeEntry": "/home/runner/work/fractal/fractal/dist/installer/linux-unpacked/resources/app.asar/node_modules/@lydell/node-pty-linux-x64/lib/index.js",
+      "binaries": [
+        "/home/runner/work/fractal/fractal/dist/installer/linux-unpacked/resources/app.asar/node_modules/@lydell/node-pty-linux-x64/prebuilds/linux-x64/pty.node"
+      ],
+      "manifestSha256": "eeede0940085b55f2526a495fd3eca1aab44873a4b1b5caec78eda5ed35a02fd"
+    },
+    "darwin-arm64": {
+      "platform": "darwin",
+      "arch": "arm64",
+      "hubStarted": true,
+      "uiServed": true,
+      "libraryApi": true,
+      "ptySpawn": true,
+      "nativeEntry": "/Users/runner/work/fractal/fractal/dist/installer/mac-arm64/Fractal.app/Contents/Resources/app.asar/node_modules/@lydell/node-pty-darwin-arm64/lib/index.js",
+      "binaries": [
+        "/Users/runner/work/fractal/fractal/dist/installer/mac-arm64/Fractal.app/Contents/Resources/app.asar/node_modules/@lydell/node-pty-darwin-arm64/prebuilds/darwin-arm64/pty.node"
+      ],
+      "manifestSha256": "6f13b9bd728f7dec03e7ebc6c008bd4ba1ab71be9b82466cd40d35f4971180ad"
+    },
+    "darwin-x64": {
+      "platform": "darwin",
+      "arch": "x64",
+      "hubStarted": true,
+      "uiServed": true,
+      "libraryApi": true,
+      "ptySpawn": true,
+      "nativeEntry": "/Users/runner/work/fractal/fractal/dist/installer/mac/Fractal.app/Contents/Resources/app.asar/node_modules/@lydell/node-pty-darwin-x64/lib/index.js",
+      "binaries": [
+        "/Users/runner/work/fractal/fractal/dist/installer/mac/Fractal.app/Contents/Resources/app.asar/node_modules/@lydell/node-pty-darwin-x64/prebuilds/darwin-x64/pty.node"
+      ],
+      "manifestSha256": "45d2f9d706b4ab3238d3794e06d454caebf6811d4fbac79f6e8850d313824b60"
+    }
+  },
+  "android": {
+    "version": "0.2.0",
+    "versionCode": 2,
+    "applicationId": "app.fractal.reader",
+    "minSdk": 29,
+    "targetSdk": 35,
+    "debugSigned": true,
+    "signatureVerified": true,
+    "certificateSha256": "62e0698d0572e672aa65a999c6e6e4a6669fb2baf4ca0c6f9c2ce7f82bdd7f4f",
+    "previousReleaseCertificateMatched": true,
+    "runtimeVerified": false
+  },
+  "aggregateManifestSha256": "b36388a45393ee9b18692782102250b8588118b035fde208ca44e7aa2b3a5146",
+  "scope": "Actual native desktop bundled startup and APK metadata/signature/source review; no full GUI installation, physical-device or API35 runtime claim."
+}

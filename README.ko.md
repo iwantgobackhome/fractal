@@ -18,10 +18,10 @@
 <p align="center"><a href="#빠른-시작">빠른 시작</a> · <a href="#주요-기능">주요 기능</a> · <a href="docs/">문서</a></p>
 
 <p align="center">
-  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="Windows 설치 파일 내려받기" src="https://img.shields.io/badge/%EB%82%B4%EB%A0%A4%EB%B0%9B%EA%B8%B0-Windows%20%EC%84%A4%EC%B9%98%20%ED%8C%8C%EC%9D%BC-2f6b45?style=for-the-badge&logo=windows&logoColor=white"></a>
-  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="Android APK 내려받기" src="https://img.shields.io/badge/%EB%82%B4%EB%A0%A4%EB%B0%9B%EA%B8%B0-Android%20APK-2f6b45?style=for-the-badge&logo=android&logoColor=white"></a>
-  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="Linux AppImage·Debian 릴리스 파일과 배포 상태" src="https://img.shields.io/badge/Releases-Linux%20x64-2f6b45?style=for-the-badge&logo=linux&logoColor=white"></a>
-  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="macOS Apple Silicon·Intel 릴리스 파일과 배포 상태" src="https://img.shields.io/badge/Releases-macOS%20arm64%20%7C%20x64-2f6b45?style=for-the-badge&logo=apple&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.0"><img alt="Windows 설치 파일 내려받기" src="https://img.shields.io/badge/%EB%82%B4%EB%A0%A4%EB%B0%9B%EA%B8%B0-Windows%20%EC%84%A4%EC%B9%98%20%ED%8C%8C%EC%9D%BC-2f6b45?style=for-the-badge&logo=windows&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.0"><img alt="Android APK 내려받기" src="https://img.shields.io/badge/%EB%82%B4%EB%A0%A4%EB%B0%9B%EA%B8%B0-Android%20APK-2f6b45?style=for-the-badge&logo=android&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.0"><img alt="Linux AppImage·Debian 릴리스 파일과 배포 상태" src="https://img.shields.io/badge/Releases-Linux%20x64-2f6b45?style=for-the-badge&logo=linux&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.0"><img alt="macOS Apple Silicon·Intel 릴리스 파일과 배포 상태" src="https://img.shields.io/badge/Releases-macOS%20arm64%20%7C%20x64-2f6b45?style=for-the-badge&logo=apple&logoColor=white"></a>
   <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="최신 릴리스" src="https://img.shields.io/github/v/release/iwantgobackhome/fractal?style=for-the-badge&color=3b625b"></a>
 </p>
 
@@ -104,18 +104,18 @@ flowchart LR
 
 ### 내려받기
 
-공개 빌드는 [릴리스 페이지](https://github.com/iwantgobackhome/fractal/releases/latest)에서 받습니다. 0.2.0 파이프라인은 아래 파일을 준비하며 플랫폼 검증과 릴리스 승인 후 내려받을 수 있습니다. 기존 0.1.0 릴리스는 유지됩니다.
+Fractal 0.2.0을 [릴리스 페이지](https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.0)에서 내려받을 수 있습니다. 아래에서 운영체제에 맞는 파일을 선택하세요. 기존 [0.1.0 릴리스](https://github.com/iwantgobackhome/fractal/releases/tag/v0.1.0)도 유지됩니다.
 
 | 파일 | 플랫폼 | 배포 형식 |
 | --- | --- | --- |
-| `Fractal-0.2.0-win-x64.exe` | Windows x64 | NSIS 설치 파일 · 서명 없음 |
-| `Fractal-0.2.0-linux-x64.AppImage` | Linux x64 | 포터블 AppImage |
-| `Fractal-0.2.0-linux-x64.deb` | Linux x64 | Debian 패키지 |
-| `Fractal-0.2.0-mac-arm64.dmg` | macOS Apple Silicon | 별도 DMG · 기본 ad-hoc 서명 |
-| `Fractal-0.2.0-mac-x64.dmg` | macOS Intel | 별도 DMG · 기본 ad-hoc 서명 |
-| `Fractal-0.2.0-android-debug.apk` | Android 10+ | 디버그 서명 앱 · versionCode 2 |
+| [Fractal-0.2.0-win-x64.exe](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.0/Fractal-0.2.0-win-x64.exe) | Windows x64 | NSIS 설치 파일 · 서명 없음 |
+| [Fractal-0.2.0-linux-x64.AppImage](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.0/Fractal-0.2.0-linux-x64.AppImage) | Linux x64 | 포터블 AppImage |
+| [Fractal-0.2.0-linux-x64.deb](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.0/Fractal-0.2.0-linux-x64.deb) | Linux x64 | Debian 패키지 |
+| [Fractal-0.2.0-mac-arm64.dmg](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.0/Fractal-0.2.0-mac-arm64.dmg) | macOS Apple Silicon | 별도 DMG · ad-hoc 서명 · 공증 없음 |
+| [Fractal-0.2.0-mac-x64.dmg](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.0/Fractal-0.2.0-mac-x64.dmg) | macOS Intel | 별도 DMG · ad-hoc 서명 · 공증 없음 |
+| [Fractal-0.2.0-android-debug.apk](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.0/Fractal-0.2.0-android-debug.apk) | Android 10+ | 디버그 서명 앱 · versionCode 2 |
 
-macOS 정식 서명·공증에는 설정된 릴리스 자격 증명이 필요하며 ad-hoc 빌드는 공증되지 않습니다. 검증된 배포에는 `SHA256SUMS.txt`가 포함됩니다. 플랫폼별 빌드·검증은 [배포 안내](docs/RELEASING.md)를 참고하세요.
+Windows는 미서명이며 Mac 앱은 ad-hoc 서명이고 공증되지 않았습니다. Apple Silicon과 Intel용 파일이 각각 제공됩니다. Android는 0.1.0과 같은 디버그 서명 인증서를 사용합니다. [SHA256SUMS.txt](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.0/SHA256SUMS.txt)로 다운로드를 확인하세요. 검증 범위는 [배포 안내](docs/RELEASING.md)를 참고하세요.
 
 ### 소스에서 빌드하기
 

@@ -1,0 +1,32 @@
+Final published 0.2.0 documentation gates
+Published release ID: 400840376; publishedAt 2026-10-01T10:12:52Z
+Immutable build source: c75ea15f806382f88e7a26e03da17a7f4f505b56
+Final tagged CI run: 36845792076
+Documentation checks only; no package rebuild.
+
+$ python docs/implementation/release/v020/check-preparation.py
+Exit code: 0
+Release versions verified: 0.2.0; Android code 2
+PASS four README languages use 5 byte-verified accepted captures with alt text and Linux/macOS release access
+  • loaded configuration  file=C:\Users\Home\orca\workspaces\fractal\fractal-v020-release\scripts\release-config.cjs
+electron-builder CJS load/schema passed
+PASS: workflow permissions/native matrix, version branch/tag negative gates, artifact names, stable signing failure, icon identity/containers, multilingual links and v26 schema
+
+$ node scripts/verify-readme-images.mjs
+Exit code: 0
+PASS four README languages use 5 byte-verified accepted captures with alt text and Linux/macOS release access
+
+$ python -X utf8 -c "from pathlib import Path; import json; e=json.loads(Path('docs/implementation/release/v020/published-evidence.json').read_text()); assert e['publication']['draft'] is False and e['publication']['uploadedAssetCount']==26; urls=[p['url'] for p in e['payloads']]; assert len(urls)==6; names=['README.md','README.ko.md','README.ja.md','README.zh-CN.md']; assert all(url in Path(n).read_text(encoding='utf-8') for n in names for url in urls); [print('PASS exact six published download URLs: '+n) for n in names]"
+Exit code: 0
+PASS exact six published download URLs: README.md
+PASS exact six published download URLs: README.ko.md
+PASS exact six published download URLs: README.ja.md
+PASS exact six published download URLs: README.zh-CN.md
+
+$ git diff --check
+Exit code: 0
+warning: in the working copy of 'CHANGELOG.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/android/README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/desktop/README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/RELEASING.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/releases/0.2.0.md', LF will be replaced by CRLF the next time Git touches it

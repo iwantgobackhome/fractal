@@ -1,10 +1,10 @@
 # Changelog
 
-## 0.2.0 — release preparation
+## 0.2.0 — 2026-10-01
 
 Scholarly desktop and native Android interfaces; persistent research history and annotations; sticky notes; Saved/Recent and nested folders; native News/Topics and split article reading; exact text selection; in-app publication PDF acquisition and cached reading. Discovery tries genuine captioned paper figures or news content images before suitable source thumbnails, caches verified images, and retains text when no usable image is available. Cross-platform packaging now targets Windows x64 NSIS, Linux x64 AppImage/deb, separate macOS arm64/x64 DMGs and a stable debug-signed Android APK (versionCode 2).
 
-See [0.2.0 release notes](docs/releases/0.2.0.md) for capability limits and [release builds](docs/RELEASING.md) for validation and publication gates. Platform configuration is prepared; actual 0.2.0 CI and native evidence must be reviewed before publication.
+Published [0.2.0 downloads](https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.0) include all six distributions and checksums. The [tagged native CI run](https://github.com/iwantgobackhome/fractal/actions/runs/36845792076) passed all five platform jobs, bundled desktop Hub/PTY startup and APK identity/signature checks; downloaded payloads and source/resource evidence were independently reviewed before publication. See [release notes](docs/releases/0.2.0.md) for signing qualifications and verification limits, and [release builds](docs/RELEASING.md) for the build process.
 
 ## 0.1.0
 

@@ -18,10 +18,10 @@
 <p align="center"><a href="#quick-start">Quick start</a> · <a href="#features">Features</a> · <a href="docs/">Docs</a></p>
 
 <p align="center">
-  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="Download the Windows installer" src="https://img.shields.io/badge/Download-Windows%20installer-2f6b45?style=for-the-badge&logo=windows&logoColor=white"></a>
-  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="Download the Android APK" src="https://img.shields.io/badge/Download-Android%20APK-2f6b45?style=for-the-badge&logo=android&logoColor=white"></a>
-  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="Linux AppImage and Debian release assets and availability" src="https://img.shields.io/badge/Releases-Linux%20x64-2f6b45?style=for-the-badge&logo=linux&logoColor=white"></a>
-  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="macOS Apple Silicon and Intel release assets and availability" src="https://img.shields.io/badge/Releases-macOS%20arm64%20%7C%20x64-2f6b45?style=for-the-badge&logo=apple&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.0"><img alt="Download the Windows installer" src="https://img.shields.io/badge/Download-Windows%20installer-2f6b45?style=for-the-badge&logo=windows&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.0"><img alt="Download the Android APK" src="https://img.shields.io/badge/Download-Android%20APK-2f6b45?style=for-the-badge&logo=android&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.0"><img alt="Linux AppImage and Debian release assets and availability" src="https://img.shields.io/badge/Releases-Linux%20x64-2f6b45?style=for-the-badge&logo=linux&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.0"><img alt="macOS Apple Silicon and Intel release assets and availability" src="https://img.shields.io/badge/Releases-macOS%20arm64%20%7C%20x64-2f6b45?style=for-the-badge&logo=apple&logoColor=white"></a>
   <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/iwantgobackhome/fractal?style=for-the-badge&color=3b625b"></a>
 </p>
 
@@ -104,18 +104,18 @@ The desktop app runs the hub and UI together. You can also run the hub and open 
 
 ### Download
 
-Published builds are on the [Releases page](https://github.com/iwantgobackhome/fractal/releases/latest). The 0.2.0 pipeline prepares the files below; downloads follow successful platform verification and release approval. The existing 0.1.0 release remains available.
+Fractal 0.2.0 is available on the [release page](https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.0). Choose your platform below. The [0.1.0 release](https://github.com/iwantgobackhome/fractal/releases/tag/v0.1.0) remains available.
 
 | File | Platform | Distribution |
 | --- | --- | --- |
-| `Fractal-0.2.0-win-x64.exe` | Windows x64 | NSIS installer; unsigned |
-| `Fractal-0.2.0-linux-x64.AppImage` | Linux x64 | Portable AppImage |
-| `Fractal-0.2.0-linux-x64.deb` | Linux x64 | Debian package |
-| `Fractal-0.2.0-mac-arm64.dmg` | macOS Apple Silicon | Separate DMG; ad-hoc signed by default |
-| `Fractal-0.2.0-mac-x64.dmg` | macOS Intel | Separate DMG; ad-hoc signed by default |
-| `Fractal-0.2.0-android-debug.apk` | Android 10+ | Debug-signed companion; versionCode 2 |
+| [Fractal-0.2.0-win-x64.exe](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.0/Fractal-0.2.0-win-x64.exe) | Windows x64 | NSIS installer; unsigned |
+| [Fractal-0.2.0-linux-x64.AppImage](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.0/Fractal-0.2.0-linux-x64.AppImage) | Linux x64 | Portable AppImage |
+| [Fractal-0.2.0-linux-x64.deb](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.0/Fractal-0.2.0-linux-x64.deb) | Linux x64 | Debian package |
+| [Fractal-0.2.0-mac-arm64.dmg](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.0/Fractal-0.2.0-mac-arm64.dmg) | macOS Apple Silicon | Separate DMG; ad-hoc signed, unnotarized |
+| [Fractal-0.2.0-mac-x64.dmg](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.0/Fractal-0.2.0-mac-x64.dmg) | macOS Intel | Separate DMG; ad-hoc signed, unnotarized |
+| [Fractal-0.2.0-android-debug.apk](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.0/Fractal-0.2.0-android-debug.apk) | Android 10+ | Debug-signed companion; versionCode 2 |
 
-macOS signing and notarization require configured release credentials; an ad-hoc build is not notarized. Verified releases include `SHA256SUMS.txt`. See [release builds](docs/RELEASING.md) for native host commands and verification.
+Windows is unsigned; the Mac apps are ad-hoc signed and unnotarized, with separate Apple Silicon and Intel downloads. Android uses the same debug signing certificate as 0.1.0. Verify downloads with [SHA256SUMS.txt](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.0/SHA256SUMS.txt). See [release builds](docs/RELEASING.md) for the verification scope.
 
 ### Build from source
 

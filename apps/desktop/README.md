@@ -2,6 +2,8 @@
 
 Fractal 0.2.0 runs the scholarly React reader and embedded Hub in an Electron shell. Saved/Recent, nested folders and tags organize the library; research history, annotations, ink and sticky notes persist with the paper. The reader supports exact character selection, original/translation/side-by-side modes and in-app reading of available publication PDFs. Discovery has Papers, News and Topics. It tries suitable captioned paper figures or article content images before source thumbnails, caches verified images, and keeps text and reading actions usable when no image is available.
 
+Download the [published 0.2.0 desktop packages](https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.0): Windows x64 NSIS, Linux x64 AppImage/deb, and separate macOS arm64/x64 DMGs. Windows is unsigned; the Mac apps are ad-hoc signed and unnotarized. [Release notes](../../docs/releases/0.2.0.md) link the downloads, checksums and actual native CI evidence.
+
 `npm run desktop` builds and opens the shell. Closing or minimizing the window hides it in the tray while the Hub keeps running. The tray offers Open, Pairing, and Quit. `electron . --headless` starts the Hub without a window.
 
 Build on the target OS: `npm run desktop:dist:win` creates Windows x64 NSIS, `npm run desktop:dist:linux` creates Linux x64 AppImage and deb, and `npm run desktop:dist:mac` creates a DMG for the native Mac host architecture. CI builds separate macOS arm64 and x64 DMGs on matching hosts. `npm run desktop:dist` remains the Windows alias. Outputs are under `dist/installer/`; builders never publish. macOS is ad-hoc signed without configured signing credentials and is notarized only with configured real credentials. See [release builds](../../docs/RELEASING.md).
