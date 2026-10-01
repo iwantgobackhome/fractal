@@ -135,7 +135,7 @@ class HubClient(private val credentials: HubCredentialStore) : HubHistoryClient 
                                     ensureCurrent()
                                     check(it.isSuccessful) { "Image unavailable" }
                                     val body = it.body ?: error("Image unavailable")
-                                    check(body.contentType()?.let { type -> type.type == "image" && type.subtype in listOf("png", "jpeg", "webp", "gif") } == true)
+                                    check(body.contentType()?.let { type -> type.type == "image" && type.subtype in listOf("png", "jpeg", "webp", "gif", "avif") } == true)
                                     check(body.contentLength() <= 5L * 1024 * 1024)
                                     body.byteStream().use { input ->
                                         val output = ByteArrayOutputStream()

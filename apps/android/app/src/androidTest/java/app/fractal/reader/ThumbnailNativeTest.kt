@@ -26,7 +26,8 @@ class ThumbnailNativeTest {
     private lateinit var feed: DiscoveryFeed
     private var scenario: ActivityScenario<MainActivity>? = null
     @Before fun connect(): Unit = runBlocking {
-        val config = File("/data/local/tmp/fractal-v020-thumbnails-private.json")
+        val documentation = InstrumentationRegistry.getArguments().getString("documentation") == "true"
+        val config = File(if (documentation) "/data/local/tmp/fractal-v020-thumbnails-private-documentation.json" else "/data/local/tmp/fractal-v020-thumbnails-private.json")
         Assume.assumeTrue("Requires exclusive thumbnail helper", config.isFile)
         val json = WireJson.format.parseToJsonElement(config.readText()).jsonObject
         fun value(name: String) = json.getValue(name).jsonPrimitive.content
@@ -48,6 +49,31 @@ class ThumbnailNativeTest {
         val directory = File(app.getExternalFilesDir(null), "v020-thumbnails/$profile").apply { mkdirs() }
         File(directory, "$name.png").outputStream().use { screen.compress(Bitmap.CompressFormat.PNG, 100, it) }
         screen.recycle(); Log.i("ThumbnailNativeQA", "capture=$profile/$name")
+    }
+    @Test fun capturesPublicationDocumentation(): Unit = runBlocking {
+        Assume.assumeTrue(InstrumentationRegistry.getArguments().getString("documentation") == "true")
+        val paper = feed.papers().first { it.id == "qa-paper" }
+        val news = feed.news().first { it.id == "qa-news" }
+        assertEquals("WorldAuditBench: Interactive 3D World Auditing with Multimodal Agents", paper.title)
+        assertEquals(8, paper.authors.size)
+        assertTrue(app.discoveryImages.load(paper.image!!.url, paired) {}.width in 1..1024)
+        assertTrue(app.discoveryImages.load(news.image!!.url, paired) {}.height in 1..1024)
+        scenario = ActivityScenario.launch(MainActivity::class.java)
+        val native = NativeDeskDriver(scenario!!)
+        scenario!!.onActivity { setAppLanguage(app, "en", explicit = true) }
+        native.click("Discover"); native.scrollToTop()
+        native.waitFor("actual publication image") { native.node(paper.image!!.alt!!) != null }
+        capture("paper-index")
+        native.click(paper.image!!.alt!!); native.waitFor("paper dossier") { native.node("Paper dossier") != null }
+        capture("paper-dossier")
+        native.click("Back"); native.click("News"); native.scrollToTop()
+        native.waitFor("actual article image") { native.node(news.image!!.alt!!) != null }
+        capture("news-index")
+        native.click(news.image!!.alt!!); native.waitFor("article dossier") { native.node("News article") != null }
+        capture("news-dossier")
+        assertTrue(app.database.library().all().isEmpty())
+        assertTrue(app.database.discovery().pending(discoveryScope(paired)).isEmpty())
+        Log.i("ThumbnailNativeQA", "documentation actual publication metadata and public bytes; no Save or Read invocation")
     }
     @Test fun capturesActualImagesAndCompactFallbacks(): Unit = runBlocking {
         val papers = feed.papers(); val paper = papers.first { it.id == "qa-paper" }; val news = feed.news().first { it.id == "qa-news" }

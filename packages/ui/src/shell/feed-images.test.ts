@@ -5,6 +5,12 @@ import { HubApi } from './hub-api';
 const path = `/api/feed/images/${'a'.repeat(64)}`;
 const ok = () => new Response(new Uint8Array([1, 2, 3]), { headers: { 'content-type': 'image/png' } });
 describe('captured Hub image bytes', () => {
+  it('accepts the Hub AVIF MIME before the platform decoder decides support', async () => {
+    const cache = new FeedImages(async () => new Response(new Uint8Array([1, 2, 3]), { headers: { 'content-type': 'image/avif' } }));
+    const lease = cache.acquire(path);
+    expect((await lease.blob).type).toBe('image/avif');
+    lease.release();
+  });
   it('expires a stalled visible body within fifteen seconds and releases the stream', async () => {
     vi.useFakeTimers();
     try {

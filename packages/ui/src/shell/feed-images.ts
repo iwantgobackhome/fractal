@@ -69,7 +69,7 @@ export class FeedImages {
   private async load(path: string, signal: AbortSignal): Promise<Blob> {
     const response = await this.fetchImage(path, signal);
     const type = response.headers.get('content-type')?.split(';')[0] ?? '';
-    if (!response.ok || !/^image\/(?:png|jpeg|webp|gif)$/.test(type) || !response.body || response.redirected) {
+    if (!response.ok || !/^image\/(?:png|jpeg|webp|gif|avif)$/.test(type) || !response.body || response.redirected) {
       await response.body?.cancel();
       throw new Error('Image unavailable');
     }

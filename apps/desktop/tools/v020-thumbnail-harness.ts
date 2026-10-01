@@ -13,6 +13,11 @@ import { JsonDeviceStore } from '@qa/hub/pairing/store';
 
 const root = resolve('.');
 const owned = join(root, 'apps/android/qa/v020-thumbnails/data');
+const documentation = process.env.QA_DOCUMENTATION === '1';
+const suffix = documentation ? '-documentation' : '';
+const metadata = documentation ? JSON.parse(readFileSync(join(root, 'docs/implementation/desktop/v020-thumbnails/publication-metadata.json'), 'utf8')) : null;
+const port = documentation ? 6296 : 6294;
+const controlPort = port + 1;
 mkdirSync(owned, { recursive: true });
 const supplyRoot = resolve(process.env.QA_IMAGE_SUPPLY!);
 const backendRoot = resolve(process.env.QA_BACKEND_ROOT!);
@@ -20,7 +25,9 @@ const sha = (bytes: Buffer) => createHash('sha256').update(bytes).digest('hex');
 const evidence: any = {
   clientSha: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
   backendSha: execFileSync('git', ['-C', backendRoot, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
-  metadata: 'Controlled layout metadata, not a gathering-success claim',
+  metadata: documentation
+    ? 'Actual publication metadata from official arXiv abstract and MIT News pages; isolated cached feed, not a live gathering claim'
+    : 'Controlled layout metadata, not a gathering-success claim',
   images: [],
   wire: [],
 };
@@ -79,34 +86,46 @@ function seed(directory: string) {
     url: 'https://news.mit.edu/2024/ai-generates-high-quality-images-30-times-faster-single-step-0321',
     image: registered.news,
   };
-  const rows = [
-    paper,
-    {
-      ...paper,
-      id: 'qa-absent',
-      arxivId: null,
-      title: 'Text-only research remains compact and readable',
-      image: null,
-      url: 'https://example.org/paper-absent',
-    },
-    {
-      ...paper,
-      id: 'qa-broken',
-      arxivId: null,
-      title: 'Unavailable figure retains the title, metadata and controls',
-      image: { url: '/api/feed/images/' + 'b'.repeat(64) },
-      url: 'https://example.org/paper-broken',
-    },
-    news,
-    { ...news, id: 'qa-news-absent', title: 'Text-only news stays useful without an empty picture card', image: null, url: 'https://example.org/news-absent' },
-    {
-      ...news,
-      id: 'qa-news-broken',
-      title: 'A failed news image leaves its headline and source available',
-      image: { url: '/api/feed/images/' + 'b'.repeat(64) },
-      url: 'https://example.org/news-broken',
-    },
-  ];
+  if (documentation) {
+    Object.assign(paper, metadata.paper, { source: 'arxiv', dateBasis: 'published' });
+    Object.assign(news, metadata.news, { source: 'news:MIT News', dateBasis: 'published' });
+  }
+  const rows = documentation
+    ? [paper, news]
+    : [
+        paper,
+        {
+          ...paper,
+          id: 'qa-absent',
+          arxivId: null,
+          title: 'Text-only research remains compact and readable',
+          image: null,
+          url: 'https://example.org/paper-absent',
+        },
+        {
+          ...paper,
+          id: 'qa-broken',
+          arxivId: null,
+          title: 'Unavailable figure retains the title, metadata and controls',
+          image: { url: '/api/feed/images/' + 'b'.repeat(64) },
+          url: 'https://example.org/paper-broken',
+        },
+        news,
+        {
+          ...news,
+          id: 'qa-news-absent',
+          title: 'Text-only news stays useful without an empty picture card',
+          image: null,
+          url: 'https://example.org/news-absent',
+        },
+        {
+          ...news,
+          id: 'qa-news-broken',
+          title: 'A failed news image leaves its headline and source available',
+          image: { url: '/api/feed/images/' + 'b'.repeat(64) },
+          url: 'https://example.org/news-broken',
+        },
+      ];
   for (const row of rows) store.db.prepare('INSERT OR REPLACE INTO feed_items VALUES(?,?,?)').run(week, row.id, JSON.stringify(row));
   for (const [key, value] of Object.entries({
     interests: { categories: ['cs.AI'], topics: [], authors: [], custom: [] },
@@ -123,17 +142,18 @@ function seed(directory: string) {
     store.db.prepare('INSERT OR REPLACE INTO feed_meta VALUES(?,?)').run(key, JSON.stringify(value));
   const article = extractArticleHtml(readFileSync(join(supplyRoot, 'news.html'), 'utf8'), news.url, news.url, images);
   if (!article?.blocks.length) throw Error('Public HTML extraction failed');
+  if (documentation) Object.assign(article, { title: metadata.news.title, author: metadata.news.authors[0], publishedAt: metadata.news.publishedAt });
   store.db.prepare('INSERT OR REPLACE INTO news_articles VALUES(?,?,?)').run(news.url, JSON.stringify(article), now);
   const devices = new JsonDeviceStore(directory);
   const paired = devices.claim('Thumbnail isolated native QA', 'android');
   store.db.close();
   return paired;
 }
-const desktopDirectory = join(owned, 'desktop-hub'),
-  directory = join(owned, 'android-hub');
+const desktopDirectory = join(owned, 'desktop-hub' + suffix),
+  directory = join(owned, 'android-hub' + suffix);
 seed(desktopDirectory);
 const paired = seed(directory);
-const service = await startService({ dataDirectory: directory, port: 6294, allowRealCli: false, startBackground: false, log() {} });
+const service = await startService({ dataDirectory: directory, port, allowRealCli: false, startBackground: false, log() {} });
 const control = createServer(async (req, res) => {
   if (req.url === '/qa/state') {
     res.setHeader('Content-Type', 'application/json');
@@ -149,25 +169,25 @@ const control = createServer(async (req, res) => {
   res.writeHead(404);
   res.end();
 });
-await new Promise<void>((r) => control.listen(6295, '127.0.0.1', r));
+await new Promise<void>((r) => control.listen(controlPort, '127.0.0.1', r));
 writeFileSync(
-  join(owned, 'private.json'),
+  join(owned, 'private' + suffix + '.json'),
   JSON.stringify({
     baseUrl: service.url,
-    controlPort: 6295,
+    controlPort,
     hubId: 'v020-thumbnails-exclusive-5572',
     deviceId: paired.device.id,
     deviceToken: paired.deviceToken,
   }),
 );
-writeFileSync(join(owned, 'supply-evidence.json'), JSON.stringify(evidence, null, 2));
+writeFileSync(join(owned, 'supply-evidence' + suffix + '.json'), JSON.stringify(evidence, null, 2));
 writeFileSync(
-  join(owned, 'server-identity.json'),
+  join(owned, 'server-identity' + suffix + '.json'),
   JSON.stringify(
     {
       pid: process.pid,
       startedUtc: new Date().toISOString(),
-      listeners: [6294, 6295],
+      listeners: [port, controlPort],
       desktopDirectory,
       directory,
       command: process.argv,
@@ -178,10 +198,10 @@ writeFileSync(
     2,
   ),
 );
-console.log(JSON.stringify({ ready: true, pid: process.pid, listeners: [6294, 6295] }));
-while (!existsSync(join(owned, 'stop'))) await new Promise((r) => setTimeout(r, 250));
+console.log(JSON.stringify({ ready: true, pid: process.pid, listeners: [port, controlPort] }));
+while (!existsSync(join(owned, 'stop' + suffix))) await new Promise((r) => setTimeout(r, 250));
 writeFileSync(
-  join(owned, 'final-state.json'),
+  join(owned, 'final-state' + suffix + '.json'),
   JSON.stringify({ ...evidence, library: service.store.listLibrary(), history: service.store.listHistory() }, null, 2),
 );
 await service.stop();
