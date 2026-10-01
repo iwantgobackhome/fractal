@@ -27,7 +27,9 @@ class PdfDownloader(
 ) {
     private val prefs = context.applicationContext.getSharedPreferences("pdf_transfer", Context.MODE_PRIVATE)
 
-    suspend fun download(paperKey: String, sha256: String): File = withContext(Dispatchers.IO) {
+    suspend fun download(paperKey: String, sha256: String, session: HubPdfSession? = null,
+        guard: () -> Unit = {}): File = withContext(Dispatchers.IO) {
+        guard()
         cache.existing(sha256)?.let { return@withContext it }
         val part = cache.partial(sha256)
         val etag = prefs.getString(sha256, null)
@@ -37,12 +39,14 @@ class PdfDownloader(
             plan.ifRange?.let { put("If-Range", it) }
         }
         val path = "/api/papers/${HubClient.keyPath(paperKey)}/pdf"
-        client.execute(path, headers = headers).use { response ->
+        (session?.executePdf(path, headers) ?: client.execute(path, headers = headers)).use { response ->
+            guard()
             if (response.code == 304) {
                 return@withContext cache.existing(sha256)
                     ?: throw IOException("Cached PDF is missing")
             }
             if (response.code == 416 && part.isFile) {
+                guard()
                 return@withContext cache.commit(sha256)
             }
             if (response.code != 200 && response.code != 206) {
@@ -56,6 +60,7 @@ class PdfDownloader(
                 body.byteStream().use { input -> input.copyTo(output) }
             }
         }
+        guard()
         cache.commit(sha256)
     }
 }

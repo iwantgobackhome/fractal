@@ -35,6 +35,10 @@ class ReaderApplication : Application() {
         PdfCache(this).also { it.limitBytes = settings.getLong("cacheLimit", 2L * 1024 * 1024 * 1024) }
     }
     val downloader by lazy { PdfDownloader(this, client, cache) }
+    val acquisition by lazy { app.fractal.sync.PublicationAcquisition(client, sync,
+        { app.fractal.sync.discoveryScope(credentials.load()) }) { key, sha, session, guard ->
+            downloader.download(key, sha, session as app.fractal.sync.HubPdfSession, guard)
+        } }
     val settings by lazy { getSharedPreferences("reader_settings", MODE_PRIVATE) }
 
     override fun onCreate() {

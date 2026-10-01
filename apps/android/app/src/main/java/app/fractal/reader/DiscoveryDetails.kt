@@ -16,6 +16,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.fractal.data.*
@@ -49,6 +52,12 @@ import java.util.Locale
     var relatedError by remember { mutableStateOf("") }
     var retryReady by remember { mutableStateOf(true) }
     var organize by remember { mutableStateOf(false) }
+    var readBusy by remember(publicationFingerprint(paper), hubScope) { mutableStateOf(false) }
+    var readError by remember(publicationFingerprint(paper), hubScope) { mutableStateOf("") }
+    val request = remember(publicationFingerprint(paper), hubScope) { Any() }
+    val activeRequest = rememberUpdatedState(request)
+    var mounted by remember(request) { mutableStateOf(true) }
+    DisposableEffect(request) { onDispose { mounted = false } }
     val folders by app.database.metadata().observeFolders().collectAsState(emptyList())
     val colors = LocalFractalColors.current
     val context = LocalContext.current
@@ -59,6 +68,25 @@ import java.util.Locale
             if (failure is CancellationException) throw failure; error = failure.message.orEmpty()
         } finally { busy = false }
     } }
+    fun readPdf() {
+        if (readBusy || busy) return
+        if (saved?.pdfSha256 != null) { onRead(saved.paperKey); return }
+        val paired = app.credentials.load()
+        scope.launch {
+            readBusy = true; readError = ""
+            try {
+                val key = app.acquisition.open(paper) {
+                    check(mounted && activeRequest.value === request && app.credentials.load() == paired) {
+                        "Publication or Hub connection changed; retry from the current paper."
+                    }
+                }
+                onRead(key)
+            } catch (failure: Exception) {
+                if (failure is CancellationException) throw failure
+                readError = failure.message ?: "PDF acquisition failed. Retry or choose a PDF."
+            } finally { readBusy = false }
+        }
+    }
     fun loadRelated() { val key = saved?.paperKey ?: return
         if (relatedBusy || !retryReady) return
         scope.launch { relatedBusy = true
@@ -72,6 +100,11 @@ import java.util.Locale
     BackHandler(onBack = onBack)
     val upload = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null && saved != null) action {
+            val paired = app.credentials.load()
+            val session = app.client.captured()
+            val guard = { session.ensureCurrent(); check(app.credentials.load() == paired && mounted && activeRequest.value === request) {
+                "Publication or Hub changed while linking; reconnect to reconcile."
+            } }
             val bytes = withContext(Dispatchers.IO) {
                 context.contentResolver.openInputStream(uri)?.use { input ->
                     val output = java.io.ByteArrayOutputStream(); val buffer = ByteArray(8192)
@@ -81,10 +114,11 @@ import java.util.Locale
                 } ?: error("Selected document is unavailable")
             }
             val result = app.client.linkPdf(saved.paperKey, bytes)
+            guard()
             check(result.text("paperKey") == saved.paperKey) { "Hub changed catalog identity" }
-            app.sync.acceptPaper(result.getValue("record").jsonObject)
-            val metadata = app.sync.refreshPaperMetadata(saved.paperKey) ?: error("Linked PDF metadata unavailable")
-            app.downloader.download(saved.paperKey, metadata.first)
+            app.sync.acceptPaper(result.getValue("record").jsonObject, guard)
+            val metadata = app.sync.refreshPaperMetadata(saved.paperKey, session, guard) ?: error("Linked PDF metadata unavailable")
+            app.downloader.download(saved.paperKey, metadata.first, session, guard)
             // Association deliberately does not call metadata.read or start the reader.
         }
     }
@@ -107,6 +141,11 @@ import java.util.Locale
                 else -> libraryText("Metadata only · saving does not acquire a PDF or mark this paper read", "논문 정보만 있음 · 저장해도 PDF를 받거나 읽음으로 기록하지 않습니다")
             })
             FlowRow(Modifier.fillMaxWidth().padding(horizontal = 8.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                Button(enabled = !busy && !readBusy, onClick = ::readPdf) {
+                    Text(if (readBusy) libraryText("Acquiring PDF…", "PDF 가져오는 중…")
+                        else if (readError.isNotBlank()) libraryText("Retry Read PDF", "PDF 읽기 다시 시도")
+                        else libraryText("Read PDF", "PDF 읽기"))
+                }
                 val pending = intents.any { it.kind == "bookmark" && it.resource == publicationFingerprint(paper) }
                 TextButton(enabled = !busy && !pending, onClick = { action {
                     if (saved == null) { app.discovery.save(paper); app.discovery.flush().firstOrNull()?.let { error(it) } }
@@ -120,10 +159,18 @@ import java.util.Locale
                 if (saved != null) {
                     TextButton(enabled = !busy, onClick = { organize = true }) { Text(libraryText("Folders and tags", "폴더·태그")) }
                     if (saved.pdfSha256 == null) TextButton(enabled = !busy, onClick = { upload.launch(arrayOf("application/pdf")) }) { Text(libraryText("Choose PDF to link", "연결할 PDF 선택")) }
-                    else TextButton(enabled = !busy, onClick = { onRead(saved.paperKey) }) { Text(libraryText("Read original", "원문 읽기")) }
                 }
                 TextButton(onClick = { runCatching { uriHandler.openUri(paper.url) }.onFailure { error = it.message.orEmpty() } }) { Text(libraryText("Publication page", "출판물 페이지")) }
                 paper.publication?.oaPdfUrl?.let { url -> TextButton(onClick = { runCatching { uriHandler.openUri(url) }.onFailure { error = it.message.orEmpty() } }) { Text(libraryText("Reported open PDF link", "보고된 공개 PDF 주소")) } }
+            }
+            if (readBusy || readError.isNotBlank()) Column(Modifier.fillMaxWidth().padding(16.dp)
+                .semantics { liveRegion = LiveRegionMode.Polite }) {
+                if (readBusy) {
+                    LinearProgressIndicator(Modifier.fillMaxWidth())
+                    Text(libraryText("Acquiring and verifying the original PDF. Saving and reading are recorded separately.",
+                        "원문 PDF를 가져와 확인합니다. 저장과 읽기는 별도로 기록됩니다."))
+                } else Text(readError + "\n" + libraryText("Use Retry Read PDF, Publication page, or Choose PDF to link. For a new paper, Save metadata enables manual linking.",
+                    "PDF 읽기 다시 시도, 출판물 페이지 또는 PDF 연결을 이용하세요. 새 논문은 메타데이터를 저장하면 수동 연결할 수 있습니다."))
             }
             if (busy) StatusParagraph(libraryText("Working…", "처리 중…"))
             if (error.isNotBlank()) StatusParagraph(error)

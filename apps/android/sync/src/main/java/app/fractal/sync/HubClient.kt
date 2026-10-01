@@ -21,6 +21,10 @@ interface HubDataClient {
     suspend fun data(path: String, method: String = "GET", body: JsonElement? = null): JsonElement
     /** Optional immutable paired-session capture for a multi-request operation. */
     fun captured(): HubDataClient = this
+    fun ensureCurrent() {}
+}
+interface HubPdfSession : HubDataClient {
+    fun executePdf(path: String, headers: Map<String, String>): Response
 }
 interface HubHistoryClient : HubDataClient {
     suspend fun attachHistory(path: String, body: JsonObject): String
@@ -79,12 +83,21 @@ class HubClient(private val credentials: HubCredentialStore) : HubHistoryClient 
             }
         }
 
-    override fun captured(): HubDataClient {
+    override fun captured(): HubPdfSession {
         val paired = credentials.load() ?: throw IOException("Hub is not paired")
-        return object : HubDataClient {
+        return object : HubPdfSession {
+            override fun ensureCurrent() {
+                check(credentials.load() == paired) { "Hub connection changed; retry on the current connection." }
+            }
+            override fun executePdf(path: String, headers: Map<String, String>): Response {
+                ensureCurrent()
+                return http.newCall(request(paired.url, path, token = paired.token, headers = headers)).execute()
+            }
             override suspend fun data(path: String, method: String, body: JsonElement?): JsonElement = withContext(Dispatchers.IO) {
+                ensureCurrent()
                 transport(path, method).newCall(request(paired.url, path, method, body, paired.token)).execute().use {
                     if (!it.isSuccessful) throw HubHttpException(it.code)
+                    ensureCurrent()
                     WireJsonAdapter.data(it.body?.string() ?: throw IOException("Empty hub response"))
                 }
             }

@@ -16,8 +16,10 @@ class SyncEngine(private val database: FractalDatabase, private val client: HubD
     }
 
     /** Import direct bookmark/link responses through the same pending-edit projection as pulls. */
-    suspend fun acceptPaper(record: JsonObject) = database.withTransaction {
+    suspend fun acceptPaper(record: JsonObject, guard: () -> Unit = {}) = database.withTransaction {
+        guard()
         project("paper", record.text("paperKey") ?: error("Missing paper key"), record)
+        guard()
     }
 
     private suspend fun project(kind: String, id: String, remote: JsonObject) {
@@ -238,13 +240,18 @@ class SyncEngine(private val database: FractalDatabase, private val client: HubD
         papers.size + annotations.size + dirty.size + pending.size
     }
 
-    suspend fun refreshPaperMetadata(key: String): Pair<String, Int>? {
-        val snapshot = client.data("/api/papers/${HubClient.keyPath(key)}").jsonObject
-        database.metadata().upsert(SnapshotEntity(key, snapshot.toString(), Instant.now().toString()))
+    suspend fun refreshPaperMetadata(key: String, session: HubDataClient = client, guard: () -> Unit = {}): Pair<String, Int>? {
+        guard()
+        val snapshot = session.data("/api/papers/${HubClient.keyPath(key)}").jsonObject
         val paper = snapshot["paper"]?.jsonObject ?: return null
         val sha = paper.text("pdfSha256") ?: return null
         val pages = paper.text("pageCount")?.toIntOrNull()
-        database.library().setPdf(key, sha, pages)
+        database.withTransaction {
+            guard()
+            database.metadata().upsert(SnapshotEntity(key, snapshot.toString(), Instant.now().toString()))
+            database.library().setPdf(key, sha, pages)
+            guard()
+        }
         return sha to (pages ?: 0)
     }
 }
