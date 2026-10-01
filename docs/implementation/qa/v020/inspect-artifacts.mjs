@@ -39,7 +39,8 @@ for (const path of sourcePaths) {
   offset = end + 1 + length + 1;
   // Git Windows checkouts may translate text line endings. Record that distinction.
   const text = !bytes.includes(0) && !/\.(png|jpg|jpeg|gif|webp|pdf|woff2?|ttf|otf|ico|icns|jar|zip|gz)$/i.test(path);
-  const crlf = text ? Buffer.from(bytes.toString('utf8').replace(/\r?\n/g, '\r\n')) : bytes;
+  // Git changes newline bytes without transcoding older non-UTF-8 text files.
+  const crlf = text ? Buffer.from(bytes.toString('latin1').replace(/\r?\n/g, '\r\n'), 'latin1') : bytes;
   expectedFiles.set(path, { sha256: sha(bytes), bytes: bytes.length, crlfSha256: sha(crlf), crlfBytes: crlf.length });
 }
 let runId;
@@ -77,7 +78,7 @@ for (const label of labels) {
     assert.ok(bundleFiles.has(`${prefix}app.asar`), `${label} ASAR hash`);
     assert.ok(bundleFiles.has(label === 'win32-x64' ? 'Fractal.exe' : label.startsWith('darwin') ? 'Contents/MacOS/Fractal' : 'fractal'));
     for (const resource of smoke.resources.filter(r => r.path.includes('app.asar.unpacked'))) {
-      const packaged = bundleFiles.get(prefix + resource.path);
+      const packaged = bundleFiles.get(prefix + resource.path.replaceAll('\\', '/'));
       assert.ok(packaged, `${label} unpacked native resource ${resource.path}`);
       assert.equal(packaged.sha256, resource.sha256); assert.equal(packaged.bytes, resource.bytes);
     }

@@ -1,0 +1,51 @@
+﻿{
+    "runId":  "36842896212",
+    "source":  "c75ea15f806382f88e7a26e03da17a7f4f505b56",
+    "url":  "https://github.com/iwantgobackhome/fractal/actions/runs/36842896212",
+    "status":  "completed",
+    "conclusion":  "success",
+    "jobs":  [
+                 {
+                     "name":  "versions",
+                     "id":  110305932604,
+                     "conclusion":  "success"
+                 },
+                 {
+                     "name":  "desktop (windows-2025, win32, x64, --win nsis)",
+                     "id":  110306030159,
+                     "conclusion":  "success"
+                 },
+                 {
+                     "name":  "android",
+                     "id":  110306030179,
+                     "conclusion":  "success"
+                 },
+                 {
+                     "name":  "desktop (macos-15, darwin, arm64, --mac dmg)",
+                     "id":  110306030245,
+                     "conclusion":  "success"
+                 },
+                 {
+                     "name":  "desktop (macos-15-intel, darwin, x64, --mac dmg)",
+                     "id":  110306030256,
+                     "conclusion":  "success"
+                 },
+                 {
+                     "name":  "desktop (ubuntu-24.04, linux, x64, --linux AppImage deb)",
+                     "id":  110306030274,
+                     "conclusion":  "success"
+                 },
+                 {
+                     "name":  "checksums",
+                     "id":  110308225440,
+                     "conclusion":  "success"
+                 },
+                 {
+                     "name":  "publication",
+                     "id":  110308457614,
+                     "conclusion":  "skipped"
+                 }
+             ],
+    "artifactGate":  "PASS all five actual platform jobs and six actual distributions; original runtime APK literal nonidentity retained with reviewed semantic scope",
+    "finalTaggedGate":  "pending run36845792076"
+}

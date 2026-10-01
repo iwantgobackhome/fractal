@@ -13,6 +13,8 @@ if runtime_only:
     ci_apk = None
 else:
     ci_apk, runtime_apk, accepted_commit = map(str, sys.argv[1:4])
+reference_kind = sys.argv[4] if not runtime_only and len(sys.argv) > 4 else 'captured-runtime'
+assert reference_kind in ('captured-runtime', 'branch-ci')
 assert re.fullmatch(r"[a-f0-9]{40}", accepted_commit)
 tools = pathlib.Path(r"C:/Users/Home/AppData/Local/Android/Sdk/build-tools/35.0.0")
 expected_cert = "62e0698d0572e672aa65a999c6e6e4a6669fb2baf4ca0c6f9c2ce7f82bdd7f4f"
@@ -43,8 +45,10 @@ if runtime_only:
     sys.exit(0)
 ci = inspect(ci_apk)
 differences = [name for name in sorted(set(ci["entries"]) | set(runtime["entries"])) if ci["entries"].get(name) != runtime["entries"].get(name)]
-report = {"acceptedSourceCommit": accepted_commit, "scope": "actual downloaded CI APK versus locally tested native runtime APK; public signature/manifest and ZIP entry correspondence only",
-          "installedByThisWorker": False, "ci": ci, "capturedRuntime": runtime,
+scope = ("actual tagged CI APK versus accepted branch CI APK" if reference_kind == 'branch-ci' else "actual downloaded CI APK versus locally tested native runtime APK")
+reference_key = 'acceptedBranchCi' if reference_kind == 'branch-ci' else 'capturedRuntime'
+report = {"acceptedSourceCommit": accepted_commit, "scope": scope + "; public signature/manifest and ZIP entry correspondence only", "referenceKind": reference_kind,
+          "installedByThisWorker": False, "ci": ci, reference_key: runtime,
           "comparedEntries": len(ci["entries"]), "excludes": "META-INF signing/build metadata; ZIP timestamps and APK signing blocks do not affect entry byte comparison",
           "differences": differences, "exactApplicationEntryMatch": not differences}
 pathlib.Path("docs/implementation/qa/v020/apk-correspondence.json").write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")

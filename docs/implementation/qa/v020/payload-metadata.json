@@ -1,0 +1,35 @@
+{
+  "acceptedSourceCommit": "c75ea15f806382f88e7a26e03da17a7f4f505b56",
+  "actualCiRun": "36842896212",
+  "scope": "actual Debian control archive and Windows installer PE version resources; read only, no installation",
+  "debian": {
+    "path": "C:\\Users\\Home\\Desktop\\Fractal\\fractal\\dist\\reviewed-builds\\v020\\branch-36842896212\\Fractal-0.2.0-linux-x64.deb",
+    "arMembers": [
+      "debian-binary",
+      "control.tar.xz",
+      "data.tar.xz"
+    ],
+    "control": {
+      "Package": "fractal",
+      "Version": "0.2.0",
+      "License": "Apache-2.0",
+      "Vendor": "Fractal contributors",
+      "Architecture": "amd64",
+      "Maintainer": "Fractal contributors",
+      "Installed-Size": "302387",
+      "Depends": "libgtk-3-0, libnotify4, libnss3, libxss1, libxtst6, xdg-utils, libatspi2.0-0, libuuid1, libsecret-1-0",
+      "Recommends": "libappindicator3-1",
+      "Section": "default",
+      "Priority": "optional",
+      "Homepage": "https://github.com/iwantgobackhome/fractal",
+      "Description": ""
+    }
+  },
+  "windows": {
+    "ProductName": "Fractal",
+    "ProductVersion": "0.2.0",
+    "FileVersion": "0.2.0",
+    "OriginalFilename": ""
+  },
+  "installedByThisWorker": false
+}
