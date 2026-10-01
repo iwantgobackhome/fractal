@@ -223,7 +223,7 @@ export function imageElementUrls(node: Element, pageUrl: string): string[] {
   if (unwanted.test([node.getAttribute('alt'), node.getAttribute('class'), node.getAttribute('id'), node.getAttribute('role')].join(' '))) return [];
   if (
     node.closest(
-      'nav,footer,aside,[aria-hidden="true"],.ltx_equation,.ltx_eqn_table,.ltx_table,.related,.related-articles,.related-news,.news-article--related-news,.recent-news,[class*="related-archive"],[class*="recent-news--teaser"]',
+      'nav,footer,aside,[aria-hidden="true"],.ltx_equation,.ltx_eqn_table,.ltx_table,.equation,.formula,[role="math"],[class*="supplement"],[id*="supplement"],.related,.related-articles,.related-news,.news-article--related-news,.recent-news,[class*="related-archive"],[class*="recent-news--teaser"]',
     )
   )
     return [];
@@ -379,11 +379,12 @@ export class FeedImageStore {
   }
   async get(hash: string, signal?: AbortSignal): Promise<{ body: Buffer; contentType: string } | null> {
     if (!/^[a-f0-9]{64}$/.test(hash)) return null;
+    const scoped = this.scopedSignal(signal);
     const existing = this.pending.get(hash);
-    if (existing) return existing;
-    const promise = this.load(hash, this.scopedSignal(signal)).finally(() => this.pending.delete(hash));
-    this.pending.set(hash, promise);
-    return promise;
+    const promise = existing ?? this.load(hash, scoped).finally(() => this.pending.delete(hash));
+    if (!existing) this.pending.set(hash, promise);
+    // A feed deadline must also interrupt a wait on an API-owned fetch/queue slot.
+    return scoped ? abortable(promise, scoped).catch(() => null) : promise;
   }
   private async load(hash: string, signal?: AbortSignal): Promise<{ body: Buffer; contentType: string } | null> {
     if (!/^[a-f0-9]{64}$/.test(hash)) return null;

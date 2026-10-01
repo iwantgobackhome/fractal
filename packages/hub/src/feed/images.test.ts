@@ -53,6 +53,7 @@ describe('first content image discovery', () => {
   it('keeps figure order, resolves relative/lazy/picture/srcset sources, and rejects non-figures', () => {
     const html = `<img src="cover.jpg"><figure><img src="logo.png"><figcaption>Figure 0</figcaption></figure>
       ${figure('equation.png')}${figure('supplement.png', 'Supplementary Figure 1')}
+      <section id="supplementary-material">${figure('other.png')}</section>
       <figure><picture><source srcset="small.webp 320w, big.webp 800w"><img src="placeholder.svg" data-src="../first.png?a=1&amp;b=2"></picture><figcaption>Figure 1: Method</figcaption></figure>
       <div class="fig" id="fig2"><img src="second.jpg"><div class="caption">Figure 2: Data</div></div>`;
     expect(figureImageCandidates(html, 'https://example.com/paper/full')).toEqual([
@@ -140,6 +141,26 @@ describe('first content image discovery', () => {
     await Promise.all([...hashes, hashes[0]!].map((hash) => images.get(hash)));
     expect(fetcher).toHaveBeenCalledTimes(12);
     expect(maximum).toBe(4);
+  });
+  it('honors a caller deadline while reusing an existing API-owned image request', async () => {
+    let release!: (response: Response) => void;
+    const fetcher = vi.fn(
+      () =>
+        new Promise<Response>((resolve) => {
+          release = resolve;
+        }),
+    ) as unknown as typeof fetch;
+    const { images } = setup(fetcher);
+    const hash = images.register('https://example.com/content.png')!.url.split('/').at(-1)!;
+    const api = images.get(hash);
+    await vi.waitFor(() => expect(fetcher).toHaveBeenCalledTimes(1));
+    const deadline = new AbortController();
+    const feed = images.get(hash, deadline.signal);
+    deadline.abort(new Error('feed deadline'));
+    expect(await feed).toBeNull();
+    release(new Response(png(), { headers: { 'content-type': 'image/png' } }));
+    expect((await api)?.body).toEqual(png());
+    expect(fetcher).toHaveBeenCalledTimes(1);
   });
   it('reads common lossy/lossless WebP dimensions', () => {
     const lossy = Buffer.alloc(30);
