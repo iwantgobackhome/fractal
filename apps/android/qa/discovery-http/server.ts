@@ -16,7 +16,9 @@ import { newsSource } from '../../../../packages/hub/src/feed/sources';
 
 const owned = resolve('apps/android/qa/discovery-http');
 mkdirSync(join(owned, 'runtime'), { recursive: true });
-const directory = mkdtempSync(join(owned, 'runtime/http-'));
+const resumed = process.env.FRACTAL_D_QA_RESUME;
+if (resumed) assert(resolve(resumed).startsWith(join(owned, 'runtime') + '\\') && existsSync(resumed), 'Only this helper owned runtime may resume');
+const directory = resumed ? resolve(resumed) : mkdtempSync(join(owned, 'runtime/http-'));
 const sourceSha = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
 const store = new SqlitePaperStore(directory, join(directory, 'no-legacy'));
 store.ensureRoot(); store.putPreferences({ ...store.getPreferences(), uiLanguage: 'en', translationLanguage: 'en' });
@@ -24,7 +26,7 @@ const deviceStore = new JsonDeviceStore(directory);
 const paired = deviceStore.claim('D stage4 isolated discovery', 'android');
 const wire: any[] = [], providerCalls: any[] = [];
 const nativeFetch = globalThis.fetch;
-let mode = 'ready', offline = false, textUnavailable = false, dropTopic = false;
+let mode = 'ready', offline = false, textUnavailable = false, dropTopic = false, articleUnavailable = false;
 const now = new Date();
 const attention = { id: 'W2741809807', title: 'Attention Is All You Need', year: 2017, date: '2017-06-12',
   type: 'conference-paper', venue: 'Advances in Neural Information Processing Systems 30 (NIPS 2017)',
@@ -71,7 +73,10 @@ const controlledFetch: typeof fetch = async (input, init) => {
   }
   if (url.hostname === 'translate.googleapis.com') {
     const text = url.searchParams.get('q') ?? '';
-    return Response.json([[[text === newsTitle ? koreanTitle : 'QA 기계 번역: ' + text, text, null, null]], null, 'en']);
+    const target = url.searchParams.get('tl');
+    const translated = target === 'ja' ? (text === newsTitle ? 'QA研究分野ニュース：言語モデルの再現可能な評価と複数の端末で続く学術的な読書' : 'QA機械翻訳：' + text)
+      : target === 'en' ? text : text === newsTitle ? koreanTitle : 'QA 기계 번역: ' + text;
+    return Response.json([[[translated, text, null, null]], null, 'en']);
   }
   if (url.pathname.endsWith('/qa-fractal-field-report')) return new Response(`<html lang="en"><head><title>${newsTitle}</title><meta property="article:published_time" content="${now.toISOString()}"></head><body><article><h1>${newsTitle}</h1><p>${paragraph}</p><h2>Reproducible source context</h2><p>${paragraph}</p><p>${paragraph}</p></article></body></html>`, { headers: { 'content-type': 'text/html' } });
   return new Response(`<rss version="2.0"><channel><title>Isolated QA news provider</title><item><title>${newsTitle}</title><link>https://jmlr.org/qa-fractal-field-report</link><description>${paragraph}</description><pubDate>${now.toUTCString()}</pubDate></item></channel></rss>`, { headers: { 'content-type': 'application/xml' } });
@@ -96,10 +101,10 @@ const fixture = Buffer.concat([readFileSync('packages/hub/test/fixtures/text-lay
 const pdfSha256 = createHash('sha256').update(fixture).digest('hex');
 const key = 'D-stage4-retry';
 const timestamp = now.toISOString();
-const metadata = await nativeFetch(internalUrl + '/api/library/metadata', { method: 'POST', headers: { ...auth, 'Content-Type': 'application/json' }, body: JSON.stringify({
+const metadata = store.getLibrary(key) ? undefined : await nativeFetch(internalUrl + '/api/library/metadata', { method: 'POST', headers: { ...auth, 'Content-Type': 'application/json' }, body: JSON.stringify({
   id: key, paperKey: key, title: 'D mounted original text recovery fixture', authors: [], year: null, venue: null, doi: null, arxivId: null,
   url: 'https://example.org/D-stage4-retry', abstract: null, tags: [], collections: [], addedAt: timestamp, updatedAt: timestamp, status: 'unread', bibtexKey: key, saved: true,
-}) }); assert.equal(metadata.status, 201);
+}) }); if (metadata) assert.equal(metadata.status, 201);
 const link = await nativeFetch(internalUrl + `/api/library/${key}/pdf`, { method: 'POST', headers: { ...auth, 'Content-Type': 'application/pdf' }, body: fixture }); assert.equal(link.status, 201, link.ok ? '' : await link.text());
 for (const block of store.listBlocks(key).filter(b => b.translatable)) store.saveTranslation(key, { blockId: block.blockId, sourceHash: block.sourceHash, modelId: 'gpt-6-sol', promptVersion: translationPromptVersion('en'), status: 'completed', text: 'Translated QA: ' + block.sourceText, error: null, completedAt: timestamp });
 await feed.refresh();
@@ -107,7 +112,7 @@ const proxy = createServer(async (incoming, outgoing) => {
   const chunks: Buffer[] = []; for await (const chunk of incoming) chunks.push(chunk); const bytes = Buffer.concat(chunks);
   const path = incoming.url!;
   wire.push({ path, method: incoming.method, at: new Date().toISOString(), bytes: bytes.length });
-  if (offline || textUnavailable && path.includes('/text-layout')) { outgoing.writeHead(503, { 'Content-Type': 'application/json' }); outgoing.end(JSON.stringify({ error: { code: 'NETWORK', message: 'Isolated QA temporary outage' } })); return; }
+  if (offline || textUnavailable && path.includes('/text-layout') || articleUnavailable && path.startsWith('/api/news/article')) { outgoing.writeHead(503, { 'Content-Type': 'application/json' }); outgoing.end(JSON.stringify({ error: { code: 'NETWORK', message: 'Isolated QA temporary outage' } })); return; }
   const lose = dropTopic && incoming.method === 'POST' && path === '/api/feed/topics'; if (lose) dropTopic = false;
   const upstream = request(internalUrl + path, { method: incoming.method, headers: { ...incoming.headers, host: `127.0.0.1:${internalPort}` } }, response => {
     if (lose) { response.resume(); response.on('end', () => outgoing.destroy()); return; }
@@ -121,12 +126,13 @@ const control = createServer(async (req, res) => { try {
   if (req.method === 'POST' && req.url === '/D/mode') {
     if ('offline' in body) offline = body.offline === true;
     if ('textUnavailable' in body) textUnavailable = body.textUnavailable === true;
+    if ('articleUnavailable' in body) articleUnavailable = body.articleUnavailable === true;
     if ('dropTopic' in body) dropTopic = body.dropTopic === true;
     if ('provider' in body) { assert(['ready', '429', 'timeout'].includes(body.provider)); mode = body.provider;
       store.db.prepare('UPDATE related_provider_cache SET fetched_at=?').run(new Date(Date.now() - 9 * 86400000).toISOString()); }
   } else assert(req.method === 'GET' && req.url === '/D/state');
   res.writeHead(200, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ data: {
-    mode, offline, textUnavailable, wire, providerCalls, topics: feed.topics.list('cs.CL'), library: store.listLibrary(),
+    mode, offline, textUnavailable, articleUnavailable, wire, providerCalls, topics: feed.topics.list('cs.CL'), library: store.listLibrary(),
     history: store.listHistory(), annotations: store.listAnnotations(key), pdfCount: store.listLibrary().filter(p => !!store.getPaper(p.paperKey)).length,
   } }));
 } catch (error) { res.writeHead(400); res.end(JSON.stringify({ error: String(error) })); } });

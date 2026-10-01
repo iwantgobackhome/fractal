@@ -199,9 +199,13 @@ private fun titleTranslationResource(title: String, target: String): String = "t
         item {
             DeskHeading(libraryText("News article", "뉴스 기사"), onBack, libraryText("Back", "뒤로"))
             SelectionContainer { Column(Modifier.padding(16.dp)) {
-                Text(if (showingTranslation) translatedText!!.first() else article?.title ?: paper.titleTranslated ?: paper.title, fontFamily = ScholarlySerif, fontSize = 27.sp, lineHeight = 35.sp, color = colors.ink)
+                Text(if (showingTranslation) translatedText!!.first() else article?.title ?: paper.title, fontFamily = ScholarlySerif, fontSize = 27.sp, lineHeight = 35.sp, color = colors.ink)
                 if (showingTranslation) Text(article?.title ?: paper.title, fontSize = 14.sp, lineHeight = 21.sp, color = colors.inkSoft)
-                Text(listOfNotNull(article?.siteName ?: paper.source, article?.byline, article?.publishedAt ?: paper.publishedAt.take(10)).joinToString(" · "), fontSize = 14.sp, lineHeight = 21.sp, color = colors.inkSoft)
+                val sourceLabel = article?.siteName?.takeIf { it.isNotBlank() }
+                    ?: (libraryText("Feed · ", "피드 · ") + paper.source.substringBefore(',').trim())
+                Text(listOfNotNull(sourceLabel, article?.byline,
+                    (article?.publishedAt ?: paper.publishedAt).takeIf { it.isNotBlank() }?.let(::readableDiscoveryTime)
+                ).joinToString(" · "), fontSize = 14.sp, lineHeight = 21.sp, color = colors.inkSoft)
             } }
             ResearchSelector(libraryText("Translation language", "번역 언어"), target,
                 (listOf("ko", "en", "ja", "zh-Hans", "zh-Hant", "de", "fr", "es", "pt", "ar", "hi", "ru") + target).distinct().map { it to Locale.forLanguageTag(it).getDisplayName(Locale.getDefault()) },
@@ -219,7 +223,7 @@ private fun titleTranslationResource(title: String, target: String): String = "t
             if (busy) StatusParagraph(libraryText("Loading… cached content remains below", "로드 중… 아래 캐시된 콘텐츠는 유지됩니다"))
             if (error.isNotBlank()) StatusParagraph(libraryText("Article provider unavailable; retained content is still readable.", "기사 제공자를 사용할 수 없습니다. 보관된 콘텐츠는 계속 읽을 수 있습니다.") + "\n$error")
             if (!canTranslate) StatusParagraph(libraryText("This article exceeds the quick-translation limits. Its complete original remains available; open the source for other translation options.", "이 기사는 빠른 번역 한도를 초과합니다. 전체 원문은 유지되며 다른 번역 방법은 출처에서 확인하세요."))
-            if (showingTranslation) StatusParagraph(libraryText("Machine translation", "기계 번역"))
+            if (showingTranslation) StatusParagraph(if (article == null) libraryText("Machine-translated title only", "제목만 기계 번역됨") else libraryText("Machine translation", "기계 번역"))
             cache.firstOrNull { it.resource == "article:${paper.url}" }?.let { StatusParagraph(libraryText("Article cached: ", "기사 캐시 시간: ") + readableDiscoveryTime(it.fetchedAt)) }
             HorizontalDivider(Modifier.padding(16.dp), color = colors.ink, thickness = 2.dp)
             if (article == null || article.blocks.isEmpty()) { StatusParagraph(libraryText("Full article content is not available in this cache. The feed provides this excerpt:", "이 캐시에 전체 기사 내용이 없습니다. 피드에 제공된 발췌문:") + "\n" + paper.abstract) }

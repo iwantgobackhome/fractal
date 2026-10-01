@@ -164,7 +164,8 @@ internal fun ScholarlyLibraryScreen(app: ReaderApplication, onSettings: () -> Un
                                 Text(paper.title ?: paper.paperKey, fontFamily = ScholarlySerif, fontSize = if (phone) 21.sp else 20.sp,
                                     lineHeight = 27.sp, color = colors.ink)
                                 Text(paper.authors, color = colors.inkSoft, fontSize = 13.sp, lineHeight = 20.sp)
-                                if (!record.abstract.isNullOrBlank()) Text(record.abstract.orEmpty(), maxLines = 3, color = colors.inkSoft, fontSize = 13.sp, lineHeight = 20.sp)
+                                if (!record.abstract.isNullOrBlank()) Text(record.abstract.orEmpty(), maxLines = 3, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                                    color = colors.inkSoft, fontSize = 13.sp, lineHeight = 20.sp)
                                 if (record.tags.isNotEmpty()) Text(record.tags.joinToString(" · "), color = colors.inkSoft, fontSize = 12.sp)
                                 Text(when {
                                     paper.lastReadAt != null -> libraryText("Read ", "읽음 ") + paper.lastReadAt.orEmpty().take(10)

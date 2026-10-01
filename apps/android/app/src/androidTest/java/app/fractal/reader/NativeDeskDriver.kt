@@ -81,17 +81,30 @@ internal class NativeDeskDriver(val scenario: ActivityScenario<MainActivity>) {
             0, 0, 1f, 1f, 0, 0, if (tool == MotionEvent.TOOL_TYPE_STYLUS) InputDevice.SOURCE_STYLUS else InputDevice.SOURCE_TOUCHSCREEN, 0)
         onMain { it.dispatchTouchEvent(event) }; event.recycle(); SystemClock.sleep(100)
     }
-    fun scrollTo(label: String, contains: Boolean = false) {
+    fun scrollTo(label: String, contains: Boolean = false, xFraction: Float = .5f) {
         repeat(16) {
             val n = node(label, contains)
-            if (n != null && n.boundsInWindow.height > 0) return
             var height = 0; var width = 0
             onMain { height = it.window.decorView.height; width = it.window.decorView.width }
-            val x = width * .5f; val y = height * .75f
+            // LazyColumn can realize the next item just below the visible viewport.
+            // Show the actual target above the navigation/footer before recording evidence.
+            if (n != null && n.boundsInWindow.height > 0 &&
+                n.boundsInWindow.top < height * .65f && n.boundsInWindow.bottom > height * .15f) return
+            val x = width * xFraction; val y = height * .75f
             event(MotionEvent.ACTION_DOWN, x, y)
             repeat(8) { step -> event(MotionEvent.ACTION_MOVE, x, y - (height * .43f) * (step + 1) / 8) }
             event(MotionEvent.ACTION_UP, x, height * .32f)
         }; error("Scroll target missing: $label")
+    }
+    fun scrollToTop(xFraction: Float = .8f) {
+        repeat(5) {
+            var height = 0; var width = 0
+            onMain { height = it.window.decorView.height; width = it.window.decorView.width }
+            val x = width * xFraction; val y = height * .3f
+            event(MotionEvent.ACTION_DOWN, x, y)
+            repeat(6) { step -> event(MotionEvent.ACTION_MOVE, x, y + height * .5f * (step + 1) / 6) }
+            event(MotionEvent.ACTION_UP, x, height * .8f)
+        }
     }
     fun capture(name: String) {
         SystemClock.sleep(600)

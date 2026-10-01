@@ -5,6 +5,7 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.*
@@ -121,7 +122,8 @@ internal fun DiscoveryScreen(app: ReaderApplication, destination: String, onSett
                 Text(libraryText("Filters", "필터") + " · " + listOf(fieldLabel, source, if (kind.isNotBlank()) publicationLabel(kind) else "", topicLabel).filter(String::isNotBlank).joinToString(" · ").ifBlank { libraryText("All", "전체") })
             }
             if (filters || destination == "topics") {
-            ResearchSelector(libraryText("Field", "분야"), field, listOf("" to libraryText("All fields", "모든 분야")) + taxonomy.map { it.code to "${it.name[if (ko) "ko" else "en"] ?: it.code} · ${it.code}" } +
+            ResearchSelector(libraryText("Field", "분야"), if (destination == "topics") topicField else field,
+                (if (destination == "topics") emptyList() else listOf("" to libraryText("All fields", "모든 분야"))) + taxonomy.map { it.code to "${it.name[if (ko) "ko" else "en"] ?: it.code} · ${it.code}" } +
                 (feed?.sections?.byField.orEmpty() + feed?.sections?.newsByField.orEmpty()).filter { group -> taxonomy.none { it.code == group.field } }.distinctBy { it.field }.map { it.field to (it.label ?: it.field) },
                 { field = it; topicFilter = "" }, Modifier.padding(horizontal = 16.dp))
             if (destination != "topics") {
@@ -137,7 +139,7 @@ internal fun DiscoveryScreen(app: ReaderApplication, destination: String, onSett
             HorizontalDivider(Modifier.padding(horizontal = 16.dp), thickness = 2.dp, color = colors.ink)
         }
         if (destination == "topics") {
-            item { StatusParagraph(libraryText("Follow topics in a taxonomy field. Personal queries join curated, trending and suggested topics; new topics are followed when admitted by the Hub.", "분류 분야에서 주제를 팔로우하세요. 개인 검색어는 추천·인기 주제와 함께 유지되며 새 주제는 허브에 등록되면 팔로우됩니다."))
+            item { StatusParagraph(libraryText("Choose a field, follow topics or add a search query.", "분야를 선택하고 주제를 팔로우하거나 검색어를 추가하세요."))
                 TextButton(enabled = topicField.isNotBlank(), onClick = { create = true }) { Text(libraryText("Create personal topic", "개인 주제 만들기")) } }
             items(topics.sortedByDescending { it.followed }, key = { it.id }) { topic ->
                 Column(Modifier.fillMaxWidth().padding(16.dp)) {
@@ -170,7 +172,9 @@ internal fun DiscoveryScreen(app: ReaderApplication, destination: String, onSett
                     } })
             }
             if (visible.isEmpty()) item { StatusParagraph(libraryText("No items in this view. Change the filters or refresh with the Hub connected.", "이 보기에는 항목이 없습니다. 필터를 바꾸거나 허브 연결 후 새로 고침하세요.")) }
-            feed?.sourceStatus?.let { statuses -> items(statuses, key = { "provider:${it.source}" }) {
+            // The same provider may report several field/topic observations. Keep all
+            // diagnostics without treating its display label as a unique row identity.
+            feed?.sourceStatus?.let { statuses -> itemsIndexed(statuses, key = { index, item -> "provider:$index:${item.source}" }) { _, it ->
                 StatusParagraph(it.source + " · " + providerState(it.errorCode ?: it.state) +
                     (it.fetchedAt?.let { time -> " · ${readableDiscoveryTime(time)}" } ?: "") + (it.retryAt?.let { time -> "\n" + libraryText("Retry after ", "다시 시도 가능 시간 ") + readableDiscoveryTime(time) } ?: "") + (it.message?.let { m -> "\n$m" } ?: ""))
             } }
@@ -241,7 +245,8 @@ internal fun matchesPublication(paper: DiscoveryPaper, row: LibraryEntity): Bool
         Text(if (paper.kind == "news") libraryText("Feed · ", "피드 · ") + paper.source.substringBefore(',') + " · " + paper.publishedAt.take(10) else
             listOf(publicationLabel(paper.publication?.publicationKind), paper.publication?.venue ?: paper.venue ?: libraryText("Venue unknown", "발행처 미상"),
                 (paper.publication?.year ?: paper.year)?.toString() ?: libraryText("Year unknown", "연도 미상")).joinToString(" · "), color = colors.inkSoft, fontSize = 14.sp, lineHeight = 21.sp)
-        if (paper.abstract.isNotBlank()) Text(paper.abstract, maxLines = 4, color = colors.inkSoft, fontSize = 14.sp, lineHeight = 22.sp)
+        if (paper.abstract.isNotBlank()) Text(paper.abstract, maxLines = 4, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+            color = colors.inkSoft, fontSize = 14.sp, lineHeight = 22.sp)
         if (paper.kind != "news") {
             Text(paper.source.ifBlank { paper.provider.orEmpty() } + if (paper.reason.isNotBlank()) " · ${paper.reason}" else "", color = colors.inkSoft, fontSize = 13.sp, lineHeight = 20.sp)
             TextButton(enabled = !pending, onClick = onSave) { Text(when { pending -> libraryText("Save retained · reconnect", "저장 요청 보관됨 · 다시 연결"); saved?.saved == true -> libraryText("Saved ✓ · Unsave", "저장됨 ✓ · 해제"); else -> libraryText("Save metadata", "논문 정보 저장") }) }

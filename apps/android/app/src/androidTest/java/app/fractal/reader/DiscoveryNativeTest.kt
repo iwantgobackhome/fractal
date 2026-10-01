@@ -36,11 +36,19 @@ class DiscoveryNativeTest {
         val language = InstrumentationRegistry.getArguments().getString("captureLanguage") ?: "en"
         InstrumentationRegistry.getInstrumentation().runOnMainSync { setAppLanguage(app, language, explicit = true) }
         InstrumentationRegistry.getArguments().getString("captureTheme")?.let { app.settings.edit().putString("theme", it).commit() }
-        control(buildJsonObject { put("offline", offlineLaunch); put("textUnavailable", false); put("provider", "ready") })
+        control(buildJsonObject { put("offline", offlineLaunch); put("textUnavailable", false); put("articleUnavailable", false); put("provider", "ready") })
         if (!offlineLaunch) { app.discovery.refresh("taxonomy", "/api/feed/categories"); app.discovery.refresh("interests", "/api/feed/interests"); app.discovery.refreshFeed() }
     }
     @After fun finish() { if (::scenario.isInitialized) { native.capture("native-test-end"); scenario.close() } }
-    private fun open() { scenario = ActivityScenario.launch(MainActivity::class.java); native = NativeDeskDriver(scenario) }
+    private fun open() {
+        scenario = ActivityScenario.launch(MainActivity::class.java); native = NativeDeskDriver(scenario)
+        // API33+ LocaleManager is discovered through an active AppCompat delegate.
+        // Apply the product language action after launch as well as the cold preference.
+        val language = InstrumentationRegistry.getArguments().getString("captureLanguage") ?: "en"
+        scenario.onActivity { setAppLanguage(app, language, explicit = true) }
+        SystemClock.sleep(700)
+        native.waitFor("active product language") { native.node(if (language == "ko") "발견" else "Discover") != null }
+    }
     private suspend fun control(body: JsonObject): JsonObject = withContext(Dispatchers.IO) {
         val connection = URL("http://127.0.0.1:${config.getValue("controlPort").jsonPrimitive.int}/D/mode").openConnection() as HttpURLConnection
         connection.requestMethod = "POST"; connection.doOutput = true; connection.setRequestProperty("Content-Type", "application/json")
@@ -251,9 +259,57 @@ class DiscoveryNativeTest {
         open(); native.click(label("Discover", "발견")); native.waitFor("discovery heading") { native.node(label("Discovery desk", "논문 발견")) != null }; native.capture("discover-index"); native.scrollTo("LoRA: Low-Rank Adaptation of Large Language Models")
         native.click("LoRA: Low-Rank Adaptation of Large Language Models"); native.capture("discover-dossier"); native.click(label("Back", "뒤로"))
         native.click(label("News", "뉴스")); native.waitFor("news list") { native.node("QA research field report:", true) != null }; native.capture("news-index")
-        native.click("QA research field report:", true); native.waitFor("article") { native.node("This isolated QA article tests", true) != null }; native.capture("news-article")
+        native.click("QA research field report:", true); native.waitFor("article header") { native.node(label("News article", "뉴스 기사")) != null }; native.capture("news-article")
+        native.scrollTo("This isolated QA article tests", true, .8f); native.capture("news-article-body"); native.scrollToTop()
+        if (ko) {
+            native.scrollTo("기사·제목 번역", xFraction = .8f); native.click("기사·제목 번역")
+            native.waitFor("complete cached article translation") { native.node("기계 번역") != null }; native.capture("news-article-translated")
+            native.scrollTo("QA 기계 번역: This isolated QA article tests", true, .8f); native.capture("news-article-translated-body"); native.scrollToTop()
+        }
         native.click(label("Back", "뒤로")); native.click(label("Topics", "주제")); native.capture("topics-index")
-        native.click(label("Library", "서재")); native.type(label("Search titles, authors and tags", "제목·저자·태그 검색"), "D representative"); native.capture("library-index")
+        if (InstrumentationRegistry.getArguments().getString("captureProfile") == "phone360-portrait") {
+            val taxonomy = WireJson.format.decodeFromString<TaxonomyResponse>(app.database.discovery().get(discoveryScope(app.credentials.load()), "taxonomy")!!.json).items
+            native.click("Field"); native.capture("field-selector-selected")
+            InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(android.view.KeyEvent.KEYCODE_DPAD_DOWN)
+            InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(android.view.KeyEvent.KEYCODE_ENTER)
+            val next = taxonomy[1]; native.waitFor("keyboard-selected actual field") { native.node("${next.name["en"]} · ${next.code}") != null }
+            waitUntil { app.database.discovery().get(discoveryScope(app.credentials.load()), "topics:${next.code}") != null }
+            native.capture("topics-keyboard-selected")
+        }
+        native.click(label("Library", "서재"))
+        val searchLabel = label("Search titles, authors and tags", "제목·저자·태그 검색")
+        if (native.node(searchLabel) == null) { native.click(label("Search", "검색")); native.type(searchLabel, "D representative"); native.click(label("Done", "완료")) }
+        else native.type(searchLabel, "D representative")
+        native.scrollTo("Attention Is All You Need"); native.capture("library-index")
+    }
+
+    @Test fun restoresOwnedQaProfile() {
+        check(InstrumentationRegistry.getArguments().getString("captureTheme") == "Light")
+        check(InstrumentationRegistry.getArguments().getString("captureLanguage") == "en")
+        open()
+        assertEquals("Light", app.settings.getString("theme", null))
+        assertEquals(1f, app.resources.configuration.fontScale)
+        native.capture("restored-owned-profile")
+    }
+
+    @Test fun capturesCurrentNewsArticleSourceFallback(): Unit = runBlocking {
+        val ko = InstrumentationRegistry.getArguments().getString("captureLanguage") == "ko"
+        fun label(en: String, korean: String) = if (ko) korean else en
+        val feed = WireJson.format.decodeFromString<DiscoveryFeed>(app.database.discovery().get(discoveryScope(app.credentials.load()), "feed")!!.json)
+        val paper = feed.news().first { it.title.startsWith("QA research field report:") }
+        open(); native.click(label("News", "뉴스")); native.click(paper.title)
+        native.waitFor("article header") { native.node(label("News article", "뉴스 기사")) != null }
+        val article = WireJson.format.decodeFromString<NewsArticle>(app.database.discovery().get(discoveryScope(app.credentials.load()), "article:${paper.url}")!!.json)
+        val expectedSource = article.siteName?.takeIf { it.isNotBlank() }
+            ?: (label("Feed · ", "피드 · ") + paper.source.substringBefore(',').trim())
+        native.waitFor("honest article source metadata") { native.node(expectedSource, true) != null }
+        assertNull(native.node(paper.source))
+        native.scrollTo(label("Translate article / title", "기사·제목 번역"), xFraction = .8f)
+        native.click(label("Translate article / title", "기사·제목 번역"))
+        native.waitFor("cached complete article translation") { native.node(label("Machine translation", "기계 번역")) != null }
+        native.scrollToTop(.8f); native.capture("news-article-translated-source-final")
+        native.scrollTo("QA 기계 번역: This isolated QA article tests", true, .8f)
+        native.capture("news-article-translated-body-final")
     }
 
     @Test fun processColdOfflineCachedFeedArticleAndOriginalPdf(): Unit = runBlocking {
@@ -266,5 +322,40 @@ class DiscoveryNativeTest {
         native.type("Search titles, authors and tags", "Attention Is All You Need"); native.click("Read")
         native.waitFor("cold cached actual PDF") { native.findSurface() != null }; native.capture("cold-offline-original")
         Log.i("DiscoveryNativeQA", "PASS process-cold offline launch cached discovery/news/full article/actual original PDF pid=${android.os.Process.myPid()}")
+    }
+
+    @Test fun articleUnavailableTitleOnlyTranslationOriginalLanguageAndOfflineCache(): Unit = runBlocking {
+        val hubScope = discoveryScope(app.credentials.load())
+        val originalFeedSettings = app.client.data("/api/feed/settings").jsonObject
+        val preferences = app.client.data("/api/preferences").jsonObject
+        var originalArticle: DiscoveryCacheEntity? = null
+        try {
+            app.client.data("/api/preferences", "PUT", JsonObject(preferences + ("uiLanguage" to JsonPrimitive("ko"))))
+            app.client.data("/api/feed/settings", "PUT", JsonObject(originalFeedSettings + ("translateNewsTitles" to JsonPrimitive(true))))
+            val feed = WireJson.format.decodeFromString<DiscoveryFeed>(app.discovery.refreshFeed(true).toString())
+            val card = feed.news().first { it.title.startsWith("QA research field report:") }
+            check(card.titleTranslated?.startsWith("QA 연구 분야 소식:") == true) { "Actual Hub feed title translation must pre-exist this fallback" }
+            val articleKey = "article:${card.url}"
+            originalArticle = app.database.discovery().get(hubScope, articleKey)
+            withContext(Dispatchers.IO) { app.database.openHelper.writableDatabase.execSQL("DELETE FROM discovery_cache WHERE scope=? AND resource=?", arrayOf(hubScope, articleKey)) }
+            app.settings.edit().putString("newsLanguage", "ko").commit()
+            control(buildJsonObject { put("articleUnavailable", true) })
+            open(); native.click("News"); native.waitFor("prefetched feed title") { native.node("QA 연구 분야 소식:", true) != null }; native.click("QA 연구 분야 소식:", true)
+            native.waitFor("actual original title") { native.node(card.title) != null }
+            native.scrollTo("Translate article / title"); native.click("Translate article / title")
+            native.waitFor("title-only KO result") { native.node("Machine-translated title only") != null && native.node("QA 연구 분야 소식:", true) != null }
+            native.capture("news-title-only-ko"); native.click("Show original"); native.waitFor("original restored") { native.node(card.title) != null && native.node("Machine-translated title only") == null }
+            native.click("Translation language"); native.click("Japanese"); native.click("Translate article / title")
+            native.waitFor("current target JA title") { native.node("QA研究分野ニュース：", true) != null }; native.capture("news-title-only-ja")
+            control(buildJsonObject { put("offline", true) }); scenario.recreate()
+            native.waitFor("offline target-specific retained title") { native.node("QA研究分野ニュース：", true) != null && native.node("Machine-translated title only") != null }
+            native.capture("news-title-only-ja-offline"); native.click("Show original"); native.waitFor("offline source title") { native.node(card.title) != null }
+            Log.i("DiscoveryNativeQA", "PASS actual prefetched feed translation, article-only503 with reachable quick route, explicit title-only KO/JA, original restoration and target-specific offline recreation")
+        } finally {
+            control(buildJsonObject { put("offline", false); put("articleUnavailable", false) })
+            originalArticle?.let { app.database.discovery().upsert(it) }
+            app.client.data("/api/preferences", "PUT", preferences); app.client.data("/api/feed/settings", "PUT", originalFeedSettings)
+            app.settings.edit().putString("newsLanguage", "ko").commit(); app.discovery.refreshFeed(true)
+        }
     }
 }
