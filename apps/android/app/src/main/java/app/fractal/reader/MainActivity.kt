@@ -114,7 +114,7 @@ internal fun ReaderApp(
             for (paper in papers) {
                 runCatching {
                     val metadata = app.sync.refreshPaperMetadata(paper.paperKey) ?: return@runCatching
-                    if (app.cache.existing(metadata.first) == null) {
+                    if (app.cache.verified(metadata.first) == null) {
                         app.downloader.download(paper.paperKey, metadata.first)
                     }
                 }

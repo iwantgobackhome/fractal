@@ -30,7 +30,7 @@ class PdfDownloader(
     suspend fun download(paperKey: String, sha256: String, session: HubPdfSession? = null,
         guard: () -> Unit = {}): File = withContext(Dispatchers.IO) {
         guard()
-        cache.existing(sha256)?.let { return@withContext it }
+        cache.verified(sha256)?.let { guard(); return@withContext it }
         val part = cache.partial(sha256)
         val etag = prefs.getString(sha256, null)
         val plan = RangePlan.forPartial(if (part.exists()) part.length() else 0, etag)
@@ -42,7 +42,7 @@ class PdfDownloader(
         (session?.executePdf(path, headers) ?: client.execute(path, headers = headers)).use { response ->
             guard()
             if (response.code == 304) {
-                return@withContext cache.existing(sha256)
+                return@withContext cache.verified(sha256)
                     ?: throw IOException("Cached PDF is missing")
             }
             if (response.code == 416 && part.isFile) {

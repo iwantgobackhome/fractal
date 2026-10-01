@@ -220,4 +220,38 @@ class PublicationAcquisitionNativeTest {
         assertFalse(row(exactUserPaper)!!.saved)
         Log.i("PdfAcquisitionQA", "PASS exact user https://arxiv.org/abs/2609.40325v1 -> native original/cache/offline; bytes=${file.length()}, sha256=$hash, unsaved=true")
     }
+
+    @Test fun h_ownedCorruptCacheCannotReadOfflineAndVerifiedHubRedownloadPreservesIdentity(): Unit = runBlocking {
+        val prior = row(available)!!; val sha = prior.pdfSha256!!; val file = app.cache.file(sha)
+        val original = withContext(Dispatchers.IO) { file.readBytes() }; val stamp = file.lastModified()
+        val changed = original.clone(); changed[changed.lastIndex] = (changed.last().toInt() xor 1).toByte()
+        withContext(Dispatchers.IO) { file.writeBytes(changed); file.setLastModified(stamp) }
+        control(buildJsonObject { put("offline", true) }); launch(); dossier(available); native.click("Read PDF")
+        native.waitFor("corrupt offline cache refused before renderer") { native.node(app.getString(R.string.offline_unavailable)) != null }
+        assertNull(native.findSurface()); assertFalse(app.cache.contains(sha))
+        assertEquals(prior.lastReadAt, row(available)!!.lastReadAt); assertFalse(row(available)!!.saved)
+        capture("corrupt-cache-offline-refused")
+        control(buildJsonObject { put("offline", false) })
+        assertEquals(prior.paperKey, app.acquisition.open(available))
+        assertEquals(prior.lastReadAt, row(available)!!.lastReadAt); assertArrayEquals(original, file.readBytes())
+        assertEquals(sha, row(available)!!.pdfSha256); assertFalse(row(available)!!.saved)
+        scenario.recreate(); native.waitFor("verified repaired original reader") { native.findSurface() != null }
+        capture("corrupt-cache-verified-redownload-reader")
+        control(buildJsonObject { put("offline", true) }); scenario.recreate()
+        native.waitFor("repaired cache remains readable offline") { native.findSurface() != null }
+        assertArrayEquals(original, file.readBytes()); assertFalse(row(available)!!.saved)
+        Log.i("PdfAcquisitionQA", "PASS owned same-size/stamp corrupt cache cannot render offline or add Recent; real Hub verified redownload retains key/hash/unsaved and reopens offline")
+    }
+
+    @Test fun i_exactUserCachedOriginalRemainsUsableAfterIntegrityCorrection(): Unit = runBlocking {
+        val record = row(exactUserPaper)!!; assertFalse(record.saved)
+        assertEquals("d9fdc657534201a7e1df44080ae52fb1c168b791b56581ebf2ddf35d0b087901", record.pdfSha256)
+        app.discovery.cache("feed", WireJson.format.encodeToJsonElement(DiscoveryFeed("2026-W40", sections = FeedSections(top = listOf(exactUserPaper)))))
+        control(buildJsonObject { put("offline", true) }); launch(); dossier(exactUserPaper)
+        val started = SystemClock.uptimeMillis(); native.click("Read PDF")
+        native.waitFor("current verified 49.7MB offline original reader") { native.findSurface() != null }
+        capture("exact-user-current-verified-offline-reader")
+        assertEquals(49668700L, app.cache.file(record.pdfSha256!!).length()); assertFalse(row(exactUserPaper)!!.saved)
+        Log.i("PdfAcquisitionQA", "PASS current integrity-corrected exact-v1 49.7MB offline original; openMs=${SystemClock.uptimeMillis() - started}; full hash executes on IO")
+    }
 }

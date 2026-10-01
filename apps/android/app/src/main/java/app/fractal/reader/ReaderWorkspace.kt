@@ -85,7 +85,7 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
     }
     LaunchedEffect(paper.paperKey) {
         try {
-            val file = paper.pdfSha256?.let(app.cache::existing) ?: run {
+            val file = paper.pdfSha256?.let { app.cache.verified(it) } ?: run {
                 val metadata = app.sync.refreshPaperMetadata(paper.paperKey) ?: error("PDF unavailable")
                 app.downloader.download(paper.paperKey, metadata.first)
             }
