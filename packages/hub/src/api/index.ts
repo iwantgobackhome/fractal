@@ -428,10 +428,11 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
       }
 
       publicationFailure =
-        method === 'POST' &&
         segments[0] === 'api' &&
-        ((segments.length === 3 && segments[1] === 'publications' && segments[2] === 'open') ||
-          (segments.length === 4 && segments[1] === 'library' && segments[3] === 'pdf'));
+        ((method === 'POST' &&
+          ((segments.length === 3 && segments[1] === 'publications' && segments[2] === 'open') ||
+            (segments.length === 4 && segments[1] === 'library' && segments[3] === 'pdf'))) ||
+          (method === 'GET' && segments.length === 4 && segments[1] === 'papers' && segments[3] === 'pdf'));
       const result = await route_(method, segments, request, { devices: options.devices, pairing: options.pairing, network: options.network, local, url });
       if (result.kind === 'json') {
         send(response, result.status, { data: result.data });

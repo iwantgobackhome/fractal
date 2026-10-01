@@ -114,10 +114,11 @@ describe('publication acquisition over authenticated application HTTP', () => {
       const opened = await post();
       const key = opened.data.paperKey;
       store.putFolder({ id: 'kept-folder', name: 'Kept folder', parentId: null });
+      store.putFolder({ id: 'kept-child', name: 'Kept child', parentId: 'kept-folder' });
       store.patchLibrary(key, {
         saved: true,
         tags: ['kept-tag'],
-        collections: ['kept-folder'],
+        collections: ['kept-child'],
         lastReadAt: '2026-09-01T00:00:00.000Z',
         readProgress: { page: 1, fraction: 0.25 },
       });
@@ -142,13 +143,23 @@ describe('publication acquisition over authenticated application HTTP', () => {
       });
       const before = store.getLibrary(key),
         paper = store.getPaper(key),
-        history = store.listHistory(key);
+        history = store.listHistory(key),
+        folders = store.listFolders(),
+        library = store.listLibrary();
       expect(await post()).toMatchObject({ status: 200, data: { paperKey: key, hasPdf: true, paper: { pdfSha256: sha(bytes) } } });
       const path = join(store.root, 'pdfs', `${sha(bytes)}.pdf`),
         altered = Buffer.concat([bytes, Buffer.from('\n% altered local cache\n')]);
       writeFileSync(path, altered);
-      const served = await fetch(`${base}/api/papers/${key}/pdf`);
-      expect(sha(Buffer.from(await served.arrayBuffer()))).toBe(sha(altered));
+      for (const headers of [{}, { range: 'bytes=0-31' }, { 'if-none-match': `"${sha(altered)}"` }] as Record<string, string>[]) {
+        const served = await fetch(`${base}/api/papers/${key}/pdf`, { headers });
+        expect(served.status).toBe(409);
+        expect(served.headers.get('content-type')).toContain('application/json');
+        const failure = await served.json();
+        expect(failure).toMatchObject({ error: { code: 'SOURCE_CHANGED', retryable: false } });
+        expect(failure.error.message).toContain('캐시 파일은 교체되지 않았습니다');
+        expect(failure.data).toBeUndefined();
+        expect(failure.error.message).not.toMatch(/\.pdf|stack|<html>|\\/);
+      }
       const link =
         route === 'link'
           ? await fetch(`${base}/api/library/${key}/pdf`, {
@@ -165,13 +176,32 @@ describe('publication acquisition over authenticated application HTTP', () => {
       expect(store.getLibrary(key)).toEqual(before);
       expect(store.getPaper(key)).toEqual(paper);
       expect(store.listHistory(key)).toEqual(history);
+      expect(store.listFolders()).toEqual(folders);
+      expect(store.listLibrary()).toEqual(library);
       expect(urls).toHaveLength(1);
       writeFileSync(path, bytes);
+      const full = await fetch(`${base}/api/papers/${key}/pdf`);
+      expect(full.status).toBe(200);
+      expect(Buffer.from(await full.arrayBuffer())).toEqual(bytes);
+      expect(full.headers.get('etag')).toBe(`"${sha(bytes)}"`);
+      const partial = await fetch(`${base}/api/papers/${key}/pdf`, { headers: { range: 'bytes=0-31', 'if-range': `"${sha(bytes)}"` } });
+      expect(partial.status).toBe(206);
+      expect(partial.headers.get('content-range')).toBe(`bytes 0-31/${bytes.length}`);
+      expect(Buffer.from(await partial.arrayBuffer())).toEqual(bytes.subarray(0, 32));
+      const unchanged = await fetch(`${base}/api/papers/${key}/pdf`, { headers: { 'if-none-match': `"${sha(bytes)}"` } });
+      expect(unchanged.status).toBe(304);
+      expect(await unchanged.text()).toBe('');
       expect(await post()).toMatchObject({ status: 200, data: { paperKey: key, hasPdf: true, paper: { pdfSha256: sha(bytes) } } });
       expect(store.getPdf(key)).toEqual(bytes);
       expect(store.getLibrary(key)).toEqual(before);
       expect(store.listHistory(key)).toEqual(history);
       expect(urls).toHaveLength(1);
+      // Preserve legacy byte-serving when no canonical Paper exists.
+      const legacyPaper = vi.spyOn(store, 'getPaper').mockReturnValue(null);
+      const legacyPdf = await fetch(`${base}/api/papers/${key}/pdf`);
+      expect(legacyPdf.status).toBe(200);
+      expect(Buffer.from(await legacyPdf.arrayBuffer())).toEqual(bytes);
+      legacyPaper.mockRestore();
     },
   );
   it.each(['en', 'ko'] as const)('returns specific bounded acquisition causes in %s while unrelated validation stays generic', async (language) => {

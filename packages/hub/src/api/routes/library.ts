@@ -15,7 +15,7 @@ import { ingestPdf, ingestUrl } from '../../ingest/index';
 import { exportLibrary, markdown } from '../../export/index';
 import { searchLibrary } from '../../library/search';
 import { body, json, jsonBody, parseRequest, type Result, type LibraryRouteContext as RouteContext } from './types';
-import { invalidInput } from '../../store/errors';
+import { appError, invalidInput } from '../../store/errors';
 import { unsupportedMedia } from '../errors';
 
 function pdfBytes(raw: Buffer, type: string): Buffer {
@@ -156,6 +156,9 @@ export async function handleLibrary(method: string, segments: string[], request:
     const bytes = ctx.store.getPdf(s[2]!);
     if (!bytes) return undefined;
     const sha = createHash('sha256').update(bytes).digest('hex');
+    const paper = ctx.store.getPaper(s[2]!);
+    if (paper && paper.pdfSha256 !== sha)
+      throw appError('SOURCE_CHANGED', 'Stored PDF bytes no longer match this publication. The cached file was not replaced.');
     const etag = `"${sha}"`;
     if (request.headers['if-none-match'] === etag)
       return { kind: 'bytes', status: 304, body: Buffer.alloc(0), contentType: 'application/pdf', headers: { etag, 'accept-ranges': 'bytes' } };

@@ -19,6 +19,21 @@ export async function loadPdf(url: string, signal?: AbortSignal): Promise<PDFDoc
   signal?.addEventListener('abort', abort, { once: true });
   try {
     return await task.promise;
+  } catch (cause) {
+    // PDF.js discards the Hub's JSON refusal and includes the request URL in
+    // its HTTP error. Recover only the curated cache-identity message.
+    if (!signal?.aborted && (cause as { status?: number })?.status === 409) {
+      const failure = await fetch(url, { signal })
+        .then(async (response) => (response.status === 409 ? response.json() : null))
+        .catch(() => null);
+      if (
+        failure?.error?.code === 'SOURCE_CHANGED' &&
+        typeof failure.error.message === 'string' &&
+        failure.error.message.length <= 240
+      )
+        throw new Error(failure.error.message);
+    }
+    throw cause;
   } finally {
     signal?.removeEventListener('abort', abort);
   }
