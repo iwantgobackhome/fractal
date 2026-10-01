@@ -1,21 +1,21 @@
 # Request acceptance map
 
-Coordinator checkpoint: accepted C stage3 implementation, final Windows package with Hub shutdown correction, and independent current desktop review through root `c969598`. This is a review map, not final product certification. Active Android reader/discovery changes remain owner checkpoints until final evidence is accepted. User direction: scholarly newspaper/paper typography, richer useful information, restrained rules and paper surfaces. Requests 1–13 are authorized; request 14 is excluded.
+Coordinator checkpoint: accepted C stage3 implementation/final Windows package/independent desktop review and D stage3 reader through root `a991ff2`. This is a review map, not final product certification. Android discovery remains active and E independent current Android review is pending. User direction: scholarly newspaper/paper typography, richer useful information, restrained rules and paper surfaces. Requests 1–13 are authorized; request 14 is excluded.
 
 | Request | Accepted evidence | Remaining final gate |
 | --- | --- | --- |
 | 1. PC UI and consistent icons | A scholarly design; C stage1 library; C stage2 reader; C stage3 actual discovery render matrix, final packaged/native icon proof and E independent current desktop review | Android final UI and current APK resources; integrated final certification |
-| 2. Selected text/figure question history survives close | B durable generation/history and persisted context/citations; C stage2 real Hub/SSE, close/reopen/restart | D stage3 actual HTTP lifecycle; final integrated history/source status review |
+| 2. Selected text/figure question history survives close | B durable generation/history and persisted context/citations; C stage2 real Hub/SSE, close/reopen/restart; D stage3 actual native HTTP close/reopen, separate-process recovery, offline retry and cancel | Independent current Android history/source status review |
 | 3. Recent vs explicitly saved; folders | B foundation/discovery; C stage1 real library flows; D stage2 Room migration and immutable queue; E accepted actual native HTTP offline/reconnect/CAS/delete bridge | Consistent discovery/save/PDF link states in final platform screens |
 | 4. Custom model/language selectors | C stage1 dynamic keyboard/focus selector; D stage2 custom focus and font captures; B per-request BCP47/auto contract | C/D final reader and discovery controls, per-question language persistence |
 | 5. Journals/conferences beyond arXiv | B accepted OpenAlex/Crossref taxonomy; C stage3 actual source/type/topic flows and honest publication metadata | D stage4 actual discovery presentation; independent final review |
-| 6. App UI details | A design, D stage2 final phone/tablet library, themes and enlarged font | D stage3 discoverable compact tools and scholarly reader hierarchy; D stage4 discovery; final captures |
+| 6. App UI details | A design, D stage2 final library; D stage3 compact Tools, full title/bibliography, complete note editor, readable panel and 84 phone/tablet/theme/font/locale captures | D stage4 source-rich discovery; independent current final captures |
 | 7. App news/topics | B discovery backend and accepted legacy feed compatibility | D stage4 news/article/title translation, taxonomy/custom topics/follow/navigation/cache |
-| 8. App pen jumps | D stage1 actual routed pen/zoom stability; D stage3 checkpoint real finger-first sole-stylus host tests | Final split/overlay/viewport integration; physical Galaxy Tab/S Pen is unverified |
+| 8. App pen jumps | D stage1 routed pen/zoom; D stage3 scoped host, mixed pointers, genuine cancel/eraser/undo, fixed viewport and maximum-zoom normal-frame lifecycle with main-thread restore | Independent current integration review; physical Galaxy Tab/S Pen is unverified |
 | 9. App icon | D stage2 matching adaptive/legacy/round launcher resources | Current final APK resource/hash verification; installed resource appearance where actually observed |
-| 10. Original and translated text selection | B original PDF geometry; C stage2 partial/backwards/Unicode/cropped/angled/across-page real browser/Electron clipboard; D stage3 cached range checkpoint | D final real selection handles/copy/quote/split/source validation; API35 native indices are not B extraction indices |
-| 11. Positioned editable/collapsible sticky notes | B optional memo fields and provenance; C stage2 full body/move/resize/color/restart; D stage3 checkpoint | D final expanded body/edit/color/move/collapse captures, actual offline/reconnect persistence |
-| 12. App original/translation split | D stage3 expanded split and compact switching checkpoint | Current rendered tablet split, physical page/block/offset preservation across resize/mode changes |
+| 10. Original and translated text selection | B original PDF geometry; C real browser/Electron clipboard; D stage3 actual finger/pen canonical range handles, exact original copy/quote, real Android translated Copy and independent rendered envelope/source validation | Initially uncached transient layout reconnect recovery and independent current review; API35 native indices remain separate |
+| 11. Positioned editable/collapsible sticky notes | B optional memo fields/provenance; C full body/move/resize/color/restart; D stage3 full body/editor/color/move/collapse, font2 captures and actual offline/reconnect persistence | Independent current Android review |
+| 12. App original/translation split | D stage3 current tablet split/compact switching, physical page/block/fraction preservation and explicit missing-translation page gaps | Independent current Android review |
 | 13. Related lookup busy/failure | B bounded S2/OpenAlex fallback; C stage3 actual retained saveable cached rows, provider-specific429/timeout/cooldown and no request storm | D stage4 usable saved/cached rows and bounded refresh; independent final review |
 
 ## Evidence sources
@@ -27,6 +27,8 @@ Coordinator checkpoint: accepted C stage3 implementation, final Windows package 
 - `docs/implementation/backend/original-provenance-verification.md`
 - `apps/android/qa/reader-interaction-stability.md`
 - `apps/android/qa/android-library-foundation.md`
+- `apps/android/qa/stage3-reader-final-report.md`
+- `docs/implementation/qa/integrated/ACCEPTED-DESKTOP.md`
 - `docs/implementation/qa/reader-prerequisite/REVIEW.md`
 - `docs/implementation/qa/native-bridge/REVIEW.md`
 
