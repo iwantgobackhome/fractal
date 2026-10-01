@@ -455,7 +455,16 @@ export function DiscoveryDesk({
         <footer className="index-footer">
           Fractal · {visible.length} {say('papers', '논문')} · {news.length} {say('stories', '소식')}
         </footer>
-        {dossier ? <PublicationDossier hub={hub} item={dossier} record={matchPublication(dossier, records)} hasPdf={papers.some((p) => p.paperKey === matchPublication(dossier, records)?.paperKey && !!p.pdfSha256)} onOpen={onOpen} onClose={() => setDossier(null)} /> : null}
+        {dossier ? (
+          <PublicationDossier
+            hub={hub}
+            item={dossier}
+            record={matchPublication(dossier, records)}
+            hasPdf={papers.some((p) => p.paperKey === matchPublication(dossier, records)?.paperKey && !!p.pdfSha256)}
+            onOpen={onOpen}
+            onClose={() => setDossier(null)}
+          />
+        ) : null}
         {reading ? <ArticleView hub={hub} item={reading} onClose={() => setReading(null)} /> : null}
         {managing && field !== 'all' ? (
           <TopicManager

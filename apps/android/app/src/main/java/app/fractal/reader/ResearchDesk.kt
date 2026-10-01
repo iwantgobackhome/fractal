@@ -41,11 +41,17 @@ internal fun ResearchDesk(app: ReaderApplication, onSettings: () -> Unit, onRead
                     }
                 }
             }
-            if (horizontal) Row(modifier.background(colors.paper).clipToBounds(), verticalAlignment = Alignment.CenterVertically) {
-                labels.forEach { (key, label) -> TextButton(onClick = { destination = key; relatedTrail = emptyList() }, modifier = Modifier.weight(1f)
-                    .heightIn(min = 48.dp).semantics { selected = destination == key }, contentPadding = PaddingValues(horizontal = 4.dp, vertical = 12.dp)) {
-                    Text(label, color = if (destination == key) colors.accent else colors.inkSoft)
-                } }
+            if (horizontal) Column(modifier.background(colors.paper).clipToBounds()) {
+                // Give large-font phone labels room to remain complete words and keep all
+                // four destinations visible without reducing the user's font preference.
+                labels.chunked(if (font >= 1.5f) 2 else 4).forEach { row ->
+                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                        row.forEach { (key, label) -> TextButton(onClick = { destination = key; relatedTrail = emptyList() }, modifier = Modifier.weight(1f)
+                            .heightIn(min = 48.dp).semantics { selected = destination == key }, contentPadding = PaddingValues(horizontal = 4.dp, vertical = 12.dp)) {
+                            Text(label, maxLines = 1, softWrap = false, color = if (destination == key) colors.accent else colors.inkSoft)
+                        } }
+                    }
+                }
             }
             else Column(modifier.background(colors.paper).clipToBounds()) { controls() }
         }

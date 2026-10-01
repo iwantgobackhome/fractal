@@ -19,16 +19,20 @@ export class FeedImages {
       this.trim();
       if (this.entries.size >= 32) throw new Error('Image cache busy');
       const controller = new AbortController();
+      const deadline = setTimeout(() => controller.abort(), 15_000);
       entry = { controller, users: 0, promise: this.load(path, controller.signal) };
       const captured = entry;
-      entry.promise = entry.promise.then((blob) => {
-        captured.blob = blob;
-        this.trim();
-        return blob;
-      }).catch((error: unknown) => {
-        if (this.entries.get(path) === captured) this.entries.delete(path);
-        throw error;
-      });
+      entry.promise = entry.promise
+        .then((blob) => {
+          captured.blob = blob;
+          this.trim();
+          return blob;
+        })
+        .catch((error: unknown) => {
+          if (this.entries.get(path) === captured) this.entries.delete(path);
+          throw error;
+        })
+        .finally(() => clearTimeout(deadline));
       this.entries.set(path, entry);
     }
     entry.users++;
@@ -37,16 +41,19 @@ export class FeedImages {
     this.entries.set(path, entry);
     const captured = entry;
     let released = false;
-    return { blob: entry.promise, release: () => {
-      if (released) return;
-      released = true;
-      captured.users--;
-      if (!captured.users && !captured.blob) {
-        captured.controller.abort();
-        if (this.entries.get(path) === captured) this.entries.delete(path);
-      }
-      this.trim();
-    } };
+    return {
+      blob: entry.promise,
+      release: () => {
+        if (released) return;
+        released = true;
+        captured.users--;
+        if (!captured.users && !captured.blob) {
+          captured.controller.abort();
+          if (this.entries.get(path) === captured) this.entries.delete(path);
+        }
+        this.trim();
+      },
+    };
   }
 
   private trim(): void {
@@ -67,6 +74,11 @@ export class FeedImages {
       throw new Error('Image unavailable');
     }
     const reader = response.body.getReader();
+    const cancel = () => {
+      void reader.cancel().catch(() => undefined);
+    };
+    signal.addEventListener('abort', cancel, { once: true });
+    if (signal.aborted) cancel();
     const chunks: Uint8Array<ArrayBuffer>[] = [];
     let size = 0;
     try {
@@ -82,6 +94,9 @@ export class FeedImages {
     } catch (error) {
       await reader.cancel().catch(() => undefined);
       throw error;
-    } finally { reader.releaseLock(); }
+    } finally {
+      signal.removeEventListener('abort', cancel);
+      reader.releaseLock();
+    }
   }
 }
