@@ -82,13 +82,17 @@ fun PdfPage(
 ) {
     val colors = LocalFractalColors.current
     val density = LocalDensity.current
+    val loadingSelection = libraryText("Text selection is loading.", "텍스트 선택을 준비하고 있습니다.")
+    val noTextSelection = libraryText("This page has no selectable text. Choose a region for a scan or figure.", "이 페이지에는 선택할 텍스트가 없습니다. 스캔이나 그림은 영역을 선택하세요.")
+    val offlineSelection = libraryText("Text selection is unavailable. Reconnect to cache text, or choose a region.", "텍스트를 선택할 수 없습니다. 다시 연결해 텍스트를 저장하거나 영역을 선택하세요.")
+    val missedSelection = libraryText("No selectable text here. Choose a region for a figure.", "여기에는 선택할 텍스트가 없습니다. 그림은 영역을 선택하세요.")
+    val changedSelection = libraryText("The PDF changed. Reopen it before selecting text.", "PDF가 변경되었습니다. 다시 열고 텍스트를 선택하세요.")
     var textPage by remember(source, index) { mutableStateOf<OriginalTextPage?>(null) }
-    var textStatus by remember(source, index) { mutableStateOf("Original text positions are loading.") }
+    var textStatus by remember(source, index) { mutableStateOf(loadingSelection) }
     LaunchedEffect(source, index) {
         val result = withContext(Dispatchers.IO) { app.originalText.page(paperKey, source.pdfSha256, index + 1, source.pageCount) }
         textPage = result.page
-        textStatus = if (result.page?.coverage == "no_text") "This page has no extracted text. Deliberately select a region for a figure or scanned page."
-            else result.message
+        textStatus = if (result.page?.coverage == "no_text") noTextSelection else if (result.page == null) offlineSelection else ""
     }
     val geometry = remember(textPage) { textPage?.let(::OriginalTextGeometry) }
     fun selected(range: OriginalRange): PdfTextSelection = PdfTextSelection(
@@ -111,9 +115,7 @@ fun PdfPage(
         val aspect = remember(source, index) { source.aspectRatio(index) }
         var bitmap by remember(source, index, widthPx) { mutableStateOf<android.graphics.Bitmap?>(null) }
         LaunchedEffect(source, index, widthPx) {
-            withContext(Dispatchers.IO) {
-                bitmap = source.bitmap(index, widthPx)
-            }
+            bitmap = withContext(Dispatchers.IO) { source.bitmap(index, widthPx) }
         }
         val height = width / aspect
         Box(Modifier.fillMaxWidth().height(height).clipToBounds()) {
@@ -142,21 +144,24 @@ fun PdfPage(
                 Canvas(Modifier.matchParentSize()) {
                     highlights.forEach { row ->
                         val json = runCatching { WireJson.format.parseToJsonElement(row.json).jsonObject }.getOrNull()
+                        val provenance = json?.get("provenance") as? kotlinx.serialization.json.JsonObject
+                        if (sourceContextStatus(provenance, source.pdfSha256, index + 1, textPage) !in listOf("current", "unknown")) return@forEach
+                        if (provenance?.get("coordinateSpace")?.jsonPrimitive?.content == "unrotated-crop-normalized-v1" && textPage == null) return@forEach
                         val color = highlightColor(json?.get("color")?.jsonPrimitive?.content ?: "yellow").copy(alpha = .38f)
                         val rects = json?.get("rects")?.jsonArray.orEmpty()
                         rects.forEach { item ->
                             val rect = item.jsonObject
                             fun value(key: String) = rect[key]?.jsonPrimitive?.content?.toFloatOrNull() ?: 0f
-                            drawRect(color, topLeft = androidx.compose.ui.geometry.Offset(value("x") * size.width, value("y") * size.height),
-                                size = Size(value("width") * size.width, value("height") * size.height))
+                            val displayed = renderedRect(PdfRect(value("x"), value("y"), value("width"), value("height")), provenance, textPage?.rotation ?: 0)
+                            drawRect(color, topLeft = androidx.compose.ui.geometry.Offset(displayed.x * size.width, displayed.y * size.height),
+                                size = Size(displayed.width * size.width, displayed.height * size.height))
                         }
                         val note = json?.get("note")?.jsonPrimitive?.content
                         if (!note.isNullOrBlank() && note != "null" && rects.isNotEmpty()) {
                             val end = rects.last().jsonObject
-                            val x = (end["x"]?.jsonPrimitive?.content?.toFloatOrNull() ?: 0f) +
-                                (end["width"]?.jsonPrimitive?.content?.toFloatOrNull() ?: 0f)
-                            val y = end["y"]?.jsonPrimitive?.content?.toFloatOrNull() ?: 0f
-                            drawCircle(colors.ink, radius = 5.dp.toPx(), center = androidx.compose.ui.geometry.Offset(x * size.width, y * size.height))
+                            fun value(key: String) = end[key]?.jsonPrimitive?.content?.toFloatOrNull() ?: 0f
+                            val displayed = renderedRect(PdfRect(value("x"), value("y"), value("width"), value("height")), provenance, textPage?.rotation ?: 0)
+                            drawCircle(colors.ink, radius = 5.dp.toPx(), center = androidx.compose.ui.geometry.Offset((displayed.x + displayed.width) * size.width, displayed.y * size.height))
                         }
                     }
                     selection?.quads?.forEach { quad ->
@@ -182,17 +187,17 @@ fun PdfPage(
                     nativeInkRouting = nativeViewport != null,
                     nativeViewportInWindow = nativeViewport,
                     onTextSelection = { start, end ->
-                        if (!source.identityUnchanged()) onSelectionUnavailable("The cached PDF changed. Reopen it before selecting text.")
+                        if (!source.identityUnchanged()) onSelectionUnavailable(changedSelection)
                         else if (regionMode) onSelection(region(start.x, start.y, end.x, end.y))
                         else geometry?.select(start.x.toDouble(), start.y.toDouble(), end.x.toDouble(), end.y.toDouble())
                             ?.let { onSelection(selected(it)) }
-                            ?: onSelectionUnavailable(textStatus.ifBlank { "No selectable text at this point. Choose region selection for a figure." })
+                            ?: onSelectionUnavailable(textStatus.ifBlank { missedSelection })
                     },
                     onFingerLongPress = { x, y ->
-                        if (!source.identityUnchanged()) onSelectionUnavailable("The cached PDF changed. Reopen it before selecting text.")
+                        if (!source.identityUnchanged()) onSelectionUnavailable(changedSelection)
                         else if (regionMode) onSelection(region((x - .08f).coerceAtLeast(0f), (y - .012f).coerceAtLeast(0f), (x + .08f).coerceAtMost(1f), (y + .012f).coerceAtMost(1f)))
                         else geometry?.wordAt(x.toDouble(), y.toDouble())?.let { onSelection(selected(it)) }
-                            ?: onSelectionUnavailable(textStatus.ifBlank { "No selectable text at this point. Choose region selection for a figure." })
+                            ?: onSelectionUnavailable(textStatus.ifBlank { missedSelection })
                     },
                     onFingerDoubleTap = onDoubleTap,
                     onWritingStateChanged = onWritingStateChanged,
@@ -207,7 +212,8 @@ fun PdfPage(
                             var dragX by remember(geometry, endHandle) { mutableStateOf(0.0) }
                             var dragY by remember(geometry, endHandle) { mutableStateOf(0.0) }
                             var opposite by remember(geometry, endHandle) { mutableStateOf(0) }
-                            Box(Modifier.offset { IntOffset((point.x * widthPx - touchPx / 2).roundToInt(), (point.y * heightPx - touchPx / 2).roundToInt()) }
+                            Box(Modifier.offset { IntOffset((point.x * widthPx - if (endHandle) 0f else touchPx).coerceIn(0.0, (widthPx - touchPx).coerceAtLeast(0f).toDouble()).roundToInt(),
+                                (point.y * heightPx).coerceIn(0.0, (heightPx - touchPx).coerceAtLeast(0f).toDouble()).roundToInt()) }
                                 .size(48.dp).nativeInkBlocker().semantics { contentDescription = if (endHandle) "Selection end handle" else "Selection start handle" }
                                 .pointerInput(geometry, endHandle, widthPx, heightPx) {
                                     detectDragGestures(onDragStart = {

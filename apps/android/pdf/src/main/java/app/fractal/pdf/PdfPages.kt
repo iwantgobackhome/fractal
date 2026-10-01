@@ -2,9 +2,7 @@ package app.fractal.pdf
 
 import android.graphics.Bitmap
 import android.graphics.Color
-import android.graphics.Point
 import android.graphics.pdf.PdfRenderer
-import android.graphics.pdf.models.selection.SelectionBoundary
 import android.os.Build
 import android.os.ParcelFileDescriptor
 import android.util.LruCache
@@ -80,26 +78,12 @@ class PdfPages(file: File) : Closeable {
         }
     }
 
-    /** Native text selection exists on API 35. Older devices can select a page region only. */
+    /** Optional native API35 helper. Its text stream is never treated as cached layout UTF16. */
     @Synchronized
     fun select(index: Int, x: Float, y: Float, endX: Float = x, endY: Float = y): PdfTextSelection? {
         if (Build.VERSION.SDK_INT < 35) return null
         renderer.openPage(index).use { page ->
-            fun boundary(px: Float, py: Float) = SelectionBoundary(Point(
-                (px.coerceIn(0f, 1f) * page.width).toInt(),
-                (py.coerceIn(0f, 1f) * page.height).toInt(),
-            ))
-            val selected = page.selectContent(boundary(x, y), boundary(endX, endY)) ?: return null
-            val contents = selected.selectedTextContents
-            val rects = contents.flatMap { it.bounds }.map { rect ->
-                PdfRect(
-                    x = (rect.left / page.width).coerceIn(0f, 1f),
-                    y = (rect.top / page.height).coerceIn(0f, 1f),
-                    width = (rect.width() / page.width).coerceIn(0f, 1f),
-                    height = (rect.height() / page.height).coerceIn(0f, 1f),
-                )
-            }
-            return PdfTextSelection(contents.joinToString(" ") { it.text }, rects)
+            return NativePageSelection.select(page, x, y, endX, endY)
         }
     }
 

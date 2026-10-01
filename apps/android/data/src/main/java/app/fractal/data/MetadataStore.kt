@@ -76,7 +76,7 @@ class MetadataStore(private val database: FractalDatabase, private val deviceId:
 
     suspend fun save(key: String, saved: Boolean) = patchPaper(key, buildJsonObject { put("saved", saved) })
 
-    suspend fun read(key: String, page: Int, scrollOffset: Double = 0.0) = database.withTransaction {
+    suspend fun read(key: String, page: Int, scrollOffset: Double = 0.0, blockId: String? = null) = database.withTransaction {
         // A hard deletion can arrive while an already-open reader is disposing.
         if (database.library().get(key) == null) return@withTransaction
         patchPaper(key, buildJsonObject {
@@ -84,6 +84,7 @@ class MetadataStore(private val database: FractalDatabase, private val deviceId:
         put("lastReadAt", java.time.format.DateTimeFormatterBuilder().appendInstant(3).toFormatter().format(Instant.now()))
         put("readProgress", buildJsonObject {
             put("page", page); put("scrollOffset", scrollOffset.coerceIn(0.0, 1.0))
+            blockId?.takeIf(String::isNotBlank)?.let { put("blockId", it) }
         })
         })
     }

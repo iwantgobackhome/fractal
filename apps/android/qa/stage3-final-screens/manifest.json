@@ -1,0 +1,511 @@
+{
+  "device": "emulator-5554",
+  "api": 34,
+  "density": 160,
+  "screens": [
+    {
+      "file": "phone360-font2/reader-full-title-360x752-font2.0.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "c56cfcf65ee90aebf65c16d8f0d3bbb47d737f874d7fbbf2ef2992b2f41ff394"
+    },
+    {
+      "file": "phone360-font2/reader-note-360x752-font2.0.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "a8a29d055fc8f614bdf8354d38cf8488cce281db6348d023bfdad66b4777967f"
+    },
+    {
+      "file": "phone360-font2/reader-note-editor-360x752-font2.0.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "bbd05573b4cc9aea8e69ca3318224fa59b5179a895dc23ec27893af273508a07"
+    },
+    {
+      "file": "phone360-font2/reader-original-360x752-font2.0.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "6cce0fa0726f3ac583569a8323346c7611df9e0e57c1eebf925839167a622310"
+    },
+    {
+      "file": "phone360-font2/reader-quoted-translation-360x752-font2.0.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "c077c879489979dfb8484e593bca522658aecafe393d347970f94175dc117a45"
+    },
+    {
+      "file": "phone360-font2/reader-translation-360x752-font2.0.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "f8f596bd2cfd7aa795e1c6a256bc3ada71cd8e5f029fd5c5878e2de59574a0d5"
+    },
+    {
+      "file": "phone360-landscape/reader-full-title-800x312-font1.0.png",
+      "width": 800,
+      "height": 360,
+      "sha256": "5086aedb345fed0e97957639a50c6d1f7851fb596c2d5a95b05c8dc3e6444330"
+    },
+    {
+      "file": "phone360-landscape/reader-hub-cached-history-800x312-font1.0.png",
+      "width": 800,
+      "height": 360,
+      "sha256": "ec6b7a3cfca6bbcae54641e4c25addcc8304e3112423e0c2a161427d2e41511d"
+    },
+    {
+      "file": "phone360-landscape/reader-hub-cached-original-800x312-font1.0.png",
+      "width": 800,
+      "height": 360,
+      "sha256": "3f0200bce0d1b407141357e53bba1082320aa6e30f4075b3d885f4f76e003504"
+    },
+    {
+      "file": "phone360-landscape/reader-hub-cached-translation-800x312-font1.0.png",
+      "width": 800,
+      "height": 360,
+      "sha256": "62d6bb1ac116a95ba5a242d1bc2ce620c7e948d272cd8db4fe0910ce6bf9eab1"
+    },
+    {
+      "file": "phone360-landscape/reader-note-800x312-font1.0.png",
+      "width": 800,
+      "height": 360,
+      "sha256": "b035cff91e9ec932ea9ed599c1f336a7b38317570d3de116e2e918bce2459d1f"
+    },
+    {
+      "file": "phone360-landscape/reader-note-editor-800x312-font1.0.png",
+      "width": 800,
+      "height": 360,
+      "sha256": "691f5ecd3e5b0a67a916b309d7c8a2978eb820077a1b2ad8f75425baa36d002e"
+    },
+    {
+      "file": "phone360-landscape/reader-original-800x312-font1.0.png",
+      "width": 800,
+      "height": 360,
+      "sha256": "cb58e5b2c3a7e1385c08ec9c5038ea48dfcd3879e8ca35346b92b9915bbfa874"
+    },
+    {
+      "file": "phone360-landscape/reader-quoted-translation-800x312-font1.0.png",
+      "width": 800,
+      "height": 360,
+      "sha256": "7183c645c7917efd87d1d3d500fb4060dbd8d93bb1d5ae6bb483e796c399ba3f"
+    },
+    {
+      "file": "phone360-landscape/reader-translation-800x312-font1.0.png",
+      "width": 800,
+      "height": 360,
+      "sha256": "fe3701f8f83fce9c1e19ecfeac0ef32c7ce5cba653d087c9101d2c353509afca"
+    },
+    {
+      "file": "phone360-portrait/reader-full-title-360x752-font1.0.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "d7fa1a8c5e8585b2d87e14f2a1aa71b28d0db193bcff43e80db1204dab5b35cd"
+    },
+    {
+      "file": "phone360-portrait/reader-hub-cached-history-360x752-font1.0.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "6a814e54e92d478a7c77cdc4779e990b7f43c8d513b02e21595ad9218f5bf1f2"
+    },
+    {
+      "file": "phone360-portrait/reader-hub-cached-original-360x752-font1.0.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "75a5478ae4749072030f3138da459a6715489fcf84d4d9dcdf1ff1151e92f584"
+    },
+    {
+      "file": "phone360-portrait/reader-hub-cached-translation-360x752-font1.0.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "3b03599a3cd315eeeb80930b5130c5b07ab6f79076d95b0b6913e608d7c227e4"
+    },
+    {
+      "file": "phone360-portrait/reader-note-360x752-font1.0.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "c1fd48d2c1a8c4b8d597bddd6be44d52d02de9b194e959007fd293d3c9355c28"
+    },
+    {
+      "file": "phone360-portrait/reader-note-editor-360x752-font1.0.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "ea8a30ef68c25a4b52d429e556a53ff43fd0249bef9844aceb07d2d438075cac"
+    },
+    {
+      "file": "phone360-portrait/reader-original-360x752-font1.0.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "60f6e30ef753798afd309afc31f99a83a65a98deb4e77bace9ca7d872910ddf5"
+    },
+    {
+      "file": "phone360-portrait/reader-quoted-translation-360x752-font1.0.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "ee5b7113d0353428216418a0ca9300837ea346c5171fce900f03669a883256a9"
+    },
+    {
+      "file": "phone360-portrait/reader-translation-360x752-font1.0.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "f9defcaaf3300429a2883cc54e2de3e8848eaffe25eccfa788a07ec0e8a1dbe4"
+    },
+    {
+      "file": "phone360-ranges/reader-cached-selection-360x744-font1.0.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "52fd30f0604ece216adb3b75b5743c471c6a889ed4648fbc425f735f99fb1ddb"
+    },
+    {
+      "file": "phone360-ranges/reader-translated-selection-360x744-font1.0.png",
+      "width": 360,
+      "height": 800,
+      "sha256": "776921958c77ab8fa0335e7371c83f1679b397250cac18df75abb1995d0edd32"
+    },
+    {
+      "file": "tablet1280-dark-font1_5/reader-full-title-1280x744-font1.5.png",
+      "width": 1280,
+      "height": 800,
+      "sha256": "5c16527316ef1f66234acbadce9d3d2951906a3efd9506ea7c2a1f72f4b24e71"
+    },
+    {
+      "file": "tablet1280-dark-font1_5/reader-note-1280x744-font1.5.png",
+      "width": 1280,
+      "height": 800,
+      "sha256": "13afa92e540d2b3240b8a7799716ae2ce5d6da1089a34c7557b995b84d11dcc8"
+    },
+    {
+      "file": "tablet1280-dark-font1_5/reader-note-editor-1280x744-font1.5.png",
+      "width": 1280,
+      "height": 800,
+      "sha256": "4ed946cf2beff6a39b9c9c7f1e2979b78ccc674afcc795a4c18ee4eabdd7a35f"
+    },
+    {
+      "file": "tablet1280-dark-font1_5/reader-original-1280x744-font1.5.png",
+      "width": 1280,
+      "height": 800,
+      "sha256": "057937cbe79e78a6d53b6867e5243b9f1fa064d01602820f887387fe3f3ea61e"
+    },
+    {
+      "file": "tablet1280-dark-font1_5/reader-quoted-translation-1280x744-font1.5.png",
+      "width": 1280,
+      "height": 800,
+      "sha256": "385b85dd233d0e4d96556e26962bd129fbcb29e212e2fea14b792bc1c41be0d3"
+    },
+    {
+      "file": "tablet1280-dark-font1_5/reader-split-1280x744-font1.5.png",
+      "width": 1280,
+      "height": 800,
+      "sha256": "256049624e5ee578d8f3c8d34611efa889370a26f6942139b8c226ba492758d6"
+    },
+    {
+      "file": "tablet1280-dark-font1_5/reader-translation-1280x744-font1.5.png",
+      "width": 1280,
+      "height": 800,
+      "sha256": "cc1772286527f5ee38626463c47a8eb62cc3dc41dd18c3b798721078701778ce"
+    },
+    {
+      "file": "tablet1280-landscape/reader-full-title-1800x1224-font1.0.png",
+      "width": 1800,
+      "height": 1280,
+      "sha256": "56bee8ce867036795d8e9b77e8c812b58b6d91505211a6e25394110475d4b7a2"
+    },
+    {
+      "file": "tablet1280-landscape/reader-hub-cached-history-1800x1224-font1.0.png",
+      "width": 1800,
+      "height": 1280,
+      "sha256": "06ea99c3006b95463ebf19ebb3d90257ba538a0efe2e3f990be1e2b4a12a4468"
+    },
+    {
+      "file": "tablet1280-landscape/reader-hub-cached-original-1800x1224-font1.0.png",
+      "width": 1800,
+      "height": 1280,
+      "sha256": "8691dde29fcf76ac47c20ebc864d1fcecca75286ec49d63eb0f3ecae9f06b77a"
+    },
+    {
+      "file": "tablet1280-landscape/reader-hub-cached-split-1800x1224-font1.0.png",
+      "width": 1800,
+      "height": 1280,
+      "sha256": "4e7c9ef8ee89097369388fb87e224cf70123894c40ea3981346f92bf7c9551fd"
+    },
+    {
+      "file": "tablet1280-landscape/reader-hub-cached-translation-1800x1224-font1.0.png",
+      "width": 1800,
+      "height": 1280,
+      "sha256": "bd6e031709ffc2ba0f03fffd7465b412960da5b87a63f2e34f7ee1283002e92f"
+    },
+    {
+      "file": "tablet1280-landscape/reader-note-1800x1224-font1.0.png",
+      "width": 1800,
+      "height": 1280,
+      "sha256": "9ef93bb9c46e2f20e50b56d8421734e961714ba248797f0d41e3e8ad662258cb"
+    },
+    {
+      "file": "tablet1280-landscape/reader-note-editor-1800x1224-font1.0.png",
+      "width": 1800,
+      "height": 1280,
+      "sha256": "6e6a18c2e739e54a75908ad7b6481135a0812924201f6dfbf2f208634014d825"
+    },
+    {
+      "file": "tablet1280-landscape/reader-original-1800x1224-font1.0.png",
+      "width": 1800,
+      "height": 1280,
+      "sha256": "a8080cbe95bfdcef22e7086c0795c53c607c04df34cc15c9a11719d751cf7d75"
+    },
+    {
+      "file": "tablet1280-landscape/reader-quoted-translation-1800x1224-font1.0.png",
+      "width": 1800,
+      "height": 1280,
+      "sha256": "9ca5e9ad20ab2a677bafabe00096000145b6b4d13dd65308272e8d16c5f0016b"
+    },
+    {
+      "file": "tablet1280-landscape/reader-split-1800x1224-font1.0.png",
+      "width": 1800,
+      "height": 1280,
+      "sha256": "8080388f44a2a33405ae093ca9d72d7ddae7a2f43e6231e88d7cbdb99096cf04"
+    },
+    {
+      "file": "tablet1280-landscape/reader-translation-1800x1224-font1.0.png",
+      "width": 1800,
+      "height": 1280,
+      "sha256": "6030ffd5852c3d9c9aa1a280e37fd519dbe95d529424bc81d7c5757a446831ad"
+    },
+    {
+      "file": "tablet1280-portrait/reader-full-title-1280x1744-font1.0.png",
+      "width": 1280,
+      "height": 1800,
+      "sha256": "6d3b7675fda0a5d444a8f39db2dd32b01cf89ec80ba0852e1f91a31903cc0191"
+    },
+    {
+      "file": "tablet1280-portrait/reader-hub-cached-history-1280x1744-font1.0.png",
+      "width": 1280,
+      "height": 1800,
+      "sha256": "2c0e2bf79df3046427c2f8591f94ff6cb2d9dd3a12e499bb72b346b04cb8902e"
+    },
+    {
+      "file": "tablet1280-portrait/reader-hub-cached-original-1280x1744-font1.0.png",
+      "width": 1280,
+      "height": 1800,
+      "sha256": "6b8e7826fadd8640188b6b9ca9012c29e321887aae81c7bb806a2a840f06e458"
+    },
+    {
+      "file": "tablet1280-portrait/reader-hub-cached-split-1280x1744-font1.0.png",
+      "width": 1280,
+      "height": 1800,
+      "sha256": "1c2da4eb4cf61e90457b4b3bb283997672f040579e7bd0d388acdd13a2d16427"
+    },
+    {
+      "file": "tablet1280-portrait/reader-hub-cached-translation-1280x1744-font1.0.png",
+      "width": 1280,
+      "height": 1800,
+      "sha256": "2064aa14507b13f9a19f2344949269882652a0a3d4f1c50ca1b7d9c6c440ffe3"
+    },
+    {
+      "file": "tablet1280-portrait/reader-note-1280x1744-font1.0.png",
+      "width": 1280,
+      "height": 1800,
+      "sha256": "a6d230cdd36dff1955fc9d1dbae571bb784c05c944ad0faef2272449853e7158"
+    },
+    {
+      "file": "tablet1280-portrait/reader-note-editor-1280x1744-font1.0.png",
+      "width": 1280,
+      "height": 1800,
+      "sha256": "36a118ce6578b0146657ff170180ecea6a8edad1196895e5d93d096053a5b7bb"
+    },
+    {
+      "file": "tablet1280-portrait/reader-original-1280x1744-font1.0.png",
+      "width": 1280,
+      "height": 1800,
+      "sha256": "490928755bbb29874107f7da1a0a0f17cc9da1e5989db39a442f4dba2727af5d"
+    },
+    {
+      "file": "tablet1280-portrait/reader-quoted-translation-1280x1744-font1.0.png",
+      "width": 1280,
+      "height": 1800,
+      "sha256": "2f88d4232cba3f83c6d5120e539adb22a35cbe3da8260d4253499b271f1b6d3f"
+    },
+    {
+      "file": "tablet1280-portrait/reader-split-1280x1744-font1.0.png",
+      "width": 1280,
+      "height": 1800,
+      "sha256": "475cac8e8e282da772daad0388c197abc6eba4a37fda6834036c0cceb067c726"
+    },
+    {
+      "file": "tablet1280-portrait/reader-translation-1280x1744-font1.0.png",
+      "width": 1280,
+      "height": 1800,
+      "sha256": "f2923ae8bae4e4da8bc6c9ec95523b5d7b2e8ada9f3ac35dd323d83c194f65f7"
+    },
+    {
+      "file": "tablet800-korean/reader-ko-history-800x1224-font1.0.png",
+      "width": 800,
+      "height": 1280,
+      "sha256": "be22f6100ccdc07bc0aefaed95b08482f0dfc218942d994fe015f6a51c3b7a4d"
+    },
+    {
+      "file": "tablet800-korean/reader-ko-original-800x1224-font1.0.png",
+      "width": 800,
+      "height": 1280,
+      "sha256": "61a261ed8c302f68497ddb98542201f8ea889ceef3ef64f760cc227932c7e112"
+    },
+    {
+      "file": "tablet800-korean/reader-ko-quote-selectors-800x1224-font1.0.png",
+      "width": 800,
+      "height": 1280,
+      "sha256": "0e377affe7502b0c879f1c86cb0f7b5423ea1951b64674e76ba76fdc58b35c9f"
+    },
+    {
+      "file": "tablet800-landscape/reader-full-title-1280x744-font1.0.png",
+      "width": 1280,
+      "height": 800,
+      "sha256": "b33a1521200b744dd8c336351849b37ced13e3387e909b4c4052ae8dd47e27a8"
+    },
+    {
+      "file": "tablet800-landscape/reader-hub-cached-history-1280x744-font1.0.png",
+      "width": 1280,
+      "height": 800,
+      "sha256": "c8b7cabe9cccb6e15991b479a7b3e55b2c44928539563b5e71b9029a25cfadff"
+    },
+    {
+      "file": "tablet800-landscape/reader-hub-cached-original-1280x744-font1.0.png",
+      "width": 1280,
+      "height": 800,
+      "sha256": "eb0f750c66b7bd4b3f80dbf5c0e90fe6190187cccada066a7a1231e5cf1ca7b5"
+    },
+    {
+      "file": "tablet800-landscape/reader-hub-cached-split-1280x744-font1.0.png",
+      "width": 1280,
+      "height": 800,
+      "sha256": "b1e9fe8548e5e0e875e6609644a0bc417a7ea3dda07cf652e4c47c77d28e44c9"
+    },
+    {
+      "file": "tablet800-landscape/reader-hub-cached-translation-1280x744-font1.0.png",
+      "width": 1280,
+      "height": 800,
+      "sha256": "27604f00bb5694452b510f64d31c9e3aca0cde837674f0870dfbcaf4c6b7dcd0"
+    },
+    {
+      "file": "tablet800-landscape/reader-note-1280x744-font1.0.png",
+      "width": 1280,
+      "height": 800,
+      "sha256": "e914779e72ab027c6f13f284cc40b533e505a524ec7cb7ff9a688f2cb0977211"
+    },
+    {
+      "file": "tablet800-landscape/reader-note-editor-1280x744-font1.0.png",
+      "width": 1280,
+      "height": 800,
+      "sha256": "b5b16ce3a91a4b6f764ec9191b5ead917bbb63a3e1fafe3e9397bc07f9bea466"
+    },
+    {
+      "file": "tablet800-landscape/reader-original-1280x744-font1.0.png",
+      "width": 1280,
+      "height": 800,
+      "sha256": "563e7a2034a3ef4b4d0642712df287cd716f91a0cf09ffe377c68ee44b50207a"
+    },
+    {
+      "file": "tablet800-landscape/reader-quoted-translation-1280x744-font1.0.png",
+      "width": 1280,
+      "height": 800,
+      "sha256": "5867f98a17e62b21ac77222156c772ce05a2e1a98f65a8f049e0ac0421c52235"
+    },
+    {
+      "file": "tablet800-landscape/reader-split-1280x744-font1.0.png",
+      "width": 1280,
+      "height": 800,
+      "sha256": "81e1367fd754460dc594800c5d601ae6f96a5294ac7bc82a5e796d8bc6c04bfb"
+    },
+    {
+      "file": "tablet800-landscape/reader-translation-1280x744-font1.0.png",
+      "width": 1280,
+      "height": 800,
+      "sha256": "4c81a8932fe97f73eb4514b157a38753313e8c59b9572e0f17a6c4489eb5e4c5"
+    },
+    {
+      "file": "tablet800-portrait/reader-full-title-800x1224-font1.0.png",
+      "width": 800,
+      "height": 1280,
+      "sha256": "f77fe2f880aaaed8b432663a8c3e1405fdad93e3027d20c408cb112bb5eb90da"
+    },
+    {
+      "file": "tablet800-portrait/reader-hub-cached-history-800x1224-font1.0.png",
+      "width": 800,
+      "height": 1280,
+      "sha256": "8efd15105b0f15016eedc98bc776b5eb69fb83f7fad9aafccc22ce58e8384d01"
+    },
+    {
+      "file": "tablet800-portrait/reader-hub-cached-original-800x1224-font1.0.png",
+      "width": 800,
+      "height": 1280,
+      "sha256": "666f0052caec5139349167b21d0ddcbe1acea4d75acd86e2adeefe5a3b0d93ae"
+    },
+    {
+      "file": "tablet800-portrait/reader-hub-cached-translation-800x1224-font1.0.png",
+      "width": 800,
+      "height": 1280,
+      "sha256": "2f40932a73203a245536798bd30ba8f9eab79321e103a60f4ee9b8422d863328"
+    },
+    {
+      "file": "tablet800-portrait/reader-note-800x1224-font1.0.png",
+      "width": 800,
+      "height": 1280,
+      "sha256": "493730b09f6eefecb81bbc6958bef8ff89ca027188e085a74d19e275c3f1cf62"
+    },
+    {
+      "file": "tablet800-portrait/reader-note-editor-800x1224-font1.0.png",
+      "width": 800,
+      "height": 1280,
+      "sha256": "4798376fa09bf7ec7bcd2b801c4b3da7f4768212f63604f120184bbb3be72b4e"
+    },
+    {
+      "file": "tablet800-portrait/reader-original-800x1224-font1.0.png",
+      "width": 800,
+      "height": 1280,
+      "sha256": "3fa1a1bb34caa12c9ae42fef5ed7d109a2676f700d2f398a81a39dabbb782e5b"
+    },
+    {
+      "file": "tablet800-portrait/reader-quoted-translation-800x1224-font1.0.png",
+      "width": 800,
+      "height": 1280,
+      "sha256": "a7440438f3aabbbd167fbfe134d13058b85419c83948f4fcd5bddd9d978747f7"
+    },
+    {
+      "file": "tablet800-portrait/reader-translation-800x1224-font1.0.png",
+      "width": 800,
+      "height": 1280,
+      "sha256": "4741b454da0660fac648f6652acc1314df2e0e4687af382c07cd9865b587e3f3"
+    },
+    {
+      "file": "tablet800-sepia/reader-full-title-800x1224-font1.0.png",
+      "width": 800,
+      "height": 1280,
+      "sha256": "8f8f061f4186a830cc20ea364094592d107b669574e902f5caeddc85e9583edd"
+    },
+    {
+      "file": "tablet800-sepia/reader-note-800x1224-font1.0.png",
+      "width": 800,
+      "height": 1280,
+      "sha256": "9b0e8da2fb3b92271364e6833bfa48a8a100edf76f8b1559123740deb5c4d90c"
+    },
+    {
+      "file": "tablet800-sepia/reader-note-editor-800x1224-font1.0.png",
+      "width": 800,
+      "height": 1280,
+      "sha256": "e20897369b3614cccc6e8c94db7587354a8e3a2516cea50e70dfba5e7e2f16e9"
+    },
+    {
+      "file": "tablet800-sepia/reader-original-800x1224-font1.0.png",
+      "width": 800,
+      "height": 1280,
+      "sha256": "5722816416d6762fd0bc85bb4543f95e19be89623cf400fba3e934a33758d1fa"
+    },
+    {
+      "file": "tablet800-sepia/reader-quoted-translation-800x1224-font1.0.png",
+      "width": 800,
+      "height": 1280,
+      "sha256": "8c1ae04096c3b685491353bcad998e71b31ee2ee6c0d7d72b25515c7b6779cf9"
+    },
+    {
+      "file": "tablet800-sepia/reader-translation-800x1224-font1.0.png",
+      "width": 800,
+      "height": 1280,
+      "sha256": "0fceec9ceba37c36293047158fb1badab284164a3a45d556b404bb867c2866c3"
+    }
+  ]
+}

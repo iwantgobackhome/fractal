@@ -2,6 +2,7 @@ package app.fractal.reader
 
 import android.graphics.Bitmap
 import android.os.SystemClock
+import androidx.compose.ui.geometry.Offset
 import android.view.*
 import android.util.Log
 import androidx.compose.runtime.*
@@ -13,6 +14,7 @@ import app.fractal.data.*
 import app.fractal.design.*
 import app.fractal.pdf.PdfPages
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.*
 import org.junit.*
 import org.junit.Assert.*
@@ -21,7 +23,7 @@ import java.security.MessageDigest
 
 /** Isolated published PDF fixtures; injected pointers establish software routing only. */
 class ReaderStageTest {
-    @get:Rule val compose = createAndroidComposeRule<MainActivity>()
+    @get:Rule val compose = createAndroidComposeRule<ReaderFixtureActivity>()
     private val app get() = compose.activity.application as ReaderApplication
     private val key = "stage3-reader-fixture"
     private lateinit var row: LibraryEntity
@@ -29,11 +31,6 @@ class ReaderStageTest {
     private var down = 0L
     @Before fun fixture() = runBlocking {
         assertNull("Use an unpaired disposable emulator", app.credentials.load())
-        compose.runOnUiThread {
-            val content = compose.activity.findViewById<ViewGroup>(android.R.id.content)
-            fun dispose(v: View) { if (v is ComposeView) v.disposeComposition() else if (v is ViewGroup) repeat(v.childCount) { dispose(v.getChildAt(it)) } }
-            repeat(content.childCount) { dispose(content.getChildAt(it)) }; content.removeAllViews()
-        }
         val assets = InstrumentationRegistry.getInstrumentation().context.assets
         val bytes = assets.open("text-layout.pdf").use { it.readBytes() }
         hash = MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") { "%02x".format(it) }
@@ -92,21 +89,50 @@ class ReaderStageTest {
         compose.waitForIdle(); SystemClock.sleep(250)
         val screen = InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot()
         val c = compose.activity.resources.configuration
-        val dir = File(app.getExternalFilesDir(null), "stage3-qa").apply { mkdirs() }
+        val profile = InstrumentationRegistry.getArguments().getString("captureProfile")?.takeIf { it.matches(Regex("[A-Za-z0-9_-]+")) } ?: "default"
+        val dir = File(app.getExternalFilesDir(null), "stage3-qa/$profile").apply { mkdirs() }
         val file = File(dir, "$name-${c.screenWidthDp}x${c.screenHeightDp}-font${c.fontScale}.png")
         file.outputStream().use { screen.compress(Bitmap.CompressFormat.PNG, 100, it) }; screen.recycle()
         Log.i("ReaderStageQA", "capture=${file.name}")
     }
+    private fun mode(label: String) {
+        compose.onNodeWithContentDescription("Reading pane").performClick()
+        compose.onAllNodesWithText(label).onLast().performClick()
+    }
+    @Test fun capturesActualHubDownloadedPaperAndRetainedHistoryOffline(): Unit = runBlocking {
+        org.junit.Assume.assumeTrue("Requires previously downloaded actual D bridge fixture", app.database.library().get("D-reader-catalog") != null)
+        val cached = app.database.library().get("D-reader-catalog")!!
+        assertNull(app.credentials.load())
+        assertTrue(translatedBlocks(WireJson.format.parseToJsonElement(app.database.metadata().snapshot(cached.paperKey)!!.json).jsonObject).any { it.translated })
+        app.database.reader().upsert(ReaderPositionEntity(cached.paperKey, "{\"mode\":\"original\",\"page\":1,\"fraction\":0}"))
+        compose.setContent { FractalTheme { ReaderScreen(app, cached, {}) } }
+        compose.waitUntil(15000) { surfaces().isNotEmpty() }; compose.waitForIdle()
+        capture("reader-hub-cached-original")
+        if (compose.activity.resources.configuration.screenWidthDp >= 840) { mode("Split"); capture("reader-hub-cached-split") }
+        mode("Translation"); capture("reader-hub-cached-translation")
+        mode("Original")
+        compose.onNodeWithText("Ask", substring = false).performClick()
+        compose.onNodeWithContentDescription("Reader panel").performClick(); compose.onAllNodesWithText("History").onLast().performClick()
+        compose.onNodeWithContentDescription("Filter history").performClick(); compose.onAllNodesWithText("Explanations").onLast().performClick()
+        assertTrue(app.database.metadata().observeHistory(cached.paperKey).first().any { it.status == "completed" }); capture("reader-hub-cached-history")
+        compose.onNodeWithText("Close", substring = false).performClick()
+    }
     @Test fun capturesSourceSplitAndCachedTranslation() {
         open(); capture("reader-original")
-        if (compose.activity.resources.configuration.screenWidthDp >= 840) { compose.onNodeWithText("Split").performClick(); compose.onNodeWithText("Translated research paragraph 1.", substring = true).assertExists(); capture("reader-split") }
-        compose.onNodeWithText("Translation", substring = false).performClick()
-        compose.onNodeWithText("Translated research paragraph 1.", substring = true).assertExists(); capture("reader-translation")
-        compose.onAllNodesWithText("Quote this translated block")[0].performClick()
-        compose.onNodeWithText("translated · page 1").assertExists(); capture("reader-quoted-translation")
+        compose.onNodeWithText(row.title!!, substring = false).performClick(); capture("reader-full-title")
         compose.onNodeWithText("Close", substring = false).performClick()
-        compose.onNodeWithText("Original", substring = false).performClick(); compose.onNodeWithContentDescription("Move source note").assertExists()
+        if (compose.activity.resources.configuration.screenWidthDp >= 840) { mode("Split"); compose.onNodeWithText("Translated research paragraph 1.", substring = true).assertExists(); capture("reader-split") }
+        mode("Translation")
+        compose.onNodeWithText("Translated research paragraph 1.", substring = true).assertExists(); capture("reader-translation")
+        compose.onAllNodesWithText("Quote this translated block")[0].performScrollTo().performClick()
+        compose.onNodeWithText("Translated quote · page 1").assertExists(); capture("reader-quoted-translation")
+        compose.onNodeWithText("Close", substring = false).performClick()
+        mode("Original"); compose.onNodeWithContentDescription("Move source note").assertExists()
+        compose.onNodeWithContentDescription("Move source note").performScrollTo().performClick()
+        compose.onNodeWithText("Complete retained memo body.", substring = true).assertExists()
         capture("reader-note")
+        compose.onNodeWithText("Edit", substring = false).performClick(); capture("reader-note-editor")
+        compose.onNodeWithText("Cancel", substring = false).performClick()
     }
     @Test fun genuineCachedRangeCopyQuoteAndHandles() = runBlocking {
         open()
@@ -128,6 +154,7 @@ class ReaderStageTest {
         compose.onNodeWithText("Copy", substring = false).performClick()
         val clip = app.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
         assertEquals("iii", clip.primaryClip!!.getItemAt(0).text.toString())
+        SystemClock.sleep(8000) // Let Android's system clipboard overlay dismiss before final product capture.
         capture("reader-cached-selection")
         compose.onNodeWithText("Quote / explain").performClick()
         compose.onNodeWithText("iii", substring = false).assertExists()
@@ -151,5 +178,99 @@ class ReaderStageTest {
                 assertTrue("Derived extraction envelope misses actual rendered text on page $page", dark > 5)
             }
         }
+    }
+    @Test fun fingerLongPressAndFingerPenHandlesChangeGenuineRange(): Unit = runBlocking {
+        open()
+        val layout = app.originalText.page(key, hash, 1, 5).page!!
+        val geometry = OriginalTextGeometry(layout)
+        val range = geometry.range(4, 7)!!
+        val quad = range.displayQuads.first()
+        val surface = surfaces().first(); val at = IntArray(2)
+        compose.runOnUiThread { surface.getLocationInWindow(at) }
+        val x = at[0] + (quad.map { it.x }.average() * surface.width).toFloat()
+        val y = at[1] + (quad.map { it.y }.average() * surface.height).toFloat()
+        val before = android.graphics.Rect(at[0], at[1], at[0] + surface.width, at[1] + surface.height)
+        event(MotionEvent.ACTION_DOWN, x, y, MotionEvent.TOOL_TYPE_FINGER)
+        SystemClock.sleep(android.view.ViewConfiguration.getLongPressTimeout().toLong() + 150)
+        event(MotionEvent.ACTION_UP, x, y, MotionEvent.TOOL_TYPE_FINGER)
+        compose.onNodeWithText("iii", substring = false).assertExists()
+        fun drag(start: Int, end: Int, endHandle: Boolean, tool: Int) {
+            val description = if (endHandle) "Selection end handle" else "Selection start handle"
+            val handle = compose.onNodeWithContentDescription(description).fetchSemanticsNode().boundsInWindow
+            val from = geometry.handlePoint(start, endHandle)!!
+            val to = geometry.handlePoint(end, endHandle)!!
+            val dx = ((to.x - from.x) * surface.width).toFloat()
+            val dy = ((to.y - from.y) * surface.height).toFloat()
+            val slop = android.view.ViewConfiguration.get(compose.activity).scaledTouchSlop.toFloat()
+            val triggerSlop = slop + 2f
+            event(MotionEvent.ACTION_DOWN, handle.center.x, handle.center.y, tool)
+            // First cross touch slop; the following moves apply the requested canonical delta.
+            event(MotionEvent.ACTION_MOVE, handle.center.x + if (dx < 0) -triggerSlop else triggerSlop, handle.center.y, tool)
+            repeat(5) { n -> event(MotionEvent.ACTION_MOVE, handle.center.x + dx * (n + 1) / 5 + if (dx < 0) -slop else slop, handle.center.y + dy * (n + 1) / 5, tool) }
+            event(MotionEvent.ACTION_UP, handle.center.x + dx + if (dx < 0) -slop else slop, handle.center.y + dy, tool)
+        }
+        drag(4, 0, false, MotionEvent.TOOL_TYPE_FINGER)
+        compose.onNodeWithText("Copy", substring = false).performClick()
+        val clip = app.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+        assertEquals("WWW iii", clip.primaryClip!!.getItemAt(0).text.toString())
+        drag(7, 12, true, MotionEvent.TOOL_TYPE_STYLUS)
+        compose.onNodeWithText("Copy", substring = false).performClick()
+        assertEquals(layout.text.substring(0, 12), clip.primaryClip!!.getItemAt(0).text.toString())
+        compose.runOnUiThread { surface.getLocationInWindow(at) }
+        assertEquals(before, android.graphics.Rect(at[0], at[1], at[0] + surface.width, at[1] + surface.height))
+        Log.i("ReaderStageQA", "finger long press + finger start/pen end handles retained canonical range [0,12) and paper=$before")
+    }
+    @Test fun actualTranslatedTextSelectionCopyAndQuote(): Unit = runBlocking {
+        open(); mode("Translation")
+        val clip = app.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+        val text = translatedBlocks(WireJson.format.parseToJsonElement(app.database.metadata().snapshot(key)!!.json).jsonObject).first().text
+        compose.onNodeWithText("Translated research paragraph 1.", substring = true).performTouchInput { longClick(Offset(30f, 20f)) }
+        val automation = InstrumentationRegistry.getInstrumentation().uiAutomation
+        capture("reader-translated-selection")
+        // Native accessibility roots are null on this disposable5554 even for uiautomator.
+        // Click the actual Android floating-toolbar item in its attached window, not a fake copy callback.
+        var copied = false
+        compose.runOnUiThread {
+            val roots = android.view.inspector.WindowInspector.getGlobalWindowViews()
+            fun click(v: View) {
+                if (copied) return
+                if (v is android.widget.TextView && v.text.toString() == "Copy") { var target = v as View
+                    while (!target.isClickable && target.parent is View) target = target.parent as View
+                    copied = target.performClick()
+                } else if (v is ViewGroup) repeat(v.childCount) { click(v.getChildAt(it)) }
+            }
+            roots.forEach(::click)
+        }
+        assertTrue("Clicked actual Android Copy toolbar", copied)
+        compose.waitForIdle()
+        val selected = clip.primaryClip!!.getItemAt(0).text.toString()
+        assertTrue("Native translated selection copied an actual proper substring", selected.isNotBlank() && selected.length < text.length && text.contains(selected))
+        compose.onNodeWithText("Quote copied excerpt", substring = false).performScrollTo().performClick()
+        compose.onNodeWithText("Translated quote · page 1").assertExists()
+        compose.onNodeWithText("Close", substring = false).performClick()
+        val draft = app.history.draft(key)["context"]!!.jsonObject
+        assertEquals(selected, draft["text"]!!.jsonPrimitive.content)
+        assertEquals("translated", draft["origin"]!!.jsonPrimitive.content)
+        assertTrue(draft["rects"]!!.jsonArray.isEmpty())
+        assertEquals(JsonNull, draft["start"])
+        Log.i("ReaderStageQA", "actual native translated selection copied/quoted ${selected.length} UTF16 units without original range/position anchors")
+    }
+    @Test fun capturesKoreanCachedReaderLabels(): Unit = runBlocking {
+        assertEquals("ko", compose.activity.resources.configuration.locales[0].language)
+        val cached = app.database.library().get("D-reader-catalog")!!
+        app.database.reader().upsert(ReaderPositionEntity(cached.paperKey, "{\"mode\":\"original\",\"page\":1,\"fraction\":0}"))
+        compose.setContent { FractalTheme { ReaderScreen(app, cached, {}) } }
+        compose.waitUntil(15000) { surfaces().isNotEmpty() }; compose.waitForIdle()
+        capture("reader-ko-original")
+        compose.onNodeWithContentDescription("읽기 화면").performClick(); compose.onAllNodesWithText("번역").onLast().performClick()
+        compose.onAllNodesWithText("번역 블록 인용")[0].performScrollTo().performClick()
+        compose.onNodeWithText("허브 기본값").assertExists(); compose.onNodeWithText("답변 언어").assertExists()
+        capture("reader-ko-quote-selectors")
+        compose.onNodeWithText("닫기", substring = false).performClick()
+        compose.onNodeWithText("질문", substring = false).performClick()
+        compose.onNodeWithContentDescription("읽기 패널").performClick(); compose.onAllNodesWithText("기록").onLast().performClick()
+        compose.onNodeWithContentDescription("기록 필터").performClick(); compose.onAllNodesWithText("설명").onLast().performClick()
+        capture("reader-ko-history")
+        compose.onNodeWithText("닫기", substring = false).performClick()
     }
 }

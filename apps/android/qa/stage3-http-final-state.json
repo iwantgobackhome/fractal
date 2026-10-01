@@ -1,0 +1,571 @@
+﻿{
+    "flights":  [
+                    {
+                        "id":  "D-FLIGHT-close-d456112c-8e41-41ef-84d2-fbe099a75017",
+                        "status":  "released"
+                    },
+                    {
+                        "id":  "D-FLIGHT-close-a66edf6b-246e-445d-a91b-5b8865d21b82",
+                        "status":  "released"
+                    },
+                    {
+                        "id":  "D-FLIGHT-lost-1258c1b5-a62d-4198-910e-5dfc160cc483",
+                        "status":  "released"
+                    },
+                    {
+                        "id":  "D-FLIGHT-cancel-b72c1b27-46a5-4d03-b145-30d9d84463dc",
+                        "status":  "aborted"
+                    },
+                    {
+                        "id":  "D-FLIGHT-restart-3997cd67-019a-47f8-89ba-dcf875483dbd",
+                        "status":  "released"
+                    },
+                    {
+                        "id":  "D-FLIGHT-figure-f56af483-d44e-467f-8d69-26fa0a4daee5",
+                        "status":  "released"
+                    },
+                    {
+                        "id":  "D-FLIGHT-figure-16d8ed12-7c06-47b2-bf01-d6dcd3690089",
+                        "status":  "released"
+                    },
+                    {
+                        "id":  "D-FLIGHT-failure-19f97ebd-012b-4a13-a45e-33cddeea2742",
+                        "status":  "released"
+                    },
+                    {
+                        "id":  "D-FLIGHT-ui-cancel-ff11a6f7-03c8-4b0e-b5e3-5761f7355108",
+                        "status":  "aborted"
+                    }
+                ],
+    "providerCalls":  [
+                          {
+                              "id":  "D-FLIGHT-close-d456112c-8e41-41ef-84d2-fbe099a75017",
+                              "at":  "2026-09-30T22:30:20.488Z"
+                          },
+                          {
+                              "id":  "D-FLIGHT-close-a66edf6b-246e-445d-a91b-5b8865d21b82",
+                              "at":  "2026-09-30T22:45:02.506Z"
+                          },
+                          {
+                              "id":  "D-FLIGHT-retry-dd1b2452-3493-452d-9446-5310034bf063",
+                              "at":  "2026-09-30T22:45:05.253Z"
+                          },
+                          {
+                              "id":  "D-FLIGHT-lost-1258c1b5-a62d-4198-910e-5dfc160cc483",
+                              "at":  "2026-09-30T22:45:05.733Z"
+                          },
+                          {
+                              "id":  "D-FLIGHT-cancel-b72c1b27-46a5-4d03-b145-30d9d84463dc",
+                              "at":  "2026-09-30T22:45:06.161Z"
+                          },
+                          {
+                              "id":  "D-FLIGHT-restart-3997cd67-019a-47f8-89ba-dcf875483dbd",
+                              "at":  "2026-09-30T22:45:59.947Z"
+                          },
+                          {
+                              "id":  "D-FLIGHT-figure-f56af483-d44e-467f-8d69-26fa0a4daee5",
+                              "at":  "2026-09-30T23:25:39.566Z"
+                          },
+                          {
+                              "id":  "D-FLIGHT-figure-16d8ed12-7c06-47b2-bf01-d6dcd3690089",
+                              "at":  "2026-09-30T23:27:30.159Z"
+                          },
+                          {
+                              "id":  "D-FLIGHT-failure-19f97ebd-012b-4a13-a45e-33cddeea2742",
+                              "at":  "2026-09-30T23:27:30.450Z"
+                          },
+                          {
+                              "id":  "D-FLIGHT-ui-cancel-ff11a6f7-03c8-4b0e-b5e3-5761f7355108",
+                              "at":  "2026-09-30T23:27:31.025Z"
+                          }
+                      ],
+    "library":  {
+                    "id":  "D-reader-catalog",
+                    "paperKey":  "D-reader-catalog",
+                    "title":  "D native lifecycle fixture",
+                    "authors":  [
+                                    {
+                                        "given":  "",
+                                        "family":  "Fixture"
+                                    }
+                                ],
+                    "year":  2026,
+                    "venue":  null,
+                    "doi":  null,
+                    "arxivId":  null,
+                    "url":  "https://example.org/qa",
+                    "abstract":  null,
+                    "tags":  [
+                                 "D-reader-offline"
+                             ],
+                    "collections":  [
+                                        "D-folder-c537c903-3075-443f-934e-be2a4b691ff7",
+                                        "D-folder-121309e7-812b-4def-8fd7-5c976e9bdf6d"
+                                    ],
+                    "addedAt":  "2026-09-30T22:10:17.114Z",
+                    "updatedAt":  "2026-09-30T23:27:30.081Z",
+                    "status":  "unread",
+                    "bibtexKey":  "D-reader-catalog",
+                    "saved":  true,
+                    "deviceId":  "2db8e95d-22d6-4901-8924-9a5f9c2419b0",
+                    "savedAt":  "2026-09-30T22:10:17.120Z",
+                    "lastReadAt":  "2026-09-30T23:27:29.251Z",
+                    "readProgress":  {
+                                         "page":  1,
+                                         "scrollOffset":  0
+                                     },
+                    "rev":  11
+                },
+    "history":  [
+                    {
+                        "id":  "e32a3624-5e71-44f3-959a-2295fa92c61a",
+                        "paperKey":  "D-reader-catalog",
+                        "kind":  "question",
+                        "question":  "D-FLIGHT-ui-cancel-ff11a6f7-03c8-4b0e-b5e3-5761f7355108 QA_WAIT explicit UI cancel",
+                        "text":  "QA D-FLIGHT-ui-cancel-ff11a6f7-03c8-4b0e-b5e3-5761f7355108 prefix ",
+                        "status":  "canceled",
+                        "createdAt":  "2026-09-30T23:27:31.024Z",
+                        "updatedAt":  "2026-09-30T23:27:32.833Z",
+                        "completedAt":  "2026-09-30T23:27:32.833Z",
+                        "requestId":  "9cef8149-b41c-499c-9d2c-7c05fcc747fb",
+                        "context":  {
+                                        "answerLanguage":  "ko",
+                                        "page":  2,
+                                        "selection":  {
+                                                          "provider":  "codex",
+                                                          "model":  "gpt-6-sol"
+                                                      }
+                                    },
+                        "answer":  null,
+                        "error":  null,
+                        "rev":  4,
+                        "deviceId":  "hub",
+                        "deleted":  false
+                    },
+                    {
+                        "id":  "05375aea-380f-45cd-a434-4cabc750dda6",
+                        "paperKey":  "D-reader-catalog",
+                        "kind":  "question",
+                        "question":  "D-FLIGHT-failure-19f97ebd-012b-4a13-a45e-33cddeea2742 QA_WAIT QA_ERROR provider failure with retained context",
+                        "text":  "QA D-FLIGHT-failure-19f97ebd-012b-4a13-a45e-33cddeea2742 prefix ",
+                        "status":  "failed",
+                        "createdAt":  "2026-09-30T23:27:30.448Z",
+                        "updatedAt":  "2026-09-30T23:27:30.604Z",
+                        "completedAt":  "2026-09-30T23:27:30.604Z",
+                        "requestId":  "a33fbd4b-c204-44f0-a351-a89f7dc21b97",
+                        "context":  {
+                                        "answerLanguage":  "ko",
+                                        "page":  2,
+                                        "selection":  {
+                                                          "provider":  "codex",
+                                                          "model":  "gpt-6-sol"
+                                                      }
+                                    },
+                        "answer":  null,
+                        "error":  {
+                                      "code":  "NETWORK",
+                                      "message":  "Deterministic QA provider error",
+                                      "retryable":  true
+                                  },
+                        "rev":  4,
+                        "deviceId":  "hub",
+                        "deleted":  false
+                    },
+                    {
+                        "id":  "ae86453c-2859-46d6-8468-113b0bfcba9c",
+                        "paperKey":  "D-reader-catalog",
+                        "kind":  "explanation",
+                        "question":  "ì´ figureì ì¤ëª\u0085íì¸ì. íì´ì§ 1, ìì­ {\"x\":0.12,\"y\":0.12,\"width\":0.4,\"height\":0.3}. \nì£¼ë³ í\u0085ì¤í¸: D-FLIGHT-figure-16d8ed12-7c06-47b2-bf01-d6dcd3690089 QA_WAIT Deliberate physical source region",
+                        "text":  "QA D-FLIGHT-figure-16d8ed12-7c06-47b2-bf01-d6dcd3690089 prefix QA D-FLIGHT-figure-16d8ed12-7c06-47b2-bf01-d6dcd3690089 completed $$x=1$$ [p.1]",
+                        "status":  "completed",
+                        "createdAt":  "2026-09-30T23:27:30.157Z",
+                        "updatedAt":  "2026-09-30T23:27:30.327Z",
+                        "completedAt":  "2026-09-30T23:27:30.327Z",
+                        "requestId":  "a22d489c-92f6-4fe6-b6aa-ece1af12ba9a",
+                        "context":  {
+                                        "provenance":  {
+                                                           "coordinateSpace":  "rendered-page-normalized-v1",
+                                                           "textSource":  "original",
+                                                           "pdfSha256":  "f79b45a88b17b236ade1298edf4cafdceae6a9f19907eb29126332a7c9037b96"
+                                                       },
+                                        "answerLanguage":  "en",
+                                        "page":  1,
+                                        "rect":  {
+                                                     "x":  0.12,
+                                                     "y":  0.12,
+                                                     "width":  0.4,
+                                                     "height":  0.3
+                                                 },
+                                        "selectedText":  "D-FLIGHT-figure-16d8ed12-7c06-47b2-bf01-d6dcd3690089 QA_WAIT Deliberate physical source region",
+                                        "explanationKind":  "figure",
+                                        "selection":  {
+                                                          "provider":  "codex",
+                                                          "model":  "gpt-6-sol"
+                                                      }
+                                    },
+                        "answer":  {
+                                       "citations":  [
+                                                         {
+                                                             "paperKey":  "D-reader-catalog",
+                                                             "page":  1
+                                                         }
+                                                     ],
+                                       "contextSourceStatus":  "current",
+                                       "text":  "QA D-FLIGHT-figure-16d8ed12-7c06-47b2-bf01-d6dcd3690089 prefix QA D-FLIGHT-figure-16d8ed12-7c06-47b2-bf01-d6dcd3690089 completed $$x=1$$ [p.1]",
+                                       "provider":  "codex",
+                                       "model":  "gpt-6-sol",
+                                       "inputTokens":  null,
+                                       "outputTokens":  null,
+                                       "durationMs":  168
+                                   },
+                        "error":  null,
+                        "rev":  6,
+                        "deviceId":  "hub",
+                        "deleted":  false
+                    },
+                    {
+                        "id":  "eb5cec39-a28b-44ec-a97a-d84e72d07443",
+                        "paperKey":  "D-reader-catalog",
+                        "kind":  "explanation",
+                        "question":  "ì´ figureì ì¤ëª\u0085íì¸ì. íì´ì§ 1, ìì­ {\"x\":0.12,\"y\":0.12,\"width\":0.4,\"height\":0.3}. \nì£¼ë³ í\u0085ì¤í¸: D-FLIGHT-figure-f56af483-d44e-467f-8d69-26fa0a4daee5 QA_WAIT Deliberate physical source region",
+                        "text":  "QA D-FLIGHT-figure-f56af483-d44e-467f-8d69-26fa0a4daee5 prefix QA D-FLIGHT-figure-f56af483-d44e-467f-8d69-26fa0a4daee5 completed $$x=1$$ [p.1]",
+                        "status":  "completed",
+                        "createdAt":  "2026-09-30T23:25:39.565Z",
+                        "updatedAt":  "2026-09-30T23:25:39.733Z",
+                        "completedAt":  "2026-09-30T23:25:39.732Z",
+                        "requestId":  "64188c44-81b6-4c42-9c81-617ca845a697",
+                        "context":  {
+                                        "provenance":  {
+                                                           "coordinateSpace":  "rendered-page-normalized-v1",
+                                                           "textSource":  "original",
+                                                           "pdfSha256":  "f79b45a88b17b236ade1298edf4cafdceae6a9f19907eb29126332a7c9037b96"
+                                                       },
+                                        "answerLanguage":  "en",
+                                        "page":  1,
+                                        "rect":  {
+                                                     "x":  0.12,
+                                                     "y":  0.12,
+                                                     "width":  0.4,
+                                                     "height":  0.3
+                                                 },
+                                        "selectedText":  "D-FLIGHT-figure-f56af483-d44e-467f-8d69-26fa0a4daee5 QA_WAIT Deliberate physical source region",
+                                        "explanationKind":  "figure",
+                                        "selection":  {
+                                                          "provider":  "codex",
+                                                          "model":  "gpt-6-sol"
+                                                      }
+                                    },
+                        "answer":  {
+                                       "citations":  [
+                                                         {
+                                                             "paperKey":  "D-reader-catalog",
+                                                             "page":  1
+                                                         }
+                                                     ],
+                                       "contextSourceStatus":  "current",
+                                       "text":  "QA D-FLIGHT-figure-f56af483-d44e-467f-8d69-26fa0a4daee5 prefix QA D-FLIGHT-figure-f56af483-d44e-467f-8d69-26fa0a4daee5 completed $$x=1$$ [p.1]",
+                                       "provider":  "codex",
+                                       "model":  "gpt-6-sol",
+                                       "inputTokens":  null,
+                                       "outputTokens":  null,
+                                       "durationMs":  166
+                                   },
+                        "error":  null,
+                        "rev":  6,
+                        "deviceId":  "hub",
+                        "deleted":  false
+                    },
+                    {
+                        "id":  "e78462b0-44b0-423f-8a5a-dcad6fd22b25",
+                        "paperKey":  "D-reader-catalog",
+                        "kind":  "question",
+                        "question":  "D-FLIGHT-restart-3997cd67-019a-47f8-89ba-dcf875483dbd QA_WAIT survive Android restart",
+                        "text":  "QA D-FLIGHT-restart-3997cd67-019a-47f8-89ba-dcf875483dbd prefix QA D-FLIGHT-restart-3997cd67-019a-47f8-89ba-dcf875483dbd completed $$x=1$$ [p.2]",
+                        "status":  "completed",
+                        "createdAt":  "2026-09-30T22:45:59.946Z",
+                        "updatedAt":  "2026-09-30T22:46:43.381Z",
+                        "completedAt":  "2026-09-30T22:46:43.380Z",
+                        "requestId":  "c856e59e-15d6-48b5-bf41-c13c19b28bf7",
+                        "context":  {
+                                        "answerLanguage":  "ko",
+                                        "page":  2,
+                                        "selection":  {
+                                                          "provider":  "codex",
+                                                          "model":  "gpt-6-sol"
+                                                      }
+                                    },
+                        "answer":  {
+                                       "citations":  [
+                                                         {
+                                                             "paperKey":  "D-reader-catalog",
+                                                             "page":  2
+                                                         }
+                                                     ],
+                                       "contextSourceStatus":  "unknown",
+                                       "text":  "QA D-FLIGHT-restart-3997cd67-019a-47f8-89ba-dcf875483dbd prefix QA D-FLIGHT-restart-3997cd67-019a-47f8-89ba-dcf875483dbd completed $$x=1$$ [p.2]",
+                                       "provider":  "codex",
+                                       "model":  "gpt-6-sol",
+                                       "inputTokens":  null,
+                                       "outputTokens":  null,
+                                       "durationMs":  43433
+                                   },
+                        "error":  null,
+                        "rev":  6,
+                        "deviceId":  "hub",
+                        "deleted":  false
+                    },
+                    {
+                        "id":  "5c98c787-94a3-4b26-86b6-9dde28500dfe",
+                        "paperKey":  "D-reader-catalog",
+                        "kind":  "question",
+                        "question":  "D-FLIGHT-cancel-b72c1b27-46a5-4d03-b145-30d9d84463dc QA_WAIT cancel only explicitly",
+                        "text":  "QA D-FLIGHT-cancel-b72c1b27-46a5-4d03-b145-30d9d84463dc prefix ",
+                        "status":  "canceled",
+                        "createdAt":  "2026-09-30T22:45:06.159Z",
+                        "updatedAt":  "2026-09-30T22:45:06.435Z",
+                        "completedAt":  "2026-09-30T22:45:06.435Z",
+                        "requestId":  "0a0d0b9d-7e73-40ab-88ef-f22cd888c8c2",
+                        "context":  {
+                                        "answerLanguage":  "ko",
+                                        "page":  2,
+                                        "selection":  {
+                                                          "provider":  "codex",
+                                                          "model":  "gpt-6-sol"
+                                                      }
+                                    },
+                        "answer":  null,
+                        "error":  null,
+                        "rev":  4,
+                        "deviceId":  "hub",
+                        "deleted":  false
+                    },
+                    {
+                        "id":  "85fb1463-ee7e-4ae5-826b-06e158c5d8a5",
+                        "paperKey":  "D-reader-catalog",
+                        "kind":  "question",
+                        "question":  "D-FLIGHT-lost-1258c1b5-a62d-4198-910e-5dfc160cc483 QA_WAIT retained lost-response context",
+                        "text":  "QA D-FLIGHT-lost-1258c1b5-a62d-4198-910e-5dfc160cc483 prefix QA D-FLIGHT-lost-1258c1b5-a62d-4198-910e-5dfc160cc483 completed $$x=1$$ [p.2]",
+                        "status":  "completed",
+                        "createdAt":  "2026-09-30T22:45:05.732Z",
+                        "updatedAt":  "2026-09-30T22:45:06.129Z",
+                        "completedAt":  "2026-09-30T22:45:06.129Z",
+                        "requestId":  "1bd741eb-8039-421a-ae6e-e36cdbc3fc5e",
+                        "context":  {
+                                        "answerLanguage":  "ko",
+                                        "page":  2,
+                                        "selection":  {
+                                                          "provider":  "codex",
+                                                          "model":  "gpt-6-sol"
+                                                      }
+                                    },
+                        "answer":  {
+                                       "citations":  [
+                                                         {
+                                                             "paperKey":  "D-reader-catalog",
+                                                             "page":  2
+                                                         }
+                                                     ],
+                                       "contextSourceStatus":  "unknown",
+                                       "text":  "QA D-FLIGHT-lost-1258c1b5-a62d-4198-910e-5dfc160cc483 prefix QA D-FLIGHT-lost-1258c1b5-a62d-4198-910e-5dfc160cc483 completed $$x=1$$ [p.2]",
+                                       "provider":  "codex",
+                                       "model":  "gpt-6-sol",
+                                       "inputTokens":  null,
+                                       "outputTokens":  null,
+                                       "durationMs":  395
+                                   },
+                        "error":  null,
+                        "rev":  6,
+                        "deviceId":  "hub",
+                        "deleted":  false
+                    },
+                    {
+                        "id":  "f7d06ada-beb3-4df1-a46e-7648e49d08f4",
+                        "paperKey":  "D-reader-catalog",
+                        "kind":  "question",
+                        "question":  "D-FLIGHT-retry-dd1b2452-3493-452d-9446-5310034bf063 retained offline question",
+                        "text":  "QA D-FLIGHT-retry-dd1b2452-3493-452d-9446-5310034bf063 prefix QA D-FLIGHT-retry-dd1b2452-3493-452d-9446-5310034bf063 completed $$x=1$$ [p.2]",
+                        "status":  "completed",
+                        "createdAt":  "2026-09-30T22:45:05.251Z",
+                        "updatedAt":  "2026-09-30T22:45:05.256Z",
+                        "completedAt":  "2026-09-30T22:45:05.255Z",
+                        "requestId":  "95562382-0756-4c8a-bc7a-f247c1f379cc",
+                        "context":  {
+                                        "answerLanguage":  "ko",
+                                        "page":  2,
+                                        "selection":  {
+                                                          "provider":  "codex",
+                                                          "model":  "gpt-6-sol"
+                                                      }
+                                    },
+                        "answer":  {
+                                       "citations":  [
+                                                         {
+                                                             "paperKey":  "D-reader-catalog",
+                                                             "page":  2
+                                                         }
+                                                     ],
+                                       "contextSourceStatus":  "unknown",
+                                       "text":  "QA D-FLIGHT-retry-dd1b2452-3493-452d-9446-5310034bf063 prefix QA D-FLIGHT-retry-dd1b2452-3493-452d-9446-5310034bf063 completed $$x=1$$ [p.2]",
+                                       "provider":  "codex",
+                                       "model":  "gpt-6-sol",
+                                       "inputTokens":  null,
+                                       "outputTokens":  null,
+                                       "durationMs":  2
+                                   },
+                        "error":  null,
+                        "rev":  6,
+                        "deviceId":  "hub",
+                        "deleted":  false
+                    },
+                    {
+                        "id":  "fc25ea92-1ed4-4bf0-87c5-c9a82c60effb",
+                        "paperKey":  "D-reader-catalog",
+                        "kind":  "question",
+                        "question":  "D-FLIGHT-close-a66edf6b-246e-445d-a91b-5b8865d21b82 QA_WAIT Explain this selected source passage.",
+                        "text":  "QA D-FLIGHT-close-a66edf6b-246e-445d-a91b-5b8865d21b82 prefix QA D-FLIGHT-close-a66edf6b-246e-445d-a91b-5b8865d21b82 completed $$x=1$$ [p.2]",
+                        "status":  "completed",
+                        "createdAt":  "2026-09-30T22:45:02.505Z",
+                        "updatedAt":  "2026-09-30T22:45:03.788Z",
+                        "completedAt":  "2026-09-30T22:45:03.787Z",
+                        "requestId":  "5ad9035f-480b-49cc-aead-cf6e244302e3",
+                        "context":  {
+                                        "provenance":  {
+                                                           "coordinateSpace":  "rendered-page-normalized-v1",
+                                                           "textSource":  "original",
+                                                           "pdfSha256":  "f79b45a88b17b236ade1298edf4cafdceae6a9f19907eb29126332a7c9037b96",
+                                                           "layoutRange":  {
+                                                                               "page":  2,
+                                                                               "extractionVersion":  "pdfjs6-original-advances-v1",
+                                                                               "start":  17,
+                                                                               "end":  20
+                                                                           }
+                                                       },
+                                        "answerLanguage":  "ko",
+                                        "page":  2,
+                                        "rect":  {
+                                                     "x":  0.8841562271118164,
+                                                     "y":  0.4145199954509735,
+                                                     "width":  0.02890622615814209,
+                                                     "height":  0.026639997959136963
+                                                 },
+                                        "selectedText":  "iii",
+                                        "selection":  {
+                                                          "provider":  "codex",
+                                                          "model":  "gpt-6-sol"
+                                                      }
+                                    },
+                        "answer":  {
+                                       "citations":  [
+                                                         {
+                                                             "paperKey":  "D-reader-catalog",
+                                                             "page":  2,
+                                                             "region":  {
+                                                                            "provenance":  {
+                                                                                               "coordinateSpace":  "unrotated-crop-normalized-v1",
+                                                                                               "textSource":  "original",
+                                                                                               "pdfSha256":  "f79b45a88b17b236ade1298edf4cafdceae6a9f19907eb29126332a7c9037b96",
+                                                                                               "layoutRange":  {
+                                                                                                                   "page":  2,
+                                                                                                                   "extractionVersion":  "pdfjs6-original-advances-v1",
+                                                                                                                   "start":  17,
+                                                                                                                   "end":  20
+                                                                                                               }
+                                                                                           },
+                                                                            "page":  2,
+                                                                            "x":  0.41452,
+                                                                            "y":  0.0869375,
+                                                                            "width":  0.026640000000000108,
+                                                                            "height":  0.028906249999999994
+                                                                        }
+                                                         }
+                                                     ],
+                                       "contextSourceStatus":  "current",
+                                       "text":  "QA D-FLIGHT-close-a66edf6b-246e-445d-a91b-5b8865d21b82 prefix QA D-FLIGHT-close-a66edf6b-246e-445d-a91b-5b8865d21b82 completed $$x=1$$ [p.2]",
+                                       "provider":  "codex",
+                                       "model":  "gpt-6-sol",
+                                       "inputTokens":  null,
+                                       "outputTokens":  null,
+                                       "durationMs":  1281
+                                   },
+                        "error":  null,
+                        "rev":  6,
+                        "deviceId":  "hub",
+                        "deleted":  false
+                    },
+                    {
+                        "id":  "ae0610c9-5203-4f25-a924-cc8ed2ee9b5a",
+                        "paperKey":  "D-reader-catalog",
+                        "kind":  "question",
+                        "question":  "D-FLIGHT-close-d456112c-8e41-41ef-84d2-fbe099a75017 QA_WAIT Explain this selected source passage.",
+                        "text":  "QA D-FLIGHT-close-d456112c-8e41-41ef-84d2-fbe099a75017 prefix QA D-FLIGHT-close-d456112c-8e41-41ef-84d2-fbe099a75017 completed $$x=1$$ [p.2]",
+                        "status":  "completed",
+                        "createdAt":  "2026-09-30T22:30:20.487Z",
+                        "updatedAt":  "2026-09-30T22:30:21.767Z",
+                        "completedAt":  "2026-09-30T22:30:21.766Z",
+                        "requestId":  "10f24dce-ef1b-41e9-b073-02a02ee1a047",
+                        "context":  {
+                                        "provenance":  {
+                                                           "coordinateSpace":  "rendered-page-normalized-v1",
+                                                           "textSource":  "original",
+                                                           "pdfSha256":  "f79b45a88b17b236ade1298edf4cafdceae6a9f19907eb29126332a7c9037b96",
+                                                           "layoutRange":  {
+                                                                               "page":  2,
+                                                                               "extractionVersion":  "pdfjs6-original-advances-v1",
+                                                                               "start":  17,
+                                                                               "end":  20
+                                                                           }
+                                                       },
+                                        "answerLanguage":  "ko",
+                                        "page":  2,
+                                        "rect":  {
+                                                     "x":  0.8841562271118164,
+                                                     "y":  0.4145199954509735,
+                                                     "width":  0.02890622615814209,
+                                                     "height":  0.026639997959136963
+                                                 },
+                                        "selectedText":  "iii",
+                                        "selection":  {
+                                                          "provider":  "codex",
+                                                          "model":  "gpt-6-sol"
+                                                      }
+                                    },
+                        "answer":  {
+                                       "citations":  [
+                                                         {
+                                                             "paperKey":  "D-reader-catalog",
+                                                             "page":  2,
+                                                             "region":  {
+                                                                            "provenance":  {
+                                                                                               "coordinateSpace":  "unrotated-crop-normalized-v1",
+                                                                                               "textSource":  "original",
+                                                                                               "pdfSha256":  "f79b45a88b17b236ade1298edf4cafdceae6a9f19907eb29126332a7c9037b96",
+                                                                                               "layoutRange":  {
+                                                                                                                   "page":  2,
+                                                                                                                   "extractionVersion":  "pdfjs6-original-advances-v1",
+                                                                                                                   "start":  17,
+                                                                                                                   "end":  20
+                                                                                                               }
+                                                                                           },
+                                                                            "page":  2,
+                                                                            "x":  0.41452,
+                                                                            "y":  0.0869375,
+                                                                            "width":  0.026640000000000108,
+                                                                            "height":  0.028906249999999994
+                                                                        }
+                                                         }
+                                                     ],
+                                       "contextSourceStatus":  "current",
+                                       "text":  "QA D-FLIGHT-close-d456112c-8e41-41ef-84d2-fbe099a75017 prefix QA D-FLIGHT-close-d456112c-8e41-41ef-84d2-fbe099a75017 completed $$x=1$$ [p.2]",
+                                       "provider":  "codex",
+                                       "model":  "gpt-6-sol",
+                                       "inputTokens":  null,
+                                       "outputTokens":  null,
+                                       "durationMs":  1278
+                                   },
+                        "error":  null,
+                        "rev":  6,
+                        "deviceId":  "hub",
+                        "deleted":  false
+                    }
+                ]
+}

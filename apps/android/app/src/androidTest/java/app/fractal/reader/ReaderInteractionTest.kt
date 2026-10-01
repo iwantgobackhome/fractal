@@ -13,7 +13,14 @@ import android.view.ViewGroup
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.semantics.SemanticsProperties
+import app.fractal.ink.R as InkR
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.first
+import app.fractal.data.WireJson
+import kotlinx.serialization.json.*
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,6 +32,7 @@ import app.fractal.ink.InkTool
 import app.fractal.ink.InkToolState
 import org.junit.Assert.assertFalse
 import app.fractal.data.LibraryEntity
+import app.fractal.data.ReaderPositionEntity
 import app.fractal.design.FractalTheme
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -36,24 +44,14 @@ import kotlin.math.abs
 
 /** Software routing tests; injected tool types are not evidence of physical palm rejection. */
 class ReaderInteractionTest {
-    @get:Rule val compose = createAndroidComposeRule<MainActivity>()
+    @get:Rule val compose = createAndroidComposeRule<ReaderFixtureActivity>()
     private var downTime = 0L
-
-    @Before fun replaceInitialContentWithControlledReaderFixture() {
-        compose.runOnUiThread {
-            val content = compose.activity.findViewById<ViewGroup>(android.R.id.content)
-            fun dispose(view: View) {
-                if (view is ComposeView) view.disposeComposition()
-                else if (view is ViewGroup) repeat(view.childCount) { dispose(view.getChildAt(it)) }
-            }
-            repeat(content.childCount) { dispose(content.getChildAt(it)) }
-            content.removeAllViews()
-        }
-    }
 
     private fun reader() {
         val app = compose.activity.application as ReaderApplication
         val sha = "a".repeat(64)
+        // Each test owns a fresh reading origin; production persists this across reader exits.
+        runBlocking { app.database.reader().upsert(ReaderPositionEntity("gesture-fixture", "{\"mode\":\"original\",\"page\":1,\"fraction\":0}")) }
         val pdf = PdfDocument()
         try {
             repeat(4) { index ->
@@ -75,6 +73,8 @@ class ReaderInteractionTest {
         }
         compose.waitUntil(15_000) { surfaces().any { it.width > 0 } }
         compose.waitForIdle()
+        val penButton = compose.onNodeWithContentDescription(app.getString(InkR.string.tool_ballpoint))
+        if (penButton.fetchSemanticsNode().config[SemanticsProperties.Selected] != true) penButton.performClick()
     }
 
     private fun surfaces(): List<View> {
@@ -226,6 +226,55 @@ class ReaderInteractionTest {
         event(MotionEvent.ACTION_MOVE, 450f, 850f)
         event(MotionEvent.ACTION_UP, 470f, 860f)
         assertEquals("pen changed zoomed geometry", settled, bounds())
+    }
+
+    @Test fun maximumZoomRetainsActualPdfInkAlignmentAndBoundedDryCache() {
+        reader()
+        val before = bounds()
+        var marker: Pair<Float, Float>? = null
+        compose.waitUntil(15000) { marker = printedMarker(); marker != null }
+        val focus = marker!!
+        val first = Contact(0, MotionEvent.TOOL_TYPE_FINGER, focus.first - 50, focus.second - 50)
+        val second = Contact(1, MotionEvent.TOOL_TYPE_FINGER, focus.first + 50, focus.second + 50)
+        pointers(MotionEvent.ACTION_DOWN, listOf(first)); pointers(MotionEvent.ACTION_POINTER_DOWN or (1 shl 8), listOf(first, second))
+        val spreadFirst = first.copy(x = focus.first - 200, y = focus.second - 200)
+        val spreadSecond = second.copy(x = focus.first + 200, y = focus.second + 200)
+        pointers(MotionEvent.ACTION_MOVE, listOf(spreadFirst, spreadSecond))
+        pointers(MotionEvent.ACTION_POINTER_UP or (1 shl 8), listOf(spreadFirst, spreadSecond)); pointers(MotionEvent.ACTION_UP, listOf(spreadFirst))
+        val zoomed = bounds()
+        assertEquals(before.width * 4, zoomed.width)
+        val expectedX = zoomed.x + zoomed.width * (focus.first - before.x) / before.width
+        val expectedY = zoomed.y + zoomed.height * (focus.second - before.y) / before.height
+        var rendered: Pair<Float, Float>? = null
+        compose.waitUntil(15000) { rendered = printedMarker(); rendered?.let { abs(it.first - expectedX) <= 4 && abs(it.second - expectedY) <= 4 } == true }
+        event(MotionEvent.ACTION_DOWN, focus.first - 30, focus.second + 70)
+        event(MotionEvent.ACTION_MOVE, focus.first, focus.second + 100)
+        event(MotionEvent.ACTION_UP, focus.first + 30, focus.second + 120)
+        assertEquals(zoomed, bounds())
+        val app = compose.activity.application as ReaderApplication
+        var point: JsonArray? = null
+        compose.waitUntil(5000) {
+            point = runBlocking { app.database.annotations().observePaper("gesture-fixture").first().filter { it.kind == "ink" }.maxByOrNull { it.updatedAt }?.let {
+                WireJson.format.parseToJsonElement(it.json).jsonObject["points"]!!.jsonArray.last().jsonArray
+            } }; point != null
+        }
+        assertEquals((focus.first + 30 - zoomed.x) / zoomed.width, point!![0].jsonPrimitive.float, .0001f)
+        assertEquals((focus.second + 120 - zoomed.y) / zoomed.height, point!![1].jsonPrimitive.float, .0001f)
+        var pixels = 0L
+        compose.runOnIdle {
+            fun inspect(v: View) {
+                if (v.javaClass.simpleName == "DryInkView") {
+                    for (name in listOf("ink", "highlights")) {
+                        val f = v.javaClass.getDeclaredField(name).apply { isAccessible = true }
+                        (f.get(v) as? Bitmap)?.let { b -> assertTrue(b.width.toLong() * b.height <= 4_194_304L); pixels += b.width.toLong() * b.height }
+                    }
+                }
+                if (v is ViewGroup) repeat(v.childCount) { inspect(v.getChildAt(it)) }
+            }
+            inspect(compose.activity.window.decorView)
+        }
+        assertTrue(pixels > 0)
+        Log.i("ReaderInteraction", "maximum zoom before=$before actual=$zoomed independentPdf=$rendered inkEnd=$point dryPixels=$pixels")
     }
 
     private fun canvas(

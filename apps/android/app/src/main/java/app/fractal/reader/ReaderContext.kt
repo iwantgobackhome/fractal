@@ -15,7 +15,7 @@ internal fun readerNoteText(kind: String, json: JsonObject?): ReaderNoteText {
     else ReaderNoteText(text("text"), text("note"))
 }
 
-/** Context for the existing /ask endpoint; persistent conversation history is separate work. */
+/** A request override never changes the Hub's global language preference. */
 internal fun readerQuestionBody(
     question: String,
     language: String,
@@ -26,8 +26,12 @@ internal fun readerQuestionBody(
     put("answerLanguage", language)
     selected?.let { (page, selection) ->
         put("page", page)
-        if (selection.text.isNotBlank()) put("selectedText", selection.text.take(20000))
-        selection.rects.firstOrNull()?.let { rect ->
+        put("provenance", selectionProvenance(page, selection))
+        require(selection.text.length <= 20000) { "Select a shorter quote; the complete selection remains retained" }
+        if (selection.text.isNotBlank()) put("selectedText", selection.text)
+        selection.rects.takeIf { selection.origin == "original" && it.isNotEmpty() }?.let { rects ->
+            val left = rects.minOf { it.x }; val top = rects.minOf { it.y }
+            val rect = app.fractal.pdf.PdfRect(left, top, rects.maxOf { it.x + it.width } - left, rects.maxOf { it.y + it.height } - top)
             // Clamp in the serialized number domain; Float subtraction can serialize past 1.
             val x = rect.x.toDouble().coerceIn(0.0, 1.0)
             val y = rect.y.toDouble().coerceIn(0.0, 1.0)

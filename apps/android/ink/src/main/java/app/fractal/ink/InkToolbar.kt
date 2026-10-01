@@ -49,6 +49,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.fractal.design.LocalFractalColors
@@ -90,7 +91,7 @@ private fun icon(name: InkTool): ImageVector = ImageVector.Builder(name = name.n
 
 /** Compact rail on tablets, top bar on narrow layouts. A second tool tap opens its options. */
 @Composable
-fun InkToolbar(state: InkPageState, tool: InkToolState, modifier: Modifier = Modifier, onAsk: (List<InkStroke>, InkBounds) -> Unit = { _, _ -> }) {
+fun InkToolbar(state: InkPageState, tool: InkToolState, modifier: Modifier = Modifier, onAsk: (List<InkStroke>, InkBounds) -> Unit = { _, _ -> }, onToolSelected: (InkTool) -> Unit = {}) {
     val colors = LocalFractalColors.current
     val addColorLabel = stringResource(R.string.add_color)
     val undoLabel = stringResource(R.string.undo)
@@ -105,7 +106,8 @@ fun InkToolbar(state: InkPageState, tool: InkToolState, modifier: Modifier = Mod
                 Box(
                     Modifier.size(48.dp).clickable {
                         if (tool.active == item && item != InkTool.TextSelection) popover = item else { tool.active = item; popover = null }
-                    }.semantics { contentDescription = label },
+                        onToolSelected(item)
+                    }.semantics { contentDescription = label; selected = tool.active == item },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(icon(item), null, tint = colors.ink, modifier = Modifier.size(24.dp))

@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.*
 import androidx.compose.ui.unit.*
 import app.fractal.data.*
+import app.fractal.pdf.PdfRect
 import app.fractal.design.LocalFractalColors
 import app.fractal.sync.SyncScheduler
 import kotlinx.coroutines.launch
@@ -28,7 +29,7 @@ internal suspend fun editAnnotation(app: ReaderApplication, original: JsonObject
 }
 
 @Composable
-internal fun BoxScope.StickyNotes(app: ReaderApplication, rows: List<AnnotationEntity>, width: Int, height: Int, page: OriginalTextPage?) {
+internal fun BoxScope.StickyNotes(app: ReaderApplication, rows: List<AnnotationEntity>, width: Int, height: Int, page: OriginalTextPage?, pdfHash: String) {
     val density = LocalDensity.current
     val scope = rememberCoroutineScope()
     var editing by remember { mutableStateOf<JsonObject?>(null) }
@@ -36,7 +37,9 @@ internal fun BoxScope.StickyNotes(app: ReaderApplication, rows: List<AnnotationE
     val positioned = rows.mapNotNull { row ->
         val json = runCatching { WireJson.format.parseToJsonElement(row.json).jsonObject }.getOrNull()
         val rect = json?.get("rect") as? JsonObject
-        if (json == null || rect == null) null else Triple(row, json, rect)
+        val provenance = json?.get("provenance") as? JsonObject
+        if (json == null || rect == null || sourceContextStatus(provenance, pdfHash, row.page, page) !in listOf("current", "unknown") ||
+            (provenance?.get("coordinateSpace")?.jsonPrimitive?.contentOrNull == "unrotated-crop-normalized-v1" && page == null)) null else Triple(row, json, rect)
     }
     positioned.forEach { (row, json, rect) ->
         key(row.id) {
@@ -44,18 +47,27 @@ internal fun BoxScope.StickyNotes(app: ReaderApplication, rows: List<AnnotationE
             val collapsed = json["collapsed"]?.jsonPrimitive?.booleanOrNull ?: false
             val body = readerNoteText("memo", json)
             val color = json["color"]?.jsonPrimitive?.contentOrNull ?: "yellow"
-            var x by remember(row.json) { mutableStateOf(value("x")) }
-            var y by remember(row.json) { mutableStateOf(value("y")) }
+            val provenance = json["provenance"] as? JsonObject
+            val displayed = renderedRect(PdfRect(value("x"), value("y"), value("width"), value("height")), provenance, page?.rotation ?: 0)
+            var x by remember(row.json) { mutableStateOf(displayed.x) }
+            var y by remember(row.json) { mutableStateOf(displayed.y) }
             val currentJson = rememberUpdatedState(json)
             fun persist() { scope.launch { editAnnotation(app, currentJson.value, buildJsonObject {
+                // Moving is an explicit new displayed placement; legacy records are never retagged on read.
+                put("provenance", JsonObject((provenance ?: JsonObject(emptyMap())) + buildJsonObject {
+                    put("coordinateSpace", "rendered-page-normalized-v1"); put("pdfSha256", pdfHash)
+                    if (provenance == null) put("textSource", "unknown")
+                }))
                 put("rect", buildJsonObject { put("x", x.toDouble()); put("y", y.toDouble()); put("width", value("width").toDouble().coerceIn(0.0, 1.0 - x)); put("height", value("height").toDouble().coerceIn(0.0, 1.0 - y)) })
             }) } }
             val noteWidth = with(density) { if (collapsed) 48.dp.roundToPx() else minOf(240.dp.roundToPx(), width) }
+            val anchorTouchHeight = with(density) { 48.dp.roundToPx() }
             val boundedX = (x * width).coerceIn(0f, (width - noteWidth).coerceAtLeast(0).toFloat())
-            Column(Modifier.offset { IntOffset(boundedX.roundToInt(), (y * height).coerceIn(0f, (height - 48).coerceAtLeast(0).toFloat()).roundToInt()) }
+            Column(Modifier.offset { IntOffset(boundedX.roundToInt(), (y * height).coerceIn(0f, (height - anchorTouchHeight).coerceAtLeast(0).toFloat()).roundToInt()) }
                 .width(with(density) { noteWidth.toDp() }).nativeInkBlocker().background(highlightColor(color).copy(alpha = .97f)).border(.5.dp, highlightColor(color))) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(Modifier.size(48.dp).focusable().semantics { contentDescription = "Move source note" }
+                    Box(Modifier.size(48.dp).clickable(enabled = collapsed) { scope.launch { editAnnotation(app, json, buildJsonObject { put("collapsed", false) }) } }
+                        .focusable().semantics { contentDescription = "Move source note" }
                         .onKeyEvent { event ->
                             if (event.type != KeyEventType.KeyDown) false else {
                                 val step = .01f
@@ -74,9 +86,8 @@ internal fun BoxScope.StickyNotes(app: ReaderApplication, rows: List<AnnotationE
                         TextButton(onClick = { scope.launch { editAnnotation(app, json, buildJsonObject { put("collapsed", true) }) } }) { Text("−", color = androidx.compose.ui.graphics.Color(0xFF29251F)) }
                     }
                 }
-                if (collapsed) Box(Modifier.fillMaxWidth().height(48.dp).clickable { scope.launch { editAnnotation(app, json, buildJsonObject { put("collapsed", false) }) } }, contentAlignment = Alignment.Center) {
-                    Text("+", color = androidx.compose.ui.graphics.Color(0xFF29251F))
-                } else {
+                if (!collapsed) {
+                    if (provenance == null) Text(libraryText("Legacy placement · source unknown", "기존 위치 · 원문 정보 없음"), Modifier.padding(horizontal = 12.dp), style = MaterialTheme.typography.bodySmall, color = androidx.compose.ui.graphics.Color(0xFF534B3D))
                     if (body.quote.isNotBlank()) Text(body.quote, Modifier.padding(horizontal = 12.dp), style = MaterialTheme.typography.bodySmall, color = androidx.compose.ui.graphics.Color(0xFF534B3D))
                     Box(Modifier.heightIn(max = 220.dp).verticalScroll(rememberScrollState()).padding(12.dp)) { Text(body.body, color = androidx.compose.ui.graphics.Color(0xFF29251F)) }
                     TextButton(onClick = { deleting = json }) { Text(libraryText("Delete…", "삭제…"), color = androidx.compose.ui.graphics.Color(0xFF29251F)) }

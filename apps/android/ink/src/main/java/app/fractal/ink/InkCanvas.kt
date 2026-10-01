@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Path
+import android.graphics.Rect
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
@@ -447,13 +448,15 @@ private class DryInkView(context: Context) : View(context) {
     var transient: List<InkPoint> = emptyList()
         set(value) { field = value; invalidate() }
     private val overlayPaint = Paint(3).apply { color = Color.rgb(162,54,42); strokeWidth = 2f; style = Paint.Style.STROKE }
+    private val bitmapPaint = Paint(Paint.FILTER_BITMAP_FLAG)
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) { super.onSizeChanged(w,h,oldw,oldh); rebuild() }
     fun sync(strokes: List<InkStroke>, selectedIds: Set<String>) {
         if (current != strokes) {
             val old = current; current = strokes
-            if (strokes.size == old.size + 1 && strokes.dropLast(1) == old && highlights != null && ink != null) {
+            val target = strokes.lastOrNull()?.let { if (it.brush == "highlighter") highlights else ink }
+            if (strokes.size == old.size + 1 && strokes.dropLast(1) == old && target != null) {
                 val stroke = strokes.last()
-                drawStroke(Canvas(if (stroke.brush == "highlighter") highlights!! else ink!!), stroke)
+                drawCached(target, stroke)
                 dirty(stroke)
             } else rebuild()
         }
@@ -467,12 +470,28 @@ private class DryInkView(context: Context) : View(context) {
     private fun rebuild() {
         if (width <= 0 || height <= 0) return
         highlights?.recycle(); ink?.recycle()
-        highlights = Bitmap.createBitmap(width,height,Bitmap.Config.ARGB_8888)
-        ink = Bitmap.createBitmap(width,height,Bitmap.Config.ARGB_8888)
-        val hCanvas = Canvas(highlights!!); val iCanvas = Canvas(ink!!)
-        current.forEach { drawStroke(if (it.brush == "highlighter") hCanvas else iCanvas, it) }
+        highlights = null; ink = null
+        val visible = current.filterNot { it.deleted || it.points.isEmpty() }
+        if (visible.isNotEmpty()) {
+            // Only derived display caches are bounded. Input and saved normalized vectors retain precision.
+            val scale = minOf(1.0, kotlin.math.sqrt(4_194_304.0 / (width.toDouble() * height)), 4096.0 / max(width, height))
+            val cacheWidth = (width * scale).toInt().coerceAtLeast(1); val cacheHeight = (height * scale).toInt().coerceAtLeast(1)
+            if (visible.any { it.brush == "highlighter" }) highlights = Bitmap.createBitmap(cacheWidth, cacheHeight, Bitmap.Config.ARGB_8888)
+            if (visible.any { it.brush != "highlighter" }) ink = Bitmap.createBitmap(cacheWidth, cacheHeight, Bitmap.Config.ARGB_8888)
+            visible.forEach { drawCached(if (it.brush == "highlighter") highlights!! else ink!!, it) }
+        }
         invalidate()
     }
+    private fun drawCached(bitmap: Bitmap, stroke: InkStroke) {
+        val canvas = Canvas(bitmap)
+        canvas.scale(bitmap.width.toFloat() / width, bitmap.height.toFloat() / height)
+        drawStroke(canvas, stroke)
+    }
+    override fun onDetachedFromWindow() {
+        highlights?.recycle(); ink?.recycle(); highlights = null; ink = null
+        super.onDetachedFromWindow()
+    }
+    override fun onAttachedToWindow() { super.onAttachedToWindow(); if (current.isNotEmpty()) rebuild() }
     private fun drawStroke(canvas: Canvas, s: InkStroke) {
         if (s.points.isEmpty() || s.deleted) return
         val batch = MutableStrokeInputBatch()
@@ -508,8 +527,9 @@ private class DryInkView(context: Context) : View(context) {
     }
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        highlights?.let { canvas.drawBitmap(it,0f,0f,null) }
-        ink?.let { canvas.drawBitmap(it,0f,0f,null) }
+        val bounds = Rect(0, 0, width, height)
+        highlights?.let { canvas.drawBitmap(it, null, bounds, bitmapPaint) }
+        ink?.let { canvas.drawBitmap(it, null, bounds, bitmapPaint) }
         if (selected.isNotEmpty()) current.filter { it.id in selected }.bounds()?.let { b ->
             canvas.drawRect(b.left*width,b.top*height,b.right*width,b.bottom*height,overlayPaint)
             canvas.drawCircle(b.left*width,b.top*height,8f,overlayPaint)

@@ -23,7 +23,7 @@ import androidx.compose.ui.res.stringResource
 @Composable
 fun ResearchSelector(label: String, selected: String, options: List<Pair<String, String>>,
     onSelected: (String) -> Unit, modifier: Modifier = Modifier, emptyLabel: String? = null,
-    enabled: Boolean = true, loading: Boolean = false) {
+    enabled: Boolean = true, loading: Boolean = false, showLabel: Boolean = true) {
     val colors = LocalFractalColors.current
     var open by remember { mutableStateOf(false) }
     var focusedId by remember { mutableStateOf<String?>(selected) }
@@ -57,10 +57,10 @@ fun ResearchSelector(label: String, selected: String, options: List<Pair<String,
         else if (options.none { it.first == focusedId }) focusedId = options.firstOrNull { it.first == selected }?.first ?: options.firstOrNull()?.first
     }
     Column(modifier.fillMaxWidth()) {
-        Text(label, style = MaterialTheme.typography.bodySmall, color = colors.inkSoft)
+        if (showLabel) Text(label, style = MaterialTheme.typography.bodySmall, color = colors.inkSoft)
         Row(Modifier.fillMaxWidth().heightIn(min = 48.dp).focusRequester(trigger).onFocusChanged { triggerFocused = it.isFocused }
             .border(if (triggerFocused) 2.dp else .5.dp, if (triggerFocused) colors.focus else colors.rule)
-            .semantics { role = Role.DropdownList; stateDescription = display }
+            .semantics { role = Role.DropdownList; stateDescription = display; contentDescription = label }
             .clickable(enabled = canOpen) { trigger.requestFocus(); closeFocused = false; focusedId = selected; open = true }.padding(12.dp)) {
             Text(display,
                 Modifier.weight(1f), color = colors.ink)

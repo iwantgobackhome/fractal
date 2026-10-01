@@ -26,10 +26,14 @@ import java.time.Instant
 private data class ReadingAnchor(val page: Int = 1, val fraction: Double = 0.0, val block: String? = null)
 private fun LazyListState.fraction() = (firstVisibleItemScrollOffset.toDouble() /
     (layoutInfo.visibleItemsInfo.firstOrNull { it.index == firstVisibleItemIndex }?.size ?: 1)).coerceIn(0.0, 1.0)
-private suspend fun LazyListState.restore(index: Int, fraction: Double) {
+private suspend fun LazyListState.restore(index: Int, fraction: Double): Unit = withContext(Dispatchers.Main.immediate) {
+    // A restore can resume after Room I/O; forceRemeasure must stay on Android's UI thread.
+    // This also confines test effect interceptors that otherwise resume on the Room worker.
     scrollToItem(index.coerceAtLeast(0))
+    if (fraction <= 0.00001) return@withContext
     withFrameNanos { }
-    val size = layoutInfo.visibleItemsInfo.firstOrNull { it.index == index }?.size ?: return
+    yield() // Apply semantic offset after the native/Compose measurement pass finishes.
+    val size = layoutInfo.visibleItemsInfo.firstOrNull { it.index == index }?.size ?: return@withContext
     scrollBy((size * fraction).toFloat())
 }
 private fun Modifier.readingDriver(onDown: () -> Unit) = composed {
@@ -56,7 +60,10 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
     var driver by remember { mutableStateOf("original") }
     var sourceAnchor by remember(paper.paperKey) { mutableStateOf(ReadingAnchor()) }
     var translatedAnchor by remember(paper.paperKey) { mutableStateOf(ReadingAnchor()) }
+    var translationGapPage by remember(paper.paperKey) { mutableStateOf<Int?>(null) }
     var restored by remember(paper.paperKey) { mutableStateOf(false) }
+    var resizing by remember { mutableStateOf(false) }
+    var lastPaneWidth by remember(paper.paperKey) { mutableStateOf(0.dp) }
     var zoom by remember(paper.paperKey) { mutableStateOf(1f) }
     var writing by remember { mutableStateOf(false) }
     var barVisible by remember { mutableStateOf(true) }
@@ -68,6 +75,8 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
     var regionMode by remember { mutableStateOf(false) }
     var viewport by remember { mutableStateOf<Rect?>(null) }
     var noteSelection by remember { mutableStateOf<Pair<Int, PdfTextSelection>?>(null) }
+    var toolsMenu by remember { mutableStateOf(false) }
+    var fullTitle by remember { mutableStateOf(false) }
     LaunchedEffect(paper.paperKey) {
         app.database.metadata().snapshot(paper.paperKey)?.let { blocks = translatedBlocks(WireJson.format.parseToJsonElement(it.json).jsonObject) }
         runCatching { app.sync.refreshPaperMetadata(paper.paperKey) }.onSuccess {
@@ -103,6 +112,11 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
     }
     LaunchedEffect(restored, blocks) {
         if (!restored || blocks.isEmpty()) return@LaunchedEffect
+        if (blocks.none { it.page == translatedAnchor.page }) {
+            translationGapPage = translatedAnchor.page
+            return@LaunchedEffect
+        }
+        translationGapPage = null
         val index = blocks.indexOfFirst { it.blockId == translatedAnchor.block }.takeIf { it >= 0 }
             ?: blocks.indexOfFirst { it.page == translatedAnchor.page }.coerceAtLeast(0)
         translationList.restore(index, translatedAnchor.fraction)
@@ -126,13 +140,19 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
         scope.launch { sourceList.scrollToItem((page - 1).coerceIn(0, count - 1)) } }
     fun sourceToTranslation(anchor: ReadingAnchor) {
         val indices = blocks.indices.filter { blocks[it].page == anchor.page }
-        if (indices.isEmpty()) return
+        if (indices.isEmpty()) {
+            translationGapPage = anchor.page
+            translatedAnchor = anchor.copy(block = null)
+            return
+        }
+        translationGapPage = null
         val scaled = anchor.fraction * indices.size
         val ordinal = scaled.toInt().coerceIn(0, indices.lastIndex)
         scope.launch { translationList.restore(indices[ordinal], (scaled - ordinal).coerceIn(0.0, 1.0)) }
     }
     fun translationToSource(anchor: ReadingAnchor) {
         val indices = blocks.filter { it.page == anchor.page }
+        if (indices.isEmpty()) { scope.launch { sourceList.restore(anchor.page - 1, anchor.fraction) }; return }
         val ordinal = indices.indexOfFirst { it.blockId == anchor.block }.coerceAtLeast(0)
         scope.launch { sourceList.restore(anchor.page - 1, (ordinal + anchor.fraction) / indices.size.coerceAtLeast(1)) }
     }
@@ -143,24 +163,39 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
         val translationOnly = mode == "translation" || (mode == "split" && !split && driver == "translation")
         val sourceVisible = !translationOnly || split
         val activePage = if (translationOnly) translatedAnchor.page else sourceAnchor.page
-        LaunchedEffect(restored, split) {
+        val paneWidth = (maxWidth - if (compact) 0.dp else 48.dp) / if (split) 2 else 1
+        val panelWidth = minOf(420.dp, (maxWidth - 48.dp) * .48f)
+        LaunchedEffect(restored, paneWidth, sourceVisible) {
+            if (!restored || !sourceVisible) return@LaunchedEffect
+            if (lastPaneWidth != 0.dp && lastPaneWidth != paneWidth) {
+                val sourceBefore = sourceAnchor; val translatedBefore = translatedAnchor
+                resizing = true
+                sourceList.restore(sourceBefore.page - 1, sourceBefore.fraction)
+                val index = blocks.indexOfFirst { it.blockId == translatedBefore.block }
+                if (index >= 0) translationList.restore(index, translatedBefore.fraction)
+                resizing = false
+            }
+            lastPaneWidth = paneWidth
+        }
+        LaunchedEffect(restored, split, sourceVisible, resizing) {
             if (!restored) return@LaunchedEffect
             snapshotFlow { sourceList.firstVisibleItemIndex to sourceList.firstVisibleItemScrollOffset }.collectLatest {
-                if (!sourceVisible) return@collectLatest
+                if (!sourceVisible || resizing) return@collectLatest
                 sourceAnchor = ReadingAnchor(sourceList.firstVisibleItemIndex + 1, sourceList.fraction())
                 if (split && driver == "original" && sourceList.isScrollInProgress) sourceToTranslation(sourceAnchor)
                 delay(500); savePosition()
                 if (driver == "original") app.metadata.read(paper.paperKey, sourceAnchor.page, sourceAnchor.fraction)
             }
         }
-        LaunchedEffect(restored, blocks, split) {
+        LaunchedEffect(restored, blocks, split, resizing) {
             if (!restored || blocks.isEmpty()) return@LaunchedEffect
             snapshotFlow { translationList.firstVisibleItemIndex to translationList.firstVisibleItemScrollOffset }.collectLatest {
                 val block = blocks.getOrNull(translationList.firstVisibleItemIndex) ?: return@collectLatest
+                if (resizing || translationGapPage != null) return@collectLatest
                 translatedAnchor = ReadingAnchor(block.page, translationList.fraction(), block.blockId)
                 if (split && driver == "translation" && translationList.isScrollInProgress) translationToSource(translatedAnchor)
                 delay(500); savePosition()
-                if (driver == "translation") app.metadata.read(paper.paperKey, block.page, translatedAnchor.fraction)
+                if (driver == "translation") app.metadata.read(paper.paperKey, block.page, translatedAnchor.fraction, block.blockId)
             }
         }
         // Reserve the same header/tool extent through writing, selection and panel changes.
@@ -170,35 +205,37 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                 if (barVisible) Column {
                     Row(Modifier.fillMaxWidth().height(headerRow), verticalAlignment = Alignment.CenterVertically) {
                         TextButton(onClick = { savePosition(); onBack() }) { Text("‹", style = MaterialTheme.typography.headlineSmall) }
-                        Text(paper.title ?: paper.paperKey, Modifier.weight(1f), style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        Text(paper.title ?: paper.paperKey, Modifier.weight(1f).heightIn(min = 48.dp).wrapContentHeight(Alignment.CenterVertically).clickable { fullTitle = true }, style = MaterialTheme.typography.titleMedium.copy(fontFamily = ScholarlySerif), maxLines = 1, overflow = TextOverflow.Ellipsis)
                         TextButton(onClick = { panelTab = "notes"; panel = true }) { Text(libraryText("Notes", "노트")) }
                         TextButton(onClick = { panelTab = "questions"; panel = true }) { Text(libraryText("Ask", "질문")) }
                     }
-                    Row(Modifier.fillMaxWidth().height(headerRow).horizontalScroll(rememberScrollState()), verticalAlignment = Alignment.CenterVertically) {
-                        listOf("original" to libraryText("Original", "원문"), "translation" to libraryText("Translation", "번역"), "split" to libraryText("Split", "나란히")).forEach { (id, label) ->
-                            if (id == "original" || blocks.isNotEmpty()) TextButton(onClick = {
-                                if (id == "translation" && !translationOnly) sourceToTranslation(sourceAnchor)
+                    Row(Modifier.fillMaxWidth().height(headerRow).padding(horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                        val modes = listOf("original" to libraryText("Original", "원문"), "translation" to libraryText("Translation", "번역"), "split" to libraryText("Split", "나란히")).filter { it.first == "original" || blocks.isNotEmpty() }
+                        ResearchSelector(libraryText("Reading pane", "읽기 화면"), mode, modes, { id ->
+                                if (id in listOf("translation", "split") && !translationOnly) sourceToTranslation(sourceAnchor)
                                 if (id == "original" && translationOnly) translationToSource(translatedAnchor)
                                 mode = id; driver = if (id == "translation") "translation" else "original"; selection = null
-                            }) { Text(label, color = if (mode == id) colors.focus else colors.inkSoft) }
-                        }
+                            }, Modifier.weight(1f), showLabel = false)
                         Text("$activePage / ${pages?.pageCount ?: 0}", Modifier.padding(horizontal = 12.dp), style = MaterialTheme.typography.bodySmall)
-                        if (sourceVisible) {
-                            TextButton(onClick = { regionMode = false; tool.active = InkTool.TextSelection }) { Text(libraryText("Select text", "텍스트 선택"), color = if (!regionMode && tool.active == InkTool.TextSelection) colors.focus else colors.inkSoft) }
-                            TextButton(onClick = { regionMode = true; tool.active = InkTool.TextSelection }) { Text(libraryText("Select region", "영역 선택"), color = if (regionMode && tool.active == InkTool.TextSelection) colors.focus else colors.inkSoft) }
+                        Box { TextButton(onClick = { toolsMenu = true }) { Text(libraryText("Tools ▾", "도구 ▾")) }
+                            DropdownMenu(toolsMenu, { toolsMenu = false }) {
+                                DropdownMenuItem(text = { Text(libraryText("Select original text", "원문 텍스트 선택")) }, enabled = sourceVisible, onClick = { regionMode = false; tool.active = InkTool.TextSelection; toolsMenu = false })
+                                DropdownMenuItem(text = { Text(libraryText("Deliberately select a region", "직접 영역 선택")) }, enabled = sourceVisible, onClick = { regionMode = true; tool.active = InkTool.TextSelection; toolsMenu = false })
+                                DropdownMenuItem(text = { Text(libraryText("Fit original page width", "원문 너비 맞춤")) }, enabled = sourceVisible, onClick = { zoom = 1f; toolsMenu = false })
+                                DropdownMenuItem(text = { Text(libraryText("Add source note", "원문 노트 추가")) }, enabled = sourceVisible, onClick = { noteSelection = activePage to PdfTextSelection("", listOf(PdfRect(.08f, .15f, .02f, .02f)), provenance = "deliberate-region", pdfSha256 = pages?.pdfSha256); toolsMenu = false })
+                                DropdownMenuItem(text = { Text(libraryText("Retained history", "저장된 기록")) }, onClick = { panelTab = "history"; panel = true; toolsMenu = false })
+                            }
                         }
-                        TextButton(onClick = { zoom = 1f }) { Text(libraryText("Fit width", "너비 맞춤")) }
-                        TextButton(onClick = { noteSelection = activePage to PdfTextSelection("", listOf(PdfRect(.08f, .15f, .02f, .02f)), provenance = "deliberate-region", pdfSha256 = pages?.pdfSha256) }, enabled = sourceVisible) { Text(libraryText("Add note", "노트 추가")) }
                     }
                 } else TextButton(onClick = { barVisible = true }, modifier = Modifier.fillMaxSize()) { Text(libraryText("Show reader controls", "읽기 도구 표시")) }
             }
             HorizontalDivider(color = colors.rule, thickness = .5.dp)
             if (compact) Box(Modifier.fillMaxWidth().height(48.dp)) {
-                if (sourceVisible) InkToolbar(states.getOrPut(activePage) { InkPageState() }, tool)
+                if (sourceVisible) InkToolbar(states.getOrPut(activePage) { InkPageState() }, tool, onToolSelected = { if (it == InkTool.TextSelection) regionMode = false })
             }
             Row(Modifier.weight(1f)) {
                 if (!compact) Box(Modifier.width(48.dp).fillMaxHeight()) {
-                    if (sourceVisible) InkToolbar(states.getOrPut(activePage) { InkPageState() }, tool, Modifier.fillMaxSize())
+                    if (sourceVisible) InkToolbar(states.getOrPut(activePage) { InkPageState() }, tool, Modifier.fillMaxSize(), onToolSelected = { if (it == InkTool.TextSelection) regionMode = false })
                 }
                 Box(Modifier.weight(1f).fillMaxHeight()) {
                     Row(Modifier.fillMaxSize()) {
@@ -214,7 +251,7 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                                         onSelectionUnavailable = { selectionMessage = it },
                                         onFingerGesture = { dy, factor, focusY ->
                                             zoom = (zoom * factor).coerceIn(.5f, 4f)
-                                            scope.launch { if (factor != 1f) withFrameNanos { }; sourceList.scrollBy(focusY * (factor - 1f) - dy) }
+                                            scope.launch { if (factor != 1f) { withFrameNanos { }; yield() }; sourceList.scrollBy(focusY * (factor - 1f) - dy) }
                                         }, onWritingStateChanged = { writing = it; if (it && tool.active != InkTool.TextSelection) barVisible = false },
                                         onSelection = { selection = index + 1 to it; selectionMessage = "" },
                                         onDoubleTap = { zoom = if (zoom == 1f) 1.5f else 1f },
@@ -224,15 +261,18 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                                             for (stroke in before.filter { it.id !in new }) app.sync.saveLocal(WireJson.format.parseToJsonElement(InkJson.format.encodeToString(InkStroke.serializer(), stroke.copy(deleted = true, updatedAt = Instant.now().toString()))).jsonObject)
                                             SyncScheduler.now(app, app.settings.getBoolean("wifiOnly", false))
                                         } }, contentOverlay = { width, height, textPage ->
-                                            StickyNotes(app, annotations.filter { it.kind == "memo" && it.page == index + 1 }, width, height, textPage)
+                                            StickyNotes(app, annotations.filter { it.kind == "memo" && it.page == index + 1 }, width, height, textPage, source.pdfSha256)
                                         })
                                 }
                             }
                         }
                         if (split) VerticalDivider(color = colors.rule)
-                        if (translationOnly || split) LazyColumn(state = translationList, modifier = Modifier.weight(1f).fillMaxHeight().readingDriver { driver = "translation" }) {
+                        if ((translationOnly || split) && translationGapPage != null) Column(Modifier.weight(1f).fillMaxHeight().padding(24.dp)) {
+                            Text(libraryText("No translated content is cached for page $translationGapPage.", "$translationGapPage 쪽의 번역 내용이 캐시되지 않았습니다."), style = MaterialTheme.typography.bodyLarge)
+                            TextButton(onClick = { translationToSource(translatedAnchor); mode = "original"; driver = "original" }) { Text(libraryText("Read original page", "원문 페이지 읽기")) }
+                        } else if (translationOnly || split) LazyColumn(state = translationList, modifier = Modifier.weight(1f).fillMaxHeight().readingDriver { driver = "translation" }) {
                             items(blocks, key = { it.blockId }) { block -> TranslatedReaderBlock(block) { text ->
-                                quote = block.page to PdfTextSelection(text, emptyList(), origin = "translated", blockId = block.blockId, provenance = "translated-copy")
+                                quote = block.page to PdfTextSelection(text, emptyList(), origin = if (block.translated) "translated" else "original", blockId = block.blockId, provenance = if (block.translated) "translated-copy" else "source-block-copy")
                                 panel = true; panelTab = "questions"
                             } }
                         }
@@ -245,7 +285,8 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                     }
                     selection?.let { selected ->
                         Surface(Modifier.align(Alignment.BottomCenter).fillMaxWidth().nativeInkBlocker(), color = colors.paper, tonalElevation = 2.dp) {
-                            Column { Text(if (selected.second.text.isBlank()) libraryText("Deliberately selected original region", "직접 선택한 원문 영역") else selected.second.text,
+                            Column { if (selected.second.provenance == "cached-original-approximate") Text(libraryText("Original text · approximate highlight", "원문 텍스트 · 대략적인 강조 영역"), Modifier.padding(horizontal = 12.dp), style = MaterialTheme.typography.bodySmall)
+                                Text(if (selected.second.text.isBlank()) libraryText("Deliberately selected original region", "직접 선택한 원문 영역") else selected.second.text,
                                 Modifier.padding(horizontal = 12.dp, vertical = 4.dp), maxLines = 2, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodySmall)
                                 Row(Modifier.horizontalScroll(rememberScrollState())) {
                                     TextButton(enabled = selected.second.text.isNotBlank(), onClick = { clipboard.setText(androidx.compose.ui.text.AnnotatedString(selected.second.text)) }) { Text(libraryText("Copy", "복사")) }
@@ -258,11 +299,11 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                         }
                     }
                     if (panel && !compact) SidePanel(app, paper.paperKey, annotations, pages, panelTab, { panelTab = it }, ::jump,
-                        Modifier.align(Alignment.CenterEnd).widthIn(max = 420.dp).fillMaxHeight().fillMaxWidth(.48f), quote, { quote = null }, onClose = { panel = false })
+                        Modifier.align(Alignment.CenterEnd).width(panelWidth).fillMaxHeight(), quote, { quote = null }, onClose = { panel = false })
                 }
             }
         }
-        if (panel && compact) ModalBottomSheet(onDismissRequest = { panel = false }) {
+        if (panel && compact) ModalBottomSheet(onDismissRequest = { panel = false }, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
             SidePanel(app, paper.paperKey, annotations, pages, panelTab, { panelTab = it }, ::jump,
                 Modifier.fillMaxWidth().height(availableHeight * .85f), quote, { quote = null }, onClose = { panel = false })
         }
@@ -270,6 +311,9 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
     noteSelection?.let { (page, selected) -> NoteEditor(null, selected.text, onDismiss = { noteSelection = null }) { text, color ->
         scope.launch { saveMemo(app, paper.paperKey, page, selected, text, color) }; noteSelection = null
     } }
+    if (fullTitle) AlertDialog(onDismissRequest = { fullTitle = false }, title = { Text(libraryText("Paper details", "논문 정보")) },
+        text = { Column(Modifier.heightIn(max = 420.dp).verticalScroll(rememberScrollState())) { Text(paper.title ?: paper.paperKey, style = MaterialTheme.typography.titleLarge); Text(paper.authors); Text(listOfNotNull(paper.venue, paper.year?.toString()).joinToString(" · ")); Text(paper.paperKey, style = MaterialTheme.typography.bodySmall) } },
+        confirmButton = { TextButton(onClick = { fullTitle = false }) { Text(libraryText("Close", "닫기")) } })
 }
 
 @Composable
@@ -286,10 +330,10 @@ private fun TranslatedReaderBlock(block: TranslatedBlock, onQuote: (String) -> U
         }
     } }
     Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp)) {
-        Text(libraryText("Translation · page ${block.page}", "번역 · ${block.page}쪽"), style = MaterialTheme.typography.bodySmall, color = colors.inkSoft)
+        Text(if (block.translated) libraryText("Translation · page ${block.page}", "번역 · ${block.page}쪽") else libraryText("Original passage · page ${block.page}", "원문 내용 · ${block.page}쪽"), style = MaterialTheme.typography.bodySmall, color = colors.inkSoft)
         CompositionLocalProvider(LocalTextToolbar provides wrapped) { SelectionContainer {
             Text(block.text, style = if (block.kind == "heading") MaterialTheme.typography.titleLarge else MaterialTheme.typography.bodyLarge, color = colors.ink)
         } }
-        TextButton(onClick = { onQuote(copied ?: block.text) }) { Text(if (copied != null) libraryText("Quote copied excerpt", "복사한 부분 인용") else libraryText("Quote this translated block", "번역 블록 인용")) }
+        TextButton(onClick = { onQuote(copied ?: block.text) }) { Text(if (copied != null) libraryText("Quote copied excerpt", "복사한 부분 인용") else if (block.translated) libraryText("Quote this translated block", "번역 블록 인용") else libraryText("Quote original passage", "원문 내용 인용")) }
     }
 }

@@ -2,7 +2,7 @@ package app.fractal.data
 
 import kotlinx.serialization.json.*
 
-data class TranslatedBlock(val blockId: String, val page: Int, val kind: String, val text: String)
+data class TranslatedBlock(val blockId: String, val page: Int, val kind: String, val text: String, val translated: Boolean = true)
 
 /** pageOrdinal orders text within a page; it is never a physical paper page. */
 fun translatedBlocks(snapshot: JsonObject): List<TranslatedBlock> {
@@ -22,6 +22,6 @@ fun translatedBlocks(snapshot: JsonObject): List<TranslatedBlock> {
             region.jsonObject.text("page")?.toIntOrNull()?.takeIf { page -> page > 0 }
         } ?: return@mapNotNull null
         val text = translations[id] ?: block.text("sourceText")
-        if (text.isNullOrBlank()) null else TranslatedBlock(id, page, block.text("kind").orEmpty(), text)
+        if (text.isNullOrBlank()) null else TranslatedBlock(id, page, block.text("kind").orEmpty(), text, translations[id] != null)
     }
 }
