@@ -1,0 +1,3223 @@
+{
+  "status": "passed independent frozen application inspection; backend GET follow-up and owner final lifecycle remain separate",
+  "inspectedAt": "2026-10-01T06:26:39.981197+00:00",
+  "acceptedQaHead": "ba4c1fe12113773a90d368e7df193263fffa0036",
+  "manifestPath": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-android\\apps\\android\\qa\\pdf-acquisition\\artifact-manifest.json",
+  "manifestSha256": "ca25be4d66fbf10aabf75e0514f556e5194127282d403c489eca63a89087550c",
+  "declaredSource": "b940fd06d5874412fac29921326c7055f31f99a1",
+  "nativeBackendBoundary": "733be9846870428de95a0f36fec1050b0e013c8f",
+  "delivered": {
+    "path": "C:\\Users\\Home\\Desktop\\Fractal\\fractal\\dist\\reviewed-builds\\android-pdf-b940fd0\\Fractal-0.1.0-android-debug.apk",
+    "bytes": 69961372,
+    "sha256": "086b78bebf11f48012efe3f59356dce86e648fd800d4c55ac559315ecd24c842",
+    "matchesOwner": true
+  },
+  "signature": "Verifies\r\nVerified using v1 scheme (JAR signing): false\r\nVerified using v2 scheme (APK Signature Scheme v2): true\r\nVerified using v3 scheme (APK Signature Scheme v3): false\r\nVerified using v3.1 scheme (APK Signature Scheme v3.1): false\r\nVerified using v4 scheme (APK Signature Scheme v4): false\r\nVerified for SourceStamp: false\r\nNumber of signers: 1\r\nSigner #1 certificate DN: C=US, O=Android, CN=Android Debug\r\nSigner #1 certificate SHA-256 digest: 62e0698d0572e672aa65a999c6e6e4a6669fb2baf4ca0c6f9c2ce7f82bdd7f4f\r\nSigner #1 certificate SHA-1 digest: 6a5c66031a15995ec98fe7ff526cf2cfe9269241\r\nSigner #1 certificate MD5 digest: 6c758442569dc14df3e04d9202181391\r\nSigner #1 key algorithm: RSA\r\nSigner #1 key size (bits): 2048\r\nSigner #1 public key SHA-256 digest: 9ed1fb3f2e7babfc438904f5df757b505bcad6c8847cd95832d3bab062f585d6\r\nSigner #1 public key SHA-1 digest: 041a234ac3bf009fbde9ea0f983bc36959752ed4\r\nSigner #1 public key MD5 digest: 8f1a64dd2a115d132e91324b7936c0fe\r\n",
+  "badging": "package: name='app.fractal.reader' versionCode='1' versionName='0.1' platformBuildVersionName='15' platformBuildVersionCode='35' compileSdkVersion='35' compileSdkVersionCodename='15'\r\nminSdkVersion:'29'\r\ntargetSdkVersion:'35'\r\nuses-permission: name='android.permission.INTERNET'\r\nuses-permission: name='android.permission.CAMERA'\r\nuses-permission: name='android.permission.ACCESS_NETWORK_STATE'\r\nuses-permission: name='android.permission.WAKE_LOCK'\r\nuses-permission: name='android.permission.RECEIVE_BOOT_COMPLETED'\r\nuses-permission: name='android.permission.FOREGROUND_SERVICE'\r\nuses-permission: name='app.fractal.reader.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'\r\napplication-label:'Fractal'\r\napplication-label-af:'Fractal'\r\napplication-label-am:'Fractal'\r\napplication-label-ar:'Fractal'\r\napplication-label-as:'Fractal'\r\napplication-label-az:'Fractal'\r\napplication-label-be:'Fractal'\r\napplication-label-bg:'Fractal'\r\napplication-label-bn:'Fractal'\r\napplication-label-bs:'Fractal'\r\napplication-label-ca:'Fractal'\r\napplication-label-cs:'Fractal'\r\napplication-label-da:'Fractal'\r\napplication-label-de:'Fractal'\r\napplication-label-el:'Fractal'\r\napplication-label-en-AU:'Fractal'\r\napplication-label-en-CA:'Fractal'\r\napplication-label-en-GB:'Fractal'\r\napplication-label-en-IN:'Fractal'\r\napplication-label-en-XC:'Fractal'\r\napplication-label-es:'Fractal'\r\napplication-label-es-US:'Fractal'\r\napplication-label-et:'Fractal'\r\napplication-label-eu:'Fractal'\r\napplication-label-fa:'Fractal'\r\napplication-label-fi:'Fractal'\r\napplication-label-fr:'Fractal'\r\napplication-label-fr-CA:'Fractal'\r\napplication-label-gl:'Fractal'\r\napplication-label-gu:'Fractal'\r\napplication-label-hi:'Fractal'\r\napplication-label-hr:'Fractal'\r\napplication-label-hu:'Fractal'\r\napplication-label-hy:'Fractal'\r\napplication-label-in:'Fractal'\r\napplication-label-is:'Fractal'\r\napplication-label-it:'Fractal'\r\napplication-label-iw:'Fractal'\r\napplication-label-ja:'Fractal'\r\napplication-label-ka:'Fractal'\r\napplication-label-kk:'Fractal'\r\napplication-label-km:'Fractal'\r\napplication-label-kn:'Fractal'\r\napplication-label-ko:'Fractal'\r\napplication-label-ky:'Fractal'\r\napplication-label-lo:'Fractal'\r\napplication-label-lt:'Fractal'\r\napplication-label-lv:'Fractal'\r\napplication-label-mk:'Fractal'\r\napplication-label-ml:'Fractal'\r\napplication-label-mn:'Fractal'\r\napplication-label-mr:'Fractal'\r\napplication-label-ms:'Fractal'\r\napplication-label-my:'Fractal'\r\napplication-label-nb:'Fractal'\r\napplication-label-ne:'Fractal'\r\napplication-label-nl:'Fractal'\r\napplication-label-or:'Fractal'\r\napplication-label-pa:'Fractal'\r\napplication-label-pl:'Fractal'\r\napplication-label-pt:'Fractal'\r\napplication-label-pt-BR:'Fractal'\r\napplication-label-pt-PT:'Fractal'\r\napplication-label-ro:'Fractal'\r\napplication-label-ru:'Fractal'\r\napplication-label-si:'Fractal'\r\napplication-label-sk:'Fractal'\r\napplication-label-sl:'Fractal'\r\napplication-label-sq:'Fractal'\r\napplication-label-sr:'Fractal'\r\napplication-label-sr-Latn:'Fractal'\r\napplication-label-sv:'Fractal'\r\napplication-label-sw:'Fractal'\r\napplication-label-ta:'Fractal'\r\napplication-label-te:'Fractal'\r\napplication-label-th:'Fractal'\r\napplication-label-tl:'Fractal'\r\napplication-label-tr:'Fractal'\r\napplication-label-uk:'Fractal'\r\napplication-label-ur:'Fractal'\r\napplication-label-uz:'Fractal'\r\napplication-label-vi:'Fractal'\r\napplication-label-zh-CN:'Fractal'\r\napplication-label-zh-HK:'Fractal'\r\napplication-label-zh-TW:'Fractal'\r\napplication-label-zu:'Fractal'\r\napplication-icon-160:'res/mipmap-anydpi-v26/ic_launcher.xml'\r\napplication-icon-240:'res/mipmap-anydpi-v26/ic_launcher.xml'\r\napplication-icon-320:'res/mipmap-anydpi-v26/ic_launcher.xml'\r\napplication-icon-480:'res/mipmap-anydpi-v26/ic_launcher.xml'\r\napplication-icon-640:'res/mipmap-anydpi-v26/ic_launcher.xml'\r\napplication-icon-65534:'res/mipmap-anydpi-v26/ic_launcher.xml'\r\napplication-icon-65535:'res/mipmap-anydpi-v26/ic_launcher.xml'\r\napplication: label='Fractal' icon='res/mipmap-anydpi-v26/ic_launcher.xml'\r\napplication-debuggable\r\nlaunchable-activity: name='app.fractal.reader.MainActivity'  label='' icon=''\r\nfeature-group: label=''\r\n  uses-feature-not-required: name='android.hardware.camera'\r\n  uses-feature: name='android.hardware.faketouch'\r\n  uses-implied-feature: name='android.hardware.faketouch' reason='default feature for all apps'\r\nmain\r\nother-activities\r\nother-receivers\r\nother-services\r\nsupports-screens: 'small' 'normal' 'large' 'xlarge'\r\nsupports-any-density: 'true'\r\nlocales: '--_--' 'af' 'am' 'ar' 'as' 'az' 'be' 'bg' 'bn' 'bs' 'ca' 'cs' 'da' 'de' 'el' 'en-AU' 'en-CA' 'en-GB' 'en-IN' 'en-XC' 'es' 'es-US' 'et' 'eu' 'fa' 'fi' 'fr' 'fr-CA' 'gl' 'gu' 'hi' 'hr' 'hu' 'hy' 'in' 'is' 'it' 'iw' 'ja' 'ka' 'kk' 'km' 'kn' 'ko' 'ky' 'lo' 'lt' 'lv' 'mk' 'ml' 'mn' 'mr' 'ms' 'my' 'nb' 'ne' 'nl' 'or' 'pa' 'pl' 'pt' 'pt-BR' 'pt-PT' 'ro' 'ru' 'si' 'sk' 'sl' 'sq' 'sr' 'sr-Latn' 'sv' 'sw' 'ta' 'te' 'th' 'tl' 'tr' 'uk' 'ur' 'uz' 'vi' 'zh-CN' 'zh-HK' 'zh-TW' 'zu'\r\ndensities: '160' '240' '320' '480' '640' '65534' '65535'\r\nnative-code: 'arm64-v8a' 'armeabi-v7a' 'x86' 'x86_64'\r\n",
+  "productionTrees": {
+    "ink": "29bcd71f5c667cc9f17a8f3d430da6ead89b4557",
+    "data": "63c9f3a8d1cf49148270f7ac45ad349fcb42cd9d",
+    "sync": "59c47166a0792e0ae5e3e4694fae404d6391ffe7",
+    "pdf": "4978ace602818e07d15be2b8c596b509fa41ad95",
+    "app": "497709ea99f7c0b2dd6c6dd62327228ea5103bda",
+    "design": "6cba08eeb5ddc74b449ea8cd8579b09e5a426aee"
+  },
+  "sourceInputs": [
+    {
+      "sha256": "e5d8210b5674d9a278bdb85647b8d2615a6229fbbd33c151dceaeb75c3acdb09",
+      "path": "apps/android/README.md",
+      "acceptedGitBlobHash": "2f0a99975882d21cf00def357ecbc44812144b9232def71b08592183fdef111e",
+      "independentlyVerifiedOwnerRawHash": "e5d8210b5674d9a278bdb85647b8d2615a6229fbbd33c151dceaeb75c3acdb09",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "411f59b4120852215d2610809c08288310f3a6fa97204f1e99c1f8107b24d51a",
+      "path": "apps/android/app/build.gradle.kts",
+      "acceptedGitBlobHash": "7f509c051a0fc6d99a90c533bf82cede5893eaabe0ce0b1ac2143a83e4226751",
+      "independentlyVerifiedOwnerRawHash": "411f59b4120852215d2610809c08288310f3a6fa97204f1e99c1f8107b24d51a",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "6541b7eb6d238aa82a0ccc8d0aedc72fadf0ef6d373905b5b44ccfefa0fe3bb3",
+      "path": "apps/android/app/src/debug/AndroidManifest.xml",
+      "acceptedGitBlobHash": "2183c3941f54a7470e0deec2b9a5b6084803ac1044583fe8ae388062364ffc3e",
+      "independentlyVerifiedOwnerRawHash": "6541b7eb6d238aa82a0ccc8d0aedc72fadf0ef6d373905b5b44ccfefa0fe3bb3",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "dcb7c788c3b04a66c418acfe39cb29b57a32a409633ac2347556c3d222ba104c",
+      "path": "apps/android/app/src/debug/java/app/fractal/reader/ReaderFixtureActivity.kt",
+      "acceptedGitBlobHash": "d0d495ba419d2a153665fef6149ec9933ae6f9d8f516d04b8ebee37dfa73d7ca",
+      "independentlyVerifiedOwnerRawHash": "dcb7c788c3b04a66c418acfe39cb29b57a32a409633ac2347556c3d222ba104c",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "c585bd02f0a40d4d09d241275ea5ac630186c18b94ec3ad57f0703962d07a9db",
+      "path": "apps/android/app/src/main/AndroidManifest.xml",
+      "acceptedGitBlobHash": "e330ab72c7499f9ed4512740f25109761e05a4d95b3ac2227caecd4746c462a5",
+      "independentlyVerifiedOwnerRawHash": "c585bd02f0a40d4d09d241275ea5ac630186c18b94ec3ad57f0703962d07a9db",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "6b79759e55f482608aa35ad6c1add108566ae9cab44fca31667f732f53b03555",
+      "path": "apps/android/app/src/main/java/app/fractal/reader/AppLanguage.kt",
+      "acceptedGitBlobHash": "13250444b37fbfcb55ba1c77751042190230029ab5ede4fc80e2a27bbc22a279",
+      "independentlyVerifiedOwnerRawHash": "6b79759e55f482608aa35ad6c1add108566ae9cab44fca31667f732f53b03555",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "7f6ac23eb55ea51db17969ec8895fb0800ebf7477586d500113518a27e07ca53",
+      "path": "apps/android/app/src/main/java/app/fractal/reader/ConnectScreen.kt",
+      "acceptedGitBlobHash": "01f1d94af03faeaa15602928a587996c1085abb0e957a56fafe16b2e5ef542ce",
+      "independentlyVerifiedOwnerRawHash": "7f6ac23eb55ea51db17969ec8895fb0800ebf7477586d500113518a27e07ca53",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "aca413644861804683c1e4067e0689e1fc8d67c8abd1eea4058d2d9430565f0e",
+      "path": "apps/android/app/src/main/java/app/fractal/reader/DiscoveryDetails.kt",
+      "acceptedGitBlobHash": "9d1d6c8133d70541bed8acb54dd48658dd227585363e02fee90cdf2894db8a75",
+      "independentlyVerifiedOwnerRawHash": "aca413644861804683c1e4067e0689e1fc8d67c8abd1eea4058d2d9430565f0e",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "bfabab2cfa8850572b5293ae1d6317e147b92733f299ec03c977a1bcd6fa24dd",
+      "path": "apps/android/app/src/main/java/app/fractal/reader/DiscoveryIdentity.kt",
+      "acceptedGitBlobHash": "6ae740b3381b268034933ebf042d5f5f6cd239f82e6f66d4a21b2f2b4f253555",
+      "independentlyVerifiedOwnerRawHash": "bfabab2cfa8850572b5293ae1d6317e147b92733f299ec03c977a1bcd6fa24dd",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "2cc55632f790cd9445b192d3b50ae465ac89789a6b1c43311d6e505357750ab8",
+      "path": "apps/android/app/src/main/java/app/fractal/reader/DiscoveryScreen.kt",
+      "acceptedGitBlobHash": "7bc9119d7c54daa13684b43ca52882875ab45e198158085ade3d4cae0dfb869d",
+      "independentlyVerifiedOwnerRawHash": "2cc55632f790cd9445b192d3b50ae465ac89789a6b1c43311d6e505357750ab8",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "c47d100c09ff52b38007fabec1f70348a93f165d07b0ba4daea2f6bef7ab4bd6",
+      "path": "apps/android/app/src/main/java/app/fractal/reader/DiscoveryTime.kt",
+      "acceptedGitBlobHash": "2357cfa80c60598e650c5d12c5332b5764c7331ad02ca8395cde418c58d47595",
+      "independentlyVerifiedOwnerRawHash": "c47d100c09ff52b38007fabec1f70348a93f165d07b0ba4daea2f6bef7ab4bd6",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "e49c0c5ad0ed026cab9b57dfe280e2089044e03800f10b43d9ff30c90ed29708",
+      "path": "apps/android/app/src/main/java/app/fractal/reader/LanguageIntroScreen.kt",
+      "acceptedGitBlobHash": "d6db5345ab2c7eda8b6c6f215731c672884f7b5ed515383719778e12d2455477",
+      "independentlyVerifiedOwnerRawHash": "e49c0c5ad0ed026cab9b57dfe280e2089044e03800f10b43d9ff30c90ed29708",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "ac901c10e22b096b11f72e92ee39300ccf6202bcd2e9cfac126fe07b93703712",
+      "path": "apps/android/app/src/main/java/app/fractal/reader/MainActivity.kt",
+      "acceptedGitBlobHash": "6d23569c650d1f87da428fc91ac3ea8b24b81331d318b4142e1ec6f22d90f9f5",
+      "independentlyVerifiedOwnerRawHash": "ac901c10e22b096b11f72e92ee39300ccf6202bcd2e9cfac126fe07b93703712",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "a4d51ccf1e147c3553e6c5704d418c609c79e3bdc93fbffb9612926c83c53856",
+      "path": "apps/android/app/src/main/java/app/fractal/reader/PdfPage.kt",
+      "acceptedGitBlobHash": "5e3092376b9e199efb14b387a860f5afdc8a333bc739a8c58624ea14e55424bf",
+      "independentlyVerifiedOwnerRawHash": "a4d51ccf1e147c3553e6c5704d418c609c79e3bdc93fbffb9612926c83c53856",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "f500874259948c4b3e0402909381c1117360ae47135dfdaefc5b3791247f9f19",
+      "path": "apps/android/app/src/main/java/app/fractal/reader/ReaderApplication.kt",
+      "acceptedGitBlobHash": "5f4f42442abc67514cd2bbec8d8869682fa684ab9d76a7f33c542ac031b6ef82",
+      "independentlyVerifiedOwnerRawHash": "f500874259948c4b3e0402909381c1117360ae47135dfdaefc5b3791247f9f19",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "0c79f0c451ca697a1a99077ee8fcaefbc09e27b5281cce8784b8e29e1143ef0a",
+      "path": "apps/android/app/src/main/java/app/fractal/reader/ReaderContext.kt",
+      "acceptedGitBlobHash": "25fb9b2d5bbfcc737962cd307f72909192fcd1614dfe9f912b1794f90b2cd69d",
+      "independentlyVerifiedOwnerRawHash": "0c79f0c451ca697a1a99077ee8fcaefbc09e27b5281cce8784b8e29e1143ef0a",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "c8e03d49c23843e858e22e61630f76b73e5cc0c9b8a46781564bebab54b05519",
+      "path": "apps/android/app/src/main/java/app/fractal/reader/ReaderHistoryPanel.kt",
+      "acceptedGitBlobHash": "4368fef24f5e52c490593ff5c4ff2834528e84feff7ccc3d331f1c1a216b731b",
+      "independentlyVerifiedOwnerRawHash": "c8e03d49c23843e858e22e61630f76b73e5cc0c9b8a46781564bebab54b05519",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "4ac675c7b238ee47eaac2206adf7b969412c9b10532fe82f29eb77743a5c37af",
+      "path": "apps/android/app/src/main/java/app/fractal/reader/ReaderLabels.kt",
+      "acceptedGitBlobHash": "1460dea860f1b41f5502d5bd9697cff91e9b2061a6caba541716b1145b91f052",
+      "independentlyVerifiedOwnerRawHash": "4ac675c7b238ee47eaac2206adf7b969412c9b10532fe82f29eb77743a5c37af",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "85b73b70c5367bf994a8b77f8d95ce127a1a4793d7c7d01ba91c98a7531ad427",
+      "path": "apps/android/app/src/main/java/app/fractal/reader/ReaderModels.kt",
+      "acceptedGitBlobHash": "75e88c0310e2ed7e45a1c0d59ad372aafc07fffd57390d3c86f42a78e11d04b3",
+      "independentlyVerifiedOwnerRawHash": "85b73b70c5367bf994a8b77f8d95ce127a1a4793d7c7d01ba91c98a7531ad427",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "2b0ab5ecae3a604a1e7f672cacc28c651a105cd26fd2385696517fb79075e68d",
+      "path": "apps/android/app/src/main/java/app/fractal/reader/ReaderNativeInput.kt",
+      "acceptedGitBlobHash": "566bfa92d05c883c4b2882e883cfc39a153311c724f32a482405a0ef938d2a2b",
+      "independentlyVerifiedOwnerRawHash": "2b0ab5ecae3a604a1e7f672cacc28c651a105cd26fd2385696517fb79075e68d",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "83749be52298f972bd9f07b1aae30d3bf517fb9ad55fca0cf39f874c106aaa7d",
+      "path": "apps/android/app/src/main/java/app/fractal/reader/ReaderProvenance.kt",
+      "acceptedGitBlobHash": "601ebada7c7b77439c8df94e4b4c621cdb9a213978310bdb7cf56a81cae788bc",
+      "independentlyVerifiedOwnerRawHash": "83749be52298f972bd9f07b1aae30d3bf517fb9ad55fca0cf39f874c106aaa7d",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "763ffdb521ebfe9432846cf2e7832621e16bee1537c2b51d5a3d53c08b8b8841",
+      "path": "apps/android/app/src/main/java/app/fractal/reader/ReaderScreen.kt",
+      "acceptedGitBlobHash": "f7a79d0350a68b841a0bea0227e93414c43a9a46736fa749fa4eec278f64d514",
+      "independentlyVerifiedOwnerRawHash": "763ffdb521ebfe9432846cf2e7832621e16bee1537c2b51d5a3d53c08b8b8841",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "0a91c07fc31924b4130a6ac8cdafd96cf2f3cbaf1656a01791679a71887a3617",
+      "path": "apps/android/app/src/main/java/app/fractal/reader/ReaderWorkspace.kt",
+      "acceptedGitBlobHash": "2e3cb4812018d91e8b46b05dd13e1495392405970c9264f4047fa39f5706116d",
+      "independentlyVerifiedOwnerRawHash": "0a91c07fc31924b4130a6ac8cdafd96cf2f3cbaf1656a01791679a71887a3617",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "2fe280a198723783629b3503ad9f909e77a41e971ca95ed736fea7aa05f484f0",
+      "path": "apps/android/app/src/main/java/app/fractal/reader/ResearchDesk.kt",
+      "acceptedGitBlobHash": "8195e35311de6f1b4772c89be49e7a73481c118e1245aae694bef69be1b87d31",
+      "independentlyVerifiedOwnerRawHash": "2fe280a198723783629b3503ad9f909e77a41e971ca95ed736fea7aa05f484f0",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "8906a19b62c78adfb147fea1abcac099ae71fb03f9ae6b6029e9b0ee79c885fb",
+      "path": "apps/android/app/src/main/java/app/fractal/reader/ResearchInterestsDialog.kt",
+      "acceptedGitBlobHash": "3b863c54fadcc07c3b054485012732092cc5fc83011a8419dc4728b38e2ac5da",
+      "independentlyVerifiedOwnerRawHash": "8906a19b62c78adfb147fea1abcac099ae71fb03f9ae6b6029e9b0ee79c885fb",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "b988ba9906e90ed09b796794219f5465eb05d821be098163d1c28e18ca91f609",
+      "path": "apps/android/app/src/main/java/app/fractal/reader/ScholarlyLibraryScreen.kt",
+      "acceptedGitBlobHash": "e27b29d2f9ba37c6024a53c2609d4872e98a0a319a5aad05ffd8b345d1fdd916",
+      "independentlyVerifiedOwnerRawHash": "b988ba9906e90ed09b796794219f5465eb05d821be098163d1c28e18ca91f609",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "deccfd2200acff8f41513283b30dc4fe12488a2e82774021f867cbf9b7c65145",
+      "path": "apps/android/app/src/main/java/app/fractal/reader/SidePanel.kt",
+      "acceptedGitBlobHash": "97252d4dc19c79b0559d0430e171f52e99d6a4b6bbdc867ea6ee427eaea8b225",
+      "independentlyVerifiedOwnerRawHash": "deccfd2200acff8f41513283b30dc4fe12488a2e82774021f867cbf9b7c65145",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "66d0719a93ddce8e52eb13f21611c2eb717708146b38b271e147f4abb101f4a9",
+      "path": "apps/android/app/src/main/java/app/fractal/reader/StickyNotes.kt",
+      "acceptedGitBlobHash": "8d6f0ab1209eb3250b4f4b70d3f7b2a13938ef43fc9b9e67af2d20d21ac0d8d7",
+      "independentlyVerifiedOwnerRawHash": "66d0719a93ddce8e52eb13f21611c2eb717708146b38b271e147f4abb101f4a9",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "0c8369a560dd457a698861e69dd3458307016a2f4dd486d5e43e369125fdeee3",
+      "path": "apps/android/app/src/main/res/drawable/branch_mark.xml",
+      "acceptedGitBlobHash": "a11a1fe83b9ef536383db6de2c7170973d11fcae0a405bca5a5403a3039d83f3",
+      "independentlyVerifiedOwnerRawHash": "0c8369a560dd457a698861e69dd3458307016a2f4dd486d5e43e369125fdeee3",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "90f0483a3621b55b0bf50bf9757a8a00685f50984eeb2e09139598db4902c3fe",
+      "path": "apps/android/app/src/main/res/drawable/ic_launcher_background.xml",
+      "acceptedGitBlobHash": "90f0483a3621b55b0bf50bf9757a8a00685f50984eeb2e09139598db4902c3fe",
+      "independentlyVerifiedOwnerRawHash": "90f0483a3621b55b0bf50bf9757a8a00685f50984eeb2e09139598db4902c3fe",
+      "lineEndingOnlyDifference": false
+    },
+    {
+      "sha256": "b625d9f7b619c363d44bc9bb281aa82a29532ec3344f61278affdea925b1ad8a",
+      "path": "apps/android/app/src/main/res/drawable/ic_launcher_foreground.xml",
+      "acceptedGitBlobHash": "82646cd20844ff26dd2fcc63b47b1ec6c49added841ed80dde5d042ea5e3d2e3",
+      "independentlyVerifiedOwnerRawHash": "b625d9f7b619c363d44bc9bb281aa82a29532ec3344f61278affdea925b1ad8a",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "81b58206c3f97dffd15d599d2b03cc2d29fad086de04b60c73a4c1b04a4a0ce9",
+      "path": "apps/android/app/src/main/res/drawable/ic_launcher_legacy.xml",
+      "acceptedGitBlobHash": "c3f2e9905a8ef7b611e58923ff281804653382faf7e9ea4a9c20daf9b1453616",
+      "independentlyVerifiedOwnerRawHash": "81b58206c3f97dffd15d599d2b03cc2d29fad086de04b60c73a4c1b04a4a0ce9",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "58dd70b349bba92783a0d014cf98e297472d62599f4ac788e26a0bec8729e8e0",
+      "path": "apps/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml",
+      "acceptedGitBlobHash": "58dd70b349bba92783a0d014cf98e297472d62599f4ac788e26a0bec8729e8e0",
+      "independentlyVerifiedOwnerRawHash": "58dd70b349bba92783a0d014cf98e297472d62599f4ac788e26a0bec8729e8e0",
+      "lineEndingOnlyDifference": false
+    },
+    {
+      "sha256": "81b58206c3f97dffd15d599d2b03cc2d29fad086de04b60c73a4c1b04a4a0ce9",
+      "path": "apps/android/app/src/main/res/mipmap-anydpi/ic_launcher.xml",
+      "acceptedGitBlobHash": "c3f2e9905a8ef7b611e58923ff281804653382faf7e9ea4a9c20daf9b1453616",
+      "independentlyVerifiedOwnerRawHash": "81b58206c3f97dffd15d599d2b03cc2d29fad086de04b60c73a4c1b04a4a0ce9",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "e00a821ff2c38974a0b7d61d5218fdc1376a9dfb65fc6458e8c7737669271898",
+      "path": "apps/android/app/src/main/res/values-ko/strings.xml",
+      "acceptedGitBlobHash": "2c0f6bf2964de1bc5849d2193e765d30ee9d2c0ba71f8be989c9d870bfc5df52",
+      "independentlyVerifiedOwnerRawHash": "e00a821ff2c38974a0b7d61d5218fdc1376a9dfb65fc6458e8c7737669271898",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "3ede864981644022872e8f262d138efa17ad82cfb3120627788ebac3532cf506",
+      "path": "apps/android/app/src/main/res/values/strings.xml",
+      "acceptedGitBlobHash": "a42fba6378a3fe0669dd71571eec0002504f95c778f7d5e73b2877007aa065c7",
+      "independentlyVerifiedOwnerRawHash": "3ede864981644022872e8f262d138efa17ad82cfb3120627788ebac3532cf506",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "2f42f6093dc89d5f2d191fc5267715994d431c3b943d1a152a31c887c50daa39",
+      "path": "apps/android/app/src/main/res/values/styles.xml",
+      "acceptedGitBlobHash": "09bedb1981369af82b25d05feca40bc1677bf00eb750bbf70edd44980f33bc40",
+      "independentlyVerifiedOwnerRawHash": "2f42f6093dc89d5f2d191fc5267715994d431c3b943d1a152a31c887c50daa39",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "08c6846449f9fe1af9282425d6216d8211e5fea007134fa169a8d79785c8435c",
+      "path": "apps/android/app/src/main/res/xml/locales_config.xml",
+      "acceptedGitBlobHash": "e089b95eeb54b52f7d5bdd0f02320c762c9aea50f3495807c61fb677641937a6",
+      "independentlyVerifiedOwnerRawHash": "08c6846449f9fe1af9282425d6216d8211e5fea007134fa169a8d79785c8435c",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "281f0790e61a496676dddc84bb9768c0f5314ca6df83d30ce6edce97a400a484",
+      "path": "apps/android/build.gradle.kts",
+      "acceptedGitBlobHash": "95c351f956297743a0e36d068279332226bd97f202ce57a43883ee82b0f60e0a",
+      "independentlyVerifiedOwnerRawHash": "281f0790e61a496676dddc84bb9768c0f5314ca6df83d30ce6edce97a400a484",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "dd103008bc72e055c5644904cd1ee05533fba46c61a5c7c276056269c22ff04f",
+      "path": "apps/android/data/build.gradle.kts",
+      "acceptedGitBlobHash": "04f091268c9a83fe78d5ad5090035d57e002bda93509f9774276177551b623e7",
+      "independentlyVerifiedOwnerRawHash": "dd103008bc72e055c5644904cd1ee05533fba46c61a5c7c276056269c22ff04f",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "5f47f872ebac1055bd85ff6126d5e956a9e63cbab559c83f05f40bd55bce3e6f",
+      "path": "apps/android/data/src/main/java/app/fractal/data/CachedSnapshot.kt",
+      "acceptedGitBlobHash": "85c874a9a0062ab5290ef6d0e208c05a4d6e98eb1555d8d2741e2ecff3d6aaee",
+      "independentlyVerifiedOwnerRawHash": "5f47f872ebac1055bd85ff6126d5e956a9e63cbab559c83f05f40bd55bce3e6f",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "e462660b8f65b8ef3e2d6e3a06c0c27523ce89ff6d397ea15fc46b64a472b8f3",
+      "path": "apps/android/data/src/main/java/app/fractal/data/DiscoveryCache.kt",
+      "acceptedGitBlobHash": "70a4a0c4a9244a49caeb5e921508f025745bded3c90c0c482a86966854641724",
+      "independentlyVerifiedOwnerRawHash": "e462660b8f65b8ef3e2d6e3a06c0c27523ce89ff6d397ea15fc46b64a472b8f3",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "a193334fc5b0e627844ec3413dc549ecb39cf7a635f4e4615262d57af7118da1",
+      "path": "apps/android/data/src/main/java/app/fractal/data/DiscoveryModels.kt",
+      "acceptedGitBlobHash": "d412f91ad9c41533a4f07e37254a910f8840c10fedbbab5b31ee9be43253b7e0",
+      "independentlyVerifiedOwnerRawHash": "a193334fc5b0e627844ec3413dc549ecb39cf7a635f4e4615262d57af7118da1",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "1cce92cb34fe2588a228f77d84a9800100799fd2e44b368dcb9e4ff88e744771",
+      "path": "apps/android/data/src/main/java/app/fractal/data/FractalDatabase.kt",
+      "acceptedGitBlobHash": "41669d4ca215694b3a03ebd5f6bd1385ec6e76dd5d89b2e84fac48ed32c86a9e",
+      "independentlyVerifiedOwnerRawHash": "1cce92cb34fe2588a228f77d84a9800100799fd2e44b368dcb9e4ff88e744771",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "9bfcd0d08a2d5b7e6b76584743027e07b9bd78c48b1a20eb48dc2a7eabdb7d48",
+      "path": "apps/android/data/src/main/java/app/fractal/data/MergeRules.kt",
+      "acceptedGitBlobHash": "e6c6c16a99bcf17bd94b60bc6487511e1722726dad72dc9d20e0e54a9e802868",
+      "independentlyVerifiedOwnerRawHash": "9bfcd0d08a2d5b7e6b76584743027e07b9bd78c48b1a20eb48dc2a7eabdb7d48",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "0f519e2108003e2d95093ed7bef43d956113a07874c86ee6d52be74124ae343b",
+      "path": "apps/android/data/src/main/java/app/fractal/data/MetadataStore.kt",
+      "acceptedGitBlobHash": "cc62f4f35ebe3ad7c179ee0de7c2907438f850ec4929e43cd8838b88a2e7f761",
+      "independentlyVerifiedOwnerRawHash": "0f519e2108003e2d95093ed7bef43d956113a07874c86ee6d52be74124ae343b",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "f02e14f762d1ce989e7da0591e7c6d902532b4cc099bd0d6fd5680dd5ef082ee",
+      "path": "apps/android/data/src/main/java/app/fractal/data/PdfCache.kt",
+      "acceptedGitBlobHash": "adcecd5e1650e215784c57eba33c23d14972c02f0d073bd01f8e016a0215d501",
+      "independentlyVerifiedOwnerRawHash": "f02e14f762d1ce989e7da0591e7c6d902532b4cc099bd0d6fd5680dd5ef082ee",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "3ce128c0166203266cc59390a6678acba7cedc784ef60c9fc76ef12aadb2c44d",
+      "path": "apps/android/data/src/main/java/app/fractal/data/PdfTextLayout.kt",
+      "acceptedGitBlobHash": "e6ca89ee504cd4fa823104f6bf775e892960028d04e98165d78c4bc62baeecec",
+      "independentlyVerifiedOwnerRawHash": "3ce128c0166203266cc59390a6678acba7cedc784ef60c9fc76ef12aadb2c44d",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "7f1602eae1f698f145e610c42878118ca1b7a962a007f35af75379731460f431",
+      "path": "apps/android/data/src/main/java/app/fractal/data/WireModels.kt",
+      "acceptedGitBlobHash": "b5c552ed86dbb5f3f420979ab013563f1283ff5220d8c770c5ad7a4d9b12f3e2",
+      "independentlyVerifiedOwnerRawHash": "7f1602eae1f698f145e610c42878118ca1b7a962a007f35af75379731460f431",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "a8d6d854d98b8f97bafba270ffbfcd467623c879d68c17fa3333c9715e8fa3e2",
+      "path": "apps/android/design/build.gradle.kts",
+      "acceptedGitBlobHash": "67aec358da920f7c6061c449b19d0946d45385f24a61b4d5da03553407e9d3f1",
+      "independentlyVerifiedOwnerRawHash": "a8d6d854d98b8f97bafba270ffbfcd467623c879d68c17fa3333c9715e8fa3e2",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "54819ca01490e0334be917dbe5109596cc61be0a93ebd3fb528ced35b6537d94",
+      "path": "apps/android/design/font-licenses/Pretendard.txt",
+      "acceptedGitBlobHash": "85fce85e25260b03777bf10373d3bd9363b9da96d9e0ca86a280dd37ed7667a0",
+      "independentlyVerifiedOwnerRawHash": "54819ca01490e0334be917dbe5109596cc61be0a93ebd3fb528ced35b6537d94",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "1efbdc9cb2d98aaa844574b5123f8d5233532c214ba259e1536e1d5702d058a1",
+      "path": "apps/android/design/font-licenses/SourceSerif4.txt",
+      "acceptedGitBlobHash": "18aabf190848725e2576eefb5c29ba06aac1029d02132252a7f312eac2e50cf3",
+      "independentlyVerifiedOwnerRawHash": "1efbdc9cb2d98aaa844574b5123f8d5233532c214ba259e1536e1d5702d058a1",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "cee82df31a613e1a1ca9c0d091dca0ea2364eecc670ac638f3839a08093a4706",
+      "path": "apps/android/design/src/main/java/app/fractal/design/FractalTheme.kt",
+      "acceptedGitBlobHash": "d7438906b78b6bf096e5f0ad8fae41fe3972121dfc7e01e0815e000c56063ef0",
+      "independentlyVerifiedOwnerRawHash": "cee82df31a613e1a1ca9c0d091dca0ea2364eecc670ac638f3839a08093a4706",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "aa03f44d4ed513d4b109c1c8c31579f412e10f16e501f24b94875837d9f51a4a",
+      "path": "apps/android/design/src/main/java/app/fractal/design/ResearchSelector.kt",
+      "acceptedGitBlobHash": "adef255049441aff3ede8780c0c7684956ee64dd38db5df0e83ba858a2909fa4",
+      "independentlyVerifiedOwnerRawHash": "aa03f44d4ed513d4b109c1c8c31579f412e10f16e501f24b94875837d9f51a4a",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "0f0e3039f735a24cb5f71b17e1b172a03d69c69c23fb15c7afc0615b99ee3f3d",
+      "path": "apps/android/design/src/main/java/app/fractal/design/ScholarlyType.kt",
+      "acceptedGitBlobHash": "93a547e0e5f98596149bb14deeb98b2ab80379f505e070ff1680de0c2668830d",
+      "independentlyVerifiedOwnerRawHash": "0f0e3039f735a24cb5f71b17e1b172a03d69c69c23fb15c7afc0615b99ee3f3d",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "506ac11293649e23edf57208022d62743f8f2d286f4c7d41a090587c54564084",
+      "path": "apps/android/design/src/main/res/font/pretendard_variable.ttf",
+      "acceptedGitBlobHash": "506ac11293649e23edf57208022d62743f8f2d286f4c7d41a090587c54564084",
+      "independentlyVerifiedOwnerRawHash": "506ac11293649e23edf57208022d62743f8f2d286f4c7d41a090587c54564084",
+      "lineEndingOnlyDifference": false
+    },
+    {
+      "sha256": "812c46f6aa1815db16a14af2bad3116f5725830fb31905cc5d50c038da5be8aa",
+      "path": "apps/android/design/src/main/res/font/source_serif_four.ttf",
+      "acceptedGitBlobHash": "812c46f6aa1815db16a14af2bad3116f5725830fb31905cc5d50c038da5be8aa",
+      "independentlyVerifiedOwnerRawHash": "812c46f6aa1815db16a14af2bad3116f5725830fb31905cc5d50c038da5be8aa",
+      "lineEndingOnlyDifference": false
+    },
+    {
+      "sha256": "82b192376df3ccb0407007947946227ecbcba08e1b043c6beab495e442b70104",
+      "path": "apps/android/design/src/main/res/values-ko/strings.xml",
+      "acceptedGitBlobHash": "e0e7315d207932ab7510b52e52ceec45888cfb62f559503bb27a6997068db52d",
+      "independentlyVerifiedOwnerRawHash": "82b192376df3ccb0407007947946227ecbcba08e1b043c6beab495e442b70104",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "62025aee811d444b73d0af038790b451bb1dd245f008cd345b65442c3f502559",
+      "path": "apps/android/design/src/main/res/values/strings.xml",
+      "acceptedGitBlobHash": "6254734f01b66ab8c298f873847248dee0026f705f84c6aa315f8e553f853765",
+      "independentlyVerifiedOwnerRawHash": "62025aee811d444b73d0af038790b451bb1dd245f008cd345b65442c3f502559",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "4845d9587551351615742276b4c7df780aac0bd04812d78c8bc8ff34e2a5a196",
+      "path": "apps/android/gradle.properties",
+      "acceptedGitBlobHash": "e43a00491832254a35cf5a979ef6de17f78c4e159d446be39319d2e3d3e46325",
+      "independentlyVerifiedOwnerRawHash": "4845d9587551351615742276b4c7df780aac0bd04812d78c8bc8ff34e2a5a196",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "e6fb6c6a85fb06b80c8c90b426984f582a4168f086c4da01491b61a0f579a00c",
+      "path": "apps/android/gradle/libs.versions.toml",
+      "acceptedGitBlobHash": "785c89edde4cbf703eefb56986112f0794968d25e7906e153dbe479b26b4b5a2",
+      "independentlyVerifiedOwnerRawHash": "e6fb6c6a85fb06b80c8c90b426984f582a4168f086c4da01491b61a0f579a00c",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "2db75c40782f5e8ba1fc278a5574bab070adccb2d21ca5a6e5ed840888448046",
+      "path": "apps/android/gradle/wrapper/gradle-wrapper.jar",
+      "acceptedGitBlobHash": "2db75c40782f5e8ba1fc278a5574bab070adccb2d21ca5a6e5ed840888448046",
+      "independentlyVerifiedOwnerRawHash": "2db75c40782f5e8ba1fc278a5574bab070adccb2d21ca5a6e5ed840888448046",
+      "lineEndingOnlyDifference": false
+    },
+    {
+      "sha256": "02dd7d937ccadf6717de341f7dba808200fe4f9dafb137afa3502b0f797b4907",
+      "path": "apps/android/gradle/wrapper/gradle-wrapper.properties",
+      "acceptedGitBlobHash": "92a43cd3fb1e49f8973850f6ee1185365e5721978a65129e31f6263c705c3fb6",
+      "independentlyVerifiedOwnerRawHash": "02dd7d937ccadf6717de341f7dba808200fe4f9dafb137afa3502b0f797b4907",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "01cf12fdeb1cbd6b277d2a57e86d697ca17859ffbceda2995e6d17398bae4ed1",
+      "path": "apps/android/gradlew",
+      "acceptedGitBlobHash": "c07475b363508dbe7cf7d1ded1b31f6d44bb97d98d069a455ab862b1fb9b25f0",
+      "independentlyVerifiedOwnerRawHash": "01cf12fdeb1cbd6b277d2a57e86d697ca17859ffbceda2995e6d17398bae4ed1",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "57931b17dd228e5c24dac90e815d0bf82477e831a4618dfab4136f5446b42a9f",
+      "path": "apps/android/gradlew.bat",
+      "acceptedGitBlobHash": "2209f919a22528af59a2af2ad97e8d056cca18e39f7d87aa3fd549a73b180150",
+      "independentlyVerifiedOwnerRawHash": "57931b17dd228e5c24dac90e815d0bf82477e831a4618dfab4136f5446b42a9f",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "87142c97a9326167f78444a7d29e4162a565536a71fa43ca8e05fc44b6a4a58b",
+      "path": "apps/android/ink/README.md",
+      "acceptedGitBlobHash": "c7e3d24810f5ed1ec6c2eed067a6ffb1e973ffe65576a2b05860031b79e5d046",
+      "independentlyVerifiedOwnerRawHash": "87142c97a9326167f78444a7d29e4162a565536a71fa43ca8e05fc44b6a4a58b",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "12e2c6c465b46f9269891b7086a516015a63636bc9da6ba77c11c679853f3158",
+      "path": "apps/android/ink/build.gradle.kts",
+      "acceptedGitBlobHash": "6c1859c141b34ab53786aedcbea1866e69be5dbf1e20ef95a58c494c1d6e5d75",
+      "independentlyVerifiedOwnerRawHash": "12e2c6c465b46f9269891b7086a516015a63636bc9da6ba77c11c679853f3158",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "44ec319c3d001a06e76335c2493218bd2ccf03f6a362ab1c6bb37a47eb0c9116",
+      "path": "apps/android/ink/src/main/java/app/fractal/ink/InkCanvas.kt",
+      "acceptedGitBlobHash": "3a8dff3f8d48c5c6a77528b3394fd8988abbfb95e82619ee6e808d381b17bea0",
+      "independentlyVerifiedOwnerRawHash": "44ec319c3d001a06e76335c2493218bd2ccf03f6a362ab1c6bb37a47eb0c9116",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "b356165089c99f847f397f7ea4f44ddaddef88fd3a7b3cad654601bb039f3d02",
+      "path": "apps/android/ink/src/main/java/app/fractal/ink/InkGeometry.kt",
+      "acceptedGitBlobHash": "a35b0dc541936723e3ec486b8597a49198c5d65730137098dd79962c1dc544ed",
+      "independentlyVerifiedOwnerRawHash": "b356165089c99f847f397f7ea4f44ddaddef88fd3a7b3cad654601bb039f3d02",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "ecc67da5943d967db4e203768e8dc3452bba6b33b1b5c7a556bb5e18402116e0",
+      "path": "apps/android/ink/src/main/java/app/fractal/ink/InkModel.kt",
+      "acceptedGitBlobHash": "eaa8ceae7c93a6bbc7e31d21c00b415ec5242e7703e441e8609e1bf5e9ef05b9",
+      "independentlyVerifiedOwnerRawHash": "ecc67da5943d967db4e203768e8dc3452bba6b33b1b5c7a556bb5e18402116e0",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "564e09f61e27433c91ffab71ba6a271fe00f34671625346d22d933347c4239a9",
+      "path": "apps/android/ink/src/main/java/app/fractal/ink/InkPreferences.kt",
+      "acceptedGitBlobHash": "ace7421644ecf30a08fab47d69eeef8ecb04390f935dae44d036ca7e9a6edfaa",
+      "independentlyVerifiedOwnerRawHash": "564e09f61e27433c91ffab71ba6a271fe00f34671625346d22d933347c4239a9",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "8359c8bcd00628a8d7d8b9f35da78b861c25aefed3400538e2c7cf4efe9c83ee",
+      "path": "apps/android/ink/src/main/java/app/fractal/ink/InkToolbar.kt",
+      "acceptedGitBlobHash": "d21f94ab7cd494ef8ca63d077cee866bbb6d783b6655b58dbd6b5d0d4da23e39",
+      "independentlyVerifiedOwnerRawHash": "8359c8bcd00628a8d7d8b9f35da78b861c25aefed3400538e2c7cf4efe9c83ee",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "8b595c3af4ef82076595c4ef274ec7dd1d8a0d09dd71b81e29dc9c2c3ad1bc85",
+      "path": "apps/android/ink/src/main/java/app/fractal/ink/ReaderInputHost.kt",
+      "acceptedGitBlobHash": "8858429886e97ca603d7e6c13339d6ad5c2bd38843a5a0ba60d445591c00c85d",
+      "independentlyVerifiedOwnerRawHash": "8b595c3af4ef82076595c4ef274ec7dd1d8a0d09dd71b81e29dc9c2c3ad1bc85",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "4c1a78866a948b3be9c632cf8a43eb6bcdb514195127455597eaa219872ec633",
+      "path": "apps/android/ink/src/main/res/values-ko/strings.xml",
+      "acceptedGitBlobHash": "0b7f2e04a04d341b6eaea360ff288f80e340331f02cd096fdcbc95a72de640eb",
+      "independentlyVerifiedOwnerRawHash": "4c1a78866a948b3be9c632cf8a43eb6bcdb514195127455597eaa219872ec633",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "b1559b27b332327c768efce780b14ef9d947e830108edf8052de5cf3958b1e06",
+      "path": "apps/android/ink/src/main/res/values/strings.xml",
+      "acceptedGitBlobHash": "3874e5c60f23c5242f53c7a9cf51d3145379435c67257859c59a37fb7be25309",
+      "independentlyVerifiedOwnerRawHash": "b1559b27b332327c768efce780b14ef9d947e830108edf8052de5cf3958b1e06",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "3c7cffaaa3c85027a4e235efdb781dc59ed645921a70b3710c24eb0f2fed0535",
+      "path": "apps/android/inkdemo/build.gradle.kts",
+      "acceptedGitBlobHash": "06d95c54deb7c7e52690ad9bc86fceb74e8548a4eb2aa2b2a01fb6d6607f7a31",
+      "independentlyVerifiedOwnerRawHash": "3c7cffaaa3c85027a4e235efdb781dc59ed645921a70b3710c24eb0f2fed0535",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "afa3ffb673db0ef405d718e5b20b92121fedb82fb7f5e6aaaffc21e92511252b",
+      "path": "apps/android/inkdemo/src/main/AndroidManifest.xml",
+      "acceptedGitBlobHash": "79096043f0106da95921838a97114dc963836aa1c3441070f736af289391942c",
+      "independentlyVerifiedOwnerRawHash": "afa3ffb673db0ef405d718e5b20b92121fedb82fb7f5e6aaaffc21e92511252b",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "f4ec356c249fe58157181d67f1792f19ad8cd79350406a9a0520d115320695cd",
+      "path": "apps/android/inkdemo/src/main/java/app/fractal/inkdemo/MainActivity.kt",
+      "acceptedGitBlobHash": "70225f48cf07af9a48004a8234612542246db194fd2a188c23eb8bb4c1c4dd36",
+      "independentlyVerifiedOwnerRawHash": "f4ec356c249fe58157181d67f1792f19ad8cd79350406a9a0520d115320695cd",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "db9ce89cd09a59ed259c343fb9dd634ce8bdd861ea520170bb455f29d7dfa07a",
+      "path": "apps/android/pdf/build.gradle.kts",
+      "acceptedGitBlobHash": "dfb80b48b911125d184db9b73af749098a08fb51f865514d6cf13a580e214c19",
+      "independentlyVerifiedOwnerRawHash": "db9ce89cd09a59ed259c343fb9dd634ce8bdd861ea520170bb455f29d7dfa07a",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "cf00986fc61ce729ad70a33d13826681457bd3e87ee64440ff6dd6bc9fbe4ebe",
+      "path": "apps/android/pdf/src/main/java/app/fractal/pdf/NativePageSelection.kt",
+      "acceptedGitBlobHash": "087ada95d3015541764abc757b7879faaddc0712e975251691800bc2e0b3c04c",
+      "independentlyVerifiedOwnerRawHash": "cf00986fc61ce729ad70a33d13826681457bd3e87ee64440ff6dd6bc9fbe4ebe",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "131a528211ea1380cdcb0a47408f2bb48de7b87086c4ca67d066533732c9e558",
+      "path": "apps/android/pdf/src/main/java/app/fractal/pdf/PdfPages.kt",
+      "acceptedGitBlobHash": "f0139d69ed58afabca6bc3f9836d292969091b4b6a0d6a9141309afc4851c5e4",
+      "independentlyVerifiedOwnerRawHash": "131a528211ea1380cdcb0a47408f2bb48de7b87086c4ca67d066533732c9e558",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "203827b72b8521feeab9a3f91f2d3ad277e483f08a99cd2ebf68e17eb190dacb",
+      "path": "apps/android/settings.gradle.kts",
+      "acceptedGitBlobHash": "db55d4b016cf8ba3bac972cfd03908954568b388f2f63f778bc67f3301b0ebb3",
+      "independentlyVerifiedOwnerRawHash": "203827b72b8521feeab9a3f91f2d3ad277e483f08a99cd2ebf68e17eb190dacb",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "4c74deb05c0c9afe2e660f94f2bf35d6aa379223c3dec69cd0554b1292d85682",
+      "path": "apps/android/sync/build.gradle.kts",
+      "acceptedGitBlobHash": "3930c6d21b701d9dca9b1f91c286a359c86e6510000f5501fcb7bc3ac9f50d91",
+      "independentlyVerifiedOwnerRawHash": "4c74deb05c0c9afe2e660f94f2bf35d6aa379223c3dec69cd0554b1292d85682",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "712cfbf2dba53f46ec602fff14cb38f2027304fc9a681a4e85725286d13743a5",
+      "path": "apps/android/sync/src/main/java/app/fractal/sync/AiStream.kt",
+      "acceptedGitBlobHash": "09da56636839e30f9b3d81bca32c86076b0fd3523dc7e4735f54d92eb9024bb3",
+      "independentlyVerifiedOwnerRawHash": "712cfbf2dba53f46ec602fff14cb38f2027304fc9a681a4e85725286d13743a5",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "baac44c243fc6eeaa40bf4c312cf280b4082e3789d580986be49b769ffb149ad",
+      "path": "apps/android/sync/src/main/java/app/fractal/sync/DiscoveryRepository.kt",
+      "acceptedGitBlobHash": "bde393f6432a9c4d77c1242390c096b97f8d4981d353554fde02446b4945df14",
+      "independentlyVerifiedOwnerRawHash": "baac44c243fc6eeaa40bf4c312cf280b4082e3789d580986be49b769ffb149ad",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "a65d7ca9a0643f8850a49366a2ec092c40530b235b3b16e5c9d131a5e534d0c7",
+      "path": "apps/android/sync/src/main/java/app/fractal/sync/HistoryRepository.kt",
+      "acceptedGitBlobHash": "4b38e11b51e26e87b42bb4576cd430267c9c915af9fbf913421db197a4c310de",
+      "independentlyVerifiedOwnerRawHash": "a65d7ca9a0643f8850a49366a2ec092c40530b235b3b16e5c9d131a5e534d0c7",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "65e046cee1ffb7a6bf42d2d5b010569f411bbb3b5a488b6d19d06d13279ed193",
+      "path": "apps/android/sync/src/main/java/app/fractal/sync/HubClient.kt",
+      "acceptedGitBlobHash": "f64c0ecbb8d22c625db0f841ccd86b57487c09bf65c7fe348ec4b6bf1c2d4429",
+      "independentlyVerifiedOwnerRawHash": "65e046cee1ffb7a6bf42d2d5b010569f411bbb3b5a488b6d19d06d13279ed193",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "90161c3687ecb337282556675d0581afda810553a10cf96a5c21539420b2132b",
+      "path": "apps/android/sync/src/main/java/app/fractal/sync/OriginalTextRepository.kt",
+      "acceptedGitBlobHash": "6ee7e7cf130785cedd0dbc5d9224b8e9fc923a953bb6a88b6ee629ce6cab720e",
+      "independentlyVerifiedOwnerRawHash": "90161c3687ecb337282556675d0581afda810553a10cf96a5c21539420b2132b",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "991ecdb22ae277cd8fb2b56011ac655395098b2fefe77e85ce1496105c18a50d",
+      "path": "apps/android/sync/src/main/java/app/fractal/sync/Pairing.kt",
+      "acceptedGitBlobHash": "dacaed8b4aef5e8b451bb697ebf487128a591f9f7328834ed09c95d79cfecaf0",
+      "independentlyVerifiedOwnerRawHash": "991ecdb22ae277cd8fb2b56011ac655395098b2fefe77e85ce1496105c18a50d",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "d963e1fc4a416cd1b9a5cadefceb66c3be89d0641780124248f2739b02306375",
+      "path": "apps/android/sync/src/main/java/app/fractal/sync/PdfDownloader.kt",
+      "acceptedGitBlobHash": "17527f550ba01af8938cb5217bf9bd09db58d9f415a3cbf91172a93c5babedae",
+      "independentlyVerifiedOwnerRawHash": "d963e1fc4a416cd1b9a5cadefceb66c3be89d0641780124248f2739b02306375",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "5c0fad58d1f0dceed826f25c4cb565b3e16339e9ba5b80ad7ab13b5961cef252",
+      "path": "apps/android/sync/src/main/java/app/fractal/sync/PublicationAcquisition.kt",
+      "acceptedGitBlobHash": "5c0fad58d1f0dceed826f25c4cb565b3e16339e9ba5b80ad7ab13b5961cef252",
+      "independentlyVerifiedOwnerRawHash": "5c0fad58d1f0dceed826f25c4cb565b3e16339e9ba5b80ad7ab13b5961cef252",
+      "lineEndingOnlyDifference": false
+    },
+    {
+      "sha256": "4e3f4673bc2f41fbe5a9a5e49ca2d7b5fa0fba489277e87d5d697b3d2ce02d74",
+      "path": "apps/android/sync/src/main/java/app/fractal/sync/SyncEngine.kt",
+      "acceptedGitBlobHash": "23bf27098d0c3bedc0a3e4ac9057c3c099e7a06946936bb7183d11a21a79c531",
+      "independentlyVerifiedOwnerRawHash": "4e3f4673bc2f41fbe5a9a5e49ca2d7b5fa0fba489277e87d5d697b3d2ce02d74",
+      "lineEndingOnlyDifference": true
+    },
+    {
+      "sha256": "e851538b9373d9ed935522d49e5b7bb93e563253929ea4bbb9474de6f970099d",
+      "path": "apps/android/sync/src/main/java/app/fractal/sync/SyncWorker.kt",
+      "acceptedGitBlobHash": "77378bbabaa203e18a791569eb33710cf8267ac671607ca92476db2dac035623",
+      "independentlyVerifiedOwnerRawHash": "e851538b9373d9ed935522d49e5b7bb93e563253929ea4bbb9474de6f970099d",
+      "lineEndingOnlyDifference": true
+    }
+  ],
+  "resources": [
+    {
+      "path": "AndroidManifest.xml",
+      "sha256": "6b1dc86de823cbef38b57e3c677fb13f29741bbf7084945dc217996ca823f1d3",
+      "bytes": 16996,
+      "independentHash": "6b1dc86de823cbef38b57e3c677fb13f29741bbf7084945dc217996ca823f1d3"
+    },
+    {
+      "path": "res/anim-v21/fragment_fast_out_extra_slow_in.xml",
+      "sha256": "650c54c5eff734092ee09354ffa1d833931b7706f2797e801f825604c47c2dd3",
+      "bytes": 364,
+      "independentHash": "650c54c5eff734092ee09354ffa1d833931b7706f2797e801f825604c47c2dd3"
+    },
+    {
+      "path": "res/anim/abc_fade_in.xml",
+      "sha256": "3067b94eebe8ac9e3a45599822f99d807d712f424494e9fc9cdd28cfb6bdae6a",
+      "bytes": 388,
+      "independentHash": "3067b94eebe8ac9e3a45599822f99d807d712f424494e9fc9cdd28cfb6bdae6a"
+    },
+    {
+      "path": "res/anim/abc_fade_out.xml",
+      "sha256": "bbb0848d98a57a7d05ccddd0311383eef9842d3b1a8c361c429fa060de6f05b2",
+      "bytes": 388,
+      "independentHash": "bbb0848d98a57a7d05ccddd0311383eef9842d3b1a8c361c429fa060de6f05b2"
+    },
+    {
+      "path": "res/anim/abc_grow_fade_in_from_bottom.xml",
+      "sha256": "ceb9157864e5cc562a21f1e4663139240d73289fc51a30c996a8c2ee8e89ec5d",
+      "bytes": 852,
+      "independentHash": "ceb9157864e5cc562a21f1e4663139240d73289fc51a30c996a8c2ee8e89ec5d"
+    },
+    {
+      "path": "res/anim/abc_popup_enter.xml",
+      "sha256": "9aded97f71c7ea36f869e372ba447ea87eaa6137a79320d2b739fdb431e83dd1",
+      "bytes": 508,
+      "independentHash": "9aded97f71c7ea36f869e372ba447ea87eaa6137a79320d2b739fdb431e83dd1"
+    },
+    {
+      "path": "res/anim/abc_popup_exit.xml",
+      "sha256": "d76cc885f63283e9f0e1d0835fc4ef3bc39db5a83f5df681133f701c2d360aa7",
+      "bytes": 508,
+      "independentHash": "d76cc885f63283e9f0e1d0835fc4ef3bc39db5a83f5df681133f701c2d360aa7"
+    },
+    {
+      "path": "res/anim/abc_shrink_fade_out_from_bottom.xml",
+      "sha256": "d630e86116cf5f5ae6838ef7736238c49168703d8f36499c14ab505e2d69426f",
+      "bytes": 852,
+      "independentHash": "d630e86116cf5f5ae6838ef7736238c49168703d8f36499c14ab505e2d69426f"
+    },
+    {
+      "path": "res/anim/abc_slide_in_bottom.xml",
+      "sha256": "486ad705ae37ff41dfabc952fe5f288e5c7bad1d8ddccd37ab09f26d355415a1",
+      "bytes": 396,
+      "independentHash": "486ad705ae37ff41dfabc952fe5f288e5c7bad1d8ddccd37ab09f26d355415a1"
+    },
+    {
+      "path": "res/anim/abc_slide_in_top.xml",
+      "sha256": "d60b273289d358f2b3eea13fa097b1cf2198eb37517f7dc9c312ed3e2b465256",
+      "bytes": 396,
+      "independentHash": "d60b273289d358f2b3eea13fa097b1cf2198eb37517f7dc9c312ed3e2b465256"
+    },
+    {
+      "path": "res/anim/abc_slide_out_bottom.xml",
+      "sha256": "e0259df82b318cd7d095daae2cb3d4ee6565adefd6def8c11675649f63717ee5",
+      "bytes": 396,
+      "independentHash": "e0259df82b318cd7d095daae2cb3d4ee6565adefd6def8c11675649f63717ee5"
+    },
+    {
+      "path": "res/anim/abc_slide_out_top.xml",
+      "sha256": "0a61ab9fb3d5a2256eb81bd9e63340da925695b00ed53030abfb31d35bd384df",
+      "bytes": 396,
+      "independentHash": "0a61ab9fb3d5a2256eb81bd9e63340da925695b00ed53030abfb31d35bd384df"
+    },
+    {
+      "path": "res/anim/abc_tooltip_enter.xml",
+      "sha256": "3c5fa9f9b71910fbd7d4567a6d060dec1e1d9305ca19ce2386c9e50a2557d7ca",
+      "bytes": 388,
+      "independentHash": "3c5fa9f9b71910fbd7d4567a6d060dec1e1d9305ca19ce2386c9e50a2557d7ca"
+    },
+    {
+      "path": "res/anim/abc_tooltip_exit.xml",
+      "sha256": "07a4b5ed5a58138eaf1db7e7640a3cc148a7d2a57e8121097249f2deeee2dcf6",
+      "bytes": 388,
+      "independentHash": "07a4b5ed5a58138eaf1db7e7640a3cc148a7d2a57e8121097249f2deeee2dcf6"
+    },
+    {
+      "path": "res/anim/btn_checkbox_to_checked_box_inner_merged_animation.xml",
+      "sha256": "3560c5c09907859e6570eea27bcbc7f557bd89ffbd16af45f6913cc046c628d1",
+      "bytes": 2124,
+      "independentHash": "3560c5c09907859e6570eea27bcbc7f557bd89ffbd16af45f6913cc046c628d1"
+    },
+    {
+      "path": "res/anim/btn_checkbox_to_checked_box_outer_merged_animation.xml",
+      "sha256": "738f20a3f83d5a90f5a6a49e916657e65b5bb857d7260bfe4a9a5d0f3e627581",
+      "bytes": 2780,
+      "independentHash": "738f20a3f83d5a90f5a6a49e916657e65b5bb857d7260bfe4a9a5d0f3e627581"
+    },
+    {
+      "path": "res/anim/btn_checkbox_to_checked_icon_null_animation.xml",
+      "sha256": "8d1b064a38d86fcda815d43ad0c06e4246f88c5caf7fb558a13ae8541cda4a8c",
+      "bytes": 1196,
+      "independentHash": "8d1b064a38d86fcda815d43ad0c06e4246f88c5caf7fb558a13ae8541cda4a8c"
+    },
+    {
+      "path": "res/anim/btn_checkbox_to_unchecked_box_inner_merged_animation.xml",
+      "sha256": "8ee615100fbfba2fd08cd11c001d462a02afe6c72a634123295f889f7287eead",
+      "bytes": 2360,
+      "independentHash": "8ee615100fbfba2fd08cd11c001d462a02afe6c72a634123295f889f7287eead"
+    },
+    {
+      "path": "res/anim/btn_checkbox_to_unchecked_check_path_merged_animation.xml",
+      "sha256": "83639378694206ce50e5fc5facef63c6b64321a1231b1f1bd26d8e76d73f6e43",
+      "bytes": 2520,
+      "independentHash": "83639378694206ce50e5fc5facef63c6b64321a1231b1f1bd26d8e76d73f6e43"
+    },
+    {
+      "path": "res/anim/btn_checkbox_to_unchecked_icon_null_animation.xml",
+      "sha256": "87675b479e31720a2d7275f1357c87a5d66b45b96daf023b64bd9e127853bbb2",
+      "bytes": 1196,
+      "independentHash": "87675b479e31720a2d7275f1357c87a5d66b45b96daf023b64bd9e127853bbb2"
+    },
+    {
+      "path": "res/anim/btn_radio_to_off_mtrl_dot_group_animation.xml",
+      "sha256": "93535bfe6190f38074bec6196b7134e71e0146fc1014467d2e0989c9fa74c67b",
+      "bytes": 1656,
+      "independentHash": "93535bfe6190f38074bec6196b7134e71e0146fc1014467d2e0989c9fa74c67b"
+    },
+    {
+      "path": "res/anim/btn_radio_to_off_mtrl_ring_outer_animation.xml",
+      "sha256": "6c042115787e059ad23c3a94afa2a48a21915c9cbc038766d18058b01473365f",
+      "bytes": 1656,
+      "independentHash": "6c042115787e059ad23c3a94afa2a48a21915c9cbc038766d18058b01473365f"
+    },
+    {
+      "path": "res/anim/btn_radio_to_off_mtrl_ring_outer_path_animation.xml",
+      "sha256": "0463f7a8f3000c1af89aa522a6ceb7fc189762c8a1d4bc6f6af816eedcf7d9d9",
+      "bytes": 1028,
+      "independentHash": "0463f7a8f3000c1af89aa522a6ceb7fc189762c8a1d4bc6f6af816eedcf7d9d9"
+    },
+    {
+      "path": "res/anim/btn_radio_to_on_mtrl_dot_group_animation.xml",
+      "sha256": "188414b8a6377367745ddadc7bc2326b376d3312a9ae18eb2679e4c456dff5f6",
+      "bytes": 1656,
+      "independentHash": "188414b8a6377367745ddadc7bc2326b376d3312a9ae18eb2679e4c456dff5f6"
+    },
+    {
+      "path": "res/anim/btn_radio_to_on_mtrl_ring_outer_animation.xml",
+      "sha256": "16feaf7a29851dbc193a814ed30a92ed8ee2d0ed6cbff3a87a5bf9627d072a7a",
+      "bytes": 1656,
+      "independentHash": "16feaf7a29851dbc193a814ed30a92ed8ee2d0ed6cbff3a87a5bf9627d072a7a"
+    },
+    {
+      "path": "res/anim/btn_radio_to_on_mtrl_ring_outer_path_animation.xml",
+      "sha256": "cefd4ee781e1467cfd10819e5463ae9408d9f1614b6da7607d7a263c2df0fecf",
+      "bytes": 1028,
+      "independentHash": "cefd4ee781e1467cfd10819e5463ae9408d9f1614b6da7607d7a263c2df0fecf"
+    },
+    {
+      "path": "res/animator/fragment_close_enter.xml",
+      "sha256": "bf99875fe47f2726b92e24a19ce2d0de63078ac74920e100b601b2bc6c7466dd",
+      "bytes": 1128,
+      "independentHash": "bf99875fe47f2726b92e24a19ce2d0de63078ac74920e100b601b2bc6c7466dd"
+    },
+    {
+      "path": "res/animator/fragment_close_exit.xml",
+      "sha256": "ab99637ff4d7562395db303bac57ec1f9e0e4859de81e9f3707af9c68f1925e3",
+      "bytes": 1128,
+      "independentHash": "ab99637ff4d7562395db303bac57ec1f9e0e4859de81e9f3707af9c68f1925e3"
+    },
+    {
+      "path": "res/animator/fragment_fade_enter.xml",
+      "sha256": "0b51013fc0f5e916a727b75512c1ee9206178bd134509b7b4be6a397fa4d9a6b",
+      "bytes": 452,
+      "independentHash": "0b51013fc0f5e916a727b75512c1ee9206178bd134509b7b4be6a397fa4d9a6b"
+    },
+    {
+      "path": "res/animator/fragment_fade_exit.xml",
+      "sha256": "440c234ca8a09188ec558b13771cb29c2da228956bfb58bdade5c1770384acbe",
+      "bytes": 452,
+      "independentHash": "440c234ca8a09188ec558b13771cb29c2da228956bfb58bdade5c1770384acbe"
+    },
+    {
+      "path": "res/animator/fragment_open_enter.xml",
+      "sha256": "f22d03722ec349fa2fe320e98dee630197cffb5d853cc49039e626c55502298e",
+      "bytes": 1128,
+      "independentHash": "f22d03722ec349fa2fe320e98dee630197cffb5d853cc49039e626c55502298e"
+    },
+    {
+      "path": "res/animator/fragment_open_exit.xml",
+      "sha256": "9e9196d0fa85f1c9424e34321551d9586f74535802f532b451f3ab4e2aa65363",
+      "bytes": 1128,
+      "independentHash": "9e9196d0fa85f1c9424e34321551d9586f74535802f532b451f3ab4e2aa65363"
+    },
+    {
+      "path": "res/color-v23/abc_btn_colored_borderless_text_material.xml",
+      "sha256": "bd0dcd3548ec35ff2fff77ddc954fbb96ed02f238be5325acad3fc11724bc79b",
+      "bytes": 500,
+      "independentHash": "bd0dcd3548ec35ff2fff77ddc954fbb96ed02f238be5325acad3fc11724bc79b"
+    },
+    {
+      "path": "res/color-v23/abc_btn_colored_text_material.xml",
+      "sha256": "35f8dd73e67887c32be74aae11f9a67d779b33f72ea61312d4c439b8f73d5ca3",
+      "bytes": 500,
+      "independentHash": "35f8dd73e67887c32be74aae11f9a67d779b33f72ea61312d4c439b8f73d5ca3"
+    },
+    {
+      "path": "res/color-v23/abc_color_highlight_material.xml",
+      "sha256": "92ab1200575e874979895a13b348253419a3d4d09abca49cbbfd3de8b2d8c524",
+      "bytes": 544,
+      "independentHash": "92ab1200575e874979895a13b348253419a3d4d09abca49cbbfd3de8b2d8c524"
+    },
+    {
+      "path": "res/color-v23/abc_tint_btn_checkable.xml",
+      "sha256": "d9c42c892d28584a6044b65103e8c6b1dff63f656ddb1dedbfc0e9129c0cd0bf",
+      "bytes": 624,
+      "independentHash": "d9c42c892d28584a6044b65103e8c6b1dff63f656ddb1dedbfc0e9129c0cd0bf"
+    },
+    {
+      "path": "res/color-v23/abc_tint_default.xml",
+      "sha256": "2705a0e6a47463c07c0c8ff4832b6ce7e82c04e681274060177b8ce94c187c36",
+      "bytes": 1120,
+      "independentHash": "2705a0e6a47463c07c0c8ff4832b6ce7e82c04e681274060177b8ce94c187c36"
+    },
+    {
+      "path": "res/color-v23/abc_tint_edittext.xml",
+      "sha256": "373a146f1caaa950f1dc2638a3d01e54324d595158641f1fd1e595e463f9bd26",
+      "bytes": 668,
+      "independentHash": "373a146f1caaa950f1dc2638a3d01e54324d595158641f1fd1e595e463f9bd26"
+    },
+    {
+      "path": "res/color-v23/abc_tint_seek_thumb.xml",
+      "sha256": "ffd52d1bb0fc08cc5c7d9781b1b69afce5f4a2d69d64333674069120bfb0cf50",
+      "bytes": 500,
+      "independentHash": "ffd52d1bb0fc08cc5c7d9781b1b69afce5f4a2d69d64333674069120bfb0cf50"
+    },
+    {
+      "path": "res/color-v23/abc_tint_spinner.xml",
+      "sha256": "373a146f1caaa950f1dc2638a3d01e54324d595158641f1fd1e595e463f9bd26",
+      "bytes": 668,
+      "independentHash": "373a146f1caaa950f1dc2638a3d01e54324d595158641f1fd1e595e463f9bd26"
+    },
+    {
+      "path": "res/color-v23/abc_tint_switch_track.xml",
+      "sha256": "d567452c7d604830c2aeb63789f394b7d1e50181d95d26bea2608c89e5549fc2",
+      "bytes": 664,
+      "independentHash": "d567452c7d604830c2aeb63789f394b7d1e50181d95d26bea2608c89e5549fc2"
+    },
+    {
+      "path": "res/color/abc_background_cache_hint_selector_material_dark.xml",
+      "sha256": "7d4dfd26cc88091c25e3b4acec3df9cf38d2c02d8714ba37f0ae49623f645d25",
+      "bytes": 468,
+      "independentHash": "7d4dfd26cc88091c25e3b4acec3df9cf38d2c02d8714ba37f0ae49623f645d25"
+    },
+    {
+      "path": "res/color/abc_background_cache_hint_selector_material_light.xml",
+      "sha256": "db68b79e2aee0dfd81849f31be7e8e707b23741e036414bf89021aea29575207",
+      "bytes": 468,
+      "independentHash": "db68b79e2aee0dfd81849f31be7e8e707b23741e036414bf89021aea29575207"
+    },
+    {
+      "path": "res/color/abc_hint_foreground_material_dark.xml",
+      "sha256": "4360670050ad8d2e663292b20c702960b04c0d6bf4d91453430ab6fc83ec34e3",
+      "bytes": 564,
+      "independentHash": "4360670050ad8d2e663292b20c702960b04c0d6bf4d91453430ab6fc83ec34e3"
+    },
+    {
+      "path": "res/color/abc_hint_foreground_material_light.xml",
+      "sha256": "2c35b67d72edf79c5b52784387058da616e99533830e9a7a3b9ec217ace3ca95",
+      "bytes": 564,
+      "independentHash": "2c35b67d72edf79c5b52784387058da616e99533830e9a7a3b9ec217ace3ca95"
+    },
+    {
+      "path": "res/color/abc_primary_text_disable_only_material_dark.xml",
+      "sha256": "f0295fb65d7efb38500842f77877430ca4ccbccec187fbfc6d1667a12ff61590",
+      "bytes": 464,
+      "independentHash": "f0295fb65d7efb38500842f77877430ca4ccbccec187fbfc6d1667a12ff61590"
+    },
+    {
+      "path": "res/color/abc_primary_text_disable_only_material_light.xml",
+      "sha256": "74c8e5e96fd1a53ea8707a04c823f51a6db5e4aa3d247a9e079d7a39ff173feb",
+      "bytes": 464,
+      "independentHash": "74c8e5e96fd1a53ea8707a04c823f51a6db5e4aa3d247a9e079d7a39ff173feb"
+    },
+    {
+      "path": "res/color/abc_primary_text_material_dark.xml",
+      "sha256": "eb36d6e19c31c025cb93ea2f71c5921d72f87343b5d22c8cfc44929d4c57d360",
+      "bytes": 464,
+      "independentHash": "eb36d6e19c31c025cb93ea2f71c5921d72f87343b5d22c8cfc44929d4c57d360"
+    },
+    {
+      "path": "res/color/abc_primary_text_material_light.xml",
+      "sha256": "421f361fbe815ac7319f1c226a528376d94d46c9f97b7c9de814af272bfa42ed",
+      "bytes": 464,
+      "independentHash": "421f361fbe815ac7319f1c226a528376d94d46c9f97b7c9de814af272bfa42ed"
+    },
+    {
+      "path": "res/color/abc_search_url_text.xml",
+      "sha256": "1e4171edfe1875ea4887fcbb8d04c78b72de421b3367df8f715e4941ba5f1b94",
+      "bytes": 588,
+      "independentHash": "1e4171edfe1875ea4887fcbb8d04c78b72de421b3367df8f715e4941ba5f1b94"
+    },
+    {
+      "path": "res/color/abc_secondary_text_material_dark.xml",
+      "sha256": "babfc8a39e5ab8773f7f486e9cdf1d9fe14b1cfc6bd9da6d6662b10f2e231842",
+      "bytes": 464,
+      "independentHash": "babfc8a39e5ab8773f7f486e9cdf1d9fe14b1cfc6bd9da6d6662b10f2e231842"
+    },
+    {
+      "path": "res/color/abc_secondary_text_material_light.xml",
+      "sha256": "40d6fb165d2eee5d493da3078d1c79f177757edaa446f51231c1e17bc8982992",
+      "bytes": 464,
+      "independentHash": "40d6fb165d2eee5d493da3078d1c79f177757edaa446f51231c1e17bc8982992"
+    },
+    {
+      "path": "res/color/common_google_signin_btn_text_dark.xml",
+      "sha256": "18dbf03332948ae40269170d0c5c5b91a1830ef7552cd3176bbfba918d959dba",
+      "bytes": 712,
+      "independentHash": "18dbf03332948ae40269170d0c5c5b91a1830ef7552cd3176bbfba918d959dba"
+    },
+    {
+      "path": "res/color/common_google_signin_btn_text_light.xml",
+      "sha256": "66e086964258d82d6cd0d70decdee5654aa94d0c0a04070aae9ad0dd3ab2035f",
+      "bytes": 712,
+      "independentHash": "66e086964258d82d6cd0d70decdee5654aa94d0c0a04070aae9ad0dd3ab2035f"
+    },
+    {
+      "path": "res/color/common_google_signin_btn_tint.xml",
+      "sha256": "c230db3d543d322c35c60b744c12b0aa7526f1ccfffbb570caee6f47c99f9626",
+      "bytes": 464,
+      "independentHash": "c230db3d543d322c35c60b744c12b0aa7526f1ccfffbb570caee6f47c99f9626"
+    },
+    {
+      "path": "res/color/switch_thumb_material_dark.xml",
+      "sha256": "cf1ea4cc8326bdbeb13c634598fba9893e540c3cb62bd1c0fba004e5753aa9c7",
+      "bytes": 464,
+      "independentHash": "cf1ea4cc8326bdbeb13c634598fba9893e540c3cb62bd1c0fba004e5753aa9c7"
+    },
+    {
+      "path": "res/color/switch_thumb_material_light.xml",
+      "sha256": "5f8bc32cdf07c681ff1a3710a7d0ffecbdfb0604832b9ecc1899c2ac18f77c13",
+      "bytes": 464,
+      "independentHash": "5f8bc32cdf07c681ff1a3710a7d0ffecbdfb0604832b9ecc1899c2ac18f77c13"
+    },
+    {
+      "path": "res/color/vector_tint_color.xml",
+      "sha256": "4bbb4ef3e0e3db260a05d794047a1765e420d699ee5673e90b57ff682a2fe34e",
+      "bytes": 340,
+      "independentHash": "4bbb4ef3e0e3db260a05d794047a1765e420d699ee5673e90b57ff682a2fe34e"
+    },
+    {
+      "path": "res/color/vector_tint_theme_color.xml",
+      "sha256": "cf34dc5bdb4a6d1568143e115ac4e34448383ac772862ef0fdbb7fe8936c6dd3",
+      "bytes": 340,
+      "independentHash": "cf34dc5bdb4a6d1568143e115ac4e34448383ac772862ef0fdbb7fe8936c6dd3"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/abc_ab_share_pack_mtrl_alpha.9.png",
+      "sha256": "991f73be600ad8821a6743db54af513f9b047058e95066e22fcdd1d72032bc58",
+      "bytes": 272,
+      "independentHash": "991f73be600ad8821a6743db54af513f9b047058e95066e22fcdd1d72032bc58"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/abc_btn_check_to_on_mtrl_000.png",
+      "sha256": "5eca0280bd38a6887b6e41765cf5da573133874625001eb90156eaeb35fbe088",
+      "bytes": 227,
+      "independentHash": "5eca0280bd38a6887b6e41765cf5da573133874625001eb90156eaeb35fbe088"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/abc_btn_check_to_on_mtrl_015.png",
+      "sha256": "5ced2ab774853050255d7309e10b76217813d56f3f8ab8fb73ac3f635d90c676",
+      "bytes": 404,
+      "independentHash": "5ced2ab774853050255d7309e10b76217813d56f3f8ab8fb73ac3f635d90c676"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/abc_btn_radio_to_on_mtrl_000.png",
+      "sha256": "5080b07eb486ba05ede737b567eb2bb89d7b79a3edb5c2ca8141c6eba012b75d",
+      "bytes": 464,
+      "independentHash": "5080b07eb486ba05ede737b567eb2bb89d7b79a3edb5c2ca8141c6eba012b75d"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/abc_btn_radio_to_on_mtrl_015.png",
+      "sha256": "7442cda653acbacdf9aef256aa191e5ebb6071a1747312aec45e1db8252a3cfb",
+      "bytes": 563,
+      "independentHash": "7442cda653acbacdf9aef256aa191e5ebb6071a1747312aec45e1db8252a3cfb"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/abc_btn_switch_to_on_mtrl_00001.9.png",
+      "sha256": "9f849bcd788adceb32f4c1a5aa892749bd1e244a3787bfbfbd30d3b6f5d8e9db",
+      "bytes": 1096,
+      "independentHash": "9f849bcd788adceb32f4c1a5aa892749bd1e244a3787bfbfbd30d3b6f5d8e9db"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/abc_btn_switch_to_on_mtrl_00012.9.png",
+      "sha256": "ab94afcb2bb325544c0c1103bf5109b827bf070f441faef909f856ae295a1cf0",
+      "bytes": 1243,
+      "independentHash": "ab94afcb2bb325544c0c1103bf5109b827bf070f441faef909f856ae295a1cf0"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/abc_cab_background_top_mtrl_alpha.9.png",
+      "sha256": "67e701476927078d89ab0bbb39fff12d69702592a7a428237a21168a21ec1038",
+      "bytes": 226,
+      "independentHash": "67e701476927078d89ab0bbb39fff12d69702592a7a428237a21168a21ec1038"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/abc_ic_commit_search_api_mtrl_alpha.png",
+      "sha256": "239d602c9c65f156fe024613207955ac8fbdd395ae6ec3efa51be98e3a4473f4",
+      "bytes": 171,
+      "independentHash": "239d602c9c65f156fe024613207955ac8fbdd395ae6ec3efa51be98e3a4473f4"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/abc_list_divider_mtrl_alpha.9.png",
+      "sha256": "378694706fb7256dd2248e2af854efd71ec7e8885f61da2e16a2bd32fcf3d0a9",
+      "bytes": 167,
+      "independentHash": "378694706fb7256dd2248e2af854efd71ec7e8885f61da2e16a2bd32fcf3d0a9"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/abc_list_focused_holo.9.png",
+      "sha256": "a2f1a37af8e699320a2fadbe54eeaa6112d5a3522d57d682edf04fe97be3b47e",
+      "bytes": 244,
+      "independentHash": "a2f1a37af8e699320a2fadbe54eeaa6112d5a3522d57d682edf04fe97be3b47e"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/abc_list_longpressed_holo.9.png",
+      "sha256": "d5c644b00ee79bd4f1fcb789ebbf89e79c0c6fea878dfbc4a8c64c3be34b5b03",
+      "bytes": 212,
+      "independentHash": "d5c644b00ee79bd4f1fcb789ebbf89e79c0c6fea878dfbc4a8c64c3be34b5b03"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/abc_list_pressed_holo_dark.9.png",
+      "sha256": "a7523ccf037f7c31cf87a186feecb9139ef92d87e0702cabb08a31914b2b503e",
+      "bytes": 208,
+      "independentHash": "a7523ccf037f7c31cf87a186feecb9139ef92d87e0702cabb08a31914b2b503e"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/abc_list_pressed_holo_light.9.png",
+      "sha256": "91b8358e22ac1b8554c71a528414acf30088d9ad562bdac3814844771c14c8a9",
+      "bytes": 208,
+      "independentHash": "91b8358e22ac1b8554c71a528414acf30088d9ad562bdac3814844771c14c8a9"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/abc_list_selector_disabled_holo_dark.9.png",
+      "sha256": "89c28e887b0d60c01b35dcd2be654f416bffb66e8565716dc983e3b0204967e8",
+      "bytes": 228,
+      "independentHash": "89c28e887b0d60c01b35dcd2be654f416bffb66e8565716dc983e3b0204967e8"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/abc_list_selector_disabled_holo_light.9.png",
+      "sha256": "475f03b3ccff04fce91a7a912142d150a000b1d011da003745dc2c0e3f5fb092",
+      "bytes": 229,
+      "independentHash": "475f03b3ccff04fce91a7a912142d150a000b1d011da003745dc2c0e3f5fb092"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/abc_menu_hardkey_panel_mtrl_mult.9.png",
+      "sha256": "8fcf5b9da03c68dff65adfa8713db9ce3b5e423a9f5046f1785ab640c2a647fb",
+      "bytes": 738,
+      "independentHash": "8fcf5b9da03c68dff65adfa8713db9ce3b5e423a9f5046f1785ab640c2a647fb"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/abc_popup_background_mtrl_mult.9.png",
+      "sha256": "00a1ac74d8164cb5c4749a0b2e77e2c6da4a90abe873d8604f29841c19357c66",
+      "bytes": 1098,
+      "independentHash": "00a1ac74d8164cb5c4749a0b2e77e2c6da4a90abe873d8604f29841c19357c66"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/abc_scrubber_control_off_mtrl_alpha.png",
+      "sha256": "0e631dbfe2575dd16d3fd6c59641dfa4abb5e162d60f59049e4459f0af29fbf6",
+      "bytes": 201,
+      "independentHash": "0e631dbfe2575dd16d3fd6c59641dfa4abb5e162d60f59049e4459f0af29fbf6"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/abc_scrubber_control_to_pressed_mtrl_000.png",
+      "sha256": "c131ab0e2eb9879bd063e736ab81313c5a4f47eaa2f4a0ec9eca93a1a150ed79",
+      "bytes": 196,
+      "independentHash": "c131ab0e2eb9879bd063e736ab81313c5a4f47eaa2f4a0ec9eca93a1a150ed79"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/abc_scrubber_control_to_pressed_mtrl_005.png",
+      "sha256": "dc08af9d14e6b673bf9f31c248236f0457b322464036647473e3a32a23773f0e",
+      "bytes": 272,
+      "independentHash": "dc08af9d14e6b673bf9f31c248236f0457b322464036647473e3a32a23773f0e"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/abc_scrubber_primary_mtrl_alpha.9.png",
+      "sha256": "9a1a48038a8d1dc041035b49cc732db23e008d126c8b2e680749dd29616a37b3",
+      "bytes": 205,
+      "independentHash": "9a1a48038a8d1dc041035b49cc732db23e008d126c8b2e680749dd29616a37b3"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/abc_scrubber_track_mtrl_alpha.9.png",
+      "sha256": "c86d934a5809f32599e42143e306ed6e066b224fe1fa3f32ade1603074e5b136",
+      "bytes": 196,
+      "independentHash": "c86d934a5809f32599e42143e306ed6e066b224fe1fa3f32ade1603074e5b136"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/abc_spinner_mtrl_am_alpha.9.png",
+      "sha256": "b0b2dc2cae7811c124ae528d714318bb1043b59d82a640f22c47ace64c283fec",
+      "bytes": 345,
+      "independentHash": "b0b2dc2cae7811c124ae528d714318bb1043b59d82a640f22c47ace64c283fec"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/abc_switch_track_mtrl_alpha.9.png",
+      "sha256": "2e3d70230977af37c6d7739899a73e63937eebdfe6d802f1a957c43c2f2ab131",
+      "bytes": 484,
+      "independentHash": "2e3d70230977af37c6d7739899a73e63937eebdfe6d802f1a957c43c2f2ab131"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/abc_tab_indicator_mtrl_alpha.9.png",
+      "sha256": "aa61229cd70239278109c5ebe725e72484d0252efa4902a17192366942749289",
+      "bytes": 190,
+      "independentHash": "aa61229cd70239278109c5ebe725e72484d0252efa4902a17192366942749289"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/abc_text_select_handle_left_mtrl.png",
+      "sha256": "498b0cbd09b6b4feed8aca9ed77d235f5bb272c53d21b332649a00e942d989da",
+      "bytes": 278,
+      "independentHash": "498b0cbd09b6b4feed8aca9ed77d235f5bb272c53d21b332649a00e942d989da"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/abc_text_select_handle_middle_mtrl.png",
+      "sha256": "a475594ae7c771092a3a2718981e2710c737844f44a4401f72d3953753649a7a",
+      "bytes": 396,
+      "independentHash": "a475594ae7c771092a3a2718981e2710c737844f44a4401f72d3953753649a7a"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/abc_text_select_handle_right_mtrl.png",
+      "sha256": "646021cc77e7f4bd68ab59fb32d306f81a2042125e6cdaa16184a062a8183f79",
+      "bytes": 262,
+      "independentHash": "646021cc77e7f4bd68ab59fb32d306f81a2042125e6cdaa16184a062a8183f79"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/abc_textfield_activated_mtrl_alpha.9.png",
+      "sha256": "a933aaebbeae489dea84e78e7fbc4079fdfda576fbdeb339401fda6cdc03e764",
+      "bytes": 186,
+      "independentHash": "a933aaebbeae489dea84e78e7fbc4079fdfda576fbdeb339401fda6cdc03e764"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/abc_textfield_default_mtrl_alpha.9.png",
+      "sha256": "94fe9824714ad94c002fe6219e723c0d80c7cbe3a6130d7aa493730b67e294d1",
+      "bytes": 192,
+      "independentHash": "94fe9824714ad94c002fe6219e723c0d80c7cbe3a6130d7aa493730b67e294d1"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/abc_textfield_search_activated_mtrl_alpha.9.png",
+      "sha256": "25f25112cc46b285767de7b5b058cfc0a9efd5f21cfe724af031505d66a9eceb",
+      "bytes": 178,
+      "independentHash": "25f25112cc46b285767de7b5b058cfc0a9efd5f21cfe724af031505d66a9eceb"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/abc_textfield_search_default_mtrl_alpha.9.png",
+      "sha256": "1411ae65d8160573c166d2a572106fd1103c12f242f67feec5feaa550197e5f5",
+      "bytes": 178,
+      "independentHash": "1411ae65d8160573c166d2a572106fd1103c12f242f67feec5feaa550197e5f5"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/common_full_open_on_phone.png",
+      "sha256": "e8e2fecfbf111cc5ef65dbb6c7395a5ae16a68f7e0922738d0c802b26e866e49",
+      "bytes": 681,
+      "independentHash": "e8e2fecfbf111cc5ef65dbb6c7395a5ae16a68f7e0922738d0c802b26e866e49"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/common_google_signin_btn_icon_dark_normal_background.9.png",
+      "sha256": "9865619196624a3cba32a36b0111357afea3148f123221ba8c7265bc681ab8a9",
+      "bytes": 897,
+      "independentHash": "9865619196624a3cba32a36b0111357afea3148f123221ba8c7265bc681ab8a9"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/common_google_signin_btn_icon_light_normal_background.9.png",
+      "sha256": "94a0b6363a09d466a3dc3722379ab367d9ff73a21ba0ff2c5bab6c30aa5f8b38",
+      "bytes": 683,
+      "independentHash": "94a0b6363a09d466a3dc3722379ab367d9ff73a21ba0ff2c5bab6c30aa5f8b38"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/common_google_signin_btn_text_dark_normal_background.9.png",
+      "sha256": "d66f7061c274b1b6f8524993367af902737ddf9187db0cc8d91a8c64ad9b944a",
+      "bytes": 960,
+      "independentHash": "d66f7061c274b1b6f8524993367af902737ddf9187db0cc8d91a8c64ad9b944a"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/common_google_signin_btn_text_light_normal_background.9.png",
+      "sha256": "dc9a0ae125491ccdac95b57b5eee4060efd191294e171c8e369d7d0ec3ab2268",
+      "bytes": 694,
+      "independentHash": "dc9a0ae125491ccdac95b57b5eee4060efd191294e171c8e369d7d0ec3ab2268"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/googleg_disabled_color_18.png",
+      "sha256": "f73508090d3e6bbc3e39ba768e71855aad52ecaaaccda676d43a1860010cc557",
+      "bytes": 410,
+      "independentHash": "f73508090d3e6bbc3e39ba768e71855aad52ecaaaccda676d43a1860010cc557"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/googleg_standard_color_18.png",
+      "sha256": "f221f962a62c954a11b1734e9631fc8531e34bee557665fea864aa4386e25e39",
+      "bytes": 808,
+      "independentHash": "f221f962a62c954a11b1734e9631fc8531e34bee557665fea864aa4386e25e39"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/notification_bg_low_normal.9.png",
+      "sha256": "21f0b55280be10b187ceff8edef4a5a7047683e6e9fcf47de410aa3839f41094",
+      "bytes": 212,
+      "independentHash": "21f0b55280be10b187ceff8edef4a5a7047683e6e9fcf47de410aa3839f41094"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/notification_bg_low_pressed.9.png",
+      "sha256": "42aee0b03883e94df5e543348a397d1302c1b8221895871a83b81899f5a9647b",
+      "bytes": 225,
+      "independentHash": "42aee0b03883e94df5e543348a397d1302c1b8221895871a83b81899f5a9647b"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/notification_bg_normal.9.png",
+      "sha256": "0c6328c7b2420570a7ec38b3beb3bac9a29d895ac1ab7239315aba7266418593",
+      "bytes": 212,
+      "independentHash": "0c6328c7b2420570a7ec38b3beb3bac9a29d895ac1ab7239315aba7266418593"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/notification_bg_normal_pressed.9.png",
+      "sha256": "18b328d8017e677d5aad3dbd66bae356b5cac978c6f0670938ea648e51d0eb66",
+      "bytes": 225,
+      "independentHash": "18b328d8017e677d5aad3dbd66bae356b5cac978c6f0670938ea648e51d0eb66"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/notification_oversize_large_icon_bg.png",
+      "sha256": "aa00088d0d9fd97bd92ed9ffd29b54bb69a48a984aa73448ce553fb9d812be41",
+      "bytes": 909,
+      "independentHash": "aa00088d0d9fd97bd92ed9ffd29b54bb69a48a984aa73448ce553fb9d812be41"
+    },
+    {
+      "path": "res/drawable-hdpi-v4/notify_panel_notification_icon_bg.png",
+      "sha256": "8430ec003e003f3f2ba2f78d48fd150e25407667e530e82e87a7d4841c0fd676",
+      "bytes": 107,
+      "independentHash": "8430ec003e003f3f2ba2f78d48fd150e25407667e530e82e87a7d4841c0fd676"
+    },
+    {
+      "path": "res/drawable-ldrtl-hdpi-v17/abc_spinner_mtrl_am_alpha.9.png",
+      "sha256": "d4d2b0dbb039f1c6395183abe945b39470ad9a8a7b680a40fa790df6c645bb43",
+      "bytes": 345,
+      "independentHash": "d4d2b0dbb039f1c6395183abe945b39470ad9a8a7b680a40fa790df6c645bb43"
+    },
+    {
+      "path": "res/drawable-ldrtl-mdpi-v17/abc_spinner_mtrl_am_alpha.9.png",
+      "sha256": "80502979302dee7353f475f558c497ae6697f77181a51f7cc80b40d72c2e0c4c",
+      "bytes": 318,
+      "independentHash": "80502979302dee7353f475f558c497ae6697f77181a51f7cc80b40d72c2e0c4c"
+    },
+    {
+      "path": "res/drawable-ldrtl-xhdpi-v17/abc_spinner_mtrl_am_alpha.9.png",
+      "sha256": "77f0ebab2416404eb1d562342e431541d885686dd1e49d6dc93be1a86c2273c4",
+      "bytes": 417,
+      "independentHash": "77f0ebab2416404eb1d562342e431541d885686dd1e49d6dc93be1a86c2273c4"
+    },
+    {
+      "path": "res/drawable-ldrtl-xxhdpi-v17/abc_spinner_mtrl_am_alpha.9.png",
+      "sha256": "007dbf5fa2dc466a4940b0a6a73dab48cb721f64d358f71ff35aaadb9630b5ec",
+      "bytes": 525,
+      "independentHash": "007dbf5fa2dc466a4940b0a6a73dab48cb721f64d358f71ff35aaadb9630b5ec"
+    },
+    {
+      "path": "res/drawable-ldrtl-xxxhdpi-v17/abc_spinner_mtrl_am_alpha.9.png",
+      "sha256": "8c3de5389a4fedf23b1efdf1c7737ca7eb44f381c22369153dfa972613a4c448",
+      "bytes": 437,
+      "independentHash": "8c3de5389a4fedf23b1efdf1c7737ca7eb44f381c22369153dfa972613a4c448"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/abc_ab_share_pack_mtrl_alpha.9.png",
+      "sha256": "f94e2129180c0ba6924430374402456035dcd6b6fff7d05f6de7e24196a3af35",
+      "bytes": 267,
+      "independentHash": "f94e2129180c0ba6924430374402456035dcd6b6fff7d05f6de7e24196a3af35"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/abc_btn_check_to_on_mtrl_000.png",
+      "sha256": "055d5f87b1bbb6677096bc7eb7eace57e40216cb97f2b2b926d26c1263f9abce",
+      "bytes": 214,
+      "independentHash": "055d5f87b1bbb6677096bc7eb7eace57e40216cb97f2b2b926d26c1263f9abce"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/abc_btn_check_to_on_mtrl_015.png",
+      "sha256": "caf1e473df6702c2a6a95d738f1d6f2b73196766b504e5ff333b3c8e747e047b",
+      "bytes": 321,
+      "independentHash": "caf1e473df6702c2a6a95d738f1d6f2b73196766b504e5ff333b3c8e747e047b"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/abc_btn_radio_to_on_mtrl_000.png",
+      "sha256": "a547431febf108ccfa9588ab89b1078e387bb351eb54d772394332187f770b74",
+      "bytes": 324,
+      "independentHash": "a547431febf108ccfa9588ab89b1078e387bb351eb54d772394332187f770b74"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/abc_btn_radio_to_on_mtrl_015.png",
+      "sha256": "c8825cd637e59a02500d8b7518562f0c91bef2edd971ba3e5ad0f416794d618e",
+      "bytes": 356,
+      "independentHash": "c8825cd637e59a02500d8b7518562f0c91bef2edd971ba3e5ad0f416794d618e"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/abc_btn_switch_to_on_mtrl_00001.9.png",
+      "sha256": "562cba1ad1b9abd502da9c03f4c10bb2bd728022c546f18059319f2ad293280e",
+      "bytes": 754,
+      "independentHash": "562cba1ad1b9abd502da9c03f4c10bb2bd728022c546f18059319f2ad293280e"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/abc_btn_switch_to_on_mtrl_00012.9.png",
+      "sha256": "b52228a35520e2d786e962e85013fe7f7c97ffb42677f3bdabc032fbb709952a",
+      "bytes": 825,
+      "independentHash": "b52228a35520e2d786e962e85013fe7f7c97ffb42677f3bdabc032fbb709952a"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/abc_cab_background_top_mtrl_alpha.9.png",
+      "sha256": "fb71e11c090133a97fe84fa3b76a263b429c9032ec467854b0e32a3157a5eba5",
+      "bytes": 216,
+      "independentHash": "fb71e11c090133a97fe84fa3b76a263b429c9032ec467854b0e32a3157a5eba5"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/abc_ic_commit_search_api_mtrl_alpha.png",
+      "sha256": "52549a8d0b6c35faf2795efdf6b4c5fe2cb34b7e8b1039cca7aa2769b6cab3d0",
+      "bytes": 173,
+      "independentHash": "52549a8d0b6c35faf2795efdf6b4c5fe2cb34b7e8b1039cca7aa2769b6cab3d0"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/abc_list_divider_mtrl_alpha.9.png",
+      "sha256": "378694706fb7256dd2248e2af854efd71ec7e8885f61da2e16a2bd32fcf3d0a9",
+      "bytes": 167,
+      "independentHash": "378694706fb7256dd2248e2af854efd71ec7e8885f61da2e16a2bd32fcf3d0a9"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/abc_list_focused_holo.9.png",
+      "sha256": "8436624220fba246ae816a3aab379dfd7ff2a484284ab24c3af4989778705bb3",
+      "bytes": 222,
+      "independentHash": "8436624220fba246ae816a3aab379dfd7ff2a484284ab24c3af4989778705bb3"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/abc_list_longpressed_holo.9.png",
+      "sha256": "dbc0af61f440bb3f5382b8ea3fa578659f76c7a6aef620a68afc43a909f2e0e5",
+      "bytes": 211,
+      "independentHash": "dbc0af61f440bb3f5382b8ea3fa578659f76c7a6aef620a68afc43a909f2e0e5"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/abc_list_pressed_holo_dark.9.png",
+      "sha256": "5d4161bf9482b5d2a2346cd3fa2739ec3203d995bebac02e89a732943368bbfc",
+      "bytes": 207,
+      "independentHash": "5d4161bf9482b5d2a2346cd3fa2739ec3203d995bebac02e89a732943368bbfc"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/abc_list_pressed_holo_light.9.png",
+      "sha256": "e98f192f013a9226010482ab8e14c7f215fb16bda3ccb0ddaec3ed0b27119e7c",
+      "bytes": 207,
+      "independentHash": "e98f192f013a9226010482ab8e14c7f215fb16bda3ccb0ddaec3ed0b27119e7c"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/abc_list_selector_disabled_holo_dark.9.png",
+      "sha256": "a15171ead4b1cd9b80c58b93c0efb453b0cf889b714cc859ee2c9b937f4b37d0",
+      "bytes": 217,
+      "independentHash": "a15171ead4b1cd9b80c58b93c0efb453b0cf889b714cc859ee2c9b937f4b37d0"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/abc_list_selector_disabled_holo_light.9.png",
+      "sha256": "7c45e46e405f5b4a3d0c62a22e67010c3327022dd1c1f4bbccea1279a4d1ad74",
+      "bytes": 217,
+      "independentHash": "7c45e46e405f5b4a3d0c62a22e67010c3327022dd1c1f4bbccea1279a4d1ad74"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/abc_menu_hardkey_panel_mtrl_mult.9.png",
+      "sha256": "c7954e2bfbd01e5bbc9d774dd4d743d3f8a26613129fac8071b741bab3018ab0",
+      "bytes": 541,
+      "independentHash": "c7954e2bfbd01e5bbc9d774dd4d743d3f8a26613129fac8071b741bab3018ab0"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/abc_popup_background_mtrl_mult.9.png",
+      "sha256": "5c7c682ffb64f4b531de0f9549c0da11c337576e426618522bfd1d35a451a414",
+      "bytes": 776,
+      "independentHash": "5c7c682ffb64f4b531de0f9549c0da11c337576e426618522bfd1d35a451a414"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/abc_scrubber_control_off_mtrl_alpha.png",
+      "sha256": "5a6ca1d0d2fea53813da5b3c9037408087f9f753f58dd2e128a4a48f7689769f",
+      "bytes": 159,
+      "independentHash": "5a6ca1d0d2fea53813da5b3c9037408087f9f753f58dd2e128a4a48f7689769f"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/abc_scrubber_control_to_pressed_mtrl_000.png",
+      "sha256": "9f856dd00a4f281d1198e6679ac8611fc67d301f28c07aea97504244ba16cb44",
+      "bytes": 145,
+      "independentHash": "9f856dd00a4f281d1198e6679ac8611fc67d301f28c07aea97504244ba16cb44"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/abc_scrubber_control_to_pressed_mtrl_005.png",
+      "sha256": "6151450ece3ab9667213c3987b6d8fffa25baf9ff43d53bcd9c94fd8ea7616d0",
+      "bytes": 197,
+      "independentHash": "6151450ece3ab9667213c3987b6d8fffa25baf9ff43d53bcd9c94fd8ea7616d0"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/abc_scrubber_primary_mtrl_alpha.9.png",
+      "sha256": "5e3f13ee854fa41354ca7378358b99f8e41f3b1c9968c313b630b02de8704e6e",
+      "bytes": 203,
+      "independentHash": "5e3f13ee854fa41354ca7378358b99f8e41f3b1c9968c313b630b02de8704e6e"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/abc_scrubber_track_mtrl_alpha.9.png",
+      "sha256": "9a9c940ea133f7e0ac8db6f06e13e852508633c21f8c71f297483165a06d92eb",
+      "bytes": 194,
+      "independentHash": "9a9c940ea133f7e0ac8db6f06e13e852508633c21f8c71f297483165a06d92eb"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/abc_spinner_mtrl_am_alpha.9.png",
+      "sha256": "0fa17d8754d6d163cc433f087cad6c083173ac87ad7097e76950a25eec5f3e90",
+      "bytes": 327,
+      "independentHash": "0fa17d8754d6d163cc433f087cad6c083173ac87ad7097e76950a25eec5f3e90"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/abc_switch_track_mtrl_alpha.9.png",
+      "sha256": "62477adc74d4e6836e3c0e4b5337c37d748cb3f94033f42c629938ef18d38b41",
+      "bytes": 395,
+      "independentHash": "62477adc74d4e6836e3c0e4b5337c37d748cb3f94033f42c629938ef18d38b41"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/abc_tab_indicator_mtrl_alpha.9.png",
+      "sha256": "f62d7aa1f9297302a43332a59834755edbd3a38670b8c523614ae1366b5f947f",
+      "bytes": 186,
+      "independentHash": "f62d7aa1f9297302a43332a59834755edbd3a38670b8c523614ae1366b5f947f"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/abc_text_select_handle_left_mtrl.png",
+      "sha256": "0fd2f53946eb93b3154f44bdafc8896ea93195a64ce5fc64049e8b7293cd6801",
+      "bytes": 203,
+      "independentHash": "0fd2f53946eb93b3154f44bdafc8896ea93195a64ce5fc64049e8b7293cd6801"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/abc_text_select_handle_middle_mtrl.png",
+      "sha256": "5358737cb680ea1cdd6ba400d33316fabf872fd44f6a0e127bfc8bdd1632b374",
+      "bytes": 310,
+      "independentHash": "5358737cb680ea1cdd6ba400d33316fabf872fd44f6a0e127bfc8bdd1632b374"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/abc_text_select_handle_right_mtrl.png",
+      "sha256": "7c8472b72441cc28a1ac53a08b4f0c14f310af338175ba6c46fd6342ac8ce2ff",
+      "bytes": 186,
+      "independentHash": "7c8472b72441cc28a1ac53a08b4f0c14f310af338175ba6c46fd6342ac8ce2ff"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/abc_textfield_activated_mtrl_alpha.9.png",
+      "sha256": "fa50162bdb3501c6b50cfa36c14dab9c94e48d57f558607ec9858124d70412f9",
+      "bytes": 181,
+      "independentHash": "fa50162bdb3501c6b50cfa36c14dab9c94e48d57f558607ec9858124d70412f9"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/abc_textfield_default_mtrl_alpha.9.png",
+      "sha256": "9fd37c82f87df00464554344ddddea55e480d09c33b505ac13252036d4d6276e",
+      "bytes": 178,
+      "independentHash": "9fd37c82f87df00464554344ddddea55e480d09c33b505ac13252036d4d6276e"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/abc_textfield_search_activated_mtrl_alpha.9.png",
+      "sha256": "4bc8f4d13d2acccc1338f73ff90cd97695d9210e04de5da924215243c8950bf3",
+      "bytes": 178,
+      "independentHash": "4bc8f4d13d2acccc1338f73ff90cd97695d9210e04de5da924215243c8950bf3"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/abc_textfield_search_default_mtrl_alpha.9.png",
+      "sha256": "b800fac7d2f0a75b17fad7009707ea49134919e48984e89815a9d24c0fa704d8",
+      "bytes": 178,
+      "independentHash": "b800fac7d2f0a75b17fad7009707ea49134919e48984e89815a9d24c0fa704d8"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/common_google_signin_btn_icon_dark_normal_background.9.png",
+      "sha256": "71bfd776b21b1102f26e31a0f6dc65d40de2cbae650c7528241d5cdc17eac991",
+      "bytes": 610,
+      "independentHash": "71bfd776b21b1102f26e31a0f6dc65d40de2cbae650c7528241d5cdc17eac991"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/common_google_signin_btn_icon_light_normal_background.9.png",
+      "sha256": "77d8cc5447360efba3b3f1659bea9680eccbe47e2aaa07424d562f0e5c8af829",
+      "bytes": 500,
+      "independentHash": "77d8cc5447360efba3b3f1659bea9680eccbe47e2aaa07424d562f0e5c8af829"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/common_google_signin_btn_text_dark_normal_background.9.png",
+      "sha256": "9635dab0f3c0b0557f3535d9655784f68130db57ce3920ae68c2d4cab4edd35e",
+      "bytes": 615,
+      "independentHash": "9635dab0f3c0b0557f3535d9655784f68130db57ce3920ae68c2d4cab4edd35e"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/common_google_signin_btn_text_light_normal_background.9.png",
+      "sha256": "08a416adad6c0e9bece3238674a76b24bbac2ce95c1cffca817b3c675ac69f6b",
+      "bytes": 465,
+      "independentHash": "08a416adad6c0e9bece3238674a76b24bbac2ce95c1cffca817b3c675ac69f6b"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/googleg_disabled_color_18.png",
+      "sha256": "7c1e1629c95fb2603fbdeab93a8fbf30b9c80be11ef483d497f8a88e8f67bd6b",
+      "bytes": 281,
+      "independentHash": "7c1e1629c95fb2603fbdeab93a8fbf30b9c80be11ef483d497f8a88e8f67bd6b"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/googleg_standard_color_18.png",
+      "sha256": "788a3b9472e9a46e1b6b68d918cd1571914b732e93aab014d77f20be5374e9de",
+      "bytes": 562,
+      "independentHash": "788a3b9472e9a46e1b6b68d918cd1571914b732e93aab014d77f20be5374e9de"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/notification_bg_low_normal.9.png",
+      "sha256": "2f7fbda0ba6e53e9a47e2fc0e24e32c447c613a5808c2d6285dc651e83a07ad7",
+      "bytes": 215,
+      "independentHash": "2f7fbda0ba6e53e9a47e2fc0e24e32c447c613a5808c2d6285dc651e83a07ad7"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/notification_bg_low_pressed.9.png",
+      "sha256": "e17761ed280edd93d7141bd504b70f9e9e15a8652288d9e6333bf4ce964ef844",
+      "bytes": 223,
+      "independentHash": "e17761ed280edd93d7141bd504b70f9e9e15a8652288d9e6333bf4ce964ef844"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/notification_bg_normal.9.png",
+      "sha256": "a8676a1793ac8310ffb12986232df66df092d29c242aeedc2b73556c010d38dc",
+      "bytes": 215,
+      "independentHash": "a8676a1793ac8310ffb12986232df66df092d29c242aeedc2b73556c010d38dc"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/notification_bg_normal_pressed.9.png",
+      "sha256": "99c14d6855b8be296d58017d3751b8dc849c47b6d1d80ab614ff9075080e461b",
+      "bytes": 223,
+      "independentHash": "99c14d6855b8be296d58017d3751b8dc849c47b6d1d80ab614ff9075080e461b"
+    },
+    {
+      "path": "res/drawable-mdpi-v4/notify_panel_notification_icon_bg.png",
+      "sha256": "0d773e62c756422313262846c787e58f67e0ee87e45e1ae9942002e816c4cb9e",
+      "bytes": 98,
+      "independentHash": "0d773e62c756422313262846c787e58f67e0ee87e45e1ae9942002e816c4cb9e"
+    },
+    {
+      "path": "res/drawable-nodpi-v4/pencil_background_v1.png",
+      "sha256": "5c2e4b12f269b4d848cfc7c8d5b22248cad818e4d3aa2bd70991db282f5fda9c",
+      "bytes": 188299,
+      "independentHash": "5c2e4b12f269b4d848cfc7c8d5b22248cad818e4d3aa2bd70991db282f5fda9c"
+    },
+    {
+      "path": "res/drawable-v21/abc_action_bar_item_background_material.xml",
+      "sha256": "5c4046ca717bff82a55d3d4d3e5ee8635fbadfe64ac358aa396fd4664085ea60",
+      "bytes": 264,
+      "independentHash": "5c4046ca717bff82a55d3d4d3e5ee8635fbadfe64ac358aa396fd4664085ea60"
+    },
+    {
+      "path": "res/drawable-v21/abc_btn_colored_material.xml",
+      "sha256": "a10af62537f859a947100aadf1f55512f74bf6c9cf7b17048f4643f944b27a35",
+      "bytes": 1716,
+      "independentHash": "a10af62537f859a947100aadf1f55512f74bf6c9cf7b17048f4643f944b27a35"
+    },
+    {
+      "path": "res/drawable-v21/abc_dialog_material_background.xml",
+      "sha256": "4358c705b6df0d847e2dc96c30a8aa8a66e7f58a03650eabe1492c6f82d7b18f",
+      "bytes": 716,
+      "independentHash": "4358c705b6df0d847e2dc96c30a8aa8a66e7f58a03650eabe1492c6f82d7b18f"
+    },
+    {
+      "path": "res/drawable-v21/abc_edit_text_material.xml",
+      "sha256": "5125370c1b2515a505c02c1bfffaf059ec2ed186efa07ee20b9da3a8cb81ef3c",
+      "bytes": 1172,
+      "independentHash": "5125370c1b2515a505c02c1bfffaf059ec2ed186efa07ee20b9da3a8cb81ef3c"
+    },
+    {
+      "path": "res/drawable-v21/abc_list_divider_material.xml",
+      "sha256": "976c8b16e6a0728e6389e244e8f8e27d2c5dc8b55a4d20e6d4735a49a1058743",
+      "bytes": 516,
+      "independentHash": "976c8b16e6a0728e6389e244e8f8e27d2c5dc8b55a4d20e6d4735a49a1058743"
+    },
+    {
+      "path": "res/drawable-v21/notification_action_background.xml",
+      "sha256": "3965c656c0fed41d0122c4f081e71c4b7cb1af0df82a7af483630bea49086e9b",
+      "bytes": 1180,
+      "independentHash": "3965c656c0fed41d0122c4f081e71c4b7cb1af0df82a7af483630bea49086e9b"
+    },
+    {
+      "path": "res/drawable-v23/abc_control_background_material.xml",
+      "sha256": "eab0b1933584952c1dc6737cb90956751e5249190dd450837b3fb1fcd3b20315",
+      "bytes": 304,
+      "independentHash": "eab0b1933584952c1dc6737cb90956751e5249190dd450837b3fb1fcd3b20315"
+    },
+    {
+      "path": "res/drawable-watch-v20/abc_dialog_material_background.xml",
+      "sha256": "49f4ee033a368be6286501a7786bb178320100987f959bc33c98e7da1fc861f1",
+      "bytes": 372,
+      "independentHash": "49f4ee033a368be6286501a7786bb178320100987f959bc33c98e7da1fc861f1"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/abc_ab_share_pack_mtrl_alpha.9.png",
+      "sha256": "a04708369abe0920ded20d87d58aebf6992ebb67efefa248a8421895efc5353f",
+      "bytes": 280,
+      "independentHash": "a04708369abe0920ded20d87d58aebf6992ebb67efefa248a8421895efc5353f"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/abc_btn_check_to_on_mtrl_000.png",
+      "sha256": "43ccf1f0a5e9e9ed9a6df33e1b3d378d49dbc8dc60d83b1cdb985e5e48f52497",
+      "bytes": 281,
+      "independentHash": "43ccf1f0a5e9e9ed9a6df33e1b3d378d49dbc8dc60d83b1cdb985e5e48f52497"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/abc_btn_check_to_on_mtrl_015.png",
+      "sha256": "2fa524cda78d7ebd66164a896a042277b7a56b8658fb318fc700a114cb04f7b2",
+      "bytes": 432,
+      "independentHash": "2fa524cda78d7ebd66164a896a042277b7a56b8658fb318fc700a114cb04f7b2"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/abc_btn_radio_to_on_mtrl_000.png",
+      "sha256": "d19092254aa4133fba8b7795fb5db560ad5dcd16c6f79201bec31b0f1e9b608b",
+      "bytes": 651,
+      "independentHash": "d19092254aa4133fba8b7795fb5db560ad5dcd16c6f79201bec31b0f1e9b608b"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/abc_btn_radio_to_on_mtrl_015.png",
+      "sha256": "02ad0ea6ff5a560e947452c7d64f679afa2056b44f86ea3b707a1cb175c2ceb0",
+      "bytes": 785,
+      "independentHash": "02ad0ea6ff5a560e947452c7d64f679afa2056b44f86ea3b707a1cb175c2ceb0"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/abc_btn_switch_to_on_mtrl_00001.9.png",
+      "sha256": "1417574134c5e9321c0b18fea711a08448ccf49957f55e10cedafb13237510f7",
+      "bytes": 1526,
+      "independentHash": "1417574134c5e9321c0b18fea711a08448ccf49957f55e10cedafb13237510f7"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/abc_btn_switch_to_on_mtrl_00012.9.png",
+      "sha256": "4d2fe45a8169f368052c921230a268ba9f53ea5fedbcb09ff35107473551e50c",
+      "bytes": 1731,
+      "independentHash": "4d2fe45a8169f368052c921230a268ba9f53ea5fedbcb09ff35107473551e50c"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/abc_cab_background_top_mtrl_alpha.9.png",
+      "sha256": "f65a87efa2f53d6fe2d848cfca1f6c90aea5e9fc67ff47f5949a6dd2a76ebe1b",
+      "bytes": 229,
+      "independentHash": "f65a87efa2f53d6fe2d848cfca1f6c90aea5e9fc67ff47f5949a6dd2a76ebe1b"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/abc_ic_commit_search_api_mtrl_alpha.png",
+      "sha256": "b84a277807f8f3bb5378e6353d99d1344aee10bd9a05f47c30afe3832d9ca7f0",
+      "bytes": 228,
+      "independentHash": "b84a277807f8f3bb5378e6353d99d1344aee10bd9a05f47c30afe3832d9ca7f0"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/abc_list_divider_mtrl_alpha.9.png",
+      "sha256": "378694706fb7256dd2248e2af854efd71ec7e8885f61da2e16a2bd32fcf3d0a9",
+      "bytes": 167,
+      "independentHash": "378694706fb7256dd2248e2af854efd71ec7e8885f61da2e16a2bd32fcf3d0a9"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/abc_list_focused_holo.9.png",
+      "sha256": "671d27e5a4b42111174b888d57118e05075a556d703bd54f9335202d2a416791",
+      "bytes": 244,
+      "independentHash": "671d27e5a4b42111174b888d57118e05075a556d703bd54f9335202d2a416791"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/abc_list_longpressed_holo.9.png",
+      "sha256": "727d78fec3f903a271c0476a50e8c064d28b32f7829b016ae0a07da53b83b281",
+      "bytes": 214,
+      "independentHash": "727d78fec3f903a271c0476a50e8c064d28b32f7829b016ae0a07da53b83b281"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/abc_list_pressed_holo_dark.9.png",
+      "sha256": "636d7f24be686e9515f7d6830ce936baa0a5416468220e94e8e257547967e22c",
+      "bytes": 209,
+      "independentHash": "636d7f24be686e9515f7d6830ce936baa0a5416468220e94e8e257547967e22c"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/abc_list_pressed_holo_light.9.png",
+      "sha256": "07bf5ce5ff8937257afd146062c9bf5ca1f4115a1643529d81845d0202c7ddef",
+      "bytes": 209,
+      "independentHash": "07bf5ce5ff8937257afd146062c9bf5ca1f4115a1643529d81845d0202c7ddef"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/abc_list_selector_disabled_holo_dark.9.png",
+      "sha256": "fd719e497aaf091c3166cb51bf4404ca4bc3b6545dfbefbfaa0cf31f0790b7d1",
+      "bytes": 236,
+      "independentHash": "fd719e497aaf091c3166cb51bf4404ca4bc3b6545dfbefbfaa0cf31f0790b7d1"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/abc_list_selector_disabled_holo_light.9.png",
+      "sha256": "cc162d4b8c12ee329e37c8d651442f0ef0a9d1c6f88ef352e54da8dfd9a50dfe",
+      "bytes": 235,
+      "independentHash": "cc162d4b8c12ee329e37c8d651442f0ef0a9d1c6f88ef352e54da8dfd9a50dfe"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/abc_menu_hardkey_panel_mtrl_mult.9.png",
+      "sha256": "006f2dc25bacc39e736bc720e26a6545df7427b6c103b2dd77c1eb872c3f3306",
+      "bytes": 966,
+      "independentHash": "006f2dc25bacc39e736bc720e26a6545df7427b6c103b2dd77c1eb872c3f3306"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/abc_popup_background_mtrl_mult.9.png",
+      "sha256": "1f7dd8b3521353af473f41850887e9385cf61c390c6e34e4e2bd991921ccfdf8",
+      "bytes": 1544,
+      "independentHash": "1f7dd8b3521353af473f41850887e9385cf61c390c6e34e4e2bd991921ccfdf8"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/abc_scrubber_control_off_mtrl_alpha.png",
+      "sha256": "777a1cf53820aa467267d1f64e5f923656f93047038ea6375bcce257b517930e",
+      "bytes": 267,
+      "independentHash": "777a1cf53820aa467267d1f64e5f923656f93047038ea6375bcce257b517930e"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/abc_scrubber_control_to_pressed_mtrl_000.png",
+      "sha256": "4133830f43f9baa0b0ed3cc80d798b20071da9f51fe12ef6b0bd09abc8d5d33a",
+      "bytes": 267,
+      "independentHash": "4133830f43f9baa0b0ed3cc80d798b20071da9f51fe12ef6b0bd09abc8d5d33a"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/abc_scrubber_control_to_pressed_mtrl_005.png",
+      "sha256": "29953bd8019dd96b7701329b9a203cff63460519549b9cca9a5eb74f9b1b0930",
+      "bytes": 391,
+      "independentHash": "29953bd8019dd96b7701329b9a203cff63460519549b9cca9a5eb74f9b1b0930"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/abc_scrubber_primary_mtrl_alpha.9.png",
+      "sha256": "c0f930a722a16df986923bf419081d1090f9476a7287c8b655ab36ffc08064cb",
+      "bytes": 208,
+      "independentHash": "c0f930a722a16df986923bf419081d1090f9476a7287c8b655ab36ffc08064cb"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/abc_scrubber_track_mtrl_alpha.9.png",
+      "sha256": "6b2372b414abc1cfcfd71c98f51901a84c46c5b712046aae019b6110de265175",
+      "bytes": 198,
+      "independentHash": "6b2372b414abc1cfcfd71c98f51901a84c46c5b712046aae019b6110de265175"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/abc_spinner_mtrl_am_alpha.9.png",
+      "sha256": "c63a94e7136ceeef43b0ade8b49e8e1ef4d1060d584f6cb9ab58b7d6eaa16312",
+      "bytes": 448,
+      "independentHash": "c63a94e7136ceeef43b0ade8b49e8e1ef4d1060d584f6cb9ab58b7d6eaa16312"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/abc_switch_track_mtrl_alpha.9.png",
+      "sha256": "468607601140955b21c6091897bfc65f609d386fa68d56c199201895e03b3fbc",
+      "bytes": 618,
+      "independentHash": "468607601140955b21c6091897bfc65f609d386fa68d56c199201895e03b3fbc"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/abc_tab_indicator_mtrl_alpha.9.png",
+      "sha256": "b8b26708d71b4c7a5cf5311abcdfa741fee39c9f5e1383d49ca0c677fcdb03cd",
+      "bytes": 194,
+      "independentHash": "b8b26708d71b4c7a5cf5311abcdfa741fee39c9f5e1383d49ca0c677fcdb03cd"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/abc_text_select_handle_left_mtrl.png",
+      "sha256": "83a46279e2f65d852c9452c86e38326ef9f3def6f5bec2ef1416c72815a5fbfa",
+      "bytes": 335,
+      "independentHash": "83a46279e2f65d852c9452c86e38326ef9f3def6f5bec2ef1416c72815a5fbfa"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/abc_text_select_handle_middle_mtrl.png",
+      "sha256": "3dbbad926d540586d6bd1230f3293108774c95e73f6604f0bbf88c3a11530223",
+      "bytes": 585,
+      "independentHash": "3dbbad926d540586d6bd1230f3293108774c95e73f6604f0bbf88c3a11530223"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/abc_text_select_handle_right_mtrl.png",
+      "sha256": "6b45aef8bf43767c2c1c83dee2bd9ceb9017994fbef6613891e6bc215e2a5ee3",
+      "bytes": 318,
+      "independentHash": "6b45aef8bf43767c2c1c83dee2bd9ceb9017994fbef6613891e6bc215e2a5ee3"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/abc_textfield_activated_mtrl_alpha.9.png",
+      "sha256": "23439b8899f4b63d68ae9385eaa49286a4b95b95f79b8b8d37de3b0e4fdbc747",
+      "bytes": 189,
+      "independentHash": "23439b8899f4b63d68ae9385eaa49286a4b95b95f79b8b8d37de3b0e4fdbc747"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/abc_textfield_default_mtrl_alpha.9.png",
+      "sha256": "0caaea0060b3772ba433c0e9e3a5452f26f3421ba5023c855157270bc675b309",
+      "bytes": 187,
+      "independentHash": "0caaea0060b3772ba433c0e9e3a5452f26f3421ba5023c855157270bc675b309"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/abc_textfield_search_activated_mtrl_alpha.9.png",
+      "sha256": "5ae9594240ada5e53500e2524215b3e2b3c91e6dd95b05e0acdd27d9d8c57e72",
+      "bytes": 184,
+      "independentHash": "5ae9594240ada5e53500e2524215b3e2b3c91e6dd95b05e0acdd27d9d8c57e72"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/abc_textfield_search_default_mtrl_alpha.9.png",
+      "sha256": "779a2606a931a399a2c9d3bd01f3c510c412f2916478aa687e430e6003b0a5f3",
+      "bytes": 182,
+      "independentHash": "779a2606a931a399a2c9d3bd01f3c510c412f2916478aa687e430e6003b0a5f3"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/common_full_open_on_phone.png",
+      "sha256": "e816dc0998f4ee90d7b630f17e16fcc2e72d91078c5315adaac4bc2da4c226d7",
+      "bytes": 489,
+      "independentHash": "e816dc0998f4ee90d7b630f17e16fcc2e72d91078c5315adaac4bc2da4c226d7"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/common_google_signin_btn_icon_dark_normal_background.9.png",
+      "sha256": "9d62d3eabefaf89e6018d3902cc8c4bb888a8891d9639deda8fb58ba60fe1822",
+      "bytes": 1032,
+      "independentHash": "9d62d3eabefaf89e6018d3902cc8c4bb888a8891d9639deda8fb58ba60fe1822"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/common_google_signin_btn_icon_light_normal_background.9.png",
+      "sha256": "f62bf21d152a276ae8d9a0d62997f12c60d64ec812fd973ff60e3295deee34b4",
+      "bytes": 776,
+      "independentHash": "f62bf21d152a276ae8d9a0d62997f12c60d64ec812fd973ff60e3295deee34b4"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/common_google_signin_btn_text_dark_normal_background.9.png",
+      "sha256": "fcb4416a4f5f5b4d72854d91722289789b30bb562c6f0f57975818ab555cc809",
+      "bytes": 1086,
+      "independentHash": "fcb4416a4f5f5b4d72854d91722289789b30bb562c6f0f57975818ab555cc809"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/common_google_signin_btn_text_light_normal_background.9.png",
+      "sha256": "092bf333080e2b3ece63147ea15e6ac04915968c010e5c3f85f8cb650d61ecb7",
+      "bytes": 808,
+      "independentHash": "092bf333080e2b3ece63147ea15e6ac04915968c010e5c3f85f8cb650d61ecb7"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/googleg_disabled_color_18.png",
+      "sha256": "6083523032ab5df9e6cb82e4ff3d48af7738900a2e9b23d991beaa2eba7862e9",
+      "bytes": 516,
+      "independentHash": "6083523032ab5df9e6cb82e4ff3d48af7738900a2e9b23d991beaa2eba7862e9"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/googleg_standard_color_18.png",
+      "sha256": "90c44675525e290332f7dba6adb97c7af3b8299e56cf5211e893d0e1dec41547",
+      "bytes": 982,
+      "independentHash": "90c44675525e290332f7dba6adb97c7af3b8299e56cf5211e893d0e1dec41547"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/notification_bg_low_normal.9.png",
+      "sha256": "3e09afa21c45372c035598c017c8fb405a6d678e6cb84dc857581cb3b40e482d",
+      "bytes": 221,
+      "independentHash": "3e09afa21c45372c035598c017c8fb405a6d678e6cb84dc857581cb3b40e482d"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/notification_bg_low_pressed.9.png",
+      "sha256": "20343222f9f79dd565c3a2248494d452e70820ac1c437173c38badd45f962afd",
+      "bytes": 252,
+      "independentHash": "20343222f9f79dd565c3a2248494d452e70820ac1c437173c38badd45f962afd"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/notification_bg_normal.9.png",
+      "sha256": "559bf783d765c02338e97952bdc9c6689c7ff99090b8c9813369118da8b080f0",
+      "bytes": 221,
+      "independentHash": "559bf783d765c02338e97952bdc9c6689c7ff99090b8c9813369118da8b080f0"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/notification_bg_normal_pressed.9.png",
+      "sha256": "d27af435101ca4cbec0c840bd30687918cd39eb83aab1487420855623a45998b",
+      "bytes": 247,
+      "independentHash": "d27af435101ca4cbec0c840bd30687918cd39eb83aab1487420855623a45998b"
+    },
+    {
+      "path": "res/drawable-xhdpi-v4/notify_panel_notification_icon_bg.png",
+      "sha256": "b44eeda34d7a529c2fe55719eb098fa29707caa91d18de06a7a775d6e6bcf973",
+      "bytes": 138,
+      "independentHash": "b44eeda34d7a529c2fe55719eb098fa29707caa91d18de06a7a775d6e6bcf973"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/abc_ab_share_pack_mtrl_alpha.9.png",
+      "sha256": "f81412c5131046a83f5d9de1d10e2b4b31f6e2657c4c08743825cd40f605fdd3",
+      "bytes": 286,
+      "independentHash": "f81412c5131046a83f5d9de1d10e2b4b31f6e2657c4c08743825cd40f605fdd3"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/abc_btn_check_to_on_mtrl_000.png",
+      "sha256": "18620c151330289bba196c1cc1e2699f98061a35be3551876296a8c4d592ba17",
+      "bytes": 307,
+      "independentHash": "18620c151330289bba196c1cc1e2699f98061a35be3551876296a8c4d592ba17"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/abc_btn_check_to_on_mtrl_015.png",
+      "sha256": "71a2ba63a5d4e91f7c14324fa1c3eb9290b73cb7b3c7828018d05adb1cfaab45",
+      "bytes": 593,
+      "independentHash": "71a2ba63a5d4e91f7c14324fa1c3eb9290b73cb7b3c7828018d05adb1cfaab45"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/abc_btn_radio_to_on_mtrl_000.png",
+      "sha256": "0eed99d0a5e36a468b557605e6ccea495c029f3569844a45f4b5d8dadd77d4a7",
+      "bytes": 984,
+      "independentHash": "0eed99d0a5e36a468b557605e6ccea495c029f3569844a45f4b5d8dadd77d4a7"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/abc_btn_radio_to_on_mtrl_015.png",
+      "sha256": "5e0799a0d0b5d43ed5ae3a378aaa0847a810ceeff58db9a0f7836ebf4ef17146",
+      "bytes": 1208,
+      "independentHash": "5e0799a0d0b5d43ed5ae3a378aaa0847a810ceeff58db9a0f7836ebf4ef17146"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/abc_btn_switch_to_on_mtrl_00001.9.png",
+      "sha256": "0f8db605d63bf1d6d35fd647d592ac4e70c9a712ff5d1c2114c8d58a88b8228a",
+      "bytes": 2463,
+      "independentHash": "0f8db605d63bf1d6d35fd647d592ac4e70c9a712ff5d1c2114c8d58a88b8228a"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/abc_btn_switch_to_on_mtrl_00012.9.png",
+      "sha256": "1f9538745cfd3209cc09ed451c198302aac3a1c5da41e87394377814b1bcc5ee",
+      "bytes": 2834,
+      "independentHash": "1f9538745cfd3209cc09ed451c198302aac3a1c5da41e87394377814b1bcc5ee"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/abc_cab_background_top_mtrl_alpha.9.png",
+      "sha256": "d68d03967fb222f7e35772a2e0637f73b4dd0d6cbb9ee3f2b4432d2f90c257db",
+      "bytes": 237,
+      "independentHash": "d68d03967fb222f7e35772a2e0637f73b4dd0d6cbb9ee3f2b4432d2f90c257db"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/abc_ic_commit_search_api_mtrl_alpha.png",
+      "sha256": "f5f349c1e949f0e66374f83b667fc0d0f477379614f36912ade22a299f2194d5",
+      "bytes": 224,
+      "independentHash": "f5f349c1e949f0e66374f83b667fc0d0f477379614f36912ade22a299f2194d5"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/abc_list_divider_mtrl_alpha.9.png",
+      "sha256": "49903073ab23abfc11a55e1333eb2905c743e1b382006c27c15434fd76e0207c",
+      "bytes": 171,
+      "independentHash": "49903073ab23abfc11a55e1333eb2905c743e1b382006c27c15434fd76e0207c"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/abc_list_focused_holo.9.png",
+      "sha256": "8c6846f4105ef1c02107e842142e9ce60b08819296e9510b2d0c12cf4560c5e1",
+      "bytes": 245,
+      "independentHash": "8c6846f4105ef1c02107e842142e9ce60b08819296e9510b2d0c12cf4560c5e1"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/abc_list_longpressed_holo.9.png",
+      "sha256": "44c29766b2d88b78a71393b3e3a771ca7eef5f552630c6074f33d6291241d0b9",
+      "bytes": 221,
+      "independentHash": "44c29766b2d88b78a71393b3e3a771ca7eef5f552630c6074f33d6291241d0b9"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/abc_list_pressed_holo_dark.9.png",
+      "sha256": "a77aaa207fd579f64383323b93f048ee9434e345ca8bb641743a77901b4383c2",
+      "bytes": 212,
+      "independentHash": "a77aaa207fd579f64383323b93f048ee9434e345ca8bb641743a77901b4383c2"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/abc_list_pressed_holo_light.9.png",
+      "sha256": "93b7657184473d5881669b80e3d43fd64e442d1ed71be4ced3518380b6cec69d",
+      "bytes": 212,
+      "independentHash": "93b7657184473d5881669b80e3d43fd64e442d1ed71be4ced3518380b6cec69d"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/abc_list_selector_disabled_holo_dark.9.png",
+      "sha256": "94ae2273a335672c1c67988e7af595d42e80526edb7f5654ee130dce06fd40d7",
+      "bytes": 260,
+      "independentHash": "94ae2273a335672c1c67988e7af595d42e80526edb7f5654ee130dce06fd40d7"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/abc_list_selector_disabled_holo_light.9.png",
+      "sha256": "4f186547c3fe5796ef49da96d60a4a9a4b347357eaff3794f38e5f2aade3e400",
+      "bytes": 258,
+      "independentHash": "4f186547c3fe5796ef49da96d60a4a9a4b347357eaff3794f38e5f2aade3e400"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/abc_menu_hardkey_panel_mtrl_mult.9.png",
+      "sha256": "a8252f52638c80df119db031626198a4a8d4b32ee618e96c3a36b9b946e26894",
+      "bytes": 1779,
+      "independentHash": "a8252f52638c80df119db031626198a4a8d4b32ee618e96c3a36b9b946e26894"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/abc_popup_background_mtrl_mult.9.png",
+      "sha256": "e1a2b864d0114a8471662f8e30ffcbb2eb9ffd414d36239612def8c7792a450a",
+      "bytes": 2305,
+      "independentHash": "e1a2b864d0114a8471662f8e30ffcbb2eb9ffd414d36239612def8c7792a450a"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/abc_scrubber_control_off_mtrl_alpha.png",
+      "sha256": "136d08fab0fe416fc7e0eca9c498e63c68357b2caa4241f444bbc3f26f9a74c9",
+      "bytes": 322,
+      "independentHash": "136d08fab0fe416fc7e0eca9c498e63c68357b2caa4241f444bbc3f26f9a74c9"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/abc_scrubber_control_to_pressed_mtrl_000.png",
+      "sha256": "63fad0a19cb9e416586049d40b62161b0cc4c2513d83931d3852e2f5a72e6d13",
+      "bytes": 403,
+      "independentHash": "63fad0a19cb9e416586049d40b62161b0cc4c2513d83931d3852e2f5a72e6d13"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/abc_scrubber_control_to_pressed_mtrl_005.png",
+      "sha256": "4f2f8c2a7b042e55aa8f43f4ce8134b3217ee9cda432c5ff8d4c33d09d86df68",
+      "bytes": 595,
+      "independentHash": "4f2f8c2a7b042e55aa8f43f4ce8134b3217ee9cda432c5ff8d4c33d09d86df68"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/abc_scrubber_primary_mtrl_alpha.9.png",
+      "sha256": "7656f2f19a84cefc2bf9fafc00760216775d333fc0b08eb85ff1e0006b46fc20",
+      "bytes": 210,
+      "independentHash": "7656f2f19a84cefc2bf9fafc00760216775d333fc0b08eb85ff1e0006b46fc20"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/abc_scrubber_track_mtrl_alpha.9.png",
+      "sha256": "c56ab9375b149ba1c5ee268f22b3cf6507bb47986f628391500fba38147dab28",
+      "bytes": 207,
+      "independentHash": "c56ab9375b149ba1c5ee268f22b3cf6507bb47986f628391500fba38147dab28"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/abc_spinner_mtrl_am_alpha.9.png",
+      "sha256": "bd893783c8d2bebb167ac05a27cdaea5dfd651fe8d64bcb30c14e7b925380c79",
+      "bytes": 524,
+      "independentHash": "bd893783c8d2bebb167ac05a27cdaea5dfd651fe8d64bcb30c14e7b925380c79"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/abc_switch_track_mtrl_alpha.9.png",
+      "sha256": "bb4b092ae69c429e9d4f7ff97c60ba10c2e443a2b0ca19a9f6c77854bf32e293",
+      "bytes": 851,
+      "independentHash": "bb4b092ae69c429e9d4f7ff97c60ba10c2e443a2b0ca19a9f6c77854bf32e293"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/abc_tab_indicator_mtrl_alpha.9.png",
+      "sha256": "3633ec99d66aae4332f9a6b2dbd3480513433001a8eec0e796d2bcb69d75b73f",
+      "bytes": 204,
+      "independentHash": "3633ec99d66aae4332f9a6b2dbd3480513433001a8eec0e796d2bcb69d75b73f"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/abc_text_select_handle_left_mtrl.png",
+      "sha256": "afbcaede66a97ddc9b54c4d9891c09415cb6944d79c4c1ae8440cda553963957",
+      "bytes": 420,
+      "independentHash": "afbcaede66a97ddc9b54c4d9891c09415cb6944d79c4c1ae8440cda553963957"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/abc_text_select_handle_middle_mtrl.png",
+      "sha256": "24f5db226f1cd56e5e775f82c37f65f3d1eec9091b26b74861629caf0019c3bd",
+      "bytes": 753,
+      "independentHash": "24f5db226f1cd56e5e775f82c37f65f3d1eec9091b26b74861629caf0019c3bd"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/abc_text_select_handle_right_mtrl.png",
+      "sha256": "3cfd0554844896b500c33513b1e89ed62028d0c80df73d3c5935479f49704a3c",
+      "bytes": 422,
+      "independentHash": "3cfd0554844896b500c33513b1e89ed62028d0c80df73d3c5935479f49704a3c"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/abc_textfield_activated_mtrl_alpha.9.png",
+      "sha256": "682c466d3e4f39e31f114abc1632d85e734557bd39814e3ba7d7c61eae2d069b",
+      "bytes": 199,
+      "independentHash": "682c466d3e4f39e31f114abc1632d85e734557bd39814e3ba7d7c61eae2d069b"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/abc_textfield_default_mtrl_alpha.9.png",
+      "sha256": "a0d63ec76ec21d40fe96a4b6fb4f4aac5b61a6b63a63472dab055e0d9e9890b1",
+      "bytes": 200,
+      "independentHash": "a0d63ec76ec21d40fe96a4b6fb4f4aac5b61a6b63a63472dab055e0d9e9890b1"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/abc_textfield_search_activated_mtrl_alpha.9.png",
+      "sha256": "c8d13e5687a34d5b85018ff7a9f0f22870a297b261ff140b3ed041ce7e7f4b81",
+      "bytes": 187,
+      "independentHash": "c8d13e5687a34d5b85018ff7a9f0f22870a297b261ff140b3ed041ce7e7f4b81"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/abc_textfield_search_default_mtrl_alpha.9.png",
+      "sha256": "f232714ccbecca97adc63b0811d62629057c77dcbd0b062c82e26754cb744831",
+      "bytes": 186,
+      "independentHash": "f232714ccbecca97adc63b0811d62629057c77dcbd0b062c82e26754cb744831"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/common_google_signin_btn_icon_dark_normal_background.9.png",
+      "sha256": "be03693c47d3c4d4466f14a695eaccd210b61e91d808c0c4a46d6f021b598278",
+      "bytes": 1510,
+      "independentHash": "be03693c47d3c4d4466f14a695eaccd210b61e91d808c0c4a46d6f021b598278"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/common_google_signin_btn_icon_light_normal_background.9.png",
+      "sha256": "71f14a18275f8678fd9f0c1c0affc400a975a0b815b82eca7345b6aaecf978ee",
+      "bytes": 1138,
+      "independentHash": "71f14a18275f8678fd9f0c1c0affc400a975a0b815b82eca7345b6aaecf978ee"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/common_google_signin_btn_text_dark_normal_background.9.png",
+      "sha256": "42a1b93ba380eeba9d499582df981a535f872af234ad6600675fff37459306e5",
+      "bytes": 1638,
+      "independentHash": "42a1b93ba380eeba9d499582df981a535f872af234ad6600675fff37459306e5"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/common_google_signin_btn_text_light_normal_background.9.png",
+      "sha256": "5624a284adf8a5e8e7c2560524eb05d7ee97d09a9c2dbe3a76a840766015ae30",
+      "bytes": 1255,
+      "independentHash": "5624a284adf8a5e8e7c2560524eb05d7ee97d09a9c2dbe3a76a840766015ae30"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/googleg_disabled_color_18.png",
+      "sha256": "5db3ab4d30063b5e8fa63ae2993f83efd0af71d6526b3a1468f9e3bf891af587",
+      "bytes": 727,
+      "independentHash": "5db3ab4d30063b5e8fa63ae2993f83efd0af71d6526b3a1468f9e3bf891af587"
+    },
+    {
+      "path": "res/drawable-xxhdpi-v4/googleg_standard_color_18.png",
+      "sha256": "549a81cda776769840f37f184d34eb673ff9e5c0671c67172818e91273753e1a",
+      "bytes": 1441,
+      "independentHash": "549a81cda776769840f37f184d34eb673ff9e5c0671c67172818e91273753e1a"
+    },
+    {
+      "path": "res/drawable-xxxhdpi-v4/abc_btn_check_to_on_mtrl_000.png",
+      "sha256": "b0aa010e7a885e4b7a669c16c7ba10fcd862a12dff3f142c7354778442a63fde",
+      "bytes": 275,
+      "independentHash": "b0aa010e7a885e4b7a669c16c7ba10fcd862a12dff3f142c7354778442a63fde"
+    },
+    {
+      "path": "res/drawable-xxxhdpi-v4/abc_btn_check_to_on_mtrl_015.png",
+      "sha256": "52a0358e54439373ca39f99cd83cf3a7be73c257f07fae83edd83c9b4891895d",
+      "bytes": 476,
+      "independentHash": "52a0358e54439373ca39f99cd83cf3a7be73c257f07fae83edd83c9b4891895d"
+    },
+    {
+      "path": "res/drawable-xxxhdpi-v4/abc_btn_radio_to_on_mtrl_000.png",
+      "sha256": "6002eb56783b956b5f91e6ddffaf36cc867402a01a225e627b4c25c8d21a4e23",
+      "bytes": 785,
+      "independentHash": "6002eb56783b956b5f91e6ddffaf36cc867402a01a225e627b4c25c8d21a4e23"
+    },
+    {
+      "path": "res/drawable-xxxhdpi-v4/abc_btn_radio_to_on_mtrl_015.png",
+      "sha256": "53340b0b0f529b26db6af632a0112708233bf312448c5b89a1357b2cd70b3f42",
+      "bytes": 946,
+      "independentHash": "53340b0b0f529b26db6af632a0112708233bf312448c5b89a1357b2cd70b3f42"
+    },
+    {
+      "path": "res/drawable-xxxhdpi-v4/abc_btn_switch_to_on_mtrl_00001.9.png",
+      "sha256": "c367b73a33a933429e1d57d33fcfbf243f0274e7cdba221a0b983ee15b5baca9",
+      "bytes": 2505,
+      "independentHash": "c367b73a33a933429e1d57d33fcfbf243f0274e7cdba221a0b983ee15b5baca9"
+    },
+    {
+      "path": "res/drawable-xxxhdpi-v4/abc_btn_switch_to_on_mtrl_00012.9.png",
+      "sha256": "b4af73e52266be570c2c163d987e64348066db311b41e7a382000529c0136c6b",
+      "bytes": 2816,
+      "independentHash": "b4af73e52266be570c2c163d987e64348066db311b41e7a382000529c0136c6b"
+    },
+    {
+      "path": "res/drawable-xxxhdpi-v4/abc_scrubber_control_to_pressed_mtrl_000.png",
+      "sha256": "1e3b02e24fa431b1abe0a97ad6723fad43df79fda8176c1060b6fbd31178619f",
+      "bytes": 415,
+      "independentHash": "1e3b02e24fa431b1abe0a97ad6723fad43df79fda8176c1060b6fbd31178619f"
+    },
+    {
+      "path": "res/drawable-xxxhdpi-v4/abc_scrubber_control_to_pressed_mtrl_005.png",
+      "sha256": "683691d79ef11e863fe4ec84ddc631696e5984b5584fc4549d6586dbaca220c7",
+      "bytes": 631,
+      "independentHash": "683691d79ef11e863fe4ec84ddc631696e5984b5584fc4549d6586dbaca220c7"
+    },
+    {
+      "path": "res/drawable-xxxhdpi-v4/abc_spinner_mtrl_am_alpha.9.png",
+      "sha256": "2552cd1bcdd9882d6c258833fb70bc081a31a2a093ef9c256f92431370a6e5de",
+      "bytes": 430,
+      "independentHash": "2552cd1bcdd9882d6c258833fb70bc081a31a2a093ef9c256f92431370a6e5de"
+    },
+    {
+      "path": "res/drawable-xxxhdpi-v4/abc_switch_track_mtrl_alpha.9.png",
+      "sha256": "100cc6ae3870dd769a252e44608a81956522e867674f854619ba7c68d314cad7",
+      "bytes": 813,
+      "independentHash": "100cc6ae3870dd769a252e44608a81956522e867674f854619ba7c68d314cad7"
+    },
+    {
+      "path": "res/drawable-xxxhdpi-v4/abc_tab_indicator_mtrl_alpha.9.png",
+      "sha256": "e7e36c3cbcedc97bc28aff91ed72c4310b16c331713a1698a692c66d46f63227",
+      "bytes": 202,
+      "independentHash": "e7e36c3cbcedc97bc28aff91ed72c4310b16c331713a1698a692c66d46f63227"
+    },
+    {
+      "path": "res/drawable-xxxhdpi-v4/abc_text_select_handle_left_mtrl.png",
+      "sha256": "55bc27772f6d35be9334fb80c371b327db25faa9a6098c3c14049e92654ac1bf",
+      "bytes": 513,
+      "independentHash": "55bc27772f6d35be9334fb80c371b327db25faa9a6098c3c14049e92654ac1bf"
+    },
+    {
+      "path": "res/drawable-xxxhdpi-v4/abc_text_select_handle_right_mtrl.png",
+      "sha256": "d83543f0c82b62cf499f2618ad99431f9ef50da60b415980ec8e0e50b90e3893",
+      "bytes": 513,
+      "independentHash": "d83543f0c82b62cf499f2618ad99431f9ef50da60b415980ec8e0e50b90e3893"
+    },
+    {
+      "path": "res/drawable/abc_btn_borderless_material.xml",
+      "sha256": "008ab99ec5591cf6e37a9826ee9451566ba2e3e8821905f017506c34c02dc7aa",
+      "bytes": 588,
+      "independentHash": "008ab99ec5591cf6e37a9826ee9451566ba2e3e8821905f017506c34c02dc7aa"
+    },
+    {
+      "path": "res/drawable/abc_btn_check_material.xml",
+      "sha256": "97c60161f8e9396a70e993ffbbbe6a9d7096b62b639d00392e9b9f3dbcc072a2",
+      "bytes": 464,
+      "independentHash": "97c60161f8e9396a70e993ffbbbe6a9d7096b62b639d00392e9b9f3dbcc072a2"
+    },
+    {
+      "path": "res/drawable/abc_btn_check_material_anim.xml",
+      "sha256": "b9a95d13a5bc46863814b82a48a0354534f90c01e4c90e90fa40f176bf2a3e77",
+      "bytes": 816,
+      "independentHash": "b9a95d13a5bc46863814b82a48a0354534f90c01e4c90e90fa40f176bf2a3e77"
+    },
+    {
+      "path": "res/drawable/abc_btn_default_mtrl_shape.xml",
+      "sha256": "1d01514fa0d0288a479df7de733e970e0e0debdc997e8d4670fcf474219553a0",
+      "bytes": 932,
+      "independentHash": "1d01514fa0d0288a479df7de733e970e0e0debdc997e8d4670fcf474219553a0"
+    },
+    {
+      "path": "res/drawable/abc_btn_radio_material.xml",
+      "sha256": "3ea724e118328647d6d4a83fee5146d8a2d682c997e3d7b7fda7bcb8d490da80",
+      "bytes": 464,
+      "independentHash": "3ea724e118328647d6d4a83fee5146d8a2d682c997e3d7b7fda7bcb8d490da80"
+    },
+    {
+      "path": "res/drawable/abc_btn_radio_material_anim.xml",
+      "sha256": "9eab49963d3a7c2fb553d4f21847e62c0f9b5d7dd87c062416e5900ce5f638ec",
+      "bytes": 816,
+      "independentHash": "9eab49963d3a7c2fb553d4f21847e62c0f9b5d7dd87c062416e5900ce5f638ec"
+    },
+    {
+      "path": "res/drawable/abc_cab_background_internal_bg.xml",
+      "sha256": "cb486473bc0f7d6c90dea564fd61bb612496371b6b0bcab82b95a10cf70db41e",
+      "bytes": 372,
+      "independentHash": "cb486473bc0f7d6c90dea564fd61bb612496371b6b0bcab82b95a10cf70db41e"
+    },
+    {
+      "path": "res/drawable/abc_cab_background_top_material.xml",
+      "sha256": "1d6d789501f02c91bc839ae4397789fa88b2570d6a3250ac48ce3d7b6669b5eb",
+      "bytes": 336,
+      "independentHash": "1d6d789501f02c91bc839ae4397789fa88b2570d6a3250ac48ce3d7b6669b5eb"
+    },
+    {
+      "path": "res/drawable/abc_ic_ab_back_material.xml",
+      "sha256": "deea4d3f97d69b45c2e1682eaf806b126b71edde5370b61a7b63b589e405dbc2",
+      "bytes": 692,
+      "independentHash": "deea4d3f97d69b45c2e1682eaf806b126b71edde5370b61a7b63b589e405dbc2"
+    },
+    {
+      "path": "res/drawable/abc_ic_arrow_drop_right_black_24dp.xml",
+      "sha256": "9334acfeb7a1b587c9a1d31c8f86703becac2044e877597562e09dc68914051e",
+      "bytes": 1000,
+      "independentHash": "9334acfeb7a1b587c9a1d31c8f86703becac2044e877597562e09dc68914051e"
+    },
+    {
+      "path": "res/drawable/abc_ic_clear_material.xml",
+      "sha256": "8c3a39739b98865c35f18e1ffc7eb23800d7d809b27b52df287ebf25bd9c373e",
+      "bytes": 684,
+      "independentHash": "8c3a39739b98865c35f18e1ffc7eb23800d7d809b27b52df287ebf25bd9c373e"
+    },
+    {
+      "path": "res/drawable/abc_ic_go_search_api_material.xml",
+      "sha256": "b5d7ac5c48bf217a63292f9f3fc0f060e4fdffb5143cbac1f0beb3510f918ed9",
+      "bytes": 640,
+      "independentHash": "b5d7ac5c48bf217a63292f9f3fc0f060e4fdffb5143cbac1f0beb3510f918ed9"
+    },
+    {
+      "path": "res/drawable/abc_ic_menu_copy_mtrl_am_alpha.xml",
+      "sha256": "84dbdf78ad99472866fd7f9f40447fcae377c02e0780935987a960bdb6d69ecc",
+      "bytes": 756,
+      "independentHash": "84dbdf78ad99472866fd7f9f40447fcae377c02e0780935987a960bdb6d69ecc"
+    },
+    {
+      "path": "res/drawable/abc_ic_menu_cut_mtrl_alpha.xml",
+      "sha256": "30d56de8667e6cdeefb48d9a2a004b40520bcdbc65a7c0c843679022e17169fb",
+      "bytes": 1096,
+      "independentHash": "30d56de8667e6cdeefb48d9a2a004b40520bcdbc65a7c0c843679022e17169fb"
+    },
+    {
+      "path": "res/drawable/abc_ic_menu_overflow_material.xml",
+      "sha256": "ab0d9c00481df7ef7c2ce9d6896af28345c57a39a9332f2e400d7cbe2a2befd6",
+      "bytes": 792,
+      "independentHash": "ab0d9c00481df7ef7c2ce9d6896af28345c57a39a9332f2e400d7cbe2a2befd6"
+    },
+    {
+      "path": "res/drawable/abc_ic_menu_paste_mtrl_am_alpha.xml",
+      "sha256": "a3dbfe4e5cb06788f6d57bde7b908ec285643261bd21abf1ae7318d2aca1bc39",
+      "bytes": 796,
+      "independentHash": "a3dbfe4e5cb06788f6d57bde7b908ec285643261bd21abf1ae7318d2aca1bc39"
+    },
+    {
+      "path": "res/drawable/abc_ic_menu_selectall_mtrl_alpha.xml",
+      "sha256": "3816c83d42d23c0dc86b97f887b3152009180c452cf3bbe51abd6990d44529a5",
+      "bytes": 920,
+      "independentHash": "3816c83d42d23c0dc86b97f887b3152009180c452cf3bbe51abd6990d44529a5"
+    },
+    {
+      "path": "res/drawable/abc_ic_menu_share_mtrl_alpha.xml",
+      "sha256": "909f4468b73823cb500570ab47067a41b3730aac73729afdb73ea325d3dda04b",
+      "bytes": 980,
+      "independentHash": "909f4468b73823cb500570ab47067a41b3730aac73729afdb73ea325d3dda04b"
+    },
+    {
+      "path": "res/drawable/abc_ic_search_api_material.xml",
+      "sha256": "2850cff8ff21832e2c0cfc284e5f50474a0b50df32425cef38064f612f5e496a",
+      "bytes": 812,
+      "independentHash": "2850cff8ff21832e2c0cfc284e5f50474a0b50df32425cef38064f612f5e496a"
+    },
+    {
+      "path": "res/drawable/abc_ic_voice_search_api_material.xml",
+      "sha256": "6369b5fe4383058c5fef3582b9a78bfe9fddfc34ec9b46a23ba8ae6ad98d6df8",
+      "bytes": 828,
+      "independentHash": "6369b5fe4383058c5fef3582b9a78bfe9fddfc34ec9b46a23ba8ae6ad98d6df8"
+    },
+    {
+      "path": "res/drawable/abc_item_background_holo_dark.xml",
+      "sha256": "9e23db4a5c99e14671e16abd07722108e724558bfa67b0b42ec542ff793684aa",
+      "bytes": 1012,
+      "independentHash": "9e23db4a5c99e14671e16abd07722108e724558bfa67b0b42ec542ff793684aa"
+    },
+    {
+      "path": "res/drawable/abc_item_background_holo_light.xml",
+      "sha256": "874a6b3cd909f0cc5d59d3b99c07289794e2d70918920123ebe3272eaf92a492",
+      "bytes": 1012,
+      "independentHash": "874a6b3cd909f0cc5d59d3b99c07289794e2d70918920123ebe3272eaf92a492"
+    },
+    {
+      "path": "res/drawable/abc_list_selector_background_transition_holo_dark.xml",
+      "sha256": "21df75316fc079a1e056a215b7c05a6af233924b24dea362baf110358d359a38",
+      "bytes": 424,
+      "independentHash": "21df75316fc079a1e056a215b7c05a6af233924b24dea362baf110358d359a38"
+    },
+    {
+      "path": "res/drawable/abc_list_selector_background_transition_holo_light.xml",
+      "sha256": "97211721d392aadf578bfc2b737df7b32aab9a6752487d6eb6bc3aa58a31e49a",
+      "bytes": 424,
+      "independentHash": "97211721d392aadf578bfc2b737df7b32aab9a6752487d6eb6bc3aa58a31e49a"
+    },
+    {
+      "path": "res/drawable/abc_list_selector_holo_dark.xml",
+      "sha256": "7bf664be91e94f0b9a8ad17bcb31df070d94c1a1dc6327b9cc833d750a34f794",
+      "bytes": 1064,
+      "independentHash": "7bf664be91e94f0b9a8ad17bcb31df070d94c1a1dc6327b9cc833d750a34f794"
+    },
+    {
+      "path": "res/drawable/abc_list_selector_holo_light.xml",
+      "sha256": "ccd9984aedd2c8ffc586b83176e88c17bc2ef2b0af4cac83b89dec5fe4f68df9",
+      "bytes": 1064,
+      "independentHash": "ccd9984aedd2c8ffc586b83176e88c17bc2ef2b0af4cac83b89dec5fe4f68df9"
+    },
+    {
+      "path": "res/drawable/abc_ratingbar_indicator_material.xml",
+      "sha256": "9b0ac791a3fa953e28b526e020fd2e629b40812ee1bc4693ff5fdfef15044202",
+      "bytes": 124,
+      "independentHash": "9b0ac791a3fa953e28b526e020fd2e629b40812ee1bc4693ff5fdfef15044202"
+    },
+    {
+      "path": "res/drawable/abc_ratingbar_material.xml",
+      "sha256": "9b0ac791a3fa953e28b526e020fd2e629b40812ee1bc4693ff5fdfef15044202",
+      "bytes": 124,
+      "independentHash": "9b0ac791a3fa953e28b526e020fd2e629b40812ee1bc4693ff5fdfef15044202"
+    },
+    {
+      "path": "res/drawable/abc_ratingbar_small_material.xml",
+      "sha256": "9b0ac791a3fa953e28b526e020fd2e629b40812ee1bc4693ff5fdfef15044202",
+      "bytes": 124,
+      "independentHash": "9b0ac791a3fa953e28b526e020fd2e629b40812ee1bc4693ff5fdfef15044202"
+    },
+    {
+      "path": "res/drawable/abc_seekbar_thumb_material.xml",
+      "sha256": "6be11e7513695f109febb9aaec1e9aaab99be3264789d88beab81f64e9751904",
+      "bytes": 1100,
+      "independentHash": "6be11e7513695f109febb9aaec1e9aaab99be3264789d88beab81f64e9751904"
+    },
+    {
+      "path": "res/drawable/abc_seekbar_tick_mark_material.xml",
+      "sha256": "965abe54fd42db2ee2e854b428b0ba1780d1d63425743c64ea7fc5cfa60d7ce0",
+      "bytes": 516,
+      "independentHash": "965abe54fd42db2ee2e854b428b0ba1780d1d63425743c64ea7fc5cfa60d7ce0"
+    },
+    {
+      "path": "res/drawable/abc_seekbar_track_material.xml",
+      "sha256": "7dde405a8b87a45cfe7db91fe77f81e13c34f6e70bbe6a5abc14f34f7ba6c374",
+      "bytes": 1408,
+      "independentHash": "7dde405a8b87a45cfe7db91fe77f81e13c34f6e70bbe6a5abc14f34f7ba6c374"
+    },
+    {
+      "path": "res/drawable/abc_spinner_textfield_background_material.xml",
+      "sha256": "9d98cb0d63a06334757b678a1e9bd5766511b69b5631de72f14d31af74c03891",
+      "bytes": 1160,
+      "independentHash": "9d98cb0d63a06334757b678a1e9bd5766511b69b5631de72f14d31af74c03891"
+    },
+    {
+      "path": "res/drawable/abc_star_black_48dp.xml",
+      "sha256": "74f13910c634a6b4730de4fa99c5a595cd4939df021fbe79a5a4f73f6094565a",
+      "bytes": 640,
+      "independentHash": "74f13910c634a6b4730de4fa99c5a595cd4939df021fbe79a5a4f73f6094565a"
+    },
+    {
+      "path": "res/drawable/abc_star_half_black_48dp.xml",
+      "sha256": "05b5baedcd58fd995fb013f2067c87dbb5f9489d7935723829a8df803d507609",
+      "bytes": 600,
+      "independentHash": "05b5baedcd58fd995fb013f2067c87dbb5f9489d7935723829a8df803d507609"
+    },
+    {
+      "path": "res/drawable/abc_switch_thumb_material.xml",
+      "sha256": "dbffc8ed2a57a88cbdf73c042eec9b6b25250b7c7d50e8537f5aee2c0e59e87c",
+      "bytes": 464,
+      "independentHash": "dbffc8ed2a57a88cbdf73c042eec9b6b25250b7c7d50e8537f5aee2c0e59e87c"
+    },
+    {
+      "path": "res/drawable/abc_tab_indicator_material.xml",
+      "sha256": "72447d7e1f54a5d835a0c53cd1cbeb5b83920b07683c889f1f20e43cf2d4e548",
+      "bytes": 468,
+      "independentHash": "72447d7e1f54a5d835a0c53cd1cbeb5b83920b07683c889f1f20e43cf2d4e548"
+    },
+    {
+      "path": "res/drawable/abc_text_cursor_material.xml",
+      "sha256": "e49a3d6549f8ffce9ef6716a1dce006f64797eaae60bc091b16c560e20ee59bd",
+      "bytes": 516,
+      "independentHash": "e49a3d6549f8ffce9ef6716a1dce006f64797eaae60bc091b16c560e20ee59bd"
+    },
+    {
+      "path": "res/drawable/abc_textfield_search_material.xml",
+      "sha256": "8f6539ead30c41dc3bf30e19b62f72d06c67e6d6b4a4e0f54944e23195bd3bec",
+      "bytes": 756,
+      "independentHash": "8f6539ead30c41dc3bf30e19b62f72d06c67e6d6b4a4e0f54944e23195bd3bec"
+    },
+    {
+      "path": "res/drawable/abc_vector_test.xml",
+      "sha256": "b2b8eab570357610a73322e777914936a1eb6399ade30906783eae1a0d632564",
+      "bytes": 612,
+      "independentHash": "b2b8eab570357610a73322e777914936a1eb6399ade30906783eae1a0d632564"
+    },
+    {
+      "path": "res/drawable/branch_mark.xml",
+      "sha256": "23b0290ff0b838ef7e50e3dc9f9d10e61e279debb8745206728ee984d066a872",
+      "bytes": 1452,
+      "independentHash": "23b0290ff0b838ef7e50e3dc9f9d10e61e279debb8745206728ee984d066a872"
+    },
+    {
+      "path": "res/drawable/btn_checkbox_checked_mtrl.xml",
+      "sha256": "c2d4585b382ece8a545149e2677f041f1131e6739dc7545088aa030723693ead",
+      "bytes": 2688,
+      "independentHash": "c2d4585b382ece8a545149e2677f041f1131e6739dc7545088aa030723693ead"
+    },
+    {
+      "path": "res/drawable/btn_checkbox_checked_to_unchecked_mtrl_animation.xml",
+      "sha256": "816efb32497fa7a2561bb9bff4b85a26fa8e8d8d702abc1152b45af69964b21b",
+      "bytes": 688,
+      "independentHash": "816efb32497fa7a2561bb9bff4b85a26fa8e8d8d702abc1152b45af69964b21b"
+    },
+    {
+      "path": "res/drawable/btn_checkbox_unchecked_mtrl.xml",
+      "sha256": "e618d2ffe965ae475f462281a349c0177b76bc95c1d0bac219325873a2b51ad7",
+      "bytes": 2660,
+      "independentHash": "e618d2ffe965ae475f462281a349c0177b76bc95c1d0bac219325873a2b51ad7"
+    },
+    {
+      "path": "res/drawable/btn_checkbox_unchecked_to_checked_mtrl_animation.xml",
+      "sha256": "f01bc746e6a10afa62942038a8671ab76fa9550fdee161df19872a78f11a8c4b",
+      "bytes": 688,
+      "independentHash": "f01bc746e6a10afa62942038a8671ab76fa9550fdee161df19872a78f11a8c4b"
+    },
+    {
+      "path": "res/drawable/btn_radio_off_mtrl.xml",
+      "sha256": "2a12a29193791d349bb512452f54e3d67755ded679c47b4b8e1540e88695e72f",
+      "bytes": 1728,
+      "independentHash": "2a12a29193791d349bb512452f54e3d67755ded679c47b4b8e1540e88695e72f"
+    },
+    {
+      "path": "res/drawable/btn_radio_off_to_on_mtrl_animation.xml",
+      "sha256": "c4932ea45f94229f5d0f96cb951f652a2abfbf8bf03cd7fbf6d2fcebac1cfc38",
+      "bytes": 680,
+      "independentHash": "c4932ea45f94229f5d0f96cb951f652a2abfbf8bf03cd7fbf6d2fcebac1cfc38"
+    },
+    {
+      "path": "res/drawable/btn_radio_on_mtrl.xml",
+      "sha256": "f2c4cdf65caa5981c52511bca1f3e5413695f82445183d6a95d0dd8120dd6a14",
+      "bytes": 1656,
+      "independentHash": "f2c4cdf65caa5981c52511bca1f3e5413695f82445183d6a95d0dd8120dd6a14"
+    },
+    {
+      "path": "res/drawable/btn_radio_on_to_off_mtrl_animation.xml",
+      "sha256": "bf7a21d6242decbbac2cc89ee64c7d54133af150006994c048ec37f497288b6a",
+      "bytes": 680,
+      "independentHash": "bf7a21d6242decbbac2cc89ee64c7d54133af150006994c048ec37f497288b6a"
+    },
+    {
+      "path": "res/drawable/common_google_signin_btn_icon_dark.xml",
+      "sha256": "e7b58ce62049cb4be6c6f8852bc799d75fb04948f001ad6942c06db1d38264c0",
+      "bytes": 588,
+      "independentHash": "e7b58ce62049cb4be6c6f8852bc799d75fb04948f001ad6942c06db1d38264c0"
+    },
+    {
+      "path": "res/drawable/common_google_signin_btn_icon_dark_focused.xml",
+      "sha256": "d31a1bb0418343bcbc5c78b3c1b34bf644465bfbf080da4f1e40cb14105ce990",
+      "bytes": 892,
+      "independentHash": "d31a1bb0418343bcbc5c78b3c1b34bf644465bfbf080da4f1e40cb14105ce990"
+    },
+    {
+      "path": "res/drawable/common_google_signin_btn_icon_dark_normal.xml",
+      "sha256": "631b05f920871657493efcd6aff830ba230551149aeaec3965c12fa6c244b3ce",
+      "bytes": 548,
+      "independentHash": "631b05f920871657493efcd6aff830ba230551149aeaec3965c12fa6c244b3ce"
+    },
+    {
+      "path": "res/drawable/common_google_signin_btn_icon_disabled.xml",
+      "sha256": "c3390cf455300dc9d0665fa75021f153d99ab91b2b2721df19dc94818196d1e3",
+      "bytes": 1132,
+      "independentHash": "c3390cf455300dc9d0665fa75021f153d99ab91b2b2721df19dc94818196d1e3"
+    },
+    {
+      "path": "res/drawable/common_google_signin_btn_icon_light.xml",
+      "sha256": "7e3fd7c23e8bd5b9b13c7e1e083a75e92c0a99c313dc5b274d9c7ae8e58eba8f",
+      "bytes": 588,
+      "independentHash": "7e3fd7c23e8bd5b9b13c7e1e083a75e92c0a99c313dc5b274d9c7ae8e58eba8f"
+    },
+    {
+      "path": "res/drawable/common_google_signin_btn_icon_light_focused.xml",
+      "sha256": "d85eaa79e1735a8310a4936dc12b6191db896366418e58e4b78190fffc594dae",
+      "bytes": 892,
+      "independentHash": "d85eaa79e1735a8310a4936dc12b6191db896366418e58e4b78190fffc594dae"
+    },
+    {
+      "path": "res/drawable/common_google_signin_btn_icon_light_normal.xml",
+      "sha256": "cef38f069cc60d35b7ba34c613f95ae6ddf0259d3f26f4a2761514dbf49ad280",
+      "bytes": 548,
+      "independentHash": "cef38f069cc60d35b7ba34c613f95ae6ddf0259d3f26f4a2761514dbf49ad280"
+    },
+    {
+      "path": "res/drawable/common_google_signin_btn_text_dark.xml",
+      "sha256": "5718c880b27ad7bfb910582ffd538db61fc595059fcd35e5fd8e389814e7abc7",
+      "bytes": 588,
+      "independentHash": "5718c880b27ad7bfb910582ffd538db61fc595059fcd35e5fd8e389814e7abc7"
+    },
+    {
+      "path": "res/drawable/common_google_signin_btn_text_dark_focused.xml",
+      "sha256": "faddf1e446e274f6af8b2919c4bc6f78f8b9d855cdca89b1edfaf9786407a2e4",
+      "bytes": 892,
+      "independentHash": "faddf1e446e274f6af8b2919c4bc6f78f8b9d855cdca89b1edfaf9786407a2e4"
+    },
+    {
+      "path": "res/drawable/common_google_signin_btn_text_dark_normal.xml",
+      "sha256": "585abe70d99607c08c914f51e731e896f513bfb2f28b0dce563086ec86ddf7ee",
+      "bytes": 584,
+      "independentHash": "585abe70d99607c08c914f51e731e896f513bfb2f28b0dce563086ec86ddf7ee"
+    },
+    {
+      "path": "res/drawable/common_google_signin_btn_text_disabled.xml",
+      "sha256": "9feb47c8d9ad2780f40f8a7127ed642ceae97c75ae0139b7dfd17e9380c33353",
+      "bytes": 1152,
+      "independentHash": "9feb47c8d9ad2780f40f8a7127ed642ceae97c75ae0139b7dfd17e9380c33353"
+    },
+    {
+      "path": "res/drawable/common_google_signin_btn_text_light.xml",
+      "sha256": "74a735de16b4e7d39680d6cb4b975d4cac8465752b29b7cb8f632e8e18571e6f",
+      "bytes": 588,
+      "independentHash": "74a735de16b4e7d39680d6cb4b975d4cac8465752b29b7cb8f632e8e18571e6f"
+    },
+    {
+      "path": "res/drawable/common_google_signin_btn_text_light_focused.xml",
+      "sha256": "139164eb1041a3647046c7355eaad41874534f1354d5fbff8bc2520fc4f8b908",
+      "bytes": 892,
+      "independentHash": "139164eb1041a3647046c7355eaad41874534f1354d5fbff8bc2520fc4f8b908"
+    },
+    {
+      "path": "res/drawable/common_google_signin_btn_text_light_normal.xml",
+      "sha256": "7831e50a9b9e164bbb8f57b24cb9df1b6078cdc11900cf5d69f5a5393c9f1f42",
+      "bytes": 584,
+      "independentHash": "7831e50a9b9e164bbb8f57b24cb9df1b6078cdc11900cf5d69f5a5393c9f1f42"
+    },
+    {
+      "path": "res/drawable/ic_call_answer.xml",
+      "sha256": "5f6376dfe199d8a6e40033d3e623989d052c9b2f974d00c824fbb8b76fc6fde8",
+      "bytes": 1356,
+      "independentHash": "5f6376dfe199d8a6e40033d3e623989d052c9b2f974d00c824fbb8b76fc6fde8"
+    },
+    {
+      "path": "res/drawable/ic_call_answer_low.xml",
+      "sha256": "8f9acacabaf2dfb4bb53dab7ce7bec9c1451ce0a0219ffaa41760ea82da3d2d6",
+      "bytes": 1320,
+      "independentHash": "8f9acacabaf2dfb4bb53dab7ce7bec9c1451ce0a0219ffaa41760ea82da3d2d6"
+    },
+    {
+      "path": "res/drawable/ic_call_answer_video.xml",
+      "sha256": "5d4cdaae5838ad9442c085f951b766b2808bff13b8c85a14e0bcf8571514492c",
+      "bytes": 772,
+      "independentHash": "5d4cdaae5838ad9442c085f951b766b2808bff13b8c85a14e0bcf8571514492c"
+    },
+    {
+      "path": "res/drawable/ic_call_answer_video_low.xml",
+      "sha256": "4a959580080ebb1d822a2459a4234d2abf0dd0b65d9c28bda8c258dafc888c51",
+      "bytes": 736,
+      "independentHash": "4a959580080ebb1d822a2459a4234d2abf0dd0b65d9c28bda8c258dafc888c51"
+    },
+    {
+      "path": "res/drawable/ic_call_decline.xml",
+      "sha256": "2d825b79cce60203492ff09a04826db0ac8d9eb9bc0fb9fb139ae1aa5cde0f67",
+      "bytes": 1528,
+      "independentHash": "2d825b79cce60203492ff09a04826db0ac8d9eb9bc0fb9fb139ae1aa5cde0f67"
+    },
+    {
+      "path": "res/drawable/ic_call_decline_low.xml",
+      "sha256": "c8321364802409baf4d76e2a84e303871585bdc95b0395040c5ecea0e2051105",
+      "bytes": 1492,
+      "independentHash": "c8321364802409baf4d76e2a84e303871585bdc95b0395040c5ecea0e2051105"
+    },
+    {
+      "path": "res/drawable/ic_launcher_background.xml",
+      "sha256": "a13c99c3cb01a1c2986549e4c54f43530f28d67416949788ff91cacb7a97616e",
+      "bytes": 372,
+      "independentHash": "a13c99c3cb01a1c2986549e4c54f43530f28d67416949788ff91cacb7a97616e"
+    },
+    {
+      "path": "res/drawable/ic_launcher_foreground.xml",
+      "sha256": "897ec4c777d843ba6aff42d3be24898ca746203522ef46786c3839a375f43055",
+      "bytes": 1452,
+      "independentHash": "897ec4c777d843ba6aff42d3be24898ca746203522ef46786c3839a375f43055"
+    },
+    {
+      "path": "res/drawable/ic_launcher_legacy.xml",
+      "sha256": "8694eecfbcb1e8e49b79aa686e5a15d0c57db94b08eec5a3bf28f90ff80c1793",
+      "bytes": 1572,
+      "independentHash": "8694eecfbcb1e8e49b79aa686e5a15d0c57db94b08eec5a3bf28f90ff80c1793"
+    },
+    {
+      "path": "res/drawable/notification_bg.xml",
+      "sha256": "6fb715a000dadb823d2ff8c2b702661a79ae28e3821621729179554219f3364e",
+      "bytes": 532,
+      "independentHash": "6fb715a000dadb823d2ff8c2b702661a79ae28e3821621729179554219f3364e"
+    },
+    {
+      "path": "res/drawable/notification_bg_low.xml",
+      "sha256": "fd04e0daa71970a6d6634c85520cfb147e82c9834ea33d566ff48a172a61a5c6",
+      "bytes": 532,
+      "independentHash": "fd04e0daa71970a6d6634c85520cfb147e82c9834ea33d566ff48a172a61a5c6"
+    },
+    {
+      "path": "res/drawable/notification_icon_background.xml",
+      "sha256": "79e68f80e10785d599f94e6aa3bf7ff2a55f5f90a7edb6b6288f77d1ac531d50",
+      "bytes": 372,
+      "independentHash": "79e68f80e10785d599f94e6aa3bf7ff2a55f5f90a7edb6b6288f77d1ac531d50"
+    },
+    {
+      "path": "res/drawable/notification_tile_bg.xml",
+      "sha256": "b4cca6f7c232070dbf70b92286d43a2cb5ff9a44e4511399f327d97704531c34",
+      "bytes": 304,
+      "independentHash": "b4cca6f7c232070dbf70b92286d43a2cb5ff9a44e4511399f327d97704531c34"
+    },
+    {
+      "path": "res/drawable/test_level_drawable.xml",
+      "sha256": "09274f291285007a7b04a999c170ba317eb74c52c861844bb2ae8a80d2b00cb8",
+      "bytes": 448,
+      "independentHash": "09274f291285007a7b04a999c170ba317eb74c52c861844bb2ae8a80d2b00cb8"
+    },
+    {
+      "path": "res/drawable/tooltip_frame_dark.xml",
+      "sha256": "80543b9241efcf6038c7b88abfddfb82ccce450ab844be9a764052eb1cfa7d92",
+      "bytes": 484,
+      "independentHash": "80543b9241efcf6038c7b88abfddfb82ccce450ab844be9a764052eb1cfa7d92"
+    },
+    {
+      "path": "res/drawable/tooltip_frame_light.xml",
+      "sha256": "4cbdcbee8d8d425c925b7acdf94e79e5302225fc77258b53a46ba6825e82ee84",
+      "bytes": 484,
+      "independentHash": "4cbdcbee8d8d425c925b7acdf94e79e5302225fc77258b53a46ba6825e82ee84"
+    },
+    {
+      "path": "res/font/pretendard_variable.ttf",
+      "sha256": "506ac11293649e23edf57208022d62743f8f2d286f4c7d41a090587c54564084",
+      "bytes": 6739336,
+      "independentHash": "506ac11293649e23edf57208022d62743f8f2d286f4c7d41a090587c54564084"
+    },
+    {
+      "path": "res/font/source_serif_four.ttf",
+      "sha256": "812c46f6aa1815db16a14af2bad3116f5725830fb31905cc5d50c038da5be8aa",
+      "bytes": 115216,
+      "independentHash": "812c46f6aa1815db16a14af2bad3116f5725830fb31905cc5d50c038da5be8aa"
+    },
+    {
+      "path": "res/interpolator/btn_checkbox_checked_mtrl_animation_interpolator_0.xml",
+      "sha256": "68b7fc0e819c526c7e31c1413b1821bc0ccfcf4ab550c356a7f740a9d84917dc",
+      "bytes": 316,
+      "independentHash": "68b7fc0e819c526c7e31c1413b1821bc0ccfcf4ab550c356a7f740a9d84917dc"
+    },
+    {
+      "path": "res/interpolator/btn_checkbox_checked_mtrl_animation_interpolator_1.xml",
+      "sha256": "0ab3bc82b3b9fd8499202cafe3d494a9f66fba248d01e90b90e932c8849947cc",
+      "bytes": 328,
+      "independentHash": "0ab3bc82b3b9fd8499202cafe3d494a9f66fba248d01e90b90e932c8849947cc"
+    },
+    {
+      "path": "res/interpolator/btn_checkbox_unchecked_mtrl_animation_interpolator_0.xml",
+      "sha256": "68b7fc0e819c526c7e31c1413b1821bc0ccfcf4ab550c356a7f740a9d84917dc",
+      "bytes": 316,
+      "independentHash": "68b7fc0e819c526c7e31c1413b1821bc0ccfcf4ab550c356a7f740a9d84917dc"
+    },
+    {
+      "path": "res/interpolator/btn_checkbox_unchecked_mtrl_animation_interpolator_1.xml",
+      "sha256": "0ab3bc82b3b9fd8499202cafe3d494a9f66fba248d01e90b90e932c8849947cc",
+      "bytes": 328,
+      "independentHash": "0ab3bc82b3b9fd8499202cafe3d494a9f66fba248d01e90b90e932c8849947cc"
+    },
+    {
+      "path": "res/interpolator/btn_radio_to_off_mtrl_animation_interpolator_0.xml",
+      "sha256": "a8d7341c20d07c9fdab602e7c39187c9abb9caf5fbf9b2832cd6d9f18a2c86c2",
+      "bytes": 320,
+      "independentHash": "a8d7341c20d07c9fdab602e7c39187c9abb9caf5fbf9b2832cd6d9f18a2c86c2"
+    },
+    {
+      "path": "res/interpolator/btn_radio_to_on_mtrl_animation_interpolator_0.xml",
+      "sha256": "a8d7341c20d07c9fdab602e7c39187c9abb9caf5fbf9b2832cd6d9f18a2c86c2",
+      "bytes": 320,
+      "independentHash": "a8d7341c20d07c9fdab602e7c39187c9abb9caf5fbf9b2832cd6d9f18a2c86c2"
+    },
+    {
+      "path": "res/interpolator/fast_out_slow_in.xml",
+      "sha256": "8237d47bafc3bab9098bd9344b12dc6c87fdd879a4e1f01c856400c595f298f0",
+      "bytes": 400,
+      "independentHash": "8237d47bafc3bab9098bd9344b12dc6c87fdd879a4e1f01c856400c595f298f0"
+    },
+    {
+      "path": "res/layout-v21/notification_action.xml",
+      "sha256": "151f92337f56955254a2da6b7936401cefd839f6a61e47e1f786ebddcf0918b2",
+      "bytes": 1052,
+      "independentHash": "151f92337f56955254a2da6b7936401cefd839f6a61e47e1f786ebddcf0918b2"
+    },
+    {
+      "path": "res/layout-v21/notification_action_tombstone.xml",
+      "sha256": "fbc8202ff5fa4d3d2d9451d7a6a5a265fe5285dc570b4a0d12c87798d0fb0e90",
+      "bytes": 1228,
+      "independentHash": "fbc8202ff5fa4d3d2d9451d7a6a5a265fe5285dc570b4a0d12c87798d0fb0e90"
+    },
+    {
+      "path": "res/layout-v21/notification_template_custom_big.xml",
+      "sha256": "870112f6b72d105acb42ef5ce304347d71a51800b123e42e73525f4cade2a8d2",
+      "bytes": 2456,
+      "independentHash": "870112f6b72d105acb42ef5ce304347d71a51800b123e42e73525f4cade2a8d2"
+    },
+    {
+      "path": "res/layout-v21/notification_template_icon_group.xml",
+      "sha256": "bd39ba0d6ce7dd39121de23b1df32c2b49306d383abda8ec6acd67847e9c9d8b",
+      "bytes": 988,
+      "independentHash": "bd39ba0d6ce7dd39121de23b1df32c2b49306d383abda8ec6acd67847e9c9d8b"
+    },
+    {
+      "path": "res/layout-v26/abc_screen_toolbar.xml",
+      "sha256": "473ff8b7666f2d9cd804e0ca0fc75b2ba121e3f16d157d35fe8afe3e9c6ca2a8",
+      "bytes": 1560,
+      "independentHash": "473ff8b7666f2d9cd804e0ca0fc75b2ba121e3f16d157d35fe8afe3e9c6ca2a8"
+    },
+    {
+      "path": "res/layout-watch-v20/abc_alert_dialog_button_bar_material.xml",
+      "sha256": "c12fee1b177bd7ed6758b1cfc25d417a6c3417142e0e1535b302bda8cd32dee8",
+      "bytes": 1208,
+      "independentHash": "c12fee1b177bd7ed6758b1cfc25d417a6c3417142e0e1535b302bda8cd32dee8"
+    },
+    {
+      "path": "res/layout-watch-v20/abc_alert_dialog_title_material.xml",
+      "sha256": "9bcc3502c02c82d4004827eae1f39e8bba832c65f1724e0536be68331f3606b1",
+      "bytes": 1352,
+      "independentHash": "9bcc3502c02c82d4004827eae1f39e8bba832c65f1724e0536be68331f3606b1"
+    },
+    {
+      "path": "res/layout/abc_action_bar_title_item.xml",
+      "sha256": "2ca9dcc8d781a3e5b6021f538d1191857578202261ce50de53d2525864b3b481",
+      "bytes": 872,
+      "independentHash": "2ca9dcc8d781a3e5b6021f538d1191857578202261ce50de53d2525864b3b481"
+    },
+    {
+      "path": "res/layout/abc_action_bar_up_container.xml",
+      "sha256": "534d8148fa1f913615e86561bc74f2453d97455790fd250b3e45f8a7a9a91f10",
+      "bytes": 440,
+      "independentHash": "534d8148fa1f913615e86561bc74f2453d97455790fd250b3e45f8a7a9a91f10"
+    },
+    {
+      "path": "res/layout/abc_action_menu_item_layout.xml",
+      "sha256": "2cdb73ef0229857b54f07f05652a062672678de2ecf092f772db1e5540ac3d17",
+      "bytes": 768,
+      "independentHash": "2cdb73ef0229857b54f07f05652a062672678de2ecf092f772db1e5540ac3d17"
+    },
+    {
+      "path": "res/layout/abc_action_menu_layout.xml",
+      "sha256": "2978790260ceeb99b1d176f4e51a6a132fc8c4cd2164aef23d7af2f5313f58d9",
+      "bytes": 576,
+      "independentHash": "2978790260ceeb99b1d176f4e51a6a132fc8c4cd2164aef23d7af2f5313f58d9"
+    },
+    {
+      "path": "res/layout/abc_action_mode_bar.xml",
+      "sha256": "3376cd54cb58e0e3f53e59bfb2542c0fb80d6c03975a6afb0f85d5b6d9344701",
+      "bytes": 464,
+      "independentHash": "3376cd54cb58e0e3f53e59bfb2542c0fb80d6c03975a6afb0f85d5b6d9344701"
+    },
+    {
+      "path": "res/layout/abc_action_mode_close_item_material.xml",
+      "sha256": "6dd78cd5cbfb91f0f655f21517127279116d44d166311c539fa35c95056b8cbd",
+      "bytes": 840,
+      "independentHash": "6dd78cd5cbfb91f0f655f21517127279116d44d166311c539fa35c95056b8cbd"
+    },
+    {
+      "path": "res/layout/abc_activity_chooser_view.xml",
+      "sha256": "8b987ea80a2532d7c03d19efe926e567fc529ae28ce8e11a1d515c4039d9653a",
+      "bytes": 1684,
+      "independentHash": "8b987ea80a2532d7c03d19efe926e567fc529ae28ce8e11a1d515c4039d9653a"
+    },
+    {
+      "path": "res/layout/abc_activity_chooser_view_list_item.xml",
+      "sha256": "aebabe1fea48d471d2dcbf8ade978cca356cb40ef1f1a1f307419e7913fc384e",
+      "bytes": 1304,
+      "independentHash": "aebabe1fea48d471d2dcbf8ade978cca356cb40ef1f1a1f307419e7913fc384e"
+    },
+    {
+      "path": "res/layout/abc_alert_dialog_button_bar_material.xml",
+      "sha256": "f8d5de0319850f7fa1aa06abe36f0ab26e092bfe49d9201423150b880ab935d0",
+      "bytes": 1584,
+      "independentHash": "f8d5de0319850f7fa1aa06abe36f0ab26e092bfe49d9201423150b880ab935d0"
+    },
+    {
+      "path": "res/layout/abc_alert_dialog_material.xml",
+      "sha256": "6714c8358b39c9134e99f2595795be52a2057b915eecab82553db120fdc85345",
+      "bytes": 2648,
+      "independentHash": "6714c8358b39c9134e99f2595795be52a2057b915eecab82553db120fdc85345"
+    },
+    {
+      "path": "res/layout/abc_alert_dialog_title_material.xml",
+      "sha256": "0834d3f6e904a6221d46b0e1f4917c1b9cacae9ccddee82867eeb01e7552171b",
+      "bytes": 1560,
+      "independentHash": "0834d3f6e904a6221d46b0e1f4917c1b9cacae9ccddee82867eeb01e7552171b"
+    },
+    {
+      "path": "res/layout/abc_cascading_menu_item_layout.xml",
+      "sha256": "73b16260f97d5fea7506a23c482d394d2265d4c47657ee1efaae608b63745467",
+      "bytes": 1868,
+      "independentHash": "73b16260f97d5fea7506a23c482d394d2265d4c47657ee1efaae608b63745467"
+    },
+    {
+      "path": "res/layout/abc_dialog_title_material.xml",
+      "sha256": "25f96943cab7700d47c01ed8f3b502257e90daad546fc00c54d5558000106535",
+      "bytes": 1116,
+      "independentHash": "25f96943cab7700d47c01ed8f3b502257e90daad546fc00c54d5558000106535"
+    },
+    {
+      "path": "res/layout/abc_expanded_menu_layout.xml",
+      "sha256": "18d8665ad6e0460405f5b8894514268c8190a36b894009357637d160427daf9a",
+      "bytes": 388,
+      "independentHash": "18d8665ad6e0460405f5b8894514268c8190a36b894009357637d160427daf9a"
+    },
+    {
+      "path": "res/layout/abc_list_menu_item_checkbox.xml",
+      "sha256": "d234ecb4ee115ce46e0d829249a9db747cd7e7e091f0283af7c7c14d7e8ffd84",
+      "bytes": 528,
+      "independentHash": "d234ecb4ee115ce46e0d829249a9db747cd7e7e091f0283af7c7c14d7e8ffd84"
+    },
+    {
+      "path": "res/layout/abc_list_menu_item_icon.xml",
+      "sha256": "57f4d7cfe40edf02971092ab6623be122d167d1fec88dc92a37c2127303f9550",
+      "bytes": 780,
+      "independentHash": "57f4d7cfe40edf02971092ab6623be122d167d1fec88dc92a37c2127303f9550"
+    },
+    {
+      "path": "res/layout/abc_list_menu_item_layout.xml",
+      "sha256": "356d87b5c1013c37f3eec5f1791823b00e79106d4eb72c3770890179b9cbab31",
+      "bytes": 1396,
+      "independentHash": "356d87b5c1013c37f3eec5f1791823b00e79106d4eb72c3770890179b9cbab31"
+    },
+    {
+      "path": "res/layout/abc_list_menu_item_radio.xml",
+      "sha256": "f61d6aec9fffeeb1175d792bba67860e12f7a53dc629e80b1ee2c27fd96a3f78",
+      "bytes": 532,
+      "independentHash": "f61d6aec9fffeeb1175d792bba67860e12f7a53dc629e80b1ee2c27fd96a3f78"
+    },
+    {
+      "path": "res/layout/abc_popup_menu_header_item_layout.xml",
+      "sha256": "15cc190947d5a93d9961fc5a7331771225274a2c65aad307a6b3704b26014dad",
+      "bytes": 848,
+      "independentHash": "15cc190947d5a93d9961fc5a7331771225274a2c65aad307a6b3704b26014dad"
+    },
+    {
+      "path": "res/layout/abc_popup_menu_item_layout.xml",
+      "sha256": "2545bbe2b146e3ff2f3a7a8a38b71624e0f801563f7e581146431b31582ba03a",
+      "bytes": 2072,
+      "independentHash": "2545bbe2b146e3ff2f3a7a8a38b71624e0f801563f7e581146431b31582ba03a"
+    },
+    {
+      "path": "res/layout/abc_screen_content_include.xml",
+      "sha256": "9cee7b7f36d4546d3d591b468492d5544d34d99e342d7acdf38c1d88248a8364",
+      "bytes": 548,
+      "independentHash": "9cee7b7f36d4546d3d591b468492d5544d34d99e342d7acdf38c1d88248a8364"
+    },
+    {
+      "path": "res/layout/abc_screen_simple.xml",
+      "sha256": "0398c472728f943cb8e7dd05182f8c4a98d02e39d144a794b67f209d942405db",
+      "bytes": 832,
+      "independentHash": "0398c472728f943cb8e7dd05182f8c4a98d02e39d144a794b67f209d942405db"
+    },
+    {
+      "path": "res/layout/abc_screen_simple_overlay_action_mode.xml",
+      "sha256": "e9880b6b6337866d67e14216bb95b1f37849d7ac3cf888b913fbce68a85f0508",
+      "bytes": 792,
+      "independentHash": "e9880b6b6337866d67e14216bb95b1f37849d7ac3cf888b913fbce68a85f0508"
+    },
+    {
+      "path": "res/layout/abc_search_dropdown_item_icons_2line.xml",
+      "sha256": "d284e43f0d346384a8829ab90c7706582fa15fe1b40dbc9700d584696402123c",
+      "bytes": 1916,
+      "independentHash": "d284e43f0d346384a8829ab90c7706582fa15fe1b40dbc9700d584696402123c"
+    },
+    {
+      "path": "res/layout/abc_search_view.xml",
+      "sha256": "070acb0ba997cd861b57d29ec87dc5c32ecad708b697d7edaf42723aa75dfb04",
+      "bytes": 3472,
+      "independentHash": "070acb0ba997cd861b57d29ec87dc5c32ecad708b697d7edaf42723aa75dfb04"
+    },
+    {
+      "path": "res/layout/abc_select_dialog_material.xml",
+      "sha256": "4c485382c4aa130313f23a46d4c344f5a3f8a7e1046dabf9b7cff3c3cffa7cc0",
+      "bytes": 1020,
+      "independentHash": "4c485382c4aa130313f23a46d4c344f5a3f8a7e1046dabf9b7cff3c3cffa7cc0"
+    },
+    {
+      "path": "res/layout/abc_tooltip.xml",
+      "sha256": "181a85157b4c45e411eb5e4baea36890796629265223a01ed85567580e58f099",
+      "bytes": 1056,
+      "independentHash": "181a85157b4c45e411eb5e4baea36890796629265223a01ed85567580e58f099"
+    },
+    {
+      "path": "res/layout/custom_dialog.xml",
+      "sha256": "b5aa9b233fcc4e15a6018d912aed788e8d70f05c47683cc6a886f8ed47218996",
+      "bytes": 612,
+      "independentHash": "b5aa9b233fcc4e15a6018d912aed788e8d70f05c47683cc6a886f8ed47218996"
+    },
+    {
+      "path": "res/layout/ime_base_split_test_activity.xml",
+      "sha256": "37ff040591f96786bfaf9d3d937fedf2f2f97e218c06beb3e7fe8a2442a181a8",
+      "bytes": 364,
+      "independentHash": "37ff040591f96786bfaf9d3d937fedf2f2f97e218c06beb3e7fe8a2442a181a8"
+    },
+    {
+      "path": "res/layout/ime_secondary_split_test_activity.xml",
+      "sha256": "b5e3b468c8887d755106731672d12ef542244f254492e01c1ef74e230a78aabd",
+      "bytes": 876,
+      "independentHash": "b5e3b468c8887d755106731672d12ef542244f254492e01c1ef74e230a78aabd"
+    },
+    {
+      "path": "res/layout/notification_template_part_chronometer.xml",
+      "sha256": "0ed882397747cf6375885d969c19f6b1647de03f4b1a4232ba24c38feee04569",
+      "bytes": 440,
+      "independentHash": "0ed882397747cf6375885d969c19f6b1647de03f4b1a4232ba24c38feee04569"
+    },
+    {
+      "path": "res/layout/notification_template_part_time.xml",
+      "sha256": "b2ffb9139e5ba793b218c914f26e16478fa9f3b4b9c8b0c54aa0a99cfd033dc0",
+      "bytes": 440,
+      "independentHash": "b2ffb9139e5ba793b218c914f26e16478fa9f3b4b9c8b0c54aa0a99cfd033dc0"
+    },
+    {
+      "path": "res/layout/select_dialog_item_material.xml",
+      "sha256": "fd4ec7f0603df1a71ced2e25e58391dd06bdf729f37e757b65bc32ebe7dbade8",
+      "bytes": 640,
+      "independentHash": "fd4ec7f0603df1a71ced2e25e58391dd06bdf729f37e757b65bc32ebe7dbade8"
+    },
+    {
+      "path": "res/layout/select_dialog_multichoice_material.xml",
+      "sha256": "ccf3b83c8f58533d2b1622a30c43d867c9aba62f80649e286cf43f66646d82f5",
+      "bytes": 864,
+      "independentHash": "ccf3b83c8f58533d2b1622a30c43d867c9aba62f80649e286cf43f66646d82f5"
+    },
+    {
+      "path": "res/layout/select_dialog_singlechoice_material.xml",
+      "sha256": "b7f36158e236140c44760336396f21290a43231f5d7c260caa163bb14a4833c8",
+      "bytes": 864,
+      "independentHash": "b7f36158e236140c44760336396f21290a43231f5d7c260caa163bb14a4833c8"
+    },
+    {
+      "path": "res/layout/support_simple_spinner_dropdown_item.xml",
+      "sha256": "16d9b4ba51600cb99b427a91753da8760cff59688edcf70d92de30938a253a90",
+      "bytes": 464,
+      "independentHash": "16d9b4ba51600cb99b427a91753da8760cff59688edcf70d92de30938a253a90"
+    },
+    {
+      "path": "res/mipmap-anydpi-v26/ic_launcher.xml",
+      "sha256": "1363a59b92ca801a318e18e9f583fe6dc7ec369fb28e7914e03d92f0b9c27585",
+      "bytes": 548,
+      "independentHash": "1363a59b92ca801a318e18e9f583fe6dc7ec369fb28e7914e03d92f0b9c27585"
+    },
+    {
+      "path": "res/xml/locales_config.xml",
+      "sha256": "a01606f21a2fb741802e8b89a410f88cb7a77a613528a9ece96d16b167ab3ff4",
+      "bytes": 444,
+      "independentHash": "a01606f21a2fb741802e8b89a410f88cb7a77a613528a9ece96d16b167ab3ff4"
+    },
+    {
+      "path": "resources.arsc",
+      "sha256": "004fab2aa330e69c6a370edfabeaaaed18051bdd8f60a443b4c933bbe00d7a12",
+      "bytes": 818696,
+      "independentHash": "004fab2aa330e69c6a370edfabeaaaed18051bdd8f60a443b4c933bbe00d7a12"
+    }
+  ],
+  "additionalSignedDependencyAssetsAndLibraries": [
+    {
+      "path": "lib/arm64-v8a/libandroidx.graphics.path.so",
+      "bytes": 10096,
+      "sha256": "41e9a793c43a0f4fddb19e33f346bace464f30f888ba7b9eaf96294ea115bfb6"
+    },
+    {
+      "path": "lib/arm64-v8a/libbarhopper_v3.so",
+      "bytes": 4946720,
+      "sha256": "ec09597e9eb3aee0eb55ae3366da0d4ba416f5aa35a1af0b3811f50ff46743a1"
+    },
+    {
+      "path": "lib/arm64-v8a/libdatastore_shared_counter.so",
+      "bytes": 7112,
+      "sha256": "d3e48717c9aa147e0ab21063ba0e8e0211cabf8bf40b222640829519edbf58e1"
+    },
+    {
+      "path": "lib/arm64-v8a/libgraphics-core.so",
+      "bytes": 212392,
+      "sha256": "a4d95a792921a6e42a65034bce4b7c75ed832fc7c11a87b63efa958244c34f88"
+    },
+    {
+      "path": "lib/arm64-v8a/libimage_processing_util_jni.so",
+      "bytes": 29008,
+      "sha256": "3e0071afcdc7e321f839e196d266014182f18d0988e4455acc9857a085b2184e"
+    },
+    {
+      "path": "lib/arm64-v8a/libink.so",
+      "bytes": 1268384,
+      "sha256": "df29741cef87a67b9e7f462877b7ac7f485016528ff339c1c2fe7aab2f4889c1"
+    },
+    {
+      "path": "lib/arm64-v8a/libsurface_util_jni.so",
+      "bytes": 4832,
+      "sha256": "ee3f0d56f81cc0a301db32dc4fd51274c3216733b4c40172768e38bc5049a265"
+    },
+    {
+      "path": "lib/armeabi-v7a/libandroidx.graphics.path.so",
+      "bytes": 7252,
+      "sha256": "41399eba6fc2a60f6f14642375c1824f3cf25eb8fec7397d753730a3ceda3e2b"
+    },
+    {
+      "path": "lib/armeabi-v7a/libbarhopper_v3.so",
+      "bytes": 3244440,
+      "sha256": "b3c162c69e4906b816227ae116bfd8b9ff19cfdd58a3de0c9a9b110e030063e9"
+    },
+    {
+      "path": "lib/armeabi-v7a/libdatastore_shared_counter.so",
+      "bytes": 4416,
+      "sha256": "716c5d8d2cac8ca0edf65da8f139c7886b726ac79d542a14edeb94994ba6d3dc"
+    },
+    {
+      "path": "lib/armeabi-v7a/libgraphics-core.so",
+      "bytes": 104508,
+      "sha256": "dd9189818ab7553f1ade2800fd05162a7e9652f970dd843be4520fe0ec820b18"
+    },
+    {
+      "path": "lib/armeabi-v7a/libimage_processing_util_jni.so",
+      "bytes": 20380,
+      "sha256": "e48e356bbe1902ae9a66178a4a0141c993b82ee9f70dde52ad83e4af3eca984f"
+    },
+    {
+      "path": "lib/armeabi-v7a/libink.so",
+      "bytes": 762536,
+      "sha256": "4a37f8c7db683f1ced7f4dd6cbf8a7eeeb2ae61d35beb7ddfb4193175eb21047"
+    },
+    {
+      "path": "lib/armeabi-v7a/libsurface_util_jni.so",
+      "bytes": 3440,
+      "sha256": "f110d6a305fef5be5664d58cfb054366b002bc516066b4ec880c38a68428756f"
+    },
+    {
+      "path": "lib/x86/libandroidx.graphics.path.so",
+      "bytes": 9284,
+      "sha256": "eb0570b41fd3bff25d8204a967c03bd7550719e768b791f680cc40cbe35f29af"
+    },
+    {
+      "path": "lib/x86/libbarhopper_v3.so",
+      "bytes": 6122368,
+      "sha256": "212dad60137637d3cbaf1ba5fd9d2c0e163c67731ed3a86ecb5d9f8bb9a60c3b"
+    },
+    {
+      "path": "lib/x86/libdatastore_shared_counter.so",
+      "bytes": 5148,
+      "sha256": "cd4a1649e2c8350703146f94a6ee2bf4c3c8c9f172159f805b61a4a2abdf0659"
+    },
+    {
+      "path": "lib/x86/libgraphics-core.so",
+      "bytes": 197208,
+      "sha256": "13bbe770a61419d1806d122635643e08bb3531955434257b2e031aebc0462bae"
+    },
+    {
+      "path": "lib/x86/libimage_processing_util_jni.so",
+      "bytes": 38292,
+      "sha256": "f5bdd537631cce21ad038a6737775540a7aef1f5a3d1fdc26c469f6c1ae73010"
+    },
+    {
+      "path": "lib/x86/libink.so",
+      "bytes": 1400812,
+      "sha256": "94adf610a31a488e6e65845f2f0766b8931425d1d7b463ff4a9c209714c74ea4"
+    },
+    {
+      "path": "lib/x86/libsurface_util_jni.so",
+      "bytes": 3712,
+      "sha256": "6b5d033063bc125d99706f14f0ded08b3f0058f53f5a3d17d134e7d2ea75db11"
+    },
+    {
+      "path": "lib/x86_64/libandroidx.graphics.path.so",
+      "bytes": 10760,
+      "sha256": "4e56c996f13670e70082658de7880c4020eabf4f25e43387f88ed78a713fc9f0"
+    },
+    {
+      "path": "lib/x86_64/libbarhopper_v3.so",
+      "bytes": 5909280,
+      "sha256": "6c5deea87d962af008fd48c3229db13ab68eef2e9feeccb2df5b33a920c0579a"
+    },
+    {
+      "path": "lib/x86_64/libdatastore_shared_counter.so",
+      "bytes": 6224,
+      "sha256": "fb6c9208988c49ae94943bc3236fa763ba584722e044fa4ea9a12d2941027105"
+    },
+    {
+      "path": "lib/x86_64/libgraphics-core.so",
+      "bytes": 219048,
+      "sha256": "5ed2ac230c1f56e21a9105df692ec3d89a5b782ce5b424074206cf30d44586ed"
+    },
+    {
+      "path": "lib/x86_64/libimage_processing_util_jni.so",
+      "bytes": 48104,
+      "sha256": "676e3e280c10dcb9b71ef5bb727552610dc73c7ec85af54c7c898f82785c33d7"
+    },
+    {
+      "path": "lib/x86_64/libink.so",
+      "bytes": 1282408,
+      "sha256": "0a312ac0a35470cf61ecc7503e7c8e4ddfeffb386307a86850771302c3bf89b9"
+    },
+    {
+      "path": "lib/x86_64/libsurface_util_jni.so",
+      "bytes": 4928,
+      "sha256": "cd425e10a365fb3695e53f1e46227d44d89f14854da4f1258ef079c80c752339"
+    },
+    {
+      "path": "assets/mlkit_barcode_models/barcode_ssd_mobilenet_v1_dmp25_quant.tflite",
+      "bytes": 390456,
+      "sha256": "6c7b209f4256ca4521d86f83d00904ada1a6a443010698463b750d757fae15a4"
+    },
+    {
+      "path": "assets/mlkit_barcode_models/oned_auto_regressor_mobile.tflite",
+      "bytes": 213880,
+      "sha256": "8e07cd3b38da1ded3c07d6c81d06990cbdfa284c214557b94e106372e0497442"
+    },
+    {
+      "path": "assets/mlkit_barcode_models/oned_feature_extractor_mobile.tflite",
+      "bytes": 276552,
+      "sha256": "981c89dcca6aac10c7ff7304933747f6936292b6395d02ee944e6fbc73b3c92b"
+    }
+  ],
+  "dexClassCounts": {
+    "classes.dex": 9260,
+    "classes10.dex": 5822,
+    "classes2.dex": 35,
+    "classes3.dex": 125,
+    "classes5.dex": 7,
+    "classes7.dex": 243,
+    "classes9.dex": 6679,
+    "classes4.dex": 77,
+    "classes8.dex": 781,
+    "classes6.dex": 203
+  },
+  "qaClassHits": [],
+  "qaZipEntries": [],
+  "existingDebugFixtureClasses": [
+    "Lapp/fractal/reader/ReaderFixtureActivity;"
+  ],
+  "debugBuild": true,
+  "instrumentationApkDelivered": false,
+  "deviceOperated": false,
+  "apkInstalledByReviewer": false,
+  "limits": "Owner API34 emulator/native evidence reviewed, not physical/API35 or new GET guard execution"
+}
