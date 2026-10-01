@@ -1,0 +1,15 @@
+﻿{
+    "remainingListeners":  [
+
+                           ],
+    "ownElectronRuntimeAbsent":  true,
+    "recordedAtUtc":  "2026-10-01T03:43:27.4203475Z",
+    "browserHandleClosed":  true,
+    "disposableProfileRetainedIgnored":  true,
+    "noNativeElectronExecution":  true,
+    "checkedOwnedPorts":  [
+                              3352,
+                              1174,
+                              7980
+                          ]
+}
