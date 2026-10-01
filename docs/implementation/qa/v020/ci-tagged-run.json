@@ -1,0 +1,49 @@
+{
+  "sourceCommit": "c75ea15f806382f88e7a26e03da17a7f4f505b56",
+  "actualRun": "36845792076",
+  "status": "completed",
+  "conclusion": "success",
+  "url": "https://github.com/iwantgobackhome/fractal/actions/runs/36845792076",
+  "jobs": [
+    {
+      "name": "versions",
+      "id": 110315492050,
+      "conclusion": "success"
+    },
+    {
+      "name": "android",
+      "id": 110315568454,
+      "conclusion": "success"
+    },
+    {
+      "name": "desktop (windows-2025, win32, x64, --win nsis)",
+      "id": 110315568575,
+      "conclusion": "success"
+    },
+    {
+      "name": "desktop (ubuntu-24.04, linux, x64, --linux AppImage deb)",
+      "id": 110315568594,
+      "conclusion": "success"
+    },
+    {
+      "name": "desktop (macos-15, darwin, arm64, --mac dmg)",
+      "id": 110315568679,
+      "conclusion": "success"
+    },
+    {
+      "name": "desktop (macos-15-intel, darwin, x64, --mac dmg)",
+      "id": 110315568686,
+      "conclusion": "success"
+    },
+    {
+      "name": "checksums",
+      "id": 110317384900,
+      "conclusion": "success"
+    },
+    {
+      "name": "publication",
+      "id": 110317658461,
+      "conclusion": "success"
+    }
+  ]
+}

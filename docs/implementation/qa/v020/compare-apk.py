@@ -24,6 +24,7 @@ def inspect(path):
     artifact = pathlib.Path(path).resolve()
     badging = subprocess.check_output([str(tools / "aapt.exe"), "dump", "badging", str(artifact)], text=True, encoding="utf-8")
     assert "package: name='app.fractal.reader' versionCode='2' versionName='0.2.0'" in badging
+    assert "sdkVersion:'29'" in badging and "targetSdkVersion:'35'" in badging
     signer = subprocess.check_output([str(tools / "apksigner.bat"), "verify", "--verbose", "--print-certs", str(artifact)], text=True, encoding="utf-8")
     certificate = re.search(r"Signer #1 certificate SHA-256 digest: ([a-f0-9]+)", signer).group(1)
     assert certificate == expected_cert

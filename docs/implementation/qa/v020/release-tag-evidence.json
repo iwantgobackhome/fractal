@@ -1,0 +1,7 @@
+﻿{
+    "tag":  "v0.2.0",
+    "reference":  "refs/tags/v0.2.0",
+    "tagObject":  "cc0485674e8e02bd63a89b3ed676a0c44336b675",
+    "acceptedCommit":  "c75ea15f806382f88e7a26e03da17a7f4f505b56",
+    "scope":  "read-only actual GitHub annotated tag identity; source must match final actual five-platform CI"
+}

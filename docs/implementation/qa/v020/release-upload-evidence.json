@@ -1,0 +1,222 @@
+{
+  "sourceCommit": "c75ea15f806382f88e7a26e03da17a7f4f505b56",
+  "actualTagRun": "36845792076",
+  "releaseId": 400840376,
+  "tag": "v0.2.0",
+  "targetCommitish": "main",
+  "isDraftAtInspection": true,
+  "htmlUrl": "https://github.com/iwantgobackhome/fractal/releases/tag/untagged-3ae492aabd9c5ca1659b",
+  "inspectedAt": "2026-10-01T10:11:24.112321+00:00",
+  "scope": "read-only actual GitHub release asset digest/state/name/size versus independently hashed final CI download; no promotion or asset mutation",
+  "assets": [
+    {
+      "id": 602951036,
+      "name": "android-verification.json",
+      "size": 6383,
+      "state": "uploaded",
+      "digest": "sha256:cae03d4d0b8b0ebfeaf6c7b735ea795daa02a2506b8a4b8bf0940773d74a36c2",
+      "browser_download_url": "https://github.com/iwantgobackhome/fractal/releases/download/untagged-3ae492aabd9c5ca1659b/android-verification.json"
+    },
+    {
+      "id": 602950848,
+      "name": "Fractal-0.2.0-android-debug.apk",
+      "size": 68509034,
+      "state": "uploaded",
+      "digest": "sha256:dc65d977bbd31d70f390ae648f4dbe9e2e326c9d8f406249663d5e0c16c5f549",
+      "browser_download_url": "https://github.com/iwantgobackhome/fractal/releases/download/untagged-3ae492aabd9c5ca1659b/Fractal-0.2.0-android-debug.apk"
+    },
+    {
+      "id": 602950849,
+      "name": "Fractal-0.2.0-linux-x64.AppImage",
+      "size": 131357147,
+      "state": "uploaded",
+      "digest": "sha256:941a92ac533b7750394a1dcf8e573ca4c5b479088ddf48dff8a83812f8401490",
+      "browser_download_url": "https://github.com/iwantgobackhome/fractal/releases/download/untagged-3ae492aabd9c5ca1659b/Fractal-0.2.0-linux-x64.AppImage"
+    },
+    {
+      "id": 602950844,
+      "name": "Fractal-0.2.0-linux-x64.deb",
+      "size": 104936776,
+      "state": "uploaded",
+      "digest": "sha256:ffd8eba4979b528c60b1cbe9b23a529f82bdf27c9b55d952858bf63356ae3872",
+      "browser_download_url": "https://github.com/iwantgobackhome/fractal/releases/download/untagged-3ae492aabd9c5ca1659b/Fractal-0.2.0-linux-x64.deb"
+    },
+    {
+      "id": 602950846,
+      "name": "Fractal-0.2.0-mac-arm64.dmg",
+      "size": 134132186,
+      "state": "uploaded",
+      "digest": "sha256:0f205d5ed48765bd64714d78be66ac65dc2693acdf45084eda7b0b6ac83c84b2",
+      "browser_download_url": "https://github.com/iwantgobackhome/fractal/releases/download/untagged-3ae492aabd9c5ca1659b/Fractal-0.2.0-mac-arm64.dmg"
+    },
+    {
+      "id": 602950852,
+      "name": "Fractal-0.2.0-mac-x64.dmg",
+      "size": 139596776,
+      "state": "uploaded",
+      "digest": "sha256:4833d6c120755cdfc254a8e701b24be0e1c0bee180d590030e333bf18165c5f0",
+      "browser_download_url": "https://github.com/iwantgobackhome/fractal/releases/download/untagged-3ae492aabd9c5ca1659b/Fractal-0.2.0-mac-x64.dmg"
+    },
+    {
+      "id": 602950943,
+      "name": "Fractal-0.2.0-win-x64.exe",
+      "size": 117656431,
+      "state": "uploaded",
+      "digest": "sha256:0e8c4d711fc4cc90736e63e4c040f55132b351e001207162b0ac88c0bc08be9b",
+      "browser_download_url": "https://github.com/iwantgobackhome/fractal/releases/download/untagged-3ae492aabd9c5ca1659b/Fractal-0.2.0-win-x64.exe"
+    },
+    {
+      "id": 602951039,
+      "name": "package-darwin-arm64.json",
+      "size": 65914,
+      "state": "uploaded",
+      "digest": "sha256:2ea93142339b9a89dda953095aaa911915689fbf62dbf6b183a77660f256aa0b",
+      "browser_download_url": "https://github.com/iwantgobackhome/fractal/releases/download/untagged-3ae492aabd9c5ca1659b/package-darwin-arm64.json"
+    },
+    {
+      "id": 602951041,
+      "name": "package-darwin-x64.json",
+      "size": 65887,
+      "state": "uploaded",
+      "digest": "sha256:859e75915bc171cd5f8ccd17bcde023de7ad218e411260b018b27411e7bac5f4",
+      "browser_download_url": "https://github.com/iwantgobackhome/fractal/releases/download/untagged-3ae492aabd9c5ca1659b/package-darwin-x64.json"
+    },
+    {
+      "id": 602951042,
+      "name": "package-linux-x64.json",
+      "size": 13562,
+      "state": "uploaded",
+      "digest": "sha256:82bd54566c49efd8abaa6c5a3cba8761f32049b88cde86c280459a9309200903",
+      "browser_download_url": "https://github.com/iwantgobackhome/fractal/releases/download/untagged-3ae492aabd9c5ca1659b/package-linux-x64.json"
+    },
+    {
+      "id": 602951045,
+      "name": "package-win32-x64.json",
+      "size": 15459,
+      "state": "uploaded",
+      "digest": "sha256:110d71dfba2421e24d18ffc4ab85fb6217db1cb170e1d46e7cdbc19a6856a38b",
+      "browser_download_url": "https://github.com/iwantgobackhome/fractal/releases/download/untagged-3ae492aabd9c5ca1659b/package-win32-x64.json"
+    },
+    {
+      "id": 602950985,
+      "name": "SHA256SUMS-android.txt",
+      "size": 276,
+      "state": "uploaded",
+      "digest": "sha256:79c317fd349b751bf121296e1fa852ecf1979cb9e532bd8c10642b6e08eb7f35",
+      "browser_download_url": "https://github.com/iwantgobackhome/fractal/releases/download/untagged-3ae492aabd9c5ca1659b/SHA256SUMS-android.txt"
+    },
+    {
+      "id": 602951004,
+      "name": "SHA256SUMS-darwin-arm64.txt",
+      "size": 367,
+      "state": "uploaded",
+      "digest": "sha256:ed79e290c8e58b5a2f966ac601f0aae8c5f6fa82a0038e528963a2cbcb239ae1",
+      "browser_download_url": "https://github.com/iwantgobackhome/fractal/releases/download/untagged-3ae492aabd9c5ca1659b/SHA256SUMS-darwin-arm64.txt"
+    },
+    {
+      "id": 602951015,
+      "name": "SHA256SUMS-darwin-x64.txt",
+      "size": 359,
+      "state": "uploaded",
+      "digest": "sha256:1b55ab490a9e9d12f690ea915e90f9644f8ce7351108c0454e8eeb67bfc8ed84",
+      "browser_download_url": "https://github.com/iwantgobackhome/fractal/releases/download/untagged-3ae492aabd9c5ca1659b/SHA256SUMS-darwin-x64.txt"
+    },
+    {
+      "id": 602951025,
+      "name": "SHA256SUMS-linux-x64.txt",
+      "size": 457,
+      "state": "uploaded",
+      "digest": "sha256:1048269cafac580be939a373229654bf7909f3ddbc0a0ef6e5cea95d8a9e5cf3",
+      "browser_download_url": "https://github.com/iwantgobackhome/fractal/releases/download/untagged-3ae492aabd9c5ca1659b/SHA256SUMS-linux-x64.txt"
+    },
+    {
+      "id": 602951026,
+      "name": "SHA256SUMS-win32-x64.txt",
+      "size": 356,
+      "state": "uploaded",
+      "digest": "sha256:67b1a0bc9750dfbb0adb42d24bb839e2f751b837e4ad72acba1b8eb77053caf0",
+      "browser_download_url": "https://github.com/iwantgobackhome/fractal/releases/download/untagged-3ae492aabd9c5ca1659b/SHA256SUMS-win32-x64.txt"
+    },
+    {
+      "id": 602951027,
+      "name": "SHA256SUMS.txt",
+      "size": 2272,
+      "state": "uploaded",
+      "digest": "sha256:b36388a45393ee9b18692782102250b8588118b035fde208ca44e7aa2b3a5146",
+      "browser_download_url": "https://github.com/iwantgobackhome/fractal/releases/download/untagged-3ae492aabd9c5ca1659b/SHA256SUMS.txt"
+    },
+    {
+      "id": 602951051,
+      "name": "smoke-darwin-arm64.json",
+      "size": 33935,
+      "state": "uploaded",
+      "digest": "sha256:6f13b9bd728f7dec03e7ebc6c008bd4ba1ab71be9b82466cd40d35f4971180ad",
+      "browser_download_url": "https://github.com/iwantgobackhome/fractal/releases/download/untagged-3ae492aabd9c5ca1659b/smoke-darwin-arm64.json"
+    },
+    {
+      "id": 602951052,
+      "name": "smoke-darwin-x64.json",
+      "size": 33898,
+      "state": "uploaded",
+      "digest": "sha256:45d2f9d706b4ab3238d3794e06d454caebf6811d4fbac79f6e8850d313824b60",
+      "browser_download_url": "https://github.com/iwantgobackhome/fractal/releases/download/untagged-3ae492aabd9c5ca1659b/smoke-darwin-x64.json"
+    },
+    {
+      "id": 602951054,
+      "name": "smoke-linux-x64.json",
+      "size": 33842,
+      "state": "uploaded",
+      "digest": "sha256:eeede0940085b55f2526a495fd3eca1aab44873a4b1b5caec78eda5ed35a02fd",
+      "browser_download_url": "https://github.com/iwantgobackhome/fractal/releases/download/untagged-3ae492aabd9c5ca1659b/smoke-linux-x64.json"
+    },
+    {
+      "id": 602951053,
+      "name": "smoke-win32-x64.json",
+      "size": 33845,
+      "state": "uploaded",
+      "digest": "sha256:4061bc66a8608db580b9f87692dd74329629e1c237d35e6349ffbe54c732e260",
+      "browser_download_url": "https://github.com/iwantgobackhome/fractal/releases/download/untagged-3ae492aabd9c5ca1659b/smoke-win32-x64.json"
+    },
+    {
+      "id": 602951062,
+      "name": "source-android.json",
+      "size": 296562,
+      "state": "uploaded",
+      "digest": "sha256:25e1600075fa69d16bd504269be65e99a12113bb1c20b91aaa2b5d4b49dcb696",
+      "browser_download_url": "https://github.com/iwantgobackhome/fractal/releases/download/untagged-3ae492aabd9c5ca1659b/source-android.json"
+    },
+    {
+      "id": 602951068,
+      "name": "source-darwin-arm64.json",
+      "size": 296562,
+      "state": "uploaded",
+      "digest": "sha256:25e1600075fa69d16bd504269be65e99a12113bb1c20b91aaa2b5d4b49dcb696",
+      "browser_download_url": "https://github.com/iwantgobackhome/fractal/releases/download/untagged-3ae492aabd9c5ca1659b/source-darwin-arm64.json"
+    },
+    {
+      "id": 602951070,
+      "name": "source-darwin-x64.json",
+      "size": 296562,
+      "state": "uploaded",
+      "digest": "sha256:25e1600075fa69d16bd504269be65e99a12113bb1c20b91aaa2b5d4b49dcb696",
+      "browser_download_url": "https://github.com/iwantgobackhome/fractal/releases/download/untagged-3ae492aabd9c5ca1659b/source-darwin-x64.json"
+    },
+    {
+      "id": 602951072,
+      "name": "source-linux-x64.json",
+      "size": 296562,
+      "state": "uploaded",
+      "digest": "sha256:25e1600075fa69d16bd504269be65e99a12113bb1c20b91aaa2b5d4b49dcb696",
+      "browser_download_url": "https://github.com/iwantgobackhome/fractal/releases/download/untagged-3ae492aabd9c5ca1659b/source-linux-x64.json"
+    },
+    {
+      "id": 602951076,
+      "name": "source-win32-x64.json",
+      "size": 296569,
+      "state": "uploaded",
+      "digest": "sha256:9204da464d59bd0110be2dd52d203b692acfe028e0ec17fed24d03d0c331ad75",
+      "browser_download_url": "https://github.com/iwantgobackhome/fractal/releases/download/untagged-3ae492aabd9c5ca1659b/source-win32-x64.json"
+    }
+  ],
+  "verifiedAssets": 26
+}

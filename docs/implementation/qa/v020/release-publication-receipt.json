@@ -1,0 +1,15 @@
+{
+  "sourceCommit": "c75ea15f806382f88e7a26e03da17a7f4f505b56",
+  "actualTaggedRun": "36845792076",
+  "releaseId": 400840376,
+  "tag": "v0.2.0",
+  "url": "https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.0",
+  "publishedAt": "2026-10-01T10:12:52Z",
+  "draft": false,
+  "prerelease": false,
+  "coordinatorMessage": "msg_8406fdef4867",
+  "scope": "coordinator-attributed guarded promotion outcome after independent final artifact acceptance; this worker performed no promotion or further optional check",
+  "tagAndAssetsUnchangedAccordingToCoordinator": true,
+  "independentlyVerifiedUploadedAssetsBeforePromotion": 26,
+  "remoteMutationsByThisWorker": false
+}
