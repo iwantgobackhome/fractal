@@ -86,6 +86,22 @@ describe('explicit publication PDF acquisition', () => {
     expect(transport).toHaveBeenCalledTimes(2);
   });
 
+  it('preserves structured acquisition 404 reasons while leaving old-route library behavior intact', async () => {
+    const changed = vi.fn();
+    vi.stubGlobal('window', { dispatchEvent: changed });
+    const transport = vi.fn<typeof fetch>(
+      async () => new Response(JSON.stringify({ error: { code: 'NOT_FOUND', message: 'No public PDF was found for this publication' } }), { status: 404 }),
+    );
+    const hub = new HubApi(null, transport);
+    await expect(hub.openPublication(item)).rejects.toMatchObject({
+      code: 'NOT_FOUND',
+      message: 'No public PDF was found for this publication',
+      httpStatus: 404,
+    });
+    expect(await hub.library()).toBeNull();
+    expect(changed).not.toHaveBeenCalled();
+  });
+
   it('bounds a hung transport even if it ignores abort; a late reply cannot announce a catalog change', async () => {
     vi.useFakeTimers();
     const changed = vi.fn();

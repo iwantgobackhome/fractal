@@ -102,7 +102,7 @@ type ActionProps = {
 
 export function PublicationActions(props: ActionProps): JSX.Element {
   // A replacement row cannot inherit an old item's busy state or late response.
-  const identity = JSON.stringify([props.item.url, props.item.doi, props.item.arxivId, props.item.title, props.item.authors]);
+  const identity = JSON.stringify([props.item.url, props.item.doi, props.item.arxivId, props.item.title, props.item.authors, props.item.publication]);
   return <PublicationActionRow key={identity} {...props} />;
 }
 

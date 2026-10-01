@@ -257,7 +257,10 @@ export class HubApi {
     private readonly fetchImpl: typeof fetch = (input, init) => globalThis.fetch(input, init),
   ) {}
 
-  private async call<T>(path: string, init: { method?: string; body?: BodyInit | object; contentType?: string; signal?: AbortSignal } = {}): Promise<T | null> {
+  private async call<T>(
+    path: string,
+    init: { method?: string; body?: BodyInit | object; contentType?: string; signal?: AbortSignal; preserveUnavailableErrors?: boolean } = {},
+  ): Promise<T | null> {
     const method = init.method ?? 'GET';
     const headers: Record<string, string> = { accept: 'application/json' };
     if (this.token !== null) headers[TOKEN_HEADER] = this.token;
@@ -270,8 +273,15 @@ export class HubApi {
       headers['content-type'] = 'application/json';
     }
     const response = await this.fetchImpl(path, { method, headers, body, credentials: 'same-origin', signal: init.signal });
-    if (response.status === 404 || response.status === 405 || response.status === 501) return null;
+    const unavailable = response.status === 404 || response.status === 405 || response.status === 501;
+    if (unavailable && !init.preserveUnavailableErrors) return null;
     const payload: unknown = await response.json().catch(() => null);
+    if (unavailable) {
+      const error = payload !== null && typeof payload === 'object' && 'error' in payload ? payload.error : null;
+      // Structured acquisition failures can be 404. Only an unusable error
+      // response can be treated as compatibility with a missing Hub route.
+      if (error === null || typeof error !== 'object' || !('message' in error) || typeof error.message !== 'string') return null;
+    }
     if (payload !== null && typeof payload === 'object' && 'error' in payload) {
       const error = (payload as { error: { message?: string; code?: string; details?: unknown } }).error;
       throw Object.assign(new Error(error.message ?? t('errors.request')), { code: error.code, details: error.details, httpStatus: response.status });
@@ -454,7 +464,10 @@ export class HubApi {
         controller.abort();
       }, 90_000);
     });
-    const request = Promise.race([this.call<PublicationPdfLinkResult>('/api/publications/open', { method: 'POST', body, signal: controller.signal }), deadline])
+    const request = Promise.race([
+      this.call<PublicationPdfLinkResult>('/api/publications/open', { method: 'POST', body, signal: controller.signal, preserveUnavailableErrors: true }),
+      deadline,
+    ])
       .then((result) => {
         if (result === null) return null;
         if (
