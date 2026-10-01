@@ -1,0 +1,497 @@
+{
+    "data":  {
+                 "acceptedSourceSha":  "733be9846870428de95a0f36fec1050b0e013c8f",
+                 "offline":  false,
+                 "oldHub":  false,
+                 "loginHtml":  false,
+                 "delayOpen":  false,
+                 "blocked":  false,
+                 "wire":  [
+                              {
+                                  "path":  "/api/sync/pull?since=9",
+                                  "method":  "GET",
+                                  "at":  "2026-10-01T06:00:48.735Z",
+                                  "bytes":  0,
+                                  "network":  "live",
+                                  "status":  200
+                              },
+                              {
+                                  "path":  "/api/sync/push",
+                                  "method":  "POST",
+                                  "at":  "2026-10-01T06:00:48.863Z",
+                                  "bytes":  1607,
+                                  "network":  "live",
+                                  "status":  400
+                              },
+                              {
+                                  "path":  "/api/feed/categories",
+                                  "method":  "GET",
+                                  "at":  "2026-10-01T06:00:49.125Z",
+                                  "bytes":  0,
+                                  "network":  "live",
+                                  "status":  404
+                              },
+                              {
+                                  "path":  "/api/papers/pub-15d941e218e5a9c026fe66d5483d5f22389faaa880521312d218dd0443c8968f/related",
+                                  "method":  "GET",
+                                  "at":  "2026-10-01T06:00:53.851Z",
+                                  "bytes":  0,
+                                  "network":  "live",
+                                  "status":  200
+                              },
+                              {
+                                  "path":  "/api/publications/open",
+                                  "method":  "POST",
+                                  "at":  "2026-10-01T06:00:55.800Z",
+                                  "bytes":  295,
+                                  "network":  "live",
+                                  "status":  404
+                              },
+                              {
+                                  "path":  "/api/publications/open",
+                                  "method":  "POST",
+                                  "at":  "2026-10-01T06:00:57.757Z",
+                                  "bytes":  295,
+                                  "network":  "controlled-login-html",
+                                  "status":  400
+                              },
+                              {
+                                  "path":  "/api/sync/pull?since=9",
+                                  "method":  "GET",
+                                  "at":  "2026-10-01T06:01:56.618Z",
+                                  "bytes":  0,
+                                  "network":  "live",
+                                  "status":  200
+                              },
+                              {
+                                  "path":  "/api/sync/push",
+                                  "method":  "POST",
+                                  "at":  "2026-10-01T06:01:56.692Z",
+                                  "bytes":  1607,
+                                  "network":  "live",
+                                  "status":  400
+                              },
+                              {
+                                  "path":  "/api/sync/pull?since=9",
+                                  "method":  "GET",
+                                  "at":  "2026-10-01T06:02:30.056Z",
+                                  "bytes":  0,
+                                  "network":  "live",
+                                  "status":  503
+                              },
+                              {
+                                  "path":  "/api/feed/categories",
+                                  "method":  "GET",
+                                  "at":  "2026-10-01T06:02:30.770Z",
+                                  "bytes":  0,
+                                  "network":  "live",
+                                  "status":  503
+                              },
+                              {
+                                  "path":  "/api/sync/pull?since=9",
+                                  "method":  "GET",
+                                  "at":  "2026-10-01T06:09:40.608Z",
+                                  "bytes":  0,
+                                  "network":  "live",
+                                  "status":  200
+                              },
+                              {
+                                  "path":  "/api/sync/push",
+                                  "method":  "POST",
+                                  "at":  "2026-10-01T06:09:40.685Z",
+                                  "bytes":  1607,
+                                  "network":  "live",
+                                  "status":  400
+                              },
+                              {
+                                  "path":  "/api/sync/pull?since=9",
+                                  "method":  "GET",
+                                  "at":  "2026-10-01T06:09:51.972Z",
+                                  "bytes":  0,
+                                  "network":  "live",
+                                  "status":  503
+                              },
+                              {
+                                  "path":  "/api/feed/categories",
+                                  "method":  "GET",
+                                  "at":  "2026-10-01T06:09:52.448Z",
+                                  "bytes":  0,
+                                  "network":  "live",
+                                  "status":  503
+                              },
+                              {
+                                  "path":  "/api/papers/pub-acfe0a99cabcf765e36605e0baa4c77ac73bddf7d4cb62029661c7568645cfa2/related",
+                                  "method":  "GET",
+                                  "at":  "2026-10-01T06:09:57.693Z",
+                                  "bytes":  0,
+                                  "network":  "live",
+                                  "status":  503
+                              },
+                              {
+                                  "path":  "/api/papers/pub-acfe0a99cabcf765e36605e0baa4c77ac73bddf7d4cb62029661c7568645cfa2",
+                                  "method":  "GET",
+                                  "at":  "2026-10-01T06:09:58.002Z",
+                                  "bytes":  0,
+                                  "network":  "live",
+                                  "status":  503
+                              },
+                              {
+                                  "path":  "/api/sync/pull?since=9",
+                                  "method":  "GET",
+                                  "at":  "2026-10-01T06:11:43.818Z",
+                                  "bytes":  0,
+                                  "network":  "live",
+                                  "status":  503
+                              },
+                              {
+                                  "path":  "/api/feed/categories",
+                                  "method":  "GET",
+                                  "at":  "2026-10-01T06:11:44.255Z",
+                                  "bytes":  0,
+                                  "network":  "live",
+                                  "status":  503
+                              },
+                              {
+                                  "path":  "/api/papers/pub-acfe0a99cabcf765e36605e0baa4c77ac73bddf7d4cb62029661c7568645cfa2/related",
+                                  "method":  "GET",
+                                  "at":  "2026-10-01T06:11:49.507Z",
+                                  "bytes":  0,
+                                  "network":  "live",
+                                  "status":  503
+                              },
+                              {
+                                  "path":  "/api/papers/pub-acfe0a99cabcf765e36605e0baa4c77ac73bddf7d4cb62029661c7568645cfa2",
+                                  "method":  "GET",
+                                  "at":  "2026-10-01T06:11:49.729Z",
+                                  "bytes":  0,
+                                  "network":  "live",
+                                  "status":  503
+                              },
+                              {
+                                  "path":  "/api/papers/pub-acfe0a99cabcf765e36605e0baa4c77ac73bddf7d4cb62029661c7568645cfa2",
+                                  "method":  "GET",
+                                  "at":  "2026-10-01T06:11:49.779Z",
+                                  "bytes":  0,
+                                  "network":  "live",
+                                  "status":  503
+                              },
+                              {
+                                  "path":  "/api/publications/open",
+                                  "method":  "POST",
+                                  "at":  "2026-10-01T06:11:50.606Z",
+                                  "bytes":  340,
+                                  "network":  "live",
+                                  "status":  200
+                              },
+                              {
+                                  "path":  "/api/papers/pub-acfe0a99cabcf765e36605e0baa4c77ac73bddf7d4cb62029661c7568645cfa2",
+                                  "method":  "GET",
+                                  "at":  "2026-10-01T06:11:50.638Z",
+                                  "bytes":  0,
+                                  "network":  "live",
+                                  "status":  200
+                              },
+                              {
+                                  "path":  "/api/papers/pub-acfe0a99cabcf765e36605e0baa4c77ac73bddf7d4cb62029661c7568645cfa2/pdf",
+                                  "method":  "GET",
+                                  "at":  "2026-10-01T06:11:50.813Z",
+                                  "bytes":  0,
+                                  "network":  "live",
+                                  "status":  200
+                              },
+                              {
+                                  "path":  "/api/papers/pub-acfe0a99cabcf765e36605e0baa4c77ac73bddf7d4cb62029661c7568645cfa2",
+                                  "method":  "GET",
+                                  "at":  "2026-10-01T06:11:51.068Z",
+                                  "bytes":  0,
+                                  "network":  "live",
+                                  "status":  200
+                              },
+                              {
+                                  "path":  "/api/papers/pub-acfe0a99cabcf765e36605e0baa4c77ac73bddf7d4cb62029661c7568645cfa2",
+                                  "method":  "GET",
+                                  "at":  "2026-10-01T06:11:52.217Z",
+                                  "bytes":  0,
+                                  "network":  "live",
+                                  "status":  503
+                              },
+                              {
+                                  "path":  "/api/sync/pull?since=9",
+                                  "method":  "GET",
+                                  "at":  "2026-10-01T06:12:50.317Z",
+                                  "bytes":  0,
+                                  "network":  "live",
+                                  "status":  200
+                              },
+                              {
+                                  "path":  "/api/feed/categories",
+                                  "method":  "GET",
+                                  "at":  "2026-10-01T06:12:50.729Z",
+                                  "bytes":  0,
+                                  "network":  "live",
+                                  "status":  404
+                              },
+                              {
+                                  "path":  "/api/papers/pub-15d941e218e5a9c026fe66d5483d5f22389faaa880521312d218dd0443c8968f/related",
+                                  "method":  "GET",
+                                  "at":  "2026-10-01T06:12:59.027Z",
+                                  "bytes":  0,
+                                  "network":  "live",
+                                  "status":  200
+                              },
+                              {
+                                  "path":  "/api/publications/open",
+                                  "method":  "POST",
+                                  "at":  "2026-10-01T06:13:00.842Z",
+                                  "bytes":  295,
+                                  "network":  "live",
+                                  "status":  404
+                              },
+                              {
+                                  "path":  "/api/publications/open",
+                                  "method":  "POST",
+                                  "at":  "2026-10-01T06:13:02.773Z",
+                                  "bytes":  295,
+                                  "network":  "controlled-login-html",
+                                  "status":  400
+                              }
+                          ],
+                 "library":  [
+                                 {
+                                     "id":  "pub-02570638f4530cfde4d8de11a44711c69d7ed0d0aa238826deebf4c450c87622",
+                                     "paperKey":  "pub-02570638f4530cfde4d8de11a44711c69d7ed0d0aa238826deebf4c450c87622",
+                                     "title":  "Dropout: A Simple Way to Prevent Neural Networks from Overfitting",
+                                     "authors":  [
+                                                     {
+                                                         "given":  "Nitish",
+                                                         "family":  "Srivastava"
+                                                     },
+                                                     {
+                                                         "given":  "Geoffrey",
+                                                         "family":  "Hinton"
+                                                     }
+                                                 ],
+                                     "year":  2014,
+                                     "venue":  "Journal of Machine Learning Research",
+                                     "doi":  null,
+                                     "arxivId":  null,
+                                     "url":  "https://jmlr.org/papers/v15/srivastava14a.html",
+                                     "abstract":  null,
+                                     "tags":  [
+
+                                              ],
+                                     "collections":  [
+
+                                                     ],
+                                     "addedAt":  "2026-10-01T05:35:43.769Z",
+                                     "updatedAt":  "2026-10-01T05:35:49.093Z",
+                                     "status":  "unread",
+                                     "bibtexKey":  "publicationb6d27ea78ed0",
+                                     "publication":  {
+                                                         "year":  2014,
+                                                         "venue":  "Journal of Machine Learning Research",
+                                                         "publicationKind":  "journal",
+                                                         "publicationDate":  null,
+                                                         "sources":  [
+                                                                         "user"
+                                                                     ],
+                                                         "oaAvailability":  "open",
+                                                         "oaPdfUrl":  "https://jmlr.org/papers/volume15/srivastava14a/srivastava14a.pdf"
+                                                     },
+                                     "saved":  true,
+                                     "savedAt":  "2026-10-01T05:35:43.769Z",
+                                     "lastReadAt":  null,
+                                     "readProgress":  null,
+                                     "rev":  2,
+                                     "deviceId":  "hub"
+                                 },
+                                 {
+                                     "id":  "pub-15d941e218e5a9c026fe66d5483d5f22389faaa880521312d218dd0443c8968f",
+                                     "paperKey":  "pub-15d941e218e5a9c026fe66d5483d5f22389faaa880521312d218dd0443c8968f",
+                                     "title":  "Controlled unavailable publication",
+                                     "authors":  [
+
+                                                 ],
+                                     "year":  null,
+                                     "venue":  null,
+                                     "doi":  null,
+                                     "arxivId":  null,
+                                     "url":  "https://jmlr.org/qa-acquisition-login",
+                                     "abstract":  null,
+                                     "tags":  [
+
+                                              ],
+                                     "collections":  [
+
+                                                     ],
+                                     "addedAt":  "2026-10-01T05:35:55.722Z",
+                                     "updatedAt":  "2026-10-01T05:35:55.723Z",
+                                     "status":  "unread",
+                                     "bibtexKey":  "publication0f456abcbcea",
+                                     "publication":  {
+                                                         "year":  null,
+                                                         "venue":  null,
+                                                         "publicationKind":  "unknown",
+                                                         "publicationDate":  null,
+                                                         "sources":  [
+                                                                         "user"
+                                                                     ],
+                                                         "oaAvailability":  "open",
+                                                         "oaPdfUrl":  "https://jmlr.org/qa-acquisition-login.pdf"
+                                                     },
+                                     "saved":  false,
+                                     "savedAt":  null,
+                                     "lastReadAt":  null,
+                                     "readProgress":  null,
+                                     "rev":  1,
+                                     "deviceId":  "hub"
+                                 },
+                                 {
+                                     "id":  "pub-32fc1d3ce5ab760587b23fe492bdf6abf032f3adcc5f8a1e0ae8f7e01d18f01f",
+                                     "paperKey":  "pub-32fc1d3ce5ab760587b23fe492bdf6abf032f3adcc5f8a1e0ae8f7e01d18f01f",
+                                     "title":  "WorldAuditBench: Interactive 3D World Auditing with Multimodal Agents",
+                                     "authors":  [
+                                                     {
+                                                         "given":  "Ziyan",
+                                                         "family":  "Jiang"
+                                                     },
+                                                     {
+                                                         "given":  "Jingbo",
+                                                         "family":  "Yang"
+                                                     },
+                                                     {
+                                                         "given":  "Jiabao",
+                                                         "family":  "Ji"
+                                                     },
+                                                     {
+                                                         "given":  "Yujian",
+                                                         "family":  "Liu"
+                                                     },
+                                                     {
+                                                         "given":  "Qiucheng",
+                                                         "family":  "Wu"
+                                                     },
+                                                     {
+                                                         "given":  "Tommi",
+                                                         "family":  "Jaakkola"
+                                                     },
+                                                     {
+                                                         "given":  "Yang",
+                                                         "family":  "Zhang"
+                                                     },
+                                                     {
+                                                         "given":  "Shiyu",
+                                                         "family":  "Chang"
+                                                     }
+                                                 ],
+                                     "year":  2026,
+                                     "venue":  "arXiv",
+                                     "doi":  null,
+                                     "arxivId":  "2609.40325",
+                                     "url":  "https://arxiv.org/abs/2609.40325v1",
+                                     "abstract":  null,
+                                     "tags":  [
+
+                                              ],
+                                     "collections":  [
+
+                                                     ],
+                                     "addedAt":  "2026-10-01T05:37:02.780Z",
+                                     "updatedAt":  "2026-10-01T05:37:11.049Z",
+                                     "status":  "unread",
+                                     "bibtexKey":  "publicationcbb5432e0e83",
+                                     "publication":  {
+                                                         "year":  2026,
+                                                         "venue":  "arXiv",
+                                                         "publicationKind":  "preprint",
+                                                         "publicationDate":  "2026-09-30",
+                                                         "sources":  [
+                                                                         "arxiv"
+                                                                     ],
+                                                         "oaAvailability":  "open",
+                                                         "oaPdfUrl":  "https://arxiv.org/pdf/2609.40325v1"
+                                                     },
+                                     "saved":  false,
+                                     "savedAt":  null,
+                                     "lastReadAt":  null,
+                                     "readProgress":  null,
+                                     "rev":  2,
+                                     "deviceId":  "hub"
+                                 },
+                                 {
+                                     "id":  "pub-acfe0a99cabcf765e36605e0baa4c77ac73bddf7d4cb62029661c7568645cfa2",
+                                     "paperKey":  "pub-acfe0a99cabcf765e36605e0baa4c77ac73bddf7d4cb62029661c7568645cfa2",
+                                     "title":  "Scikit-learn: Machine Learning in Python",
+                                     "authors":  [
+                                                     {
+                                                         "given":  "Fabian",
+                                                         "family":  "Pedregosa"
+                                                     },
+                                                     {
+                                                         "given":  "GaÃ«l",
+                                                         "family":  "Varoquaux"
+                                                     }
+                                                 ],
+                                     "year":  2011,
+                                     "venue":  "Journal of Machine Learning Research",
+                                     "doi":  null,
+                                     "arxivId":  null,
+                                     "url":  "https://jmlr.org/papers/v12/pedregosa11a.html",
+                                     "abstract":  null,
+                                     "tags":  [
+
+                                              ],
+                                     "collections":  [
+
+                                                     ],
+                                     "addedAt":  "2026-10-01T05:35:02.175Z",
+                                     "updatedAt":  "2026-10-01T05:35:43.819Z",
+                                     "status":  "unread",
+                                     "bibtexKey":  "publication939c3a7c9fb0",
+                                     "publication":  {
+                                                         "year":  2011,
+                                                         "venue":  "Journal of Machine Learning Research",
+                                                         "publicationKind":  "journal",
+                                                         "publicationDate":  null,
+                                                         "sources":  [
+                                                                         "user"
+                                                                     ],
+                                                         "oaAvailability":  "open",
+                                                         "oaPdfUrl":  null
+                                                     },
+                                     "saved":  false,
+                                     "savedAt":  null,
+                                     "lastReadAt":  "2026-10-01T05:35:03.544Z",
+                                     "readProgress":  {
+                                                          "page":  1,
+                                                          "scrollOffset":  0
+                                                      },
+                                     "rev":  4,
+                                     "deviceId":  "b9af763a-eb0e-4d16-91b2-51d5e50fefd7"
+                                 }
+                             ],
+                 "folders":  [
+
+                             ],
+                 "history":  [
+
+                             ],
+                 "pdfs":  [
+                              {
+                                  "paperKey":  "pub-02570638f4530cfde4d8de11a44711c69d7ed0d0aa238826deebf4c450c87622",
+                                  "bytes":  2869095,
+                                  "sha256":  "9c196ccbe6c6a595a1adba6cd030d35f7c2e548bbf5e7f1278b0109d8dd9ebaa"
+                              },
+                              {
+                                  "paperKey":  "pub-32fc1d3ce5ab760587b23fe492bdf6abf032f3adcc5f8a1e0ae8f7e01d18f01f",
+                                  "bytes":  49668700,
+                                  "sha256":  "d9fdc657534201a7e1df44080ae52fb1c168b791b56581ebf2ddf35d0b087901"
+                              },
+                              {
+                                  "paperKey":  "pub-acfe0a99cabcf765e36605e0baa4c77ac73bddf7d4cb62029661c7568645cfa2",
+                                  "bytes":  42310,
+                                  "sha256":  "1c338a6b3c6c1dcafda3990a8098b8b50dd6c77616361396fb75f6822c6e0778"
+                              }
+                          ]
+             }
+}

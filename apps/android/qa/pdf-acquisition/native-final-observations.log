@@ -1,0 +1,12 @@
+--------- beginning of main
+10-01 06:11:43.125 12744 12786 I DiscoveryNativeQA: click=Discover
+10-01 06:11:48.285 12744 12786 I DiscoveryNativeQA: click=Scikit-learn: Machine Learning in Python
+10-01 06:11:48.617 12744 12786 I DiscoveryNativeQA: click=Read PDF
+10-01 06:11:51.454 12744 12786 I PdfAcquisitionQA: PASS owned same-size/stamp corrupt cache cannot render offline or add Recent; real Hub verified redownload retains key/hash/unsaved and reopens offline
+--------- beginning of main
+10-01 06:12:49.543 12990 13019 I DiscoveryNativeQA: click=Discover
+10-01 06:12:57.831 12990 13019 I DiscoveryNativeQA: click=Controlled unavailable publication
+10-01 06:12:59.877 12990 13019 I DiscoveryNativeQA: click=Read PDF
+10-01 06:13:01.809 12990 13019 I DiscoveryNativeQA: click=Retry Read PDF
+10-01 06:13:02.136 12990 13019 I PdfAcquisitionQA: observed=accessible progress response held
+10-01 06:13:03.359 12990 13019 I PdfAcquisitionQA: PASS controlled old-Hub and login HTML retry/source/manual fallback; no reader/save/external launch

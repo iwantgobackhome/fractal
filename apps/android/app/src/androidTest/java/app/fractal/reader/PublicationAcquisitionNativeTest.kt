@@ -74,7 +74,7 @@ class PublicationAcquisitionNativeTest {
         native.waitFor("real MainActivity desk") { native.node("Discover") != null }
     }
     private fun dossier(paper: DiscoveryPaper) {
-        native.click("Discover"); native.scrollTo(paper.title); native.click(paper.title); native.scrollTo("Read PDF")
+        native.click("Discover"); native.scrollToTop(); native.scrollTo(paper.title); native.click(paper.title); native.scrollTo("Read PDF")
     }
     private suspend fun until(label: String, condition: suspend () -> Boolean) = withTimeout(60000) {
         while (!condition()) delay(100); Log.i("PdfAcquisitionQA", "observed=$label")
@@ -224,6 +224,8 @@ class PublicationAcquisitionNativeTest {
     @Test fun h_ownedCorruptCacheCannotReadOfflineAndVerifiedHubRedownloadPreservesIdentity(): Unit = runBlocking {
         val prior = row(available)!!; val sha = prior.pdfSha256!!; val file = app.cache.file(sha)
         val original = withContext(Dispatchers.IO) { file.readBytes() }; val stamp = file.lastModified()
+        assertEquals(sha, MessageDigest.getInstance("SHA-256").digest(original).joinToString("") { "%02x".format(it) })
+        try {
         val changed = original.clone(); changed[changed.lastIndex] = (changed.last().toInt() xor 1).toByte()
         withContext(Dispatchers.IO) { file.writeBytes(changed); file.setLastModified(stamp) }
         control(buildJsonObject { put("offline", true) }); launch(); dossier(available); native.click("Read PDF")
@@ -241,6 +243,10 @@ class PublicationAcquisitionNativeTest {
         native.waitFor("repaired cache remains readable offline") { native.findSurface() != null }
         assertArrayEquals(original, file.readBytes()); assertFalse(row(available)!!.saved)
         Log.i("PdfAcquisitionQA", "PASS owned same-size/stamp corrupt cache cannot render offline or add Recent; real Hub verified redownload retains key/hash/unsaved and reopens offline")
+        } finally {
+            // Restore only this owned fixture even if a native navigation assertion interrupts the test.
+            withContext(Dispatchers.IO) { file.writeBytes(original); file.setLastModified(stamp) }
+        }
     }
 
     @Test fun i_exactUserCachedOriginalRemainsUsableAfterIntegrityCorrection(): Unit = runBlocking {

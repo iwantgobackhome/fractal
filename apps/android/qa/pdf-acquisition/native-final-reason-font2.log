@@ -1,0 +1,17 @@
+
+adb.exe : s_glBindAttribLocation: bind attrib 0 name position
+위치 줄:2 문자:107
++ ...  logcat -c; & $adb -s emulator-5562 shell am instrument -w -e class a ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (s_glBindAttribL...0 name position:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+s_glBindAttribLocation: bind attrib 1 name color
+s_glBindAttribLocation: bind attrib 2 name localCoord
+app.fractal.reader.PublicationAcquisitionNativeTest:.
+
+Time: 16.679
+
+OK (1 test)
+
+
