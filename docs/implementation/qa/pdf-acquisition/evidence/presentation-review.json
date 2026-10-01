@@ -1,0 +1,68 @@
+{
+  "reviewedAt": "2026-10-01T06:43:51.705Z",
+  "acceptedQaHead": "3af58d807d71e3b4e41f99323803f0bfce92906e",
+  "acceptedWindowsSource": "c0a01b88a6f0141c57fb427344cb0e86ef011141",
+  "status": "QA-PDF-2 source and actual bilingual owner browser proof closed; fresh final package evidence remains pending",
+  "sourceAppGitBlobSha256": "24844b5d8dc4bcaea5fedeb57c5ff0190fd10f3761a1bf45f11b3e2a8f2bca7b",
+  "ownerExecution": "Actual built UI/Hub/public scholarly bytes, independent read-only review; reviewer did not run this owner browser",
+  "ownerRecordedParent": "a45b36286f4ded81d708b32efd70e327b3ee33d3",
+  "parentVsAccepted": "Two presentation lines in working tree tested, then bound by clean c0a01b8",
+  "proofSha256": "fd2925ea4e2afefc9a83d95a607c283a7d4da2fb7b20701f2a26218a048e2016",
+  "cases": [
+    {
+      "name": "localized-corrupted-primary-Read",
+      "language": "en",
+      "heading": "Could not open the original PDF",
+      "context": "Original",
+      "display": "The stored PDF no longer matches its recorded hash. The cached file was not replaced. Check the stored file or open the publication site.",
+      "rawKeyAbsent": true,
+      "retryWorked": true,
+      "mountedPdf": false,
+      "recordedRecent": false,
+      "acquisitionSkipped": true,
+      "metadataPreserved": true
+    },
+    {
+      "name": "localized-corrupted-primary-Read",
+      "language": "ko",
+      "heading": "원본 PDF를 열지 못했습니다",
+      "context": "원문",
+      "display": "저장된 PDF가 기록된 해시와 일치하지 않습니다. 캐시 파일은 교체되지 않았습니다. 저장 파일을 확인하거나 출판물 사이트를 여세요.",
+      "rawKeyAbsent": true,
+      "retryWorked": true,
+      "mountedPdf": false,
+      "recordedRecent": false,
+      "acquisitionSkipped": true,
+      "metadataPreserved": true
+    },
+    {
+      "name": "restored-primary-Read",
+      "exactOriginalHash": "d87d482d5ae7960e2e43d7dd6d21377e60e73e8fce1bf2a01aff7aca8a08c537",
+      "mountedPdf": true,
+      "recentAfterActualRead": true,
+      "retainedMetadataPreserved": true
+    }
+  ],
+  "reference": {
+    "url": "https://papers.nips.cc/paper_files/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf",
+    "bytes": 569417,
+    "sha256": "d87d482d5ae7960e2e43d7dd6d21377e60e73e8fce1bf2a01aff7aca8a08c537",
+    "paperKey": "pub-a7f082412c26f4efd83d74e27f6ac2df66e63468821bfe416ceb86eea9486777"
+  },
+  "screens": [
+    {
+      "name": "browser-failure-en.png",
+      "sha256": "05436b503b2a58bf4991ffaac38d65e8d21a11554b35d04b039a8945408090f1",
+      "visuallyReviewed": true
+    },
+    {
+      "name": "browser-failure-ko.png",
+      "sha256": "88b86bd4281ecd68b786cf24880031d7e058564120b45ec0efc19e4b1733b006",
+      "visuallyReviewed": true
+    }
+  ],
+  "ownedBrowserExited": true,
+  "listenerReleased": true,
+  "seededPdfBytes": false,
+  "reviewerPeerRuntimeOperated": false
+}
