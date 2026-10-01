@@ -1,0 +1,1863 @@
+{
+  "acceptedRuntimeSourceCommit": "edd8019808c923c58f3964528bb57832f79b72d6",
+  "scope": "retained actual native runtime APK; public manifest/signature and entry hashes; no CI artifact comparison yet",
+  "installedByThisWorker": false,
+  "capturedRuntime": {
+    "path": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-v020-thumbnails-clients\\apps\\android\\qa\\v020-thumbnails\\Fractal-0.2.0-clients.apk",
+    "sha256": "42dd1eda407ccc90abcd646b94cd1c2df363cf53634638ce3088ed7529dde64c",
+    "bytes": 68705684,
+    "certificateSha256": "62e0698d0572e672aa65a999c6e6e4a6669fb2baf4ca0c6f9c2ce7f82bdd7f4f",
+    "badging": "package: name='app.fractal.reader' versionCode='2' versionName='0.2.0' platformBuildVersionName='15' platformBuildVersionCode='35' compileSdkVersion='35' compileSdkVersionCodename='15'\nsdkVersion:'29'\ntargetSdkVersion:'35'\nuses-permission: name='android.permission.INTERNET'\nuses-permission: name='android.permission.CAMERA'\nuses-permission: name='android.permission.ACCESS_NETWORK_STATE'\nuses-permission: name='android.permission.WAKE_LOCK'\nuses-permission: name='android.permission.RECEIVE_BOOT_COMPLETED'\nuses-permission: name='android.permission.FOREGROUND_SERVICE'\nuses-permission: name='app.fractal.reader.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'\napplication-label:'Fractal'\napplication-label-af:'Fractal'\napplication-label-am:'Fractal'\napplication-label-ar:'Fractal'\napplication-label-as:'Fractal'\napplication-label-az:'Fractal'\napplication-label-be:'Fractal'\napplication-label-bg:'Fractal'\napplication-label-bn:'Fractal'\napplication-label-bs:'Fractal'\napplication-label-ca:'Fractal'\napplication-label-cs:'Fractal'\napplication-label-da:'Fractal'\napplication-label-de:'Fractal'\napplication-label-el:'Fractal'\napplication-label-en-AU:'Fractal'\napplication-label-en-CA:'Fractal'\napplication-label-en-GB:'Fractal'\napplication-label-en-IN:'Fractal'\napplication-label-en-XC:'Fractal'\napplication-label-es:'Fractal'\napplication-label-es-US:'Fractal'\napplication-label-et:'Fractal'\napplication-label-eu:'Fractal'\napplication-label-fa:'Fractal'\napplication-label-fi:'Fractal'\napplication-label-fr:'Fractal'\napplication-label-fr-CA:'Fractal'\napplication-label-gl:'Fractal'\napplication-label-gu:'Fractal'\napplication-label-hi:'Fractal'\napplication-label-hr:'Fractal'\napplication-label-hu:'Fractal'\napplication-label-hy:'Fractal'\napplication-label-in:'Fractal'\napplication-label-is:'Fractal'\napplication-label-it:'Fractal'\napplication-label-iw:'Fractal'\napplication-label-ja:'Fractal'\napplication-label-ka:'Fractal'\napplication-label-kk:'Fractal'\napplication-label-km:'Fractal'\napplication-label-kn:'Fractal'\napplication-label-ko:'Fractal'\napplication-label-ky:'Fractal'\napplication-label-lo:'Fractal'\napplication-label-lt:'Fractal'\napplication-label-lv:'Fractal'\napplication-label-mk:'Fractal'\napplication-label-ml:'Fractal'\napplication-label-mn:'Fractal'\napplication-label-mr:'Fractal'\napplication-label-ms:'Fractal'\napplication-label-my:'Fractal'\napplication-label-nb:'Fractal'\napplication-label-ne:'Fractal'\napplication-label-nl:'Fractal'\napplication-label-or:'Fractal'\napplication-label-pa:'Fractal'\napplication-label-pl:'Fractal'\napplication-label-pt:'Fractal'\napplication-label-pt-BR:'Fractal'\napplication-label-pt-PT:'Fractal'\napplication-label-ro:'Fractal'\napplication-label-ru:'Fractal'\napplication-label-si:'Fractal'\napplication-label-sk:'Fractal'\napplication-label-sl:'Fractal'\napplication-label-sq:'Fractal'\napplication-label-sr:'Fractal'\napplication-label-sr-Latn:'Fractal'\napplication-label-sv:'Fractal'\napplication-label-sw:'Fractal'\napplication-label-ta:'Fractal'\napplication-label-te:'Fractal'\napplication-label-th:'Fractal'\napplication-label-tl:'Fractal'\napplication-label-tr:'Fractal'\napplication-label-uk:'Fractal'\napplication-label-ur:'Fractal'\napplication-label-uz:'Fractal'\napplication-label-vi:'Fractal'\napplication-label-zh-CN:'Fractal'\napplication-label-zh-HK:'Fractal'\napplication-label-zh-TW:'Fractal'\napplication-label-zu:'Fractal'\napplication-icon-160:'res/mipmap-anydpi-v26/ic_launcher.xml'\napplication-icon-240:'res/mipmap-anydpi-v26/ic_launcher.xml'\napplication-icon-320:'res/mipmap-anydpi-v26/ic_launcher.xml'\napplication-icon-480:'res/mipmap-anydpi-v26/ic_launcher.xml'\napplication-icon-640:'res/mipmap-anydpi-v26/ic_launcher.xml'\napplication-icon-65534:'res/mipmap-anydpi-v26/ic_launcher.xml'\napplication-icon-65535:'res/mipmap-anydpi-v26/ic_launcher.xml'\napplication: label='Fractal' icon='res/mipmap-anydpi-v26/ic_launcher.xml'\napplication-debuggable\nlaunchable-activity: name='app.fractal.reader.MainActivity'  label='' icon=''\nfeature-group: label=''\n  uses-feature-not-required: name='android.hardware.camera'\n  uses-feature: name='android.hardware.faketouch'\n  uses-implied-feature: name='android.hardware.faketouch' reason='default feature for all apps'\nmain\nother-activities\nother-receivers\nother-services\nsupports-screens: 'small' 'normal' 'large' 'xlarge'\nsupports-any-density: 'true'\nlocales: '--_--' 'af' 'am' 'ar' 'as' 'az' 'be' 'bg' 'bn' 'bs' 'ca' 'cs' 'da' 'de' 'el' 'en-AU' 'en-CA' 'en-GB' 'en-IN' 'en-XC' 'es' 'es-US' 'et' 'eu' 'fa' 'fi' 'fr' 'fr-CA' 'gl' 'gu' 'hi' 'hr' 'hu' 'hy' 'in' 'is' 'it' 'iw' 'ja' 'ka' 'kk' 'km' 'kn' 'ko' 'ky' 'lo' 'lt' 'lv' 'mk' 'ml' 'mn' 'mr' 'ms' 'my' 'nb' 'ne' 'nl' 'or' 'pa' 'pl' 'pt' 'pt-BR' 'pt-PT' 'ro' 'ru' 'si' 'sk' 'sl' 'sq' 'sr' 'sr-Latn' 'sv' 'sw' 'ta' 'te' 'th' 'tl' 'tr' 'uk' 'ur' 'uz' 'vi' 'zh-CN' 'zh-HK' 'zh-TW' 'zu'\ndensities: '160' '240' '320' '480' '640' '65534' '65535'\nnative-code: 'arm64-v8a' 'armeabi-v7a' 'x86' 'x86_64'\n",
+    "signatureVerification": "Verifies\nVerified using v1 scheme (JAR signing): false\nVerified using v2 scheme (APK Signature Scheme v2): true\nVerified using v3 scheme (APK Signature Scheme v3): false\nVerified using v3.1 scheme (APK Signature Scheme v3.1): false\nVerified using v4 scheme (APK Signature Scheme v4): false\nVerified for SourceStamp: false\nNumber of signers: 1\nSigner #1 certificate DN: C=US, O=Android, CN=Android Debug\nSigner #1 certificate SHA-256 digest: 62e0698d0572e672aa65a999c6e6e4a6669fb2baf4ca0c6f9c2ce7f82bdd7f4f\nSigner #1 certificate SHA-1 digest: 6a5c66031a15995ec98fe7ff526cf2cfe9269241\nSigner #1 certificate MD5 digest: 6c758442569dc14df3e04d9202181391\nSigner #1 key algorithm: RSA\nSigner #1 key size (bits): 2048\nSigner #1 public key SHA-256 digest: 9ed1fb3f2e7babfc438904f5df757b505bcad6c8847cd95832d3bab062f585d6\nSigner #1 public key SHA-1 digest: 041a234ac3bf009fbde9ea0f983bc36959752ed4\nSigner #1 public key MD5 digest: 8f1a64dd2a115d132e91324b7936c0fe\n",
+    "entries": {
+      "AndroidManifest.xml": {
+        "sha256": "fcde2ba629efb15fe11e4337e480ea09969f002e9e19c288d141ae81a275bd8e",
+        "bytes": 17000
+      },
+      "DebugProbesKt.bin": {
+        "sha256": "4d13bd92f86a0b1415062b8ed57655c0738ccfbdf0786c1d730d988b27fd4400",
+        "bytes": 1728
+      },
+      "assets/mlkit_barcode_models/barcode_ssd_mobilenet_v1_dmp25_quant.tflite": {
+        "sha256": "6c7b209f4256ca4521d86f83d00904ada1a6a443010698463b750d757fae15a4",
+        "bytes": 390456
+      },
+      "assets/mlkit_barcode_models/oned_auto_regressor_mobile.tflite": {
+        "sha256": "8e07cd3b38da1ded3c07d6c81d06990cbdfa284c214557b94e106372e0497442",
+        "bytes": 213880
+      },
+      "assets/mlkit_barcode_models/oned_feature_extractor_mobile.tflite": {
+        "sha256": "981c89dcca6aac10c7ff7304933747f6936292b6395d02ee944e6fbc73b3c92b",
+        "bytes": 276552
+      },
+      "barcode-scanning-common.properties": {
+        "sha256": "98245f350edba9b80b71e4eb7416d2c18e1b3989a8f15fcc8eb04f5a6098c318",
+        "bytes": 84
+      },
+      "barcode-scanning.properties": {
+        "sha256": "045a350629cb114c6b4557590e2230aded7b796c4ec7c1807e815591f8b48218",
+        "bytes": 70
+      },
+      "classes.dex": {
+        "sha256": "117aca6868a158a6ce702bbd0c85b2e9c94cf66d6adcd8ea212a91196880761b",
+        "bytes": 16144964
+      },
+      "classes10.dex": {
+        "sha256": "ef22f12f34575b99f202d1aedc9b537402f086c876a0311831c877669b08d274",
+        "bytes": 7399480
+      },
+      "classes2.dex": {
+        "sha256": "db23ccf369a37062a86541744eb5e7beea982913dfae374d33fced114f4c0c6a",
+        "bytes": 92700
+      },
+      "classes3.dex": {
+        "sha256": "c39850215f4ff745dacb735f4512c7910acd7110fdf2185b200881e61c346d37",
+        "bytes": 259024
+      },
+      "classes4.dex": {
+        "sha256": "d0cf93c9e7a07baa821ee7a256b26d568d38fadbbb2776d3f2671a7475c5c920",
+        "bytes": 196608
+      },
+      "classes5.dex": {
+        "sha256": "f6ebed9350eaf7276a3ccb5cea80858695420ebec90cf81d5695ce3a638977eb",
+        "bytes": 20460
+      },
+      "classes6.dex": {
+        "sha256": "e27f78ed25159866c24d61b5ccd118635f9eabac13f36198ad37c3892d005c12",
+        "bytes": 397776
+      },
+      "classes7.dex": {
+        "sha256": "e27d6728614ba7522e82afbd402933cd5f7a2898e9c2b52f8f9cdd7f9d8c4398",
+        "bytes": 159096
+      },
+      "classes8.dex": {
+        "sha256": "18f0fb18aa9cd8456b782128f0ac9b6061190643aae9a9578211ad8143b24603",
+        "bytes": 1532332
+      },
+      "classes9.dex": {
+        "sha256": "9b6ff1345a7d8243179f98c4b0610aaf482591b2eb9278473ac2068a41aca30b",
+        "bytes": 10929212
+      },
+      "common.properties": {
+        "sha256": "6e34f8b8269d048595ac00b7826dc0988a0bdf4bc131cebd096ee0e24e206127",
+        "bytes": 52
+      },
+      "firebase-annotations.properties": {
+        "sha256": "972326b7b3ba61a998494be06ce6820c633b5c38382279e81f144c48ea6b5d7f",
+        "bytes": 78
+      },
+      "firebase-components.properties": {
+        "sha256": "c6fe1f5b8883cbc775f67184f02cb04fb7a67916696578932bb98f560c77e8c6",
+        "bytes": 76
+      },
+      "firebase-encoders-json.properties": {
+        "sha256": "2bb75fd4ceb1de28ff7c426d70b2fff9e4d0df4e06a1ff3bcfae4967c629b7e1",
+        "bytes": 82
+      },
+      "firebase-encoders.properties": {
+        "sha256": "68fe77519b9c8e9b9c5ed4fec09a364864a2a55fb4ec4eae04d30dd7b3d7161d",
+        "bytes": 72
+      },
+      "image.properties": {
+        "sha256": "f152de3e1791dceecf408291e589678059b2f9d33d748dac34b1c87c5738c060",
+        "bytes": 58
+      },
+      "kotlin/annotation/annotation.kotlin_builtins": {
+        "sha256": "f6bf68d4798ece5071900772a4a87150314aed3788e042d9e30ab60a0857b211",
+        "bytes": 865
+      },
+      "kotlin/collections/collections.kotlin_builtins": {
+        "sha256": "91d6cd4138e850c100a2dec88a965453b0042bf7f6f51202fe4b1efba38e96c0",
+        "bytes": 3635
+      },
+      "kotlin/coroutines/coroutines.kotlin_builtins": {
+        "sha256": "98ab3a3c18fcb237528dd63fa489815c583e1d6c13debd2a27ac6d74ccf8717b",
+        "bytes": 137
+      },
+      "kotlin/internal/internal.kotlin_builtins": {
+        "sha256": "7489c6bcec13d048a4ce9d9f3bafa1a11bfa08021bfa0e07166978d0bc5e450a",
+        "bytes": 583
+      },
+      "kotlin/kotlin.kotlin_builtins": {
+        "sha256": "d03111a486daaa503eb6c17aa6770daf744a9b668f54a75b419d1de3deb868a0",
+        "bytes": 18653
+      },
+      "kotlin/ranges/ranges.kotlin_builtins": {
+        "sha256": "ecf5a840ebf529fd9d1fa8216febc191b8559412a1068554266f64bc3b6f8428",
+        "bytes": 3349
+      },
+      "kotlin/reflect/reflect.kotlin_builtins": {
+        "sha256": "b549fbaa2455d8bd417f44e3df1af2ff6802693a5aa0bb6a740848467b53b69a",
+        "bytes": 2370
+      },
+      "lib/arm64-v8a/libandroidx.graphics.path.so": {
+        "sha256": "41e9a793c43a0f4fddb19e33f346bace464f30f888ba7b9eaf96294ea115bfb6",
+        "bytes": 10096
+      },
+      "lib/arm64-v8a/libbarhopper_v3.so": {
+        "sha256": "ec09597e9eb3aee0eb55ae3366da0d4ba416f5aa35a1af0b3811f50ff46743a1",
+        "bytes": 4946720
+      },
+      "lib/arm64-v8a/libdatastore_shared_counter.so": {
+        "sha256": "d3e48717c9aa147e0ab21063ba0e8e0211cabf8bf40b222640829519edbf58e1",
+        "bytes": 7112
+      },
+      "lib/arm64-v8a/libgraphics-core.so": {
+        "sha256": "a4d95a792921a6e42a65034bce4b7c75ed832fc7c11a87b63efa958244c34f88",
+        "bytes": 212392
+      },
+      "lib/arm64-v8a/libimage_processing_util_jni.so": {
+        "sha256": "3e0071afcdc7e321f839e196d266014182f18d0988e4455acc9857a085b2184e",
+        "bytes": 29008
+      },
+      "lib/arm64-v8a/libink.so": {
+        "sha256": "df29741cef87a67b9e7f462877b7ac7f485016528ff339c1c2fe7aab2f4889c1",
+        "bytes": 1268384
+      },
+      "lib/arm64-v8a/libsurface_util_jni.so": {
+        "sha256": "ee3f0d56f81cc0a301db32dc4fd51274c3216733b4c40172768e38bc5049a265",
+        "bytes": 4832
+      },
+      "lib/armeabi-v7a/libandroidx.graphics.path.so": {
+        "sha256": "41399eba6fc2a60f6f14642375c1824f3cf25eb8fec7397d753730a3ceda3e2b",
+        "bytes": 7252
+      },
+      "lib/armeabi-v7a/libbarhopper_v3.so": {
+        "sha256": "b3c162c69e4906b816227ae116bfd8b9ff19cfdd58a3de0c9a9b110e030063e9",
+        "bytes": 3244440
+      },
+      "lib/armeabi-v7a/libdatastore_shared_counter.so": {
+        "sha256": "716c5d8d2cac8ca0edf65da8f139c7886b726ac79d542a14edeb94994ba6d3dc",
+        "bytes": 4416
+      },
+      "lib/armeabi-v7a/libgraphics-core.so": {
+        "sha256": "dd9189818ab7553f1ade2800fd05162a7e9652f970dd843be4520fe0ec820b18",
+        "bytes": 104508
+      },
+      "lib/armeabi-v7a/libimage_processing_util_jni.so": {
+        "sha256": "e48e356bbe1902ae9a66178a4a0141c993b82ee9f70dde52ad83e4af3eca984f",
+        "bytes": 20380
+      },
+      "lib/armeabi-v7a/libink.so": {
+        "sha256": "4a37f8c7db683f1ced7f4dd6cbf8a7eeeb2ae61d35beb7ddfb4193175eb21047",
+        "bytes": 762536
+      },
+      "lib/armeabi-v7a/libsurface_util_jni.so": {
+        "sha256": "f110d6a305fef5be5664d58cfb054366b002bc516066b4ec880c38a68428756f",
+        "bytes": 3440
+      },
+      "lib/x86/libandroidx.graphics.path.so": {
+        "sha256": "eb0570b41fd3bff25d8204a967c03bd7550719e768b791f680cc40cbe35f29af",
+        "bytes": 9284
+      },
+      "lib/x86/libbarhopper_v3.so": {
+        "sha256": "212dad60137637d3cbaf1ba5fd9d2c0e163c67731ed3a86ecb5d9f8bb9a60c3b",
+        "bytes": 6122368
+      },
+      "lib/x86/libdatastore_shared_counter.so": {
+        "sha256": "cd4a1649e2c8350703146f94a6ee2bf4c3c8c9f172159f805b61a4a2abdf0659",
+        "bytes": 5148
+      },
+      "lib/x86/libgraphics-core.so": {
+        "sha256": "13bbe770a61419d1806d122635643e08bb3531955434257b2e031aebc0462bae",
+        "bytes": 197208
+      },
+      "lib/x86/libimage_processing_util_jni.so": {
+        "sha256": "f5bdd537631cce21ad038a6737775540a7aef1f5a3d1fdc26c469f6c1ae73010",
+        "bytes": 38292
+      },
+      "lib/x86/libink.so": {
+        "sha256": "94adf610a31a488e6e65845f2f0766b8931425d1d7b463ff4a9c209714c74ea4",
+        "bytes": 1400812
+      },
+      "lib/x86/libsurface_util_jni.so": {
+        "sha256": "6b5d033063bc125d99706f14f0ded08b3f0058f53f5a3d17d134e7d2ea75db11",
+        "bytes": 3712
+      },
+      "lib/x86_64/libandroidx.graphics.path.so": {
+        "sha256": "4e56c996f13670e70082658de7880c4020eabf4f25e43387f88ed78a713fc9f0",
+        "bytes": 10760
+      },
+      "lib/x86_64/libbarhopper_v3.so": {
+        "sha256": "6c5deea87d962af008fd48c3229db13ab68eef2e9feeccb2df5b33a920c0579a",
+        "bytes": 5909280
+      },
+      "lib/x86_64/libdatastore_shared_counter.so": {
+        "sha256": "fb6c9208988c49ae94943bc3236fa763ba584722e044fa4ea9a12d2941027105",
+        "bytes": 6224
+      },
+      "lib/x86_64/libgraphics-core.so": {
+        "sha256": "5ed2ac230c1f56e21a9105df692ec3d89a5b782ce5b424074206cf30d44586ed",
+        "bytes": 219048
+      },
+      "lib/x86_64/libimage_processing_util_jni.so": {
+        "sha256": "676e3e280c10dcb9b71ef5bb727552610dc73c7ec85af54c7c898f82785c33d7",
+        "bytes": 48104
+      },
+      "lib/x86_64/libink.so": {
+        "sha256": "0a312ac0a35470cf61ecc7503e7c8e4ddfeffb386307a86850771302c3bf89b9",
+        "bytes": 1282408
+      },
+      "lib/x86_64/libsurface_util_jni.so": {
+        "sha256": "cd425e10a365fb3695e53f1e46227d44d89f14854da4f1258ef079c80c752339",
+        "bytes": 4928
+      },
+      "okhttp3/internal/publicsuffix/NOTICE": {
+        "sha256": "8a9c58fbded5ea3474315e4a9824ca8b1486098a1a03e897e0b19419d5e1876a",
+        "bytes": 218
+      },
+      "okhttp3/internal/publicsuffix/publicsuffixes.gz": {
+        "sha256": "9af43e9995ec749e7a30eec4e5a87770d7e2027847084a07cca82060eff0c791",
+        "bytes": 41394
+      },
+      "play-services-base.properties": {
+        "sha256": "8d3f6754abfac37a2cd34b08b4c528baa8754ec9ff59878ef3d4ac6b01f4d58f",
+        "bytes": 74
+      },
+      "play-services-basement.properties": {
+        "sha256": "b4eb0222955e970ea6434d883c89ccf128b2921b2c0e3e3953b6491ca162c72d",
+        "bytes": 82
+      },
+      "play-services-mlkit-barcode-scanning.properties": {
+        "sha256": "44e42a08e2deb8d85ce4872f779923a498cd8b11d7ab2f0cb33f7d7ba54ae452",
+        "bytes": 110
+      },
+      "play-services-tasks.properties": {
+        "sha256": "e82b1e7f5fbe3788895488f92aee879f1c431fc100fc7f337d429f213971dd88",
+        "bytes": 76
+      },
+      "res/anim-v21/fragment_fast_out_extra_slow_in.xml": {
+        "sha256": "650c54c5eff734092ee09354ffa1d833931b7706f2797e801f825604c47c2dd3",
+        "bytes": 364
+      },
+      "res/anim/abc_fade_in.xml": {
+        "sha256": "3067b94eebe8ac9e3a45599822f99d807d712f424494e9fc9cdd28cfb6bdae6a",
+        "bytes": 388
+      },
+      "res/anim/abc_fade_out.xml": {
+        "sha256": "bbb0848d98a57a7d05ccddd0311383eef9842d3b1a8c361c429fa060de6f05b2",
+        "bytes": 388
+      },
+      "res/anim/abc_grow_fade_in_from_bottom.xml": {
+        "sha256": "ceb9157864e5cc562a21f1e4663139240d73289fc51a30c996a8c2ee8e89ec5d",
+        "bytes": 852
+      },
+      "res/anim/abc_popup_enter.xml": {
+        "sha256": "9aded97f71c7ea36f869e372ba447ea87eaa6137a79320d2b739fdb431e83dd1",
+        "bytes": 508
+      },
+      "res/anim/abc_popup_exit.xml": {
+        "sha256": "d76cc885f63283e9f0e1d0835fc4ef3bc39db5a83f5df681133f701c2d360aa7",
+        "bytes": 508
+      },
+      "res/anim/abc_shrink_fade_out_from_bottom.xml": {
+        "sha256": "d630e86116cf5f5ae6838ef7736238c49168703d8f36499c14ab505e2d69426f",
+        "bytes": 852
+      },
+      "res/anim/abc_slide_in_bottom.xml": {
+        "sha256": "486ad705ae37ff41dfabc952fe5f288e5c7bad1d8ddccd37ab09f26d355415a1",
+        "bytes": 396
+      },
+      "res/anim/abc_slide_in_top.xml": {
+        "sha256": "d60b273289d358f2b3eea13fa097b1cf2198eb37517f7dc9c312ed3e2b465256",
+        "bytes": 396
+      },
+      "res/anim/abc_slide_out_bottom.xml": {
+        "sha256": "e0259df82b318cd7d095daae2cb3d4ee6565adefd6def8c11675649f63717ee5",
+        "bytes": 396
+      },
+      "res/anim/abc_slide_out_top.xml": {
+        "sha256": "0a61ab9fb3d5a2256eb81bd9e63340da925695b00ed53030abfb31d35bd384df",
+        "bytes": 396
+      },
+      "res/anim/abc_tooltip_enter.xml": {
+        "sha256": "3c5fa9f9b71910fbd7d4567a6d060dec1e1d9305ca19ce2386c9e50a2557d7ca",
+        "bytes": 388
+      },
+      "res/anim/abc_tooltip_exit.xml": {
+        "sha256": "07a4b5ed5a58138eaf1db7e7640a3cc148a7d2a57e8121097249f2deeee2dcf6",
+        "bytes": 388
+      },
+      "res/anim/btn_checkbox_to_checked_box_inner_merged_animation.xml": {
+        "sha256": "3560c5c09907859e6570eea27bcbc7f557bd89ffbd16af45f6913cc046c628d1",
+        "bytes": 2124
+      },
+      "res/anim/btn_checkbox_to_checked_box_outer_merged_animation.xml": {
+        "sha256": "738f20a3f83d5a90f5a6a49e916657e65b5bb857d7260bfe4a9a5d0f3e627581",
+        "bytes": 2780
+      },
+      "res/anim/btn_checkbox_to_checked_icon_null_animation.xml": {
+        "sha256": "8d1b064a38d86fcda815d43ad0c06e4246f88c5caf7fb558a13ae8541cda4a8c",
+        "bytes": 1196
+      },
+      "res/anim/btn_checkbox_to_unchecked_box_inner_merged_animation.xml": {
+        "sha256": "8ee615100fbfba2fd08cd11c001d462a02afe6c72a634123295f889f7287eead",
+        "bytes": 2360
+      },
+      "res/anim/btn_checkbox_to_unchecked_check_path_merged_animation.xml": {
+        "sha256": "83639378694206ce50e5fc5facef63c6b64321a1231b1f1bd26d8e76d73f6e43",
+        "bytes": 2520
+      },
+      "res/anim/btn_checkbox_to_unchecked_icon_null_animation.xml": {
+        "sha256": "87675b479e31720a2d7275f1357c87a5d66b45b96daf023b64bd9e127853bbb2",
+        "bytes": 1196
+      },
+      "res/anim/btn_radio_to_off_mtrl_dot_group_animation.xml": {
+        "sha256": "93535bfe6190f38074bec6196b7134e71e0146fc1014467d2e0989c9fa74c67b",
+        "bytes": 1656
+      },
+      "res/anim/btn_radio_to_off_mtrl_ring_outer_animation.xml": {
+        "sha256": "6c042115787e059ad23c3a94afa2a48a21915c9cbc038766d18058b01473365f",
+        "bytes": 1656
+      },
+      "res/anim/btn_radio_to_off_mtrl_ring_outer_path_animation.xml": {
+        "sha256": "0463f7a8f3000c1af89aa522a6ceb7fc189762c8a1d4bc6f6af816eedcf7d9d9",
+        "bytes": 1028
+      },
+      "res/anim/btn_radio_to_on_mtrl_dot_group_animation.xml": {
+        "sha256": "188414b8a6377367745ddadc7bc2326b376d3312a9ae18eb2679e4c456dff5f6",
+        "bytes": 1656
+      },
+      "res/anim/btn_radio_to_on_mtrl_ring_outer_animation.xml": {
+        "sha256": "16feaf7a29851dbc193a814ed30a92ed8ee2d0ed6cbff3a87a5bf9627d072a7a",
+        "bytes": 1656
+      },
+      "res/anim/btn_radio_to_on_mtrl_ring_outer_path_animation.xml": {
+        "sha256": "cefd4ee781e1467cfd10819e5463ae9408d9f1614b6da7607d7a263c2df0fecf",
+        "bytes": 1028
+      },
+      "res/animator/fragment_close_enter.xml": {
+        "sha256": "bf99875fe47f2726b92e24a19ce2d0de63078ac74920e100b601b2bc6c7466dd",
+        "bytes": 1128
+      },
+      "res/animator/fragment_close_exit.xml": {
+        "sha256": "ab99637ff4d7562395db303bac57ec1f9e0e4859de81e9f3707af9c68f1925e3",
+        "bytes": 1128
+      },
+      "res/animator/fragment_fade_enter.xml": {
+        "sha256": "0b51013fc0f5e916a727b75512c1ee9206178bd134509b7b4be6a397fa4d9a6b",
+        "bytes": 452
+      },
+      "res/animator/fragment_fade_exit.xml": {
+        "sha256": "440c234ca8a09188ec558b13771cb29c2da228956bfb58bdade5c1770384acbe",
+        "bytes": 452
+      },
+      "res/animator/fragment_open_enter.xml": {
+        "sha256": "f22d03722ec349fa2fe320e98dee630197cffb5d853cc49039e626c55502298e",
+        "bytes": 1128
+      },
+      "res/animator/fragment_open_exit.xml": {
+        "sha256": "9e9196d0fa85f1c9424e34321551d9586f74535802f532b451f3ab4e2aa65363",
+        "bytes": 1128
+      },
+      "res/color-v23/abc_btn_colored_borderless_text_material.xml": {
+        "sha256": "bd0dcd3548ec35ff2fff77ddc954fbb96ed02f238be5325acad3fc11724bc79b",
+        "bytes": 500
+      },
+      "res/color-v23/abc_btn_colored_text_material.xml": {
+        "sha256": "35f8dd73e67887c32be74aae11f9a67d779b33f72ea61312d4c439b8f73d5ca3",
+        "bytes": 500
+      },
+      "res/color-v23/abc_color_highlight_material.xml": {
+        "sha256": "92ab1200575e874979895a13b348253419a3d4d09abca49cbbfd3de8b2d8c524",
+        "bytes": 544
+      },
+      "res/color-v23/abc_tint_btn_checkable.xml": {
+        "sha256": "d9c42c892d28584a6044b65103e8c6b1dff63f656ddb1dedbfc0e9129c0cd0bf",
+        "bytes": 624
+      },
+      "res/color-v23/abc_tint_default.xml": {
+        "sha256": "2705a0e6a47463c07c0c8ff4832b6ce7e82c04e681274060177b8ce94c187c36",
+        "bytes": 1120
+      },
+      "res/color-v23/abc_tint_edittext.xml": {
+        "sha256": "373a146f1caaa950f1dc2638a3d01e54324d595158641f1fd1e595e463f9bd26",
+        "bytes": 668
+      },
+      "res/color-v23/abc_tint_seek_thumb.xml": {
+        "sha256": "ffd52d1bb0fc08cc5c7d9781b1b69afce5f4a2d69d64333674069120bfb0cf50",
+        "bytes": 500
+      },
+      "res/color-v23/abc_tint_spinner.xml": {
+        "sha256": "373a146f1caaa950f1dc2638a3d01e54324d595158641f1fd1e595e463f9bd26",
+        "bytes": 668
+      },
+      "res/color-v23/abc_tint_switch_track.xml": {
+        "sha256": "d567452c7d604830c2aeb63789f394b7d1e50181d95d26bea2608c89e5549fc2",
+        "bytes": 664
+      },
+      "res/color/abc_background_cache_hint_selector_material_dark.xml": {
+        "sha256": "7d4dfd26cc88091c25e3b4acec3df9cf38d2c02d8714ba37f0ae49623f645d25",
+        "bytes": 468
+      },
+      "res/color/abc_background_cache_hint_selector_material_light.xml": {
+        "sha256": "db68b79e2aee0dfd81849f31be7e8e707b23741e036414bf89021aea29575207",
+        "bytes": 468
+      },
+      "res/color/abc_hint_foreground_material_dark.xml": {
+        "sha256": "4360670050ad8d2e663292b20c702960b04c0d6bf4d91453430ab6fc83ec34e3",
+        "bytes": 564
+      },
+      "res/color/abc_hint_foreground_material_light.xml": {
+        "sha256": "2c35b67d72edf79c5b52784387058da616e99533830e9a7a3b9ec217ace3ca95",
+        "bytes": 564
+      },
+      "res/color/abc_primary_text_disable_only_material_dark.xml": {
+        "sha256": "f0295fb65d7efb38500842f77877430ca4ccbccec187fbfc6d1667a12ff61590",
+        "bytes": 464
+      },
+      "res/color/abc_primary_text_disable_only_material_light.xml": {
+        "sha256": "74c8e5e96fd1a53ea8707a04c823f51a6db5e4aa3d247a9e079d7a39ff173feb",
+        "bytes": 464
+      },
+      "res/color/abc_primary_text_material_dark.xml": {
+        "sha256": "eb36d6e19c31c025cb93ea2f71c5921d72f87343b5d22c8cfc44929d4c57d360",
+        "bytes": 464
+      },
+      "res/color/abc_primary_text_material_light.xml": {
+        "sha256": "421f361fbe815ac7319f1c226a528376d94d46c9f97b7c9de814af272bfa42ed",
+        "bytes": 464
+      },
+      "res/color/abc_search_url_text.xml": {
+        "sha256": "1e4171edfe1875ea4887fcbb8d04c78b72de421b3367df8f715e4941ba5f1b94",
+        "bytes": 588
+      },
+      "res/color/abc_secondary_text_material_dark.xml": {
+        "sha256": "babfc8a39e5ab8773f7f486e9cdf1d9fe14b1cfc6bd9da6d6662b10f2e231842",
+        "bytes": 464
+      },
+      "res/color/abc_secondary_text_material_light.xml": {
+        "sha256": "40d6fb165d2eee5d493da3078d1c79f177757edaa446f51231c1e17bc8982992",
+        "bytes": 464
+      },
+      "res/color/common_google_signin_btn_text_dark.xml": {
+        "sha256": "18dbf03332948ae40269170d0c5c5b91a1830ef7552cd3176bbfba918d959dba",
+        "bytes": 712
+      },
+      "res/color/common_google_signin_btn_text_light.xml": {
+        "sha256": "66e086964258d82d6cd0d70decdee5654aa94d0c0a04070aae9ad0dd3ab2035f",
+        "bytes": 712
+      },
+      "res/color/common_google_signin_btn_tint.xml": {
+        "sha256": "c230db3d543d322c35c60b744c12b0aa7526f1ccfffbb570caee6f47c99f9626",
+        "bytes": 464
+      },
+      "res/color/switch_thumb_material_dark.xml": {
+        "sha256": "cf1ea4cc8326bdbeb13c634598fba9893e540c3cb62bd1c0fba004e5753aa9c7",
+        "bytes": 464
+      },
+      "res/color/switch_thumb_material_light.xml": {
+        "sha256": "5f8bc32cdf07c681ff1a3710a7d0ffecbdfb0604832b9ecc1899c2ac18f77c13",
+        "bytes": 464
+      },
+      "res/color/vector_tint_color.xml": {
+        "sha256": "4bbb4ef3e0e3db260a05d794047a1765e420d699ee5673e90b57ff682a2fe34e",
+        "bytes": 340
+      },
+      "res/color/vector_tint_theme_color.xml": {
+        "sha256": "cf34dc5bdb4a6d1568143e115ac4e34448383ac772862ef0fdbb7fe8936c6dd3",
+        "bytes": 340
+      },
+      "res/drawable-hdpi-v4/abc_ab_share_pack_mtrl_alpha.9.png": {
+        "sha256": "991f73be600ad8821a6743db54af513f9b047058e95066e22fcdd1d72032bc58",
+        "bytes": 272
+      },
+      "res/drawable-hdpi-v4/abc_btn_check_to_on_mtrl_000.png": {
+        "sha256": "5eca0280bd38a6887b6e41765cf5da573133874625001eb90156eaeb35fbe088",
+        "bytes": 227
+      },
+      "res/drawable-hdpi-v4/abc_btn_check_to_on_mtrl_015.png": {
+        "sha256": "5ced2ab774853050255d7309e10b76217813d56f3f8ab8fb73ac3f635d90c676",
+        "bytes": 404
+      },
+      "res/drawable-hdpi-v4/abc_btn_radio_to_on_mtrl_000.png": {
+        "sha256": "5080b07eb486ba05ede737b567eb2bb89d7b79a3edb5c2ca8141c6eba012b75d",
+        "bytes": 464
+      },
+      "res/drawable-hdpi-v4/abc_btn_radio_to_on_mtrl_015.png": {
+        "sha256": "7442cda653acbacdf9aef256aa191e5ebb6071a1747312aec45e1db8252a3cfb",
+        "bytes": 563
+      },
+      "res/drawable-hdpi-v4/abc_btn_switch_to_on_mtrl_00001.9.png": {
+        "sha256": "9f849bcd788adceb32f4c1a5aa892749bd1e244a3787bfbfbd30d3b6f5d8e9db",
+        "bytes": 1096
+      },
+      "res/drawable-hdpi-v4/abc_btn_switch_to_on_mtrl_00012.9.png": {
+        "sha256": "ab94afcb2bb325544c0c1103bf5109b827bf070f441faef909f856ae295a1cf0",
+        "bytes": 1243
+      },
+      "res/drawable-hdpi-v4/abc_cab_background_top_mtrl_alpha.9.png": {
+        "sha256": "67e701476927078d89ab0bbb39fff12d69702592a7a428237a21168a21ec1038",
+        "bytes": 226
+      },
+      "res/drawable-hdpi-v4/abc_ic_commit_search_api_mtrl_alpha.png": {
+        "sha256": "239d602c9c65f156fe024613207955ac8fbdd395ae6ec3efa51be98e3a4473f4",
+        "bytes": 171
+      },
+      "res/drawable-hdpi-v4/abc_list_divider_mtrl_alpha.9.png": {
+        "sha256": "378694706fb7256dd2248e2af854efd71ec7e8885f61da2e16a2bd32fcf3d0a9",
+        "bytes": 167
+      },
+      "res/drawable-hdpi-v4/abc_list_focused_holo.9.png": {
+        "sha256": "a2f1a37af8e699320a2fadbe54eeaa6112d5a3522d57d682edf04fe97be3b47e",
+        "bytes": 244
+      },
+      "res/drawable-hdpi-v4/abc_list_longpressed_holo.9.png": {
+        "sha256": "d5c644b00ee79bd4f1fcb789ebbf89e79c0c6fea878dfbc4a8c64c3be34b5b03",
+        "bytes": 212
+      },
+      "res/drawable-hdpi-v4/abc_list_pressed_holo_dark.9.png": {
+        "sha256": "a7523ccf037f7c31cf87a186feecb9139ef92d87e0702cabb08a31914b2b503e",
+        "bytes": 208
+      },
+      "res/drawable-hdpi-v4/abc_list_pressed_holo_light.9.png": {
+        "sha256": "91b8358e22ac1b8554c71a528414acf30088d9ad562bdac3814844771c14c8a9",
+        "bytes": 208
+      },
+      "res/drawable-hdpi-v4/abc_list_selector_disabled_holo_dark.9.png": {
+        "sha256": "89c28e887b0d60c01b35dcd2be654f416bffb66e8565716dc983e3b0204967e8",
+        "bytes": 228
+      },
+      "res/drawable-hdpi-v4/abc_list_selector_disabled_holo_light.9.png": {
+        "sha256": "475f03b3ccff04fce91a7a912142d150a000b1d011da003745dc2c0e3f5fb092",
+        "bytes": 229
+      },
+      "res/drawable-hdpi-v4/abc_menu_hardkey_panel_mtrl_mult.9.png": {
+        "sha256": "8fcf5b9da03c68dff65adfa8713db9ce3b5e423a9f5046f1785ab640c2a647fb",
+        "bytes": 738
+      },
+      "res/drawable-hdpi-v4/abc_popup_background_mtrl_mult.9.png": {
+        "sha256": "00a1ac74d8164cb5c4749a0b2e77e2c6da4a90abe873d8604f29841c19357c66",
+        "bytes": 1098
+      },
+      "res/drawable-hdpi-v4/abc_scrubber_control_off_mtrl_alpha.png": {
+        "sha256": "0e631dbfe2575dd16d3fd6c59641dfa4abb5e162d60f59049e4459f0af29fbf6",
+        "bytes": 201
+      },
+      "res/drawable-hdpi-v4/abc_scrubber_control_to_pressed_mtrl_000.png": {
+        "sha256": "c131ab0e2eb9879bd063e736ab81313c5a4f47eaa2f4a0ec9eca93a1a150ed79",
+        "bytes": 196
+      },
+      "res/drawable-hdpi-v4/abc_scrubber_control_to_pressed_mtrl_005.png": {
+        "sha256": "dc08af9d14e6b673bf9f31c248236f0457b322464036647473e3a32a23773f0e",
+        "bytes": 272
+      },
+      "res/drawable-hdpi-v4/abc_scrubber_primary_mtrl_alpha.9.png": {
+        "sha256": "9a1a48038a8d1dc041035b49cc732db23e008d126c8b2e680749dd29616a37b3",
+        "bytes": 205
+      },
+      "res/drawable-hdpi-v4/abc_scrubber_track_mtrl_alpha.9.png": {
+        "sha256": "c86d934a5809f32599e42143e306ed6e066b224fe1fa3f32ade1603074e5b136",
+        "bytes": 196
+      },
+      "res/drawable-hdpi-v4/abc_spinner_mtrl_am_alpha.9.png": {
+        "sha256": "b0b2dc2cae7811c124ae528d714318bb1043b59d82a640f22c47ace64c283fec",
+        "bytes": 345
+      },
+      "res/drawable-hdpi-v4/abc_switch_track_mtrl_alpha.9.png": {
+        "sha256": "2e3d70230977af37c6d7739899a73e63937eebdfe6d802f1a957c43c2f2ab131",
+        "bytes": 484
+      },
+      "res/drawable-hdpi-v4/abc_tab_indicator_mtrl_alpha.9.png": {
+        "sha256": "aa61229cd70239278109c5ebe725e72484d0252efa4902a17192366942749289",
+        "bytes": 190
+      },
+      "res/drawable-hdpi-v4/abc_text_select_handle_left_mtrl.png": {
+        "sha256": "498b0cbd09b6b4feed8aca9ed77d235f5bb272c53d21b332649a00e942d989da",
+        "bytes": 278
+      },
+      "res/drawable-hdpi-v4/abc_text_select_handle_middle_mtrl.png": {
+        "sha256": "a475594ae7c771092a3a2718981e2710c737844f44a4401f72d3953753649a7a",
+        "bytes": 396
+      },
+      "res/drawable-hdpi-v4/abc_text_select_handle_right_mtrl.png": {
+        "sha256": "646021cc77e7f4bd68ab59fb32d306f81a2042125e6cdaa16184a062a8183f79",
+        "bytes": 262
+      },
+      "res/drawable-hdpi-v4/abc_textfield_activated_mtrl_alpha.9.png": {
+        "sha256": "a933aaebbeae489dea84e78e7fbc4079fdfda576fbdeb339401fda6cdc03e764",
+        "bytes": 186
+      },
+      "res/drawable-hdpi-v4/abc_textfield_default_mtrl_alpha.9.png": {
+        "sha256": "94fe9824714ad94c002fe6219e723c0d80c7cbe3a6130d7aa493730b67e294d1",
+        "bytes": 192
+      },
+      "res/drawable-hdpi-v4/abc_textfield_search_activated_mtrl_alpha.9.png": {
+        "sha256": "25f25112cc46b285767de7b5b058cfc0a9efd5f21cfe724af031505d66a9eceb",
+        "bytes": 178
+      },
+      "res/drawable-hdpi-v4/abc_textfield_search_default_mtrl_alpha.9.png": {
+        "sha256": "1411ae65d8160573c166d2a572106fd1103c12f242f67feec5feaa550197e5f5",
+        "bytes": 178
+      },
+      "res/drawable-hdpi-v4/common_full_open_on_phone.png": {
+        "sha256": "e8e2fecfbf111cc5ef65dbb6c7395a5ae16a68f7e0922738d0c802b26e866e49",
+        "bytes": 681
+      },
+      "res/drawable-hdpi-v4/common_google_signin_btn_icon_dark_normal_background.9.png": {
+        "sha256": "9865619196624a3cba32a36b0111357afea3148f123221ba8c7265bc681ab8a9",
+        "bytes": 897
+      },
+      "res/drawable-hdpi-v4/common_google_signin_btn_icon_light_normal_background.9.png": {
+        "sha256": "94a0b6363a09d466a3dc3722379ab367d9ff73a21ba0ff2c5bab6c30aa5f8b38",
+        "bytes": 683
+      },
+      "res/drawable-hdpi-v4/common_google_signin_btn_text_dark_normal_background.9.png": {
+        "sha256": "d66f7061c274b1b6f8524993367af902737ddf9187db0cc8d91a8c64ad9b944a",
+        "bytes": 960
+      },
+      "res/drawable-hdpi-v4/common_google_signin_btn_text_light_normal_background.9.png": {
+        "sha256": "dc9a0ae125491ccdac95b57b5eee4060efd191294e171c8e369d7d0ec3ab2268",
+        "bytes": 694
+      },
+      "res/drawable-hdpi-v4/googleg_disabled_color_18.png": {
+        "sha256": "f73508090d3e6bbc3e39ba768e71855aad52ecaaaccda676d43a1860010cc557",
+        "bytes": 410
+      },
+      "res/drawable-hdpi-v4/googleg_standard_color_18.png": {
+        "sha256": "f221f962a62c954a11b1734e9631fc8531e34bee557665fea864aa4386e25e39",
+        "bytes": 808
+      },
+      "res/drawable-hdpi-v4/notification_bg_low_normal.9.png": {
+        "sha256": "21f0b55280be10b187ceff8edef4a5a7047683e6e9fcf47de410aa3839f41094",
+        "bytes": 212
+      },
+      "res/drawable-hdpi-v4/notification_bg_low_pressed.9.png": {
+        "sha256": "42aee0b03883e94df5e543348a397d1302c1b8221895871a83b81899f5a9647b",
+        "bytes": 225
+      },
+      "res/drawable-hdpi-v4/notification_bg_normal.9.png": {
+        "sha256": "0c6328c7b2420570a7ec38b3beb3bac9a29d895ac1ab7239315aba7266418593",
+        "bytes": 212
+      },
+      "res/drawable-hdpi-v4/notification_bg_normal_pressed.9.png": {
+        "sha256": "18b328d8017e677d5aad3dbd66bae356b5cac978c6f0670938ea648e51d0eb66",
+        "bytes": 225
+      },
+      "res/drawable-hdpi-v4/notification_oversize_large_icon_bg.png": {
+        "sha256": "aa00088d0d9fd97bd92ed9ffd29b54bb69a48a984aa73448ce553fb9d812be41",
+        "bytes": 909
+      },
+      "res/drawable-hdpi-v4/notify_panel_notification_icon_bg.png": {
+        "sha256": "8430ec003e003f3f2ba2f78d48fd150e25407667e530e82e87a7d4841c0fd676",
+        "bytes": 107
+      },
+      "res/drawable-ldrtl-hdpi-v17/abc_spinner_mtrl_am_alpha.9.png": {
+        "sha256": "d4d2b0dbb039f1c6395183abe945b39470ad9a8a7b680a40fa790df6c645bb43",
+        "bytes": 345
+      },
+      "res/drawable-ldrtl-mdpi-v17/abc_spinner_mtrl_am_alpha.9.png": {
+        "sha256": "80502979302dee7353f475f558c497ae6697f77181a51f7cc80b40d72c2e0c4c",
+        "bytes": 318
+      },
+      "res/drawable-ldrtl-xhdpi-v17/abc_spinner_mtrl_am_alpha.9.png": {
+        "sha256": "77f0ebab2416404eb1d562342e431541d885686dd1e49d6dc93be1a86c2273c4",
+        "bytes": 417
+      },
+      "res/drawable-ldrtl-xxhdpi-v17/abc_spinner_mtrl_am_alpha.9.png": {
+        "sha256": "007dbf5fa2dc466a4940b0a6a73dab48cb721f64d358f71ff35aaadb9630b5ec",
+        "bytes": 525
+      },
+      "res/drawable-ldrtl-xxxhdpi-v17/abc_spinner_mtrl_am_alpha.9.png": {
+        "sha256": "8c3de5389a4fedf23b1efdf1c7737ca7eb44f381c22369153dfa972613a4c448",
+        "bytes": 437
+      },
+      "res/drawable-mdpi-v4/abc_ab_share_pack_mtrl_alpha.9.png": {
+        "sha256": "f94e2129180c0ba6924430374402456035dcd6b6fff7d05f6de7e24196a3af35",
+        "bytes": 267
+      },
+      "res/drawable-mdpi-v4/abc_btn_check_to_on_mtrl_000.png": {
+        "sha256": "055d5f87b1bbb6677096bc7eb7eace57e40216cb97f2b2b926d26c1263f9abce",
+        "bytes": 214
+      },
+      "res/drawable-mdpi-v4/abc_btn_check_to_on_mtrl_015.png": {
+        "sha256": "caf1e473df6702c2a6a95d738f1d6f2b73196766b504e5ff333b3c8e747e047b",
+        "bytes": 321
+      },
+      "res/drawable-mdpi-v4/abc_btn_radio_to_on_mtrl_000.png": {
+        "sha256": "a547431febf108ccfa9588ab89b1078e387bb351eb54d772394332187f770b74",
+        "bytes": 324
+      },
+      "res/drawable-mdpi-v4/abc_btn_radio_to_on_mtrl_015.png": {
+        "sha256": "c8825cd637e59a02500d8b7518562f0c91bef2edd971ba3e5ad0f416794d618e",
+        "bytes": 356
+      },
+      "res/drawable-mdpi-v4/abc_btn_switch_to_on_mtrl_00001.9.png": {
+        "sha256": "562cba1ad1b9abd502da9c03f4c10bb2bd728022c546f18059319f2ad293280e",
+        "bytes": 754
+      },
+      "res/drawable-mdpi-v4/abc_btn_switch_to_on_mtrl_00012.9.png": {
+        "sha256": "b52228a35520e2d786e962e85013fe7f7c97ffb42677f3bdabc032fbb709952a",
+        "bytes": 825
+      },
+      "res/drawable-mdpi-v4/abc_cab_background_top_mtrl_alpha.9.png": {
+        "sha256": "fb71e11c090133a97fe84fa3b76a263b429c9032ec467854b0e32a3157a5eba5",
+        "bytes": 216
+      },
+      "res/drawable-mdpi-v4/abc_ic_commit_search_api_mtrl_alpha.png": {
+        "sha256": "52549a8d0b6c35faf2795efdf6b4c5fe2cb34b7e8b1039cca7aa2769b6cab3d0",
+        "bytes": 173
+      },
+      "res/drawable-mdpi-v4/abc_list_divider_mtrl_alpha.9.png": {
+        "sha256": "378694706fb7256dd2248e2af854efd71ec7e8885f61da2e16a2bd32fcf3d0a9",
+        "bytes": 167
+      },
+      "res/drawable-mdpi-v4/abc_list_focused_holo.9.png": {
+        "sha256": "8436624220fba246ae816a3aab379dfd7ff2a484284ab24c3af4989778705bb3",
+        "bytes": 222
+      },
+      "res/drawable-mdpi-v4/abc_list_longpressed_holo.9.png": {
+        "sha256": "dbc0af61f440bb3f5382b8ea3fa578659f76c7a6aef620a68afc43a909f2e0e5",
+        "bytes": 211
+      },
+      "res/drawable-mdpi-v4/abc_list_pressed_holo_dark.9.png": {
+        "sha256": "5d4161bf9482b5d2a2346cd3fa2739ec3203d995bebac02e89a732943368bbfc",
+        "bytes": 207
+      },
+      "res/drawable-mdpi-v4/abc_list_pressed_holo_light.9.png": {
+        "sha256": "e98f192f013a9226010482ab8e14c7f215fb16bda3ccb0ddaec3ed0b27119e7c",
+        "bytes": 207
+      },
+      "res/drawable-mdpi-v4/abc_list_selector_disabled_holo_dark.9.png": {
+        "sha256": "a15171ead4b1cd9b80c58b93c0efb453b0cf889b714cc859ee2c9b937f4b37d0",
+        "bytes": 217
+      },
+      "res/drawable-mdpi-v4/abc_list_selector_disabled_holo_light.9.png": {
+        "sha256": "7c45e46e405f5b4a3d0c62a22e67010c3327022dd1c1f4bbccea1279a4d1ad74",
+        "bytes": 217
+      },
+      "res/drawable-mdpi-v4/abc_menu_hardkey_panel_mtrl_mult.9.png": {
+        "sha256": "c7954e2bfbd01e5bbc9d774dd4d743d3f8a26613129fac8071b741bab3018ab0",
+        "bytes": 541
+      },
+      "res/drawable-mdpi-v4/abc_popup_background_mtrl_mult.9.png": {
+        "sha256": "5c7c682ffb64f4b531de0f9549c0da11c337576e426618522bfd1d35a451a414",
+        "bytes": 776
+      },
+      "res/drawable-mdpi-v4/abc_scrubber_control_off_mtrl_alpha.png": {
+        "sha256": "5a6ca1d0d2fea53813da5b3c9037408087f9f753f58dd2e128a4a48f7689769f",
+        "bytes": 159
+      },
+      "res/drawable-mdpi-v4/abc_scrubber_control_to_pressed_mtrl_000.png": {
+        "sha256": "9f856dd00a4f281d1198e6679ac8611fc67d301f28c07aea97504244ba16cb44",
+        "bytes": 145
+      },
+      "res/drawable-mdpi-v4/abc_scrubber_control_to_pressed_mtrl_005.png": {
+        "sha256": "6151450ece3ab9667213c3987b6d8fffa25baf9ff43d53bcd9c94fd8ea7616d0",
+        "bytes": 197
+      },
+      "res/drawable-mdpi-v4/abc_scrubber_primary_mtrl_alpha.9.png": {
+        "sha256": "5e3f13ee854fa41354ca7378358b99f8e41f3b1c9968c313b630b02de8704e6e",
+        "bytes": 203
+      },
+      "res/drawable-mdpi-v4/abc_scrubber_track_mtrl_alpha.9.png": {
+        "sha256": "9a9c940ea133f7e0ac8db6f06e13e852508633c21f8c71f297483165a06d92eb",
+        "bytes": 194
+      },
+      "res/drawable-mdpi-v4/abc_spinner_mtrl_am_alpha.9.png": {
+        "sha256": "0fa17d8754d6d163cc433f087cad6c083173ac87ad7097e76950a25eec5f3e90",
+        "bytes": 327
+      },
+      "res/drawable-mdpi-v4/abc_switch_track_mtrl_alpha.9.png": {
+        "sha256": "62477adc74d4e6836e3c0e4b5337c37d748cb3f94033f42c629938ef18d38b41",
+        "bytes": 395
+      },
+      "res/drawable-mdpi-v4/abc_tab_indicator_mtrl_alpha.9.png": {
+        "sha256": "f62d7aa1f9297302a43332a59834755edbd3a38670b8c523614ae1366b5f947f",
+        "bytes": 186
+      },
+      "res/drawable-mdpi-v4/abc_text_select_handle_left_mtrl.png": {
+        "sha256": "0fd2f53946eb93b3154f44bdafc8896ea93195a64ce5fc64049e8b7293cd6801",
+        "bytes": 203
+      },
+      "res/drawable-mdpi-v4/abc_text_select_handle_middle_mtrl.png": {
+        "sha256": "5358737cb680ea1cdd6ba400d33316fabf872fd44f6a0e127bfc8bdd1632b374",
+        "bytes": 310
+      },
+      "res/drawable-mdpi-v4/abc_text_select_handle_right_mtrl.png": {
+        "sha256": "7c8472b72441cc28a1ac53a08b4f0c14f310af338175ba6c46fd6342ac8ce2ff",
+        "bytes": 186
+      },
+      "res/drawable-mdpi-v4/abc_textfield_activated_mtrl_alpha.9.png": {
+        "sha256": "fa50162bdb3501c6b50cfa36c14dab9c94e48d57f558607ec9858124d70412f9",
+        "bytes": 181
+      },
+      "res/drawable-mdpi-v4/abc_textfield_default_mtrl_alpha.9.png": {
+        "sha256": "9fd37c82f87df00464554344ddddea55e480d09c33b505ac13252036d4d6276e",
+        "bytes": 178
+      },
+      "res/drawable-mdpi-v4/abc_textfield_search_activated_mtrl_alpha.9.png": {
+        "sha256": "4bc8f4d13d2acccc1338f73ff90cd97695d9210e04de5da924215243c8950bf3",
+        "bytes": 178
+      },
+      "res/drawable-mdpi-v4/abc_textfield_search_default_mtrl_alpha.9.png": {
+        "sha256": "b800fac7d2f0a75b17fad7009707ea49134919e48984e89815a9d24c0fa704d8",
+        "bytes": 178
+      },
+      "res/drawable-mdpi-v4/common_google_signin_btn_icon_dark_normal_background.9.png": {
+        "sha256": "71bfd776b21b1102f26e31a0f6dc65d40de2cbae650c7528241d5cdc17eac991",
+        "bytes": 610
+      },
+      "res/drawable-mdpi-v4/common_google_signin_btn_icon_light_normal_background.9.png": {
+        "sha256": "77d8cc5447360efba3b3f1659bea9680eccbe47e2aaa07424d562f0e5c8af829",
+        "bytes": 500
+      },
+      "res/drawable-mdpi-v4/common_google_signin_btn_text_dark_normal_background.9.png": {
+        "sha256": "9635dab0f3c0b0557f3535d9655784f68130db57ce3920ae68c2d4cab4edd35e",
+        "bytes": 615
+      },
+      "res/drawable-mdpi-v4/common_google_signin_btn_text_light_normal_background.9.png": {
+        "sha256": "08a416adad6c0e9bece3238674a76b24bbac2ce95c1cffca817b3c675ac69f6b",
+        "bytes": 465
+      },
+      "res/drawable-mdpi-v4/googleg_disabled_color_18.png": {
+        "sha256": "7c1e1629c95fb2603fbdeab93a8fbf30b9c80be11ef483d497f8a88e8f67bd6b",
+        "bytes": 281
+      },
+      "res/drawable-mdpi-v4/googleg_standard_color_18.png": {
+        "sha256": "788a3b9472e9a46e1b6b68d918cd1571914b732e93aab014d77f20be5374e9de",
+        "bytes": 562
+      },
+      "res/drawable-mdpi-v4/notification_bg_low_normal.9.png": {
+        "sha256": "2f7fbda0ba6e53e9a47e2fc0e24e32c447c613a5808c2d6285dc651e83a07ad7",
+        "bytes": 215
+      },
+      "res/drawable-mdpi-v4/notification_bg_low_pressed.9.png": {
+        "sha256": "e17761ed280edd93d7141bd504b70f9e9e15a8652288d9e6333bf4ce964ef844",
+        "bytes": 223
+      },
+      "res/drawable-mdpi-v4/notification_bg_normal.9.png": {
+        "sha256": "a8676a1793ac8310ffb12986232df66df092d29c242aeedc2b73556c010d38dc",
+        "bytes": 215
+      },
+      "res/drawable-mdpi-v4/notification_bg_normal_pressed.9.png": {
+        "sha256": "99c14d6855b8be296d58017d3751b8dc849c47b6d1d80ab614ff9075080e461b",
+        "bytes": 223
+      },
+      "res/drawable-mdpi-v4/notify_panel_notification_icon_bg.png": {
+        "sha256": "0d773e62c756422313262846c787e58f67e0ee87e45e1ae9942002e816c4cb9e",
+        "bytes": 98
+      },
+      "res/drawable-nodpi-v4/pencil_background_v1.png": {
+        "sha256": "5c2e4b12f269b4d848cfc7c8d5b22248cad818e4d3aa2bd70991db282f5fda9c",
+        "bytes": 188299
+      },
+      "res/drawable-v21/abc_action_bar_item_background_material.xml": {
+        "sha256": "5c4046ca717bff82a55d3d4d3e5ee8635fbadfe64ac358aa396fd4664085ea60",
+        "bytes": 264
+      },
+      "res/drawable-v21/abc_btn_colored_material.xml": {
+        "sha256": "a10af62537f859a947100aadf1f55512f74bf6c9cf7b17048f4643f944b27a35",
+        "bytes": 1716
+      },
+      "res/drawable-v21/abc_dialog_material_background.xml": {
+        "sha256": "4358c705b6df0d847e2dc96c30a8aa8a66e7f58a03650eabe1492c6f82d7b18f",
+        "bytes": 716
+      },
+      "res/drawable-v21/abc_edit_text_material.xml": {
+        "sha256": "5125370c1b2515a505c02c1bfffaf059ec2ed186efa07ee20b9da3a8cb81ef3c",
+        "bytes": 1172
+      },
+      "res/drawable-v21/abc_list_divider_material.xml": {
+        "sha256": "976c8b16e6a0728e6389e244e8f8e27d2c5dc8b55a4d20e6d4735a49a1058743",
+        "bytes": 516
+      },
+      "res/drawable-v21/notification_action_background.xml": {
+        "sha256": "3965c656c0fed41d0122c4f081e71c4b7cb1af0df82a7af483630bea49086e9b",
+        "bytes": 1180
+      },
+      "res/drawable-v23/abc_control_background_material.xml": {
+        "sha256": "eab0b1933584952c1dc6737cb90956751e5249190dd450837b3fb1fcd3b20315",
+        "bytes": 304
+      },
+      "res/drawable-watch-v20/abc_dialog_material_background.xml": {
+        "sha256": "49f4ee033a368be6286501a7786bb178320100987f959bc33c98e7da1fc861f1",
+        "bytes": 372
+      },
+      "res/drawable-xhdpi-v4/abc_ab_share_pack_mtrl_alpha.9.png": {
+        "sha256": "a04708369abe0920ded20d87d58aebf6992ebb67efefa248a8421895efc5353f",
+        "bytes": 280
+      },
+      "res/drawable-xhdpi-v4/abc_btn_check_to_on_mtrl_000.png": {
+        "sha256": "43ccf1f0a5e9e9ed9a6df33e1b3d378d49dbc8dc60d83b1cdb985e5e48f52497",
+        "bytes": 281
+      },
+      "res/drawable-xhdpi-v4/abc_btn_check_to_on_mtrl_015.png": {
+        "sha256": "2fa524cda78d7ebd66164a896a042277b7a56b8658fb318fc700a114cb04f7b2",
+        "bytes": 432
+      },
+      "res/drawable-xhdpi-v4/abc_btn_radio_to_on_mtrl_000.png": {
+        "sha256": "d19092254aa4133fba8b7795fb5db560ad5dcd16c6f79201bec31b0f1e9b608b",
+        "bytes": 651
+      },
+      "res/drawable-xhdpi-v4/abc_btn_radio_to_on_mtrl_015.png": {
+        "sha256": "02ad0ea6ff5a560e947452c7d64f679afa2056b44f86ea3b707a1cb175c2ceb0",
+        "bytes": 785
+      },
+      "res/drawable-xhdpi-v4/abc_btn_switch_to_on_mtrl_00001.9.png": {
+        "sha256": "1417574134c5e9321c0b18fea711a08448ccf49957f55e10cedafb13237510f7",
+        "bytes": 1526
+      },
+      "res/drawable-xhdpi-v4/abc_btn_switch_to_on_mtrl_00012.9.png": {
+        "sha256": "4d2fe45a8169f368052c921230a268ba9f53ea5fedbcb09ff35107473551e50c",
+        "bytes": 1731
+      },
+      "res/drawable-xhdpi-v4/abc_cab_background_top_mtrl_alpha.9.png": {
+        "sha256": "f65a87efa2f53d6fe2d848cfca1f6c90aea5e9fc67ff47f5949a6dd2a76ebe1b",
+        "bytes": 229
+      },
+      "res/drawable-xhdpi-v4/abc_ic_commit_search_api_mtrl_alpha.png": {
+        "sha256": "b84a277807f8f3bb5378e6353d99d1344aee10bd9a05f47c30afe3832d9ca7f0",
+        "bytes": 228
+      },
+      "res/drawable-xhdpi-v4/abc_list_divider_mtrl_alpha.9.png": {
+        "sha256": "378694706fb7256dd2248e2af854efd71ec7e8885f61da2e16a2bd32fcf3d0a9",
+        "bytes": 167
+      },
+      "res/drawable-xhdpi-v4/abc_list_focused_holo.9.png": {
+        "sha256": "671d27e5a4b42111174b888d57118e05075a556d703bd54f9335202d2a416791",
+        "bytes": 244
+      },
+      "res/drawable-xhdpi-v4/abc_list_longpressed_holo.9.png": {
+        "sha256": "727d78fec3f903a271c0476a50e8c064d28b32f7829b016ae0a07da53b83b281",
+        "bytes": 214
+      },
+      "res/drawable-xhdpi-v4/abc_list_pressed_holo_dark.9.png": {
+        "sha256": "636d7f24be686e9515f7d6830ce936baa0a5416468220e94e8e257547967e22c",
+        "bytes": 209
+      },
+      "res/drawable-xhdpi-v4/abc_list_pressed_holo_light.9.png": {
+        "sha256": "07bf5ce5ff8937257afd146062c9bf5ca1f4115a1643529d81845d0202c7ddef",
+        "bytes": 209
+      },
+      "res/drawable-xhdpi-v4/abc_list_selector_disabled_holo_dark.9.png": {
+        "sha256": "fd719e497aaf091c3166cb51bf4404ca4bc3b6545dfbefbfaa0cf31f0790b7d1",
+        "bytes": 236
+      },
+      "res/drawable-xhdpi-v4/abc_list_selector_disabled_holo_light.9.png": {
+        "sha256": "cc162d4b8c12ee329e37c8d651442f0ef0a9d1c6f88ef352e54da8dfd9a50dfe",
+        "bytes": 235
+      },
+      "res/drawable-xhdpi-v4/abc_menu_hardkey_panel_mtrl_mult.9.png": {
+        "sha256": "006f2dc25bacc39e736bc720e26a6545df7427b6c103b2dd77c1eb872c3f3306",
+        "bytes": 966
+      },
+      "res/drawable-xhdpi-v4/abc_popup_background_mtrl_mult.9.png": {
+        "sha256": "1f7dd8b3521353af473f41850887e9385cf61c390c6e34e4e2bd991921ccfdf8",
+        "bytes": 1544
+      },
+      "res/drawable-xhdpi-v4/abc_scrubber_control_off_mtrl_alpha.png": {
+        "sha256": "777a1cf53820aa467267d1f64e5f923656f93047038ea6375bcce257b517930e",
+        "bytes": 267
+      },
+      "res/drawable-xhdpi-v4/abc_scrubber_control_to_pressed_mtrl_000.png": {
+        "sha256": "4133830f43f9baa0b0ed3cc80d798b20071da9f51fe12ef6b0bd09abc8d5d33a",
+        "bytes": 267
+      },
+      "res/drawable-xhdpi-v4/abc_scrubber_control_to_pressed_mtrl_005.png": {
+        "sha256": "29953bd8019dd96b7701329b9a203cff63460519549b9cca9a5eb74f9b1b0930",
+        "bytes": 391
+      },
+      "res/drawable-xhdpi-v4/abc_scrubber_primary_mtrl_alpha.9.png": {
+        "sha256": "c0f930a722a16df986923bf419081d1090f9476a7287c8b655ab36ffc08064cb",
+        "bytes": 208
+      },
+      "res/drawable-xhdpi-v4/abc_scrubber_track_mtrl_alpha.9.png": {
+        "sha256": "6b2372b414abc1cfcfd71c98f51901a84c46c5b712046aae019b6110de265175",
+        "bytes": 198
+      },
+      "res/drawable-xhdpi-v4/abc_spinner_mtrl_am_alpha.9.png": {
+        "sha256": "c63a94e7136ceeef43b0ade8b49e8e1ef4d1060d584f6cb9ab58b7d6eaa16312",
+        "bytes": 448
+      },
+      "res/drawable-xhdpi-v4/abc_switch_track_mtrl_alpha.9.png": {
+        "sha256": "468607601140955b21c6091897bfc65f609d386fa68d56c199201895e03b3fbc",
+        "bytes": 618
+      },
+      "res/drawable-xhdpi-v4/abc_tab_indicator_mtrl_alpha.9.png": {
+        "sha256": "b8b26708d71b4c7a5cf5311abcdfa741fee39c9f5e1383d49ca0c677fcdb03cd",
+        "bytes": 194
+      },
+      "res/drawable-xhdpi-v4/abc_text_select_handle_left_mtrl.png": {
+        "sha256": "83a46279e2f65d852c9452c86e38326ef9f3def6f5bec2ef1416c72815a5fbfa",
+        "bytes": 335
+      },
+      "res/drawable-xhdpi-v4/abc_text_select_handle_middle_mtrl.png": {
+        "sha256": "3dbbad926d540586d6bd1230f3293108774c95e73f6604f0bbf88c3a11530223",
+        "bytes": 585
+      },
+      "res/drawable-xhdpi-v4/abc_text_select_handle_right_mtrl.png": {
+        "sha256": "6b45aef8bf43767c2c1c83dee2bd9ceb9017994fbef6613891e6bc215e2a5ee3",
+        "bytes": 318
+      },
+      "res/drawable-xhdpi-v4/abc_textfield_activated_mtrl_alpha.9.png": {
+        "sha256": "23439b8899f4b63d68ae9385eaa49286a4b95b95f79b8b8d37de3b0e4fdbc747",
+        "bytes": 189
+      },
+      "res/drawable-xhdpi-v4/abc_textfield_default_mtrl_alpha.9.png": {
+        "sha256": "0caaea0060b3772ba433c0e9e3a5452f26f3421ba5023c855157270bc675b309",
+        "bytes": 187
+      },
+      "res/drawable-xhdpi-v4/abc_textfield_search_activated_mtrl_alpha.9.png": {
+        "sha256": "5ae9594240ada5e53500e2524215b3e2b3c91e6dd95b05e0acdd27d9d8c57e72",
+        "bytes": 184
+      },
+      "res/drawable-xhdpi-v4/abc_textfield_search_default_mtrl_alpha.9.png": {
+        "sha256": "779a2606a931a399a2c9d3bd01f3c510c412f2916478aa687e430e6003b0a5f3",
+        "bytes": 182
+      },
+      "res/drawable-xhdpi-v4/common_full_open_on_phone.png": {
+        "sha256": "e816dc0998f4ee90d7b630f17e16fcc2e72d91078c5315adaac4bc2da4c226d7",
+        "bytes": 489
+      },
+      "res/drawable-xhdpi-v4/common_google_signin_btn_icon_dark_normal_background.9.png": {
+        "sha256": "9d62d3eabefaf89e6018d3902cc8c4bb888a8891d9639deda8fb58ba60fe1822",
+        "bytes": 1032
+      },
+      "res/drawable-xhdpi-v4/common_google_signin_btn_icon_light_normal_background.9.png": {
+        "sha256": "f62bf21d152a276ae8d9a0d62997f12c60d64ec812fd973ff60e3295deee34b4",
+        "bytes": 776
+      },
+      "res/drawable-xhdpi-v4/common_google_signin_btn_text_dark_normal_background.9.png": {
+        "sha256": "fcb4416a4f5f5b4d72854d91722289789b30bb562c6f0f57975818ab555cc809",
+        "bytes": 1086
+      },
+      "res/drawable-xhdpi-v4/common_google_signin_btn_text_light_normal_background.9.png": {
+        "sha256": "092bf333080e2b3ece63147ea15e6ac04915968c010e5c3f85f8cb650d61ecb7",
+        "bytes": 808
+      },
+      "res/drawable-xhdpi-v4/googleg_disabled_color_18.png": {
+        "sha256": "6083523032ab5df9e6cb82e4ff3d48af7738900a2e9b23d991beaa2eba7862e9",
+        "bytes": 516
+      },
+      "res/drawable-xhdpi-v4/googleg_standard_color_18.png": {
+        "sha256": "90c44675525e290332f7dba6adb97c7af3b8299e56cf5211e893d0e1dec41547",
+        "bytes": 982
+      },
+      "res/drawable-xhdpi-v4/notification_bg_low_normal.9.png": {
+        "sha256": "3e09afa21c45372c035598c017c8fb405a6d678e6cb84dc857581cb3b40e482d",
+        "bytes": 221
+      },
+      "res/drawable-xhdpi-v4/notification_bg_low_pressed.9.png": {
+        "sha256": "20343222f9f79dd565c3a2248494d452e70820ac1c437173c38badd45f962afd",
+        "bytes": 252
+      },
+      "res/drawable-xhdpi-v4/notification_bg_normal.9.png": {
+        "sha256": "559bf783d765c02338e97952bdc9c6689c7ff99090b8c9813369118da8b080f0",
+        "bytes": 221
+      },
+      "res/drawable-xhdpi-v4/notification_bg_normal_pressed.9.png": {
+        "sha256": "d27af435101ca4cbec0c840bd30687918cd39eb83aab1487420855623a45998b",
+        "bytes": 247
+      },
+      "res/drawable-xhdpi-v4/notify_panel_notification_icon_bg.png": {
+        "sha256": "b44eeda34d7a529c2fe55719eb098fa29707caa91d18de06a7a775d6e6bcf973",
+        "bytes": 138
+      },
+      "res/drawable-xxhdpi-v4/abc_ab_share_pack_mtrl_alpha.9.png": {
+        "sha256": "f81412c5131046a83f5d9de1d10e2b4b31f6e2657c4c08743825cd40f605fdd3",
+        "bytes": 286
+      },
+      "res/drawable-xxhdpi-v4/abc_btn_check_to_on_mtrl_000.png": {
+        "sha256": "18620c151330289bba196c1cc1e2699f98061a35be3551876296a8c4d592ba17",
+        "bytes": 307
+      },
+      "res/drawable-xxhdpi-v4/abc_btn_check_to_on_mtrl_015.png": {
+        "sha256": "71a2ba63a5d4e91f7c14324fa1c3eb9290b73cb7b3c7828018d05adb1cfaab45",
+        "bytes": 593
+      },
+      "res/drawable-xxhdpi-v4/abc_btn_radio_to_on_mtrl_000.png": {
+        "sha256": "0eed99d0a5e36a468b557605e6ccea495c029f3569844a45f4b5d8dadd77d4a7",
+        "bytes": 984
+      },
+      "res/drawable-xxhdpi-v4/abc_btn_radio_to_on_mtrl_015.png": {
+        "sha256": "5e0799a0d0b5d43ed5ae3a378aaa0847a810ceeff58db9a0f7836ebf4ef17146",
+        "bytes": 1208
+      },
+      "res/drawable-xxhdpi-v4/abc_btn_switch_to_on_mtrl_00001.9.png": {
+        "sha256": "0f8db605d63bf1d6d35fd647d592ac4e70c9a712ff5d1c2114c8d58a88b8228a",
+        "bytes": 2463
+      },
+      "res/drawable-xxhdpi-v4/abc_btn_switch_to_on_mtrl_00012.9.png": {
+        "sha256": "1f9538745cfd3209cc09ed451c198302aac3a1c5da41e87394377814b1bcc5ee",
+        "bytes": 2834
+      },
+      "res/drawable-xxhdpi-v4/abc_cab_background_top_mtrl_alpha.9.png": {
+        "sha256": "d68d03967fb222f7e35772a2e0637f73b4dd0d6cbb9ee3f2b4432d2f90c257db",
+        "bytes": 237
+      },
+      "res/drawable-xxhdpi-v4/abc_ic_commit_search_api_mtrl_alpha.png": {
+        "sha256": "f5f349c1e949f0e66374f83b667fc0d0f477379614f36912ade22a299f2194d5",
+        "bytes": 224
+      },
+      "res/drawable-xxhdpi-v4/abc_list_divider_mtrl_alpha.9.png": {
+        "sha256": "49903073ab23abfc11a55e1333eb2905c743e1b382006c27c15434fd76e0207c",
+        "bytes": 171
+      },
+      "res/drawable-xxhdpi-v4/abc_list_focused_holo.9.png": {
+        "sha256": "8c6846f4105ef1c02107e842142e9ce60b08819296e9510b2d0c12cf4560c5e1",
+        "bytes": 245
+      },
+      "res/drawable-xxhdpi-v4/abc_list_longpressed_holo.9.png": {
+        "sha256": "44c29766b2d88b78a71393b3e3a771ca7eef5f552630c6074f33d6291241d0b9",
+        "bytes": 221
+      },
+      "res/drawable-xxhdpi-v4/abc_list_pressed_holo_dark.9.png": {
+        "sha256": "a77aaa207fd579f64383323b93f048ee9434e345ca8bb641743a77901b4383c2",
+        "bytes": 212
+      },
+      "res/drawable-xxhdpi-v4/abc_list_pressed_holo_light.9.png": {
+        "sha256": "93b7657184473d5881669b80e3d43fd64e442d1ed71be4ced3518380b6cec69d",
+        "bytes": 212
+      },
+      "res/drawable-xxhdpi-v4/abc_list_selector_disabled_holo_dark.9.png": {
+        "sha256": "94ae2273a335672c1c67988e7af595d42e80526edb7f5654ee130dce06fd40d7",
+        "bytes": 260
+      },
+      "res/drawable-xxhdpi-v4/abc_list_selector_disabled_holo_light.9.png": {
+        "sha256": "4f186547c3fe5796ef49da96d60a4a9a4b347357eaff3794f38e5f2aade3e400",
+        "bytes": 258
+      },
+      "res/drawable-xxhdpi-v4/abc_menu_hardkey_panel_mtrl_mult.9.png": {
+        "sha256": "a8252f52638c80df119db031626198a4a8d4b32ee618e96c3a36b9b946e26894",
+        "bytes": 1779
+      },
+      "res/drawable-xxhdpi-v4/abc_popup_background_mtrl_mult.9.png": {
+        "sha256": "e1a2b864d0114a8471662f8e30ffcbb2eb9ffd414d36239612def8c7792a450a",
+        "bytes": 2305
+      },
+      "res/drawable-xxhdpi-v4/abc_scrubber_control_off_mtrl_alpha.png": {
+        "sha256": "136d08fab0fe416fc7e0eca9c498e63c68357b2caa4241f444bbc3f26f9a74c9",
+        "bytes": 322
+      },
+      "res/drawable-xxhdpi-v4/abc_scrubber_control_to_pressed_mtrl_000.png": {
+        "sha256": "63fad0a19cb9e416586049d40b62161b0cc4c2513d83931d3852e2f5a72e6d13",
+        "bytes": 403
+      },
+      "res/drawable-xxhdpi-v4/abc_scrubber_control_to_pressed_mtrl_005.png": {
+        "sha256": "4f2f8c2a7b042e55aa8f43f4ce8134b3217ee9cda432c5ff8d4c33d09d86df68",
+        "bytes": 595
+      },
+      "res/drawable-xxhdpi-v4/abc_scrubber_primary_mtrl_alpha.9.png": {
+        "sha256": "7656f2f19a84cefc2bf9fafc00760216775d333fc0b08eb85ff1e0006b46fc20",
+        "bytes": 210
+      },
+      "res/drawable-xxhdpi-v4/abc_scrubber_track_mtrl_alpha.9.png": {
+        "sha256": "c56ab9375b149ba1c5ee268f22b3cf6507bb47986f628391500fba38147dab28",
+        "bytes": 207
+      },
+      "res/drawable-xxhdpi-v4/abc_spinner_mtrl_am_alpha.9.png": {
+        "sha256": "bd893783c8d2bebb167ac05a27cdaea5dfd651fe8d64bcb30c14e7b925380c79",
+        "bytes": 524
+      },
+      "res/drawable-xxhdpi-v4/abc_switch_track_mtrl_alpha.9.png": {
+        "sha256": "bb4b092ae69c429e9d4f7ff97c60ba10c2e443a2b0ca19a9f6c77854bf32e293",
+        "bytes": 851
+      },
+      "res/drawable-xxhdpi-v4/abc_tab_indicator_mtrl_alpha.9.png": {
+        "sha256": "3633ec99d66aae4332f9a6b2dbd3480513433001a8eec0e796d2bcb69d75b73f",
+        "bytes": 204
+      },
+      "res/drawable-xxhdpi-v4/abc_text_select_handle_left_mtrl.png": {
+        "sha256": "afbcaede66a97ddc9b54c4d9891c09415cb6944d79c4c1ae8440cda553963957",
+        "bytes": 420
+      },
+      "res/drawable-xxhdpi-v4/abc_text_select_handle_middle_mtrl.png": {
+        "sha256": "24f5db226f1cd56e5e775f82c37f65f3d1eec9091b26b74861629caf0019c3bd",
+        "bytes": 753
+      },
+      "res/drawable-xxhdpi-v4/abc_text_select_handle_right_mtrl.png": {
+        "sha256": "3cfd0554844896b500c33513b1e89ed62028d0c80df73d3c5935479f49704a3c",
+        "bytes": 422
+      },
+      "res/drawable-xxhdpi-v4/abc_textfield_activated_mtrl_alpha.9.png": {
+        "sha256": "682c466d3e4f39e31f114abc1632d85e734557bd39814e3ba7d7c61eae2d069b",
+        "bytes": 199
+      },
+      "res/drawable-xxhdpi-v4/abc_textfield_default_mtrl_alpha.9.png": {
+        "sha256": "a0d63ec76ec21d40fe96a4b6fb4f4aac5b61a6b63a63472dab055e0d9e9890b1",
+        "bytes": 200
+      },
+      "res/drawable-xxhdpi-v4/abc_textfield_search_activated_mtrl_alpha.9.png": {
+        "sha256": "c8d13e5687a34d5b85018ff7a9f0f22870a297b261ff140b3ed041ce7e7f4b81",
+        "bytes": 187
+      },
+      "res/drawable-xxhdpi-v4/abc_textfield_search_default_mtrl_alpha.9.png": {
+        "sha256": "f232714ccbecca97adc63b0811d62629057c77dcbd0b062c82e26754cb744831",
+        "bytes": 186
+      },
+      "res/drawable-xxhdpi-v4/common_google_signin_btn_icon_dark_normal_background.9.png": {
+        "sha256": "be03693c47d3c4d4466f14a695eaccd210b61e91d808c0c4a46d6f021b598278",
+        "bytes": 1510
+      },
+      "res/drawable-xxhdpi-v4/common_google_signin_btn_icon_light_normal_background.9.png": {
+        "sha256": "71f14a18275f8678fd9f0c1c0affc400a975a0b815b82eca7345b6aaecf978ee",
+        "bytes": 1138
+      },
+      "res/drawable-xxhdpi-v4/common_google_signin_btn_text_dark_normal_background.9.png": {
+        "sha256": "42a1b93ba380eeba9d499582df981a535f872af234ad6600675fff37459306e5",
+        "bytes": 1638
+      },
+      "res/drawable-xxhdpi-v4/common_google_signin_btn_text_light_normal_background.9.png": {
+        "sha256": "5624a284adf8a5e8e7c2560524eb05d7ee97d09a9c2dbe3a76a840766015ae30",
+        "bytes": 1255
+      },
+      "res/drawable-xxhdpi-v4/googleg_disabled_color_18.png": {
+        "sha256": "5db3ab4d30063b5e8fa63ae2993f83efd0af71d6526b3a1468f9e3bf891af587",
+        "bytes": 727
+      },
+      "res/drawable-xxhdpi-v4/googleg_standard_color_18.png": {
+        "sha256": "549a81cda776769840f37f184d34eb673ff9e5c0671c67172818e91273753e1a",
+        "bytes": 1441
+      },
+      "res/drawable-xxxhdpi-v4/abc_btn_check_to_on_mtrl_000.png": {
+        "sha256": "b0aa010e7a885e4b7a669c16c7ba10fcd862a12dff3f142c7354778442a63fde",
+        "bytes": 275
+      },
+      "res/drawable-xxxhdpi-v4/abc_btn_check_to_on_mtrl_015.png": {
+        "sha256": "52a0358e54439373ca39f99cd83cf3a7be73c257f07fae83edd83c9b4891895d",
+        "bytes": 476
+      },
+      "res/drawable-xxxhdpi-v4/abc_btn_radio_to_on_mtrl_000.png": {
+        "sha256": "6002eb56783b956b5f91e6ddffaf36cc867402a01a225e627b4c25c8d21a4e23",
+        "bytes": 785
+      },
+      "res/drawable-xxxhdpi-v4/abc_btn_radio_to_on_mtrl_015.png": {
+        "sha256": "53340b0b0f529b26db6af632a0112708233bf312448c5b89a1357b2cd70b3f42",
+        "bytes": 946
+      },
+      "res/drawable-xxxhdpi-v4/abc_btn_switch_to_on_mtrl_00001.9.png": {
+        "sha256": "c367b73a33a933429e1d57d33fcfbf243f0274e7cdba221a0b983ee15b5baca9",
+        "bytes": 2505
+      },
+      "res/drawable-xxxhdpi-v4/abc_btn_switch_to_on_mtrl_00012.9.png": {
+        "sha256": "b4af73e52266be570c2c163d987e64348066db311b41e7a382000529c0136c6b",
+        "bytes": 2816
+      },
+      "res/drawable-xxxhdpi-v4/abc_scrubber_control_to_pressed_mtrl_000.png": {
+        "sha256": "1e3b02e24fa431b1abe0a97ad6723fad43df79fda8176c1060b6fbd31178619f",
+        "bytes": 415
+      },
+      "res/drawable-xxxhdpi-v4/abc_scrubber_control_to_pressed_mtrl_005.png": {
+        "sha256": "683691d79ef11e863fe4ec84ddc631696e5984b5584fc4549d6586dbaca220c7",
+        "bytes": 631
+      },
+      "res/drawable-xxxhdpi-v4/abc_spinner_mtrl_am_alpha.9.png": {
+        "sha256": "2552cd1bcdd9882d6c258833fb70bc081a31a2a093ef9c256f92431370a6e5de",
+        "bytes": 430
+      },
+      "res/drawable-xxxhdpi-v4/abc_switch_track_mtrl_alpha.9.png": {
+        "sha256": "100cc6ae3870dd769a252e44608a81956522e867674f854619ba7c68d314cad7",
+        "bytes": 813
+      },
+      "res/drawable-xxxhdpi-v4/abc_tab_indicator_mtrl_alpha.9.png": {
+        "sha256": "e7e36c3cbcedc97bc28aff91ed72c4310b16c331713a1698a692c66d46f63227",
+        "bytes": 202
+      },
+      "res/drawable-xxxhdpi-v4/abc_text_select_handle_left_mtrl.png": {
+        "sha256": "55bc27772f6d35be9334fb80c371b327db25faa9a6098c3c14049e92654ac1bf",
+        "bytes": 513
+      },
+      "res/drawable-xxxhdpi-v4/abc_text_select_handle_right_mtrl.png": {
+        "sha256": "d83543f0c82b62cf499f2618ad99431f9ef50da60b415980ec8e0e50b90e3893",
+        "bytes": 513
+      },
+      "res/drawable/abc_btn_borderless_material.xml": {
+        "sha256": "008ab99ec5591cf6e37a9826ee9451566ba2e3e8821905f017506c34c02dc7aa",
+        "bytes": 588
+      },
+      "res/drawable/abc_btn_check_material.xml": {
+        "sha256": "97c60161f8e9396a70e993ffbbbe6a9d7096b62b639d00392e9b9f3dbcc072a2",
+        "bytes": 464
+      },
+      "res/drawable/abc_btn_check_material_anim.xml": {
+        "sha256": "b9a95d13a5bc46863814b82a48a0354534f90c01e4c90e90fa40f176bf2a3e77",
+        "bytes": 816
+      },
+      "res/drawable/abc_btn_default_mtrl_shape.xml": {
+        "sha256": "1d01514fa0d0288a479df7de733e970e0e0debdc997e8d4670fcf474219553a0",
+        "bytes": 932
+      },
+      "res/drawable/abc_btn_radio_material.xml": {
+        "sha256": "3ea724e118328647d6d4a83fee5146d8a2d682c997e3d7b7fda7bcb8d490da80",
+        "bytes": 464
+      },
+      "res/drawable/abc_btn_radio_material_anim.xml": {
+        "sha256": "9eab49963d3a7c2fb553d4f21847e62c0f9b5d7dd87c062416e5900ce5f638ec",
+        "bytes": 816
+      },
+      "res/drawable/abc_cab_background_internal_bg.xml": {
+        "sha256": "cb486473bc0f7d6c90dea564fd61bb612496371b6b0bcab82b95a10cf70db41e",
+        "bytes": 372
+      },
+      "res/drawable/abc_cab_background_top_material.xml": {
+        "sha256": "1d6d789501f02c91bc839ae4397789fa88b2570d6a3250ac48ce3d7b6669b5eb",
+        "bytes": 336
+      },
+      "res/drawable/abc_ic_ab_back_material.xml": {
+        "sha256": "deea4d3f97d69b45c2e1682eaf806b126b71edde5370b61a7b63b589e405dbc2",
+        "bytes": 692
+      },
+      "res/drawable/abc_ic_arrow_drop_right_black_24dp.xml": {
+        "sha256": "9334acfeb7a1b587c9a1d31c8f86703becac2044e877597562e09dc68914051e",
+        "bytes": 1000
+      },
+      "res/drawable/abc_ic_clear_material.xml": {
+        "sha256": "8c3a39739b98865c35f18e1ffc7eb23800d7d809b27b52df287ebf25bd9c373e",
+        "bytes": 684
+      },
+      "res/drawable/abc_ic_go_search_api_material.xml": {
+        "sha256": "b5d7ac5c48bf217a63292f9f3fc0f060e4fdffb5143cbac1f0beb3510f918ed9",
+        "bytes": 640
+      },
+      "res/drawable/abc_ic_menu_copy_mtrl_am_alpha.xml": {
+        "sha256": "84dbdf78ad99472866fd7f9f40447fcae377c02e0780935987a960bdb6d69ecc",
+        "bytes": 756
+      },
+      "res/drawable/abc_ic_menu_cut_mtrl_alpha.xml": {
+        "sha256": "30d56de8667e6cdeefb48d9a2a004b40520bcdbc65a7c0c843679022e17169fb",
+        "bytes": 1096
+      },
+      "res/drawable/abc_ic_menu_overflow_material.xml": {
+        "sha256": "ab0d9c00481df7ef7c2ce9d6896af28345c57a39a9332f2e400d7cbe2a2befd6",
+        "bytes": 792
+      },
+      "res/drawable/abc_ic_menu_paste_mtrl_am_alpha.xml": {
+        "sha256": "a3dbfe4e5cb06788f6d57bde7b908ec285643261bd21abf1ae7318d2aca1bc39",
+        "bytes": 796
+      },
+      "res/drawable/abc_ic_menu_selectall_mtrl_alpha.xml": {
+        "sha256": "3816c83d42d23c0dc86b97f887b3152009180c452cf3bbe51abd6990d44529a5",
+        "bytes": 920
+      },
+      "res/drawable/abc_ic_menu_share_mtrl_alpha.xml": {
+        "sha256": "909f4468b73823cb500570ab47067a41b3730aac73729afdb73ea325d3dda04b",
+        "bytes": 980
+      },
+      "res/drawable/abc_ic_search_api_material.xml": {
+        "sha256": "2850cff8ff21832e2c0cfc284e5f50474a0b50df32425cef38064f612f5e496a",
+        "bytes": 812
+      },
+      "res/drawable/abc_ic_voice_search_api_material.xml": {
+        "sha256": "6369b5fe4383058c5fef3582b9a78bfe9fddfc34ec9b46a23ba8ae6ad98d6df8",
+        "bytes": 828
+      },
+      "res/drawable/abc_item_background_holo_dark.xml": {
+        "sha256": "9e23db4a5c99e14671e16abd07722108e724558bfa67b0b42ec542ff793684aa",
+        "bytes": 1012
+      },
+      "res/drawable/abc_item_background_holo_light.xml": {
+        "sha256": "874a6b3cd909f0cc5d59d3b99c07289794e2d70918920123ebe3272eaf92a492",
+        "bytes": 1012
+      },
+      "res/drawable/abc_list_selector_background_transition_holo_dark.xml": {
+        "sha256": "21df75316fc079a1e056a215b7c05a6af233924b24dea362baf110358d359a38",
+        "bytes": 424
+      },
+      "res/drawable/abc_list_selector_background_transition_holo_light.xml": {
+        "sha256": "97211721d392aadf578bfc2b737df7b32aab9a6752487d6eb6bc3aa58a31e49a",
+        "bytes": 424
+      },
+      "res/drawable/abc_list_selector_holo_dark.xml": {
+        "sha256": "7bf664be91e94f0b9a8ad17bcb31df070d94c1a1dc6327b9cc833d750a34f794",
+        "bytes": 1064
+      },
+      "res/drawable/abc_list_selector_holo_light.xml": {
+        "sha256": "ccd9984aedd2c8ffc586b83176e88c17bc2ef2b0af4cac83b89dec5fe4f68df9",
+        "bytes": 1064
+      },
+      "res/drawable/abc_ratingbar_indicator_material.xml": {
+        "sha256": "9b0ac791a3fa953e28b526e020fd2e629b40812ee1bc4693ff5fdfef15044202",
+        "bytes": 124
+      },
+      "res/drawable/abc_ratingbar_material.xml": {
+        "sha256": "9b0ac791a3fa953e28b526e020fd2e629b40812ee1bc4693ff5fdfef15044202",
+        "bytes": 124
+      },
+      "res/drawable/abc_ratingbar_small_material.xml": {
+        "sha256": "9b0ac791a3fa953e28b526e020fd2e629b40812ee1bc4693ff5fdfef15044202",
+        "bytes": 124
+      },
+      "res/drawable/abc_seekbar_thumb_material.xml": {
+        "sha256": "6be11e7513695f109febb9aaec1e9aaab99be3264789d88beab81f64e9751904",
+        "bytes": 1100
+      },
+      "res/drawable/abc_seekbar_tick_mark_material.xml": {
+        "sha256": "965abe54fd42db2ee2e854b428b0ba1780d1d63425743c64ea7fc5cfa60d7ce0",
+        "bytes": 516
+      },
+      "res/drawable/abc_seekbar_track_material.xml": {
+        "sha256": "7dde405a8b87a45cfe7db91fe77f81e13c34f6e70bbe6a5abc14f34f7ba6c374",
+        "bytes": 1408
+      },
+      "res/drawable/abc_spinner_textfield_background_material.xml": {
+        "sha256": "9d98cb0d63a06334757b678a1e9bd5766511b69b5631de72f14d31af74c03891",
+        "bytes": 1160
+      },
+      "res/drawable/abc_star_black_48dp.xml": {
+        "sha256": "74f13910c634a6b4730de4fa99c5a595cd4939df021fbe79a5a4f73f6094565a",
+        "bytes": 640
+      },
+      "res/drawable/abc_star_half_black_48dp.xml": {
+        "sha256": "05b5baedcd58fd995fb013f2067c87dbb5f9489d7935723829a8df803d507609",
+        "bytes": 600
+      },
+      "res/drawable/abc_switch_thumb_material.xml": {
+        "sha256": "dbffc8ed2a57a88cbdf73c042eec9b6b25250b7c7d50e8537f5aee2c0e59e87c",
+        "bytes": 464
+      },
+      "res/drawable/abc_tab_indicator_material.xml": {
+        "sha256": "72447d7e1f54a5d835a0c53cd1cbeb5b83920b07683c889f1f20e43cf2d4e548",
+        "bytes": 468
+      },
+      "res/drawable/abc_text_cursor_material.xml": {
+        "sha256": "e49a3d6549f8ffce9ef6716a1dce006f64797eaae60bc091b16c560e20ee59bd",
+        "bytes": 516
+      },
+      "res/drawable/abc_textfield_search_material.xml": {
+        "sha256": "8f6539ead30c41dc3bf30e19b62f72d06c67e6d6b4a4e0f54944e23195bd3bec",
+        "bytes": 756
+      },
+      "res/drawable/abc_vector_test.xml": {
+        "sha256": "b2b8eab570357610a73322e777914936a1eb6399ade30906783eae1a0d632564",
+        "bytes": 612
+      },
+      "res/drawable/branch_mark.xml": {
+        "sha256": "23b0290ff0b838ef7e50e3dc9f9d10e61e279debb8745206728ee984d066a872",
+        "bytes": 1452
+      },
+      "res/drawable/btn_checkbox_checked_mtrl.xml": {
+        "sha256": "c2d4585b382ece8a545149e2677f041f1131e6739dc7545088aa030723693ead",
+        "bytes": 2688
+      },
+      "res/drawable/btn_checkbox_checked_to_unchecked_mtrl_animation.xml": {
+        "sha256": "816efb32497fa7a2561bb9bff4b85a26fa8e8d8d702abc1152b45af69964b21b",
+        "bytes": 688
+      },
+      "res/drawable/btn_checkbox_unchecked_mtrl.xml": {
+        "sha256": "e618d2ffe965ae475f462281a349c0177b76bc95c1d0bac219325873a2b51ad7",
+        "bytes": 2660
+      },
+      "res/drawable/btn_checkbox_unchecked_to_checked_mtrl_animation.xml": {
+        "sha256": "f01bc746e6a10afa62942038a8671ab76fa9550fdee161df19872a78f11a8c4b",
+        "bytes": 688
+      },
+      "res/drawable/btn_radio_off_mtrl.xml": {
+        "sha256": "2a12a29193791d349bb512452f54e3d67755ded679c47b4b8e1540e88695e72f",
+        "bytes": 1728
+      },
+      "res/drawable/btn_radio_off_to_on_mtrl_animation.xml": {
+        "sha256": "c4932ea45f94229f5d0f96cb951f652a2abfbf8bf03cd7fbf6d2fcebac1cfc38",
+        "bytes": 680
+      },
+      "res/drawable/btn_radio_on_mtrl.xml": {
+        "sha256": "f2c4cdf65caa5981c52511bca1f3e5413695f82445183d6a95d0dd8120dd6a14",
+        "bytes": 1656
+      },
+      "res/drawable/btn_radio_on_to_off_mtrl_animation.xml": {
+        "sha256": "bf7a21d6242decbbac2cc89ee64c7d54133af150006994c048ec37f497288b6a",
+        "bytes": 680
+      },
+      "res/drawable/common_google_signin_btn_icon_dark.xml": {
+        "sha256": "e7b58ce62049cb4be6c6f8852bc799d75fb04948f001ad6942c06db1d38264c0",
+        "bytes": 588
+      },
+      "res/drawable/common_google_signin_btn_icon_dark_focused.xml": {
+        "sha256": "d31a1bb0418343bcbc5c78b3c1b34bf644465bfbf080da4f1e40cb14105ce990",
+        "bytes": 892
+      },
+      "res/drawable/common_google_signin_btn_icon_dark_normal.xml": {
+        "sha256": "631b05f920871657493efcd6aff830ba230551149aeaec3965c12fa6c244b3ce",
+        "bytes": 548
+      },
+      "res/drawable/common_google_signin_btn_icon_disabled.xml": {
+        "sha256": "c3390cf455300dc9d0665fa75021f153d99ab91b2b2721df19dc94818196d1e3",
+        "bytes": 1132
+      },
+      "res/drawable/common_google_signin_btn_icon_light.xml": {
+        "sha256": "7e3fd7c23e8bd5b9b13c7e1e083a75e92c0a99c313dc5b274d9c7ae8e58eba8f",
+        "bytes": 588
+      },
+      "res/drawable/common_google_signin_btn_icon_light_focused.xml": {
+        "sha256": "d85eaa79e1735a8310a4936dc12b6191db896366418e58e4b78190fffc594dae",
+        "bytes": 892
+      },
+      "res/drawable/common_google_signin_btn_icon_light_normal.xml": {
+        "sha256": "cef38f069cc60d35b7ba34c613f95ae6ddf0259d3f26f4a2761514dbf49ad280",
+        "bytes": 548
+      },
+      "res/drawable/common_google_signin_btn_text_dark.xml": {
+        "sha256": "5718c880b27ad7bfb910582ffd538db61fc595059fcd35e5fd8e389814e7abc7",
+        "bytes": 588
+      },
+      "res/drawable/common_google_signin_btn_text_dark_focused.xml": {
+        "sha256": "faddf1e446e274f6af8b2919c4bc6f78f8b9d855cdca89b1edfaf9786407a2e4",
+        "bytes": 892
+      },
+      "res/drawable/common_google_signin_btn_text_dark_normal.xml": {
+        "sha256": "585abe70d99607c08c914f51e731e896f513bfb2f28b0dce563086ec86ddf7ee",
+        "bytes": 584
+      },
+      "res/drawable/common_google_signin_btn_text_disabled.xml": {
+        "sha256": "9feb47c8d9ad2780f40f8a7127ed642ceae97c75ae0139b7dfd17e9380c33353",
+        "bytes": 1152
+      },
+      "res/drawable/common_google_signin_btn_text_light.xml": {
+        "sha256": "74a735de16b4e7d39680d6cb4b975d4cac8465752b29b7cb8f632e8e18571e6f",
+        "bytes": 588
+      },
+      "res/drawable/common_google_signin_btn_text_light_focused.xml": {
+        "sha256": "139164eb1041a3647046c7355eaad41874534f1354d5fbff8bc2520fc4f8b908",
+        "bytes": 892
+      },
+      "res/drawable/common_google_signin_btn_text_light_normal.xml": {
+        "sha256": "7831e50a9b9e164bbb8f57b24cb9df1b6078cdc11900cf5d69f5a5393c9f1f42",
+        "bytes": 584
+      },
+      "res/drawable/ic_call_answer.xml": {
+        "sha256": "5f6376dfe199d8a6e40033d3e623989d052c9b2f974d00c824fbb8b76fc6fde8",
+        "bytes": 1356
+      },
+      "res/drawable/ic_call_answer_low.xml": {
+        "sha256": "8f9acacabaf2dfb4bb53dab7ce7bec9c1451ce0a0219ffaa41760ea82da3d2d6",
+        "bytes": 1320
+      },
+      "res/drawable/ic_call_answer_video.xml": {
+        "sha256": "5d4cdaae5838ad9442c085f951b766b2808bff13b8c85a14e0bcf8571514492c",
+        "bytes": 772
+      },
+      "res/drawable/ic_call_answer_video_low.xml": {
+        "sha256": "4a959580080ebb1d822a2459a4234d2abf0dd0b65d9c28bda8c258dafc888c51",
+        "bytes": 736
+      },
+      "res/drawable/ic_call_decline.xml": {
+        "sha256": "2d825b79cce60203492ff09a04826db0ac8d9eb9bc0fb9fb139ae1aa5cde0f67",
+        "bytes": 1528
+      },
+      "res/drawable/ic_call_decline_low.xml": {
+        "sha256": "c8321364802409baf4d76e2a84e303871585bdc95b0395040c5ecea0e2051105",
+        "bytes": 1492
+      },
+      "res/drawable/ic_launcher_background.xml": {
+        "sha256": "a13c99c3cb01a1c2986549e4c54f43530f28d67416949788ff91cacb7a97616e",
+        "bytes": 372
+      },
+      "res/drawable/ic_launcher_foreground.xml": {
+        "sha256": "897ec4c777d843ba6aff42d3be24898ca746203522ef46786c3839a375f43055",
+        "bytes": 1452
+      },
+      "res/drawable/ic_launcher_legacy.xml": {
+        "sha256": "8694eecfbcb1e8e49b79aa686e5a15d0c57db94b08eec5a3bf28f90ff80c1793",
+        "bytes": 1572
+      },
+      "res/drawable/notification_bg.xml": {
+        "sha256": "6fb715a000dadb823d2ff8c2b702661a79ae28e3821621729179554219f3364e",
+        "bytes": 532
+      },
+      "res/drawable/notification_bg_low.xml": {
+        "sha256": "fd04e0daa71970a6d6634c85520cfb147e82c9834ea33d566ff48a172a61a5c6",
+        "bytes": 532
+      },
+      "res/drawable/notification_icon_background.xml": {
+        "sha256": "79e68f80e10785d599f94e6aa3bf7ff2a55f5f90a7edb6b6288f77d1ac531d50",
+        "bytes": 372
+      },
+      "res/drawable/notification_tile_bg.xml": {
+        "sha256": "b4cca6f7c232070dbf70b92286d43a2cb5ff9a44e4511399f327d97704531c34",
+        "bytes": 304
+      },
+      "res/drawable/test_level_drawable.xml": {
+        "sha256": "09274f291285007a7b04a999c170ba317eb74c52c861844bb2ae8a80d2b00cb8",
+        "bytes": 448
+      },
+      "res/drawable/tooltip_frame_dark.xml": {
+        "sha256": "80543b9241efcf6038c7b88abfddfb82ccce450ab844be9a764052eb1cfa7d92",
+        "bytes": 484
+      },
+      "res/drawable/tooltip_frame_light.xml": {
+        "sha256": "4cbdcbee8d8d425c925b7acdf94e79e5302225fc77258b53a46ba6825e82ee84",
+        "bytes": 484
+      },
+      "res/font/pretendard_variable.ttf": {
+        "sha256": "506ac11293649e23edf57208022d62743f8f2d286f4c7d41a090587c54564084",
+        "bytes": 6739336
+      },
+      "res/font/source_serif_four.ttf": {
+        "sha256": "812c46f6aa1815db16a14af2bad3116f5725830fb31905cc5d50c038da5be8aa",
+        "bytes": 115216
+      },
+      "res/interpolator/btn_checkbox_checked_mtrl_animation_interpolator_0.xml": {
+        "sha256": "68b7fc0e819c526c7e31c1413b1821bc0ccfcf4ab550c356a7f740a9d84917dc",
+        "bytes": 316
+      },
+      "res/interpolator/btn_checkbox_checked_mtrl_animation_interpolator_1.xml": {
+        "sha256": "0ab3bc82b3b9fd8499202cafe3d494a9f66fba248d01e90b90e932c8849947cc",
+        "bytes": 328
+      },
+      "res/interpolator/btn_checkbox_unchecked_mtrl_animation_interpolator_0.xml": {
+        "sha256": "68b7fc0e819c526c7e31c1413b1821bc0ccfcf4ab550c356a7f740a9d84917dc",
+        "bytes": 316
+      },
+      "res/interpolator/btn_checkbox_unchecked_mtrl_animation_interpolator_1.xml": {
+        "sha256": "0ab3bc82b3b9fd8499202cafe3d494a9f66fba248d01e90b90e932c8849947cc",
+        "bytes": 328
+      },
+      "res/interpolator/btn_radio_to_off_mtrl_animation_interpolator_0.xml": {
+        "sha256": "a8d7341c20d07c9fdab602e7c39187c9abb9caf5fbf9b2832cd6d9f18a2c86c2",
+        "bytes": 320
+      },
+      "res/interpolator/btn_radio_to_on_mtrl_animation_interpolator_0.xml": {
+        "sha256": "a8d7341c20d07c9fdab602e7c39187c9abb9caf5fbf9b2832cd6d9f18a2c86c2",
+        "bytes": 320
+      },
+      "res/interpolator/fast_out_slow_in.xml": {
+        "sha256": "8237d47bafc3bab9098bd9344b12dc6c87fdd879a4e1f01c856400c595f298f0",
+        "bytes": 400
+      },
+      "res/layout-v21/notification_action.xml": {
+        "sha256": "151f92337f56955254a2da6b7936401cefd839f6a61e47e1f786ebddcf0918b2",
+        "bytes": 1052
+      },
+      "res/layout-v21/notification_action_tombstone.xml": {
+        "sha256": "fbc8202ff5fa4d3d2d9451d7a6a5a265fe5285dc570b4a0d12c87798d0fb0e90",
+        "bytes": 1228
+      },
+      "res/layout-v21/notification_template_custom_big.xml": {
+        "sha256": "870112f6b72d105acb42ef5ce304347d71a51800b123e42e73525f4cade2a8d2",
+        "bytes": 2456
+      },
+      "res/layout-v21/notification_template_icon_group.xml": {
+        "sha256": "bd39ba0d6ce7dd39121de23b1df32c2b49306d383abda8ec6acd67847e9c9d8b",
+        "bytes": 988
+      },
+      "res/layout-v26/abc_screen_toolbar.xml": {
+        "sha256": "473ff8b7666f2d9cd804e0ca0fc75b2ba121e3f16d157d35fe8afe3e9c6ca2a8",
+        "bytes": 1560
+      },
+      "res/layout-watch-v20/abc_alert_dialog_button_bar_material.xml": {
+        "sha256": "c12fee1b177bd7ed6758b1cfc25d417a6c3417142e0e1535b302bda8cd32dee8",
+        "bytes": 1208
+      },
+      "res/layout-watch-v20/abc_alert_dialog_title_material.xml": {
+        "sha256": "9bcc3502c02c82d4004827eae1f39e8bba832c65f1724e0536be68331f3606b1",
+        "bytes": 1352
+      },
+      "res/layout/abc_action_bar_title_item.xml": {
+        "sha256": "2ca9dcc8d781a3e5b6021f538d1191857578202261ce50de53d2525864b3b481",
+        "bytes": 872
+      },
+      "res/layout/abc_action_bar_up_container.xml": {
+        "sha256": "534d8148fa1f913615e86561bc74f2453d97455790fd250b3e45f8a7a9a91f10",
+        "bytes": 440
+      },
+      "res/layout/abc_action_menu_item_layout.xml": {
+        "sha256": "2cdb73ef0229857b54f07f05652a062672678de2ecf092f772db1e5540ac3d17",
+        "bytes": 768
+      },
+      "res/layout/abc_action_menu_layout.xml": {
+        "sha256": "2978790260ceeb99b1d176f4e51a6a132fc8c4cd2164aef23d7af2f5313f58d9",
+        "bytes": 576
+      },
+      "res/layout/abc_action_mode_bar.xml": {
+        "sha256": "3376cd54cb58e0e3f53e59bfb2542c0fb80d6c03975a6afb0f85d5b6d9344701",
+        "bytes": 464
+      },
+      "res/layout/abc_action_mode_close_item_material.xml": {
+        "sha256": "6dd78cd5cbfb91f0f655f21517127279116d44d166311c539fa35c95056b8cbd",
+        "bytes": 840
+      },
+      "res/layout/abc_activity_chooser_view.xml": {
+        "sha256": "8b987ea80a2532d7c03d19efe926e567fc529ae28ce8e11a1d515c4039d9653a",
+        "bytes": 1684
+      },
+      "res/layout/abc_activity_chooser_view_list_item.xml": {
+        "sha256": "aebabe1fea48d471d2dcbf8ade978cca356cb40ef1f1a1f307419e7913fc384e",
+        "bytes": 1304
+      },
+      "res/layout/abc_alert_dialog_button_bar_material.xml": {
+        "sha256": "f8d5de0319850f7fa1aa06abe36f0ab26e092bfe49d9201423150b880ab935d0",
+        "bytes": 1584
+      },
+      "res/layout/abc_alert_dialog_material.xml": {
+        "sha256": "6714c8358b39c9134e99f2595795be52a2057b915eecab82553db120fdc85345",
+        "bytes": 2648
+      },
+      "res/layout/abc_alert_dialog_title_material.xml": {
+        "sha256": "0834d3f6e904a6221d46b0e1f4917c1b9cacae9ccddee82867eeb01e7552171b",
+        "bytes": 1560
+      },
+      "res/layout/abc_cascading_menu_item_layout.xml": {
+        "sha256": "73b16260f97d5fea7506a23c482d394d2265d4c47657ee1efaae608b63745467",
+        "bytes": 1868
+      },
+      "res/layout/abc_dialog_title_material.xml": {
+        "sha256": "25f96943cab7700d47c01ed8f3b502257e90daad546fc00c54d5558000106535",
+        "bytes": 1116
+      },
+      "res/layout/abc_expanded_menu_layout.xml": {
+        "sha256": "18d8665ad6e0460405f5b8894514268c8190a36b894009357637d160427daf9a",
+        "bytes": 388
+      },
+      "res/layout/abc_list_menu_item_checkbox.xml": {
+        "sha256": "d234ecb4ee115ce46e0d829249a9db747cd7e7e091f0283af7c7c14d7e8ffd84",
+        "bytes": 528
+      },
+      "res/layout/abc_list_menu_item_icon.xml": {
+        "sha256": "57f4d7cfe40edf02971092ab6623be122d167d1fec88dc92a37c2127303f9550",
+        "bytes": 780
+      },
+      "res/layout/abc_list_menu_item_layout.xml": {
+        "sha256": "356d87b5c1013c37f3eec5f1791823b00e79106d4eb72c3770890179b9cbab31",
+        "bytes": 1396
+      },
+      "res/layout/abc_list_menu_item_radio.xml": {
+        "sha256": "f61d6aec9fffeeb1175d792bba67860e12f7a53dc629e80b1ee2c27fd96a3f78",
+        "bytes": 532
+      },
+      "res/layout/abc_popup_menu_header_item_layout.xml": {
+        "sha256": "15cc190947d5a93d9961fc5a7331771225274a2c65aad307a6b3704b26014dad",
+        "bytes": 848
+      },
+      "res/layout/abc_popup_menu_item_layout.xml": {
+        "sha256": "2545bbe2b146e3ff2f3a7a8a38b71624e0f801563f7e581146431b31582ba03a",
+        "bytes": 2072
+      },
+      "res/layout/abc_screen_content_include.xml": {
+        "sha256": "9cee7b7f36d4546d3d591b468492d5544d34d99e342d7acdf38c1d88248a8364",
+        "bytes": 548
+      },
+      "res/layout/abc_screen_simple.xml": {
+        "sha256": "0398c472728f943cb8e7dd05182f8c4a98d02e39d144a794b67f209d942405db",
+        "bytes": 832
+      },
+      "res/layout/abc_screen_simple_overlay_action_mode.xml": {
+        "sha256": "e9880b6b6337866d67e14216bb95b1f37849d7ac3cf888b913fbce68a85f0508",
+        "bytes": 792
+      },
+      "res/layout/abc_search_dropdown_item_icons_2line.xml": {
+        "sha256": "d284e43f0d346384a8829ab90c7706582fa15fe1b40dbc9700d584696402123c",
+        "bytes": 1916
+      },
+      "res/layout/abc_search_view.xml": {
+        "sha256": "070acb0ba997cd861b57d29ec87dc5c32ecad708b697d7edaf42723aa75dfb04",
+        "bytes": 3472
+      },
+      "res/layout/abc_select_dialog_material.xml": {
+        "sha256": "4c485382c4aa130313f23a46d4c344f5a3f8a7e1046dabf9b7cff3c3cffa7cc0",
+        "bytes": 1020
+      },
+      "res/layout/abc_tooltip.xml": {
+        "sha256": "181a85157b4c45e411eb5e4baea36890796629265223a01ed85567580e58f099",
+        "bytes": 1056
+      },
+      "res/layout/custom_dialog.xml": {
+        "sha256": "b5aa9b233fcc4e15a6018d912aed788e8d70f05c47683cc6a886f8ed47218996",
+        "bytes": 612
+      },
+      "res/layout/ime_base_split_test_activity.xml": {
+        "sha256": "37ff040591f96786bfaf9d3d937fedf2f2f97e218c06beb3e7fe8a2442a181a8",
+        "bytes": 364
+      },
+      "res/layout/ime_secondary_split_test_activity.xml": {
+        "sha256": "b5e3b468c8887d755106731672d12ef542244f254492e01c1ef74e230a78aabd",
+        "bytes": 876
+      },
+      "res/layout/notification_template_part_chronometer.xml": {
+        "sha256": "0ed882397747cf6375885d969c19f6b1647de03f4b1a4232ba24c38feee04569",
+        "bytes": 440
+      },
+      "res/layout/notification_template_part_time.xml": {
+        "sha256": "b2ffb9139e5ba793b218c914f26e16478fa9f3b4b9c8b0c54aa0a99cfd033dc0",
+        "bytes": 440
+      },
+      "res/layout/select_dialog_item_material.xml": {
+        "sha256": "fd4ec7f0603df1a71ced2e25e58391dd06bdf729f37e757b65bc32ebe7dbade8",
+        "bytes": 640
+      },
+      "res/layout/select_dialog_multichoice_material.xml": {
+        "sha256": "ccf3b83c8f58533d2b1622a30c43d867c9aba62f80649e286cf43f66646d82f5",
+        "bytes": 864
+      },
+      "res/layout/select_dialog_singlechoice_material.xml": {
+        "sha256": "b7f36158e236140c44760336396f21290a43231f5d7c260caa163bb14a4833c8",
+        "bytes": 864
+      },
+      "res/layout/support_simple_spinner_dropdown_item.xml": {
+        "sha256": "16d9b4ba51600cb99b427a91753da8760cff59688edcf70d92de30938a253a90",
+        "bytes": 464
+      },
+      "res/mipmap-anydpi-v26/ic_launcher.xml": {
+        "sha256": "1363a59b92ca801a318e18e9f583fe6dc7ec369fb28e7914e03d92f0b9c27585",
+        "bytes": 548
+      },
+      "res/xml/locales_config.xml": {
+        "sha256": "a01606f21a2fb741802e8b89a410f88cb7a77a613528a9ece96d16b167ab3ff4",
+        "bytes": 444
+      },
+      "resources.arsc": {
+        "sha256": "004fab2aa330e69c6a370edfabeaaaed18051bdd8f60a443b4c933bbe00d7a12",
+        "bytes": 818696
+      },
+      "transport-api.properties": {
+        "sha256": "bef74d23ddca0168d8b34c1bafd9711609e78e004b6d44b24bf112445baa2a26",
+        "bytes": 62
+      },
+      "transport-backend-cct.properties": {
+        "sha256": "af996331632d3d3ae1146e89837a32eba1d9b3fe50f122e590eb736e581d8a0c",
+        "bytes": 78
+      },
+      "transport-runtime.properties": {
+        "sha256": "092eac9daadbccb730235fbea4fc6af06e24e31d5c613b92d794d1230e09096e",
+        "bytes": 70
+      },
+      "vision-common.properties": {
+        "sha256": "17d5d69b33423ed393118678dd5c66d54bef292e6d295c772d3cda2ac280f093",
+        "bytes": 64
+      },
+      "vision-interfaces.properties": {
+        "sha256": "4de4f31504cb086be088a62bb3b14d6e156381238dca2a362108d4ee8ede358f",
+        "bytes": 72
+      }
+    }
+  }
+}

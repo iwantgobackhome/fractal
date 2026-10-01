@@ -7,6 +7,7 @@ Status: **pending final integrated runtime and actual CI artifacts**. This is a 
 - Initial accepted root: `6080532fe6fad7e40a8dfc262fcdc271a764e339`; accepted backend source is integrated here, with original proof source `d5cbccbd450f7ab1bfd0297b329eeb5c41d46ab2`.
 - Coordinator declared combined client root `fa4304f6698dbdf28675dfe522dff8748ab50f66` at 07:58 UTC; its final 0.2.0 screenshots and actual release outputs are still pending.
 - Corrected accepted root `b5e18a55242e1d523a35602dd6b5cc0c123c04f8` includes release-owner fix `75dd001`; merged for review locally at `45a80dcfda79677954b5bb3b93af65ac0689f1b9`. Relevant product/script source matches declared root; the local merge also retains QA evidence.
+- Final runtime production source `edd8019808c923c58f3964528bb57832f79b72d6`, declared integrated root `fa6c40ab2955c5f517394726794851bf9785858d`, merged locally at `6d71b8d`. Product source directories match the declared runtime commit exactly. One add/add conflict in this worker-owned report resulted from root cherry-picking the earlier QA checkpoint; retained this later report, with no product conflict or amendment.
 - Preliminary peer client screenshots explicitly report unpackaged app `0.1.0` and source `b6323d1f4b3b00007c7e0f09e7a75545a87301c5`; they are not proof of final integrated 0.2.0 binaries.
 
 ## Reproduced release blocker
@@ -39,13 +40,25 @@ Native transport uses a captured credential session, redirect-disabled OkHttp wi
 
 Compatibility finding at `b5e18a`: backend discovery permits AVIF, but both clients initially accepted only PNG/JPEG/WebP/GIF. An AVIF-only first candidate therefore became a text fallback. Coordinator classified the new transport rejection as avoidable and routed additive AVIF MIME acceptance to the client owner; exact correction checkpoint is pending. Native codec support will still depend on platform decoding, with graceful text fallback where unsupported.
 
+**Resolved at `edd8019` / accepted `fa6c40a`**: both transports now permit `image/avif`, preserving body/decode bounds. Independently reran all six focused PC image tests on this exact product source; all passed, including new AVIF MIME acceptance. The MIME test uses controlled bytes and does not prove every native platform codec can decode AVIF.
+
 ## Preliminary visual observations
 
 Inspected existing 1440 desktop paper list, 1280 desktop paper dossier, native 360 phone with font scale 2, and 1280 tablet news list. Paper figures preserve proportions using contain/fit. Desktop Read PDF is visually primary and Save metadata secondary; failed/absent images leave readable rows. Native font2 title wraps within width and the two-row navigation remains visible; content requires scrolling. Tablet news image intentionally crops as a photo and its list/detail split is clear. Final serif/font/focus/nav corrections and final version correspondence remain to be reviewed against accepted captures.
 
+Further inspected 1440 news index, 1280 news dossier and topics view, native ordinary/font2 paper dossier actions and tablet paper dossier. Both actions remain available and the large-font phone wraps them onto separate rows while preserving full words. Figure proportions are intact in both list and full dossier, source metadata remains visible, and there are no broken-image placeholders in failed/absent rows.
+
+Final runtime evidence supplied from the peer contains `desktop-evidence-documentation.json` with exact source `edd8019`, appVersion `0.2.0`, packaged false, no JavaScript errors and empty library/history after reading the UI. Individually inspected all four actual-metadata 1440 screenshots plus phone360 paper/news indices and dossiers. Actual requested paper title, full author roster, first figure and public abstract are shown; MIT article date is correctly March 21, 2024 rather than the initial controlled feed timestamp. Full paper/news dossier images preserve proportions, scholarly titles and reading/saving hierarchy remain clear. Native phone360 article has source/author/date and scrollable translation/source actions.
+
+The 1280 desktop/font2 phone/tablet captures remain explicitly version 0.1 layout evidence. Independent source diff from `f66ba73` to `edd8019` shows no renderer, layout or native resource changes: only two transport MIME lines and the AVIF test changed in product directories. This supports layout correspondence, with final 0.2 direct runtime capture restricted to 1440 desktop and phone360. Coordinator was informed of that exact scope.
+
+## Retained actual runtime APK
+
+[runtime-apk-evidence.json](runtime-apk-evidence.json) records independent actual SDK35 manifest/signature inspection and all 462 application ZIP entry hashes from the retained native runtime APK. APK SHA-256 `42dd1eda407ccc90abcd646b94cd1c2df363cf53634638ce3088ed7529dde64c` matches the coordinator-supplied artifact; package `app.fractal.reader`, versionName `0.2.0`, versionCode 2, minSdk29/targetSdk35, valid v2 signature and the expected previous public certificate. The client owner's final native documentation log reports `OK (2 tests)` on the rebuilt APK. This worker inspected the file without installation and awaits an actual CI APK for correspondence comparison.
+
 ## Remaining gates and cleanup
 
-Pending: exact accepted final source; final desktop 1440/1280 and native 360/font2/tablet captures; all five successful actual native CI jobs and six downloaded distributions; independent payload/source/resource hashes, package versions/architectures, native PTY records and Android old/new certificate identity; source/resource correspondence between CI APK and accepted native captures. Static APK inspection will not be described as installation.
+Pending: final release/source freeze and documentation integration; all five successful actual native CI jobs and six downloaded distributions; independent payload/source/resource hashes, package versions/architectures and native PTY records; actual CI APK certificate and source/resource correspondence to accepted native captures. Final version 0.2 direct captures at 1280/font2/tablet have not been supplied; existing identical-layout-source evidence remains qualified above. Static APK inspection will not be described as installation.
 
 The independent Hub ran only inside a short-lived QA command, with real CLI and background refresh disabled and a new QA profile plus isolated legacy path. Its close completed before the command naturally exited. No persistent helper, terminal, emulator, user profile, library or peer resources were started, stopped or cleaned up by this worker.
 
