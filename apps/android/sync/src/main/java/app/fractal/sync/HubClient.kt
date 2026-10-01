@@ -30,7 +30,16 @@ interface HubHistoryClient : HubDataClient {
     suspend fun attachHistory(path: String, body: JsonObject): String
 }
 
-class HubHttpException(val code: Int) : IOException("Hub HTTP $code")
+class HubHttpException(val code: Int, val reason: String? = null) : IOException(reason ?: "Hub HTTP $code")
+
+private fun hubFailure(response: Response): HubHttpException {
+    val reason = runCatching {
+        val body = response.body?.string().orEmpty()
+        if (body.length > 16384) null else WireJsonAdapter.json.parseToJsonElement(body)
+            .jsonObject["error"]?.jsonObject?.get("message")?.jsonPrimitive?.content?.take(1000)
+    }.getOrNull()?.takeIf { it.isNotBlank() }
+    return HubHttpException(response.code, reason)
+}
 
 class HubClient(private val credentials: HubCredentialStore) : HubHistoryClient {
     private val http = OkHttpClient.Builder()
@@ -40,8 +49,15 @@ class HubClient(private val credentials: HubCredentialStore) : HubHistoryClient 
     // Topic creation has no server idempotency key. A transport retry after admission
     // can duplicate it before the durable queue gets a chance to reconcile by GET.
     private val admissionHttp = http.newBuilder().retryOnConnectionFailure(false).build()
-    private fun transport(path: String, method: String) =
-        if (method == "POST" && path.substringBefore('?') == "/api/feed/topics") admissionHttp else http
+    // The publication resolver owns a 60-second network budget; allow extraction
+    // and JSON processing after that, without extending unrelated Hub requests.
+    private val publicationHttp = http.newBuilder().readTimeout(90, TimeUnit.SECONDS)
+        .callTimeout(100, TimeUnit.SECONDS).retryOnConnectionFailure(false).build()
+    private fun transport(path: String, method: String) = when {
+        method == "POST" && path.substringBefore('?') == "/api/feed/topics" -> admissionHttp
+        method == "POST" && path.substringBefore('?') == "/api/publications/open" -> publicationHttp
+        else -> http
+    }
 
     companion object {
         private val jsonType = "application/json; charset=utf-8".toMediaType()
@@ -77,7 +93,7 @@ class HubClient(private val credentials: HubCredentialStore) : HubHistoryClient 
     override suspend fun data(path: String, method: String, body: JsonElement?): JsonElement =
         withContext(Dispatchers.IO) {
             execute(path, method, body).use { response ->
-                if (!response.isSuccessful) throw HubHttpException(response.code)
+                if (!response.isSuccessful) throw hubFailure(response)
                 val raw = response.body?.string() ?: throw IOException("Empty hub response")
                 WireJsonAdapter.data(raw)
             }
@@ -96,7 +112,7 @@ class HubClient(private val credentials: HubCredentialStore) : HubHistoryClient 
             override suspend fun data(path: String, method: String, body: JsonElement?): JsonElement = withContext(Dispatchers.IO) {
                 ensureCurrent()
                 transport(path, method).newCall(request(paired.url, path, method, body, paired.token)).execute().use {
-                    if (!it.isSuccessful) throw HubHttpException(it.code)
+                    if (!it.isSuccessful) throw hubFailure(it)
                     ensureCurrent()
                     WireJsonAdapter.data(it.body?.string() ?: throw IOException("Empty hub response"))
                 }
@@ -112,7 +128,7 @@ class HubClient(private val credentials: HubCredentialStore) : HubHistoryClient 
             .header("Authorization", "Bearer ${paired.token}")
             .post(bytes.toRequestBody("application/pdf".toMediaType())).build()
         http.newCall(request).execute().use {
-            if (!it.isSuccessful) throw HubHttpException(it.code)
+            if (!it.isSuccessful) throw hubFailure(it)
             check(credentials.load() == paired) { "Hub changed while linking the PDF; reconnect to reconcile." }
             WireJsonAdapter.data(it.body?.string() ?: "").jsonObject
         }

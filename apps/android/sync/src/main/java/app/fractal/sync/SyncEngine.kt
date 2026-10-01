@@ -22,6 +22,17 @@ class SyncEngine(private val database: FractalDatabase, private val client: HubD
         guard()
     }
 
+    /** Validated acquisition record and authoritative reader metadata are admitted atomically. */
+    suspend fun acceptPublication(record: JsonObject, snapshot: JsonObject, guard: () -> Unit) = database.withTransaction {
+        guard()
+        val key = record.text("paperKey") ?: error("Missing paper key")
+        val paper = snapshot.getValue("paper").jsonObject
+        project("paper", key, record)
+        database.metadata().upsert(SnapshotEntity(key, snapshot.toString(), Instant.now().toString()))
+        database.library().setPdf(key, paper.text("pdfSha256")!!, paper.text("pageCount")!!.toInt())
+        guard()
+    }
+
     private suspend fun project(kind: String, id: String, remote: JsonObject) {
         val pending = database.metadata().pending(kind, id)
         val key = "$kind:$id"

@@ -14,7 +14,7 @@ class PublicationAcquisitionTest {
     private fun obj(raw: String) = WireJson.format.parseToJsonElement(raw).jsonObject
     private val paper = DiscoveryPaper(title = "Available publisher paper", url = "https://jmlr.org/papers/v12/pedregosa11a.html")
     private fun record(saved: Boolean = false) = obj("""{"id":"canonical","paperKey":"canonical","title":"Available publisher paper","authors":[],"addedAt":"2026-10-01","updatedAt":"2026-10-01","bibtexKey":"canonical","saved":$saved,"tags":["remote"],"collections":[],"rev":3}""")
-    private fun result(hasPdf: Boolean = true) = buildJsonObject { put("paperKey", "canonical"); put("record", record()); put("hasPdf", hasPdf) }
+    private fun result(hasPdf: Boolean = true) = buildJsonObject { put("paperKey", "canonical"); put("record", record()); put("hasPdf", hasPdf); put("paper", snapshot().getValue("paper")) }
     private fun snapshot() = obj("""{"paper":{"paperKey":"canonical","pdfSha256":"${"a".repeat(64)}","pageCount":16}}""")
 
     @Test fun unsavedReadAdmissionUsesCanonicalKeyAndNeverCreatesSaveOrRecent(): Unit = runBlocking {
@@ -86,6 +86,28 @@ class PublicationAcquisitionTest {
                 assertTrue(failure.message!!.contains(if (oldHub) "does not support" else "No readable PDF"))
                 assertEquals(0, downloads); assertNull(db.library().get("canonical")?.lastReadAt)
                 assertTrue(db.discovery().pending("scope").isEmpty()); assertTrue(db.metadata().pending().isEmpty())
+            } finally { db.close() }
+        }
+    }
+
+    @Test fun structuredNotFoundReasonIsPreservedAndMalformedPdfNeverAdmitsRecord(): Unit = runBlocking {
+        for (mode in listOf("notFound", "missingPaper", "wrongKey", "changedHash", "noPdf")) {
+            val db = memory(); var downloads = 0
+            val client = object : HubDataClient { override suspend fun data(path: String, method: String, body: JsonElement?): JsonElement {
+                if (mode == "notFound") throw HubHttpException(404, "Publisher requires login; choose a public PDF.")
+                if (method != "POST") return if (mode == "changedHash") obj("""{"paper":{"paperKey":"canonical","pdfSha256":"${"b".repeat(64)}","pageCount":16}}""") else snapshot()
+                return when (mode) {
+                    "missingPaper" -> JsonObject(result().filterKeys { it != "paper" })
+                    "wrongKey" -> JsonObject(result() + ("paper" to JsonObject(snapshot().getValue("paper").jsonObject + ("paperKey" to JsonPrimitive("wrong")))))
+                    "noPdf" -> result(false)
+                    else -> result()
+                }
+            } }
+            try {
+                val read = PublicationAcquisition(client, SyncEngine(db, client), { "scope" }) { _, _, _, _ -> downloads++ }
+                val failure = runCatching { read.open(paper) }.exceptionOrNull()!!
+                if (mode == "notFound") assertEquals("Publisher requires login; choose a public PDF.", failure.message)
+                assertEquals(0, downloads); assertTrue(db.library().all().isEmpty()); assertNull(db.metadata().snapshot("canonical"))
             } finally { db.close() }
         }
     }
