@@ -37,6 +37,12 @@ class PublicationAcquisitionNativeTest {
     private val failurePaper = DiscoveryPaper(id = "acq-failure", title = "Controlled unavailable publication",
         url = "https://jmlr.org/qa-acquisition-login", source = "user", publication = PublicationMetadata(
             oaAvailability = "open", oaPdfUrl = "https://jmlr.org/qa-acquisition-login.pdf", sources = listOf("user")))
+    private val exactUserPaper = DiscoveryPaper(id = "user-2609.40325v1",
+        title = "WorldAuditBench: Interactive 3D World Auditing with Multimodal Agents",
+        authors = listOf("Ziyan Jiang", "Jingbo Yang", "Jiabao Ji", "Yujian Liu", "Qiucheng Wu", "Tommi Jaakkola", "Yang Zhang", "Shiyu Chang"),
+        source = "arxiv", url = "https://arxiv.org/abs/2609.40325v1", arxivId = "2609.40325v1",
+        publication = PublicationMetadata(year = 2026, venue = "arXiv", publicationKind = "preprint", publicationDate = "2026-09-30",
+            oaAvailability = "open", oaPdfUrl = "https://arxiv.org/pdf/2609.40325v1", sources = listOf("arxiv")))
     @Before fun setup(): Unit = runBlocking {
         val file = File("/data/local/tmp/fractal-pdf-acquisition-private.json")
         Assume.assumeTrue("Requires fresh owned 5562 acquisition profile", file.isFile)
@@ -110,6 +116,12 @@ class PublicationAcquisitionNativeTest {
         app.database.annotations().upsert(memo)
         app.database.reader().upsert(ReaderPositionEntity(key, "{\"page\":1,\"fraction\":0,\"mode\":\"original\"}"))
         val position = app.database.reader().position(key)
+        val history = historyEntity(buildJsonObject {
+            put("id", "acquisition-retained-history"); put("paperKey", key); put("kind", "question"); put("status", "completed")
+            put("text", "Complete retained answer with original context"); put("createdAt", "2026-09-30T00:00:00Z")
+            put("updatedAt", "2026-09-30T00:00:00Z"); put("rev", 1); put("deleted", false)
+        })
+        app.database.metadata().upsert(history)
         launch(); dossier(savedPaper); capture("saved-metadata-read-action"); native.click("Read PDF")
         native.waitFor("saved acquired original reader") { native.findSurface() != null }
         val record = app.database.library().get(key)!!; val retained = WireJson.format.decodeFromString<LibraryRecord>(record.json)
@@ -120,6 +132,7 @@ class PublicationAcquisitionNativeTest {
         val retainedNote = WireJson.format.parseToJsonElement(currentMemo.json).jsonObject
         assertEquals(originalNote["text"], retainedNote["text"]); assertEquals(originalNote["quote"], retainedNote["quote"])
         assertNotNull(position); assertNotNull(app.database.reader().position(key))
+        assertEquals(history, app.database.metadata().history(history.id))
         capture("saved-retained-reader")
         Log.i("PdfAcquisitionQA", "PASS saved metadata actual acquisition key=$key; saved/tags/nested-folder/memo/reader-position retained")
     }
@@ -179,5 +192,28 @@ class PublicationAcquisitionNativeTest {
             assertEquals(memo, db.annotations().get(memo.id)); assertEquals(remote.text("lastReadAt"), row.lastReadAt)
         } finally { db.close() }
         Log.i("PdfAcquisitionQA", "PASS actual delayed HTTP admission preserves concurrent saved/tags/nested membership/memo/dirty queue without new Recent")
+    }
+
+    @Test fun g_exactUserVersionedArxivPdfOpensOriginalWithIdenticalBytesUnsaved(): Unit = runBlocking {
+        assertNull(row(exactUserPaper))
+        app.discovery.cache("feed", WireJson.format.encodeToJsonElement(DiscoveryFeed("2026-W40", sections = FeedSections(top = listOf(exactUserPaper)))))
+        launch(); dossier(exactUserPaper); capture("exact-user-v1-dossier-action"); native.click("Read PDF")
+        until("exact user original verified cache") { row(exactUserPaper)?.pdfSha256?.let(app.cache::contains) == true }
+        native.waitFor("exact user original native reader") { native.findSurface() != null }
+        until("exact user Recent only after reader") { row(exactUserPaper)?.lastReadAt != null }
+        val record = row(exactUserPaper)!!; assertFalse(record.saved)
+        val file = app.cache.file(record.pdfSha256!!)
+        val hash = withContext(Dispatchers.IO) { val digest = MessageDigest.getInstance("SHA-256")
+            file.inputStream().use { input -> val buffer = ByteArray(8192); while (true) { val count = input.read(buffer); if (count < 0) break; digest.update(buffer, 0, count) } }
+            digest.digest().joinToString("") { "%02x".format(it) } }
+        assertEquals(49668700L, file.length()); assertEquals("d9fdc657534201a7e1df44080ae52fb1c168b791b56581ebf2ddf35d0b087901", hash)
+        assertEquals(record.pdfSha256, hash)
+        val snapshot = app.client.data("/api/papers/${HubClient.keyPath(record.paperKey)}").jsonObject.getValue("paper").jsonObject
+        assertTrue(snapshot.text("sourceUrl")!!.contains("2609.40325v1"))
+        capture("exact-user-v1-original-reader")
+        control(buildJsonObject { put("offline", true) }); scenario.recreate()
+        native.waitFor("exact user cached offline reader") { native.findSurface() != null }; capture("exact-user-v1-offline-reader")
+        assertFalse(row(exactUserPaper)!!.saved)
+        Log.i("PdfAcquisitionQA", "PASS exact user https://arxiv.org/abs/2609.40325v1 -> native original/cache/offline; bytes=${file.length()}, sha256=$hash, unsaved=true")
     }
 }
