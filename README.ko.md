@@ -25,7 +25,9 @@
   <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="최신 릴리스" src="https://img.shields.io/github/v/release/iwantgobackhome/fractal?style=for-the-badge&color=3b625b"></a>
 </p>
 
-![Fractal 학술 탐색 화면](docs/implementation/desktop/stage3/discovery-1280-light-en.png)
+![Fractal 탐색 화면의 WorldAuditBench 논문 정보와 첫 적합한 과학 그림](docs/assets/readme/v020-desktop-discovery.png)
+
+학술 탐색 화면에서 논문과 그 과학 그림을 함께 살펴봅니다.
 
 **눈앞의 논문에서 다음에 읽을 논문까지.** 원문 PDF와 충실한 번역을 나란히 놓고 읽으세요. 궁금한 점은 논문에 묻고, 답변의 페이지 인용을 따라 원문을 확인하세요. 관심 분야의 논문과 뉴스를 살펴보고 중요한 자료는 서재에 담을 수 있습니다. 이미 이용 중인 Codex 또는 Claude CLI 구독 계정으로 연결하며, API 키를 따로 입력할 필요가 없습니다.
 
@@ -39,7 +41,7 @@
 
 탐색에서는 논문 HTML의 첫 적합한 캡션 그림이나 뉴스 기사의 첫 적합한 본문 이미지를 먼저 시도합니다. 후보를 가져오지 못하면 뒤의 적합한 이미지와 출처 썸네일을 시도합니다. 로고와 자리표시자는 제외하고 검증된 이미지 바이트를 로컬에 캐시합니다. 사용 가능한 이미지가 없으면 텍스트와 읽기 동작을 그대로 제공합니다. 이미지 제공 여부는 출처에 따라 다르며, 이미지가 없다고 논문이나 PDF도 없는 것은 아닙니다. 배포 대상과 기능 범위는 [0.2.0 릴리스 노트](docs/releases/0.2.0.md)를 참고하세요.
 
-![데스크톱 리더의 앱 내 출판물 PDF](docs/implementation/desktop/pdf-reader-failure/packaged-public-original-read.png)
+![데스크톱 리더의 앱 내 출판물 PDF](docs/assets/readme/v020-reader-original.png)
 
 ### 원문을 놓치지 않는 리더
 
@@ -65,13 +67,19 @@ arXiv ID, DOI, 공개 논문 주소, 로컬 PDF를 열 수 있습니다. 저장�
 | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | 관심 분야에서 기본 제공 주제와 개인 주제를 팔로우합니다. | 공개 기사를 앱 안의 간결한 텍스트 화면에서 읽고 제목과 본문을 빠르게 번역할 수 있습니다. 언론사 제한으로 본문을 가져오지 못할 수 있습니다. |
 
+![Fractal 안에 표시된 MIT News 기사 날짜·저자와 첫 본문 이미지](docs/assets/readme/v020-desktop-news.png)
+
+앱 안에서 기사와 본문 이미지를 읽고 발행처 원문도 바로 열 수 있습니다.
+
 ### 쓰던 AI 계정 그대로
 
 Fractal은 공식 Codex·Claude CLI로 연결합니다. 앱에서 로그인을 시작하거나 터미널의 기존 로그인을 사용할 수 있고, 별도 관리 계정을 추가해 제공자별 활성 계정을 바꿀 수 있습니다. 지원되는 환경에서는 설치와 로그인을 앱에서 시작하며, 자동 설치가 안 되면 직접 실행할 명령을 안내합니다. 기본 모델과 기능별 모델을 고를 수 있습니다. 5시간·주간 사용량은 제공자가 알려 줄 때만 표시하고, 확인할 수 없으면 그대로 알립니다.
 
 ### Android 태블릿에서도 이어서
 
-<p align="center"><img src="apps/android/qa/pdf-acquisition/screens/phone360-current/exact-user-current-verified-offline-reader.png" width="360" alt="Android 원문 PDF 리더"></p>
+<p align="center"><img src="docs/assets/readme/v020-android-papers.png" width="360" alt="네이티브 Android 탐색 화면의 WorldAuditBench 과학 그림과 논문 정보"> <img src="docs/assets/readme/v020-android-news.png" width="360" alt="네이티브 Android 뉴스 화면의 MIT News 본문 이미지와 기사 정보"></p>
+
+실제 본문 이미지가 있는 네이티브 Android 논문·뉴스 탐색 화면입니다.
 
 QR 코드를 스캔해 Kotlin/Compose 앱을 데스크톱 허브에 연결합니다. 신뢰할 수 있는 LAN 또는 Tailscale을 통해 서재와 펜 필기를 포함한 주석을 동기화하고, 캐시된 PDF를 읽을 수 있습니다. AI와 탐색 기능은 데스크톱 허브에서 처리합니다.
 

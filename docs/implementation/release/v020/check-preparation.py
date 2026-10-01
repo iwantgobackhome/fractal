@@ -72,6 +72,7 @@ for path in original_assets:
     assert actual == accepted, 'accepted icon changed: '+path
 
 readmes = ['README.md','README.ko.md','README.ja.md','README.zh-CN.md']
+accepted_screens = {screen['path'] for screen in json.loads(Path('docs/assets/readme/v020-screens.json').read_text(encoding='utf-8'))['screens']}
 for filename in readmes:
     text=Path(filename).read_text(encoding='utf-8')
     original=subprocess.check_output(['git','show','239e444c:'+filename]).decode('utf-8')
@@ -80,7 +81,8 @@ for filename in readmes:
     for suffix in ['win-x64.exe','linux-x64.AppImage','linux-x64.deb','mac-arm64.dmg','mac-x64.dmg','android-debug.apk']:
         assert 'Fractal-0.2.0-'+suffix in text
     assert '\ufffd' not in text and '|  |' not in text
-    assert not re.search(r'docs/assets/readme/[^\s)"]+\.png',text), 'stale dashboard screenshot'
+    for image in re.findall(r'docs/assets/readme/[^\s)"]+\.png',text):
+        assert image in accepted_screens, 'stale or unqualified screenshot: '+image
 for filename in readmes+['apps/desktop/README.md','apps/android/README.md','docs/RELEASING.md','docs/releases/0.2.0.md','CHANGELOG.md']:
     path=Path(filename); text=path.read_text(encoding='utf-8')
     links=re.findall(r'\]\(([^)]+)\)',text)+re.findall(r'(?:src|srcset|href)="([^"]+)"',text)
@@ -96,6 +98,7 @@ for kind,name,expected in [('tag','v0.2.0',0),('tag','v0.1.0',1),('tag','v0.2.0-
     assert (result.returncode == 0) == (expected == 0), (kind,name,result.stderr)
 missing_key=subprocess.run(['node','scripts/restore-android-debug-key.mjs'],env={**base,'ANDROID_DEBUG_KEYSTORE_BASE64':''},capture_output=True)
 assert missing_key.returncode != 0
+subprocess.run(['node','scripts/verify-readme-images.mjs'],check=True)
 for path in list(Path('scripts').glob('*release*.mjs'))+[Path('scripts/release-config.cjs'),Path('scripts/packaged-release-probe.cjs'),Path('scripts/restore-android-debug-key.mjs'),Path('apps/desktop/tools/generate-distribution-icons.mjs')]:
     subprocess.run(['node','--check',str(path)],check=True)
 subprocess.run(['node','-e',"require('app-builder-lib/out/util/config/config.js').getConfig(process.cwd(),'scripts/release-config.cjs').then(c=>require('app-builder-lib/out/util/config/config.js').validateConfiguration(c)).then(()=>console.log('electron-builder CJS load/schema passed'))"],check=True)

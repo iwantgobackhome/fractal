@@ -25,7 +25,9 @@
   <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="最新リリース" src="https://img.shields.io/github/v/release/iwantgobackhome/fractal?style=for-the-badge&color=3b625b"></a>
 </p>
 
-![Fractal の学術発見画面](docs/implementation/desktop/stage3/discovery-1280-light-en.png)
+![Fractal の発見画面に表示された WorldAuditBench の情報と最初の適切な科学図](docs/assets/readme/v020-desktop-discovery.png)
+
+学術発見画面で論文とその科学図を一緒に確認できます。
 
 **今読んでいる論文から、次に読むべき論文まで。** 原文 PDF と忠実な翻訳を並べて読み、疑問は論文に質問できます。回答に付いたページの引用から原文へ戻れます。専門分野の論文やニュースを追い、大切な資料は書庫に保存。現在利用している Codex または Claude CLI のサブスクリプションで接続でき、API キーの入力は不要です。
 
@@ -39,7 +41,7 @@
 
 発見画面では、論文 HTML の最初の適切なキャプション付き図、またはニュース本文の最初の適切な画像を試します。取得できない場合は後続の適切な画像や情報源のサムネイルを試します。ロゴやプレースホルダーを除外し、検証済みの画像データをローカルに保存します。利用できる画像がなければ、テキストと読む操作を保ちます。画像の有無は情報源によって異なり、画像がなくても論文や PDF がないとは限りません。配布形式と機能の範囲は [0.2.0 リリースノート](docs/releases/0.2.0.md) を参照してください。
 
-![デスクトップリーダーで開いた出版物 PDF](docs/implementation/desktop/pdf-reader-failure/packaged-public-original-read.png)
+![デスクトップリーダーで開いた出版物 PDF](docs/assets/readme/v020-reader-original.png)
 
 ### 原文を見失わないリーダー
 
@@ -65,13 +67,19 @@ arXiv ID、DOI、公開論文の URL、手元の PDF を開けます。保存し
 | ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
 | 各分野で既存または個人のトピックをフォローできます。 | 対応する公開記事を読みやすいテキスト表示で開き、見出しや本文をすばやく翻訳できます。配信元の制限により本文を取得できない場合があります。 |
 
+![Fractal 内の MIT News 記事の日付、著者、最初の本文画像](docs/assets/readme/v020-desktop-news.png)
+
+記事と本文画像をアプリ内で読み、配信元の原文もすぐに開けます。
+
 ### いつもの AI アカウントを使う
 
 Fractal は公式の Codex・Claude CLI を通じて接続します。アプリからサインインを始めるか、ターミナルで使用中のログインを利用できます。管理対象の別アカウントを追加し、プロバイダーごとに有効なアカウントを切り替えることも可能です。対応する環境ではアプリから CLI のインストールとサインインを開始でき、非対応の環境では手動コマンドを案内します。既定モデルと機能別モデルも選べます。5 時間・週間の使用量はプロバイダーから取得できる場合に表示し、取得できなければその旨を示します。
 
 ### Android でも続きを読む
 
-<p align="center"><img src="apps/android/qa/pdf-acquisition/screens/phone360-current/exact-user-current-verified-offline-reader.png" width="360" alt="Android 原文 PDF リーダー"></p>
+<p align="center"><img src="docs/assets/readme/v020-android-papers.png" width="360" alt="ネイティブ Android の発見画面に表示された WorldAuditBench の科学図と論文情報"> <img src="docs/assets/readme/v020-android-news.png" width="360" alt="ネイティブ Android ニュース画面の MIT News 本文画像と記事情報"></p>
+
+実際の本文画像を使ったネイティブ Android の論文・ニュース発見画面です。
 
 QR コードで Kotlin/Compose アプリをデスクトップのハブにペアリングします。信頼できる LAN または Tailscale 経由で、書庫や手書きを含む注釈を同期し、キャッシュ済み PDF を読めます。AI と発見機能はデスクトップのハブが担います。
 

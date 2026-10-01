@@ -1,0 +1,22 @@
+Final 0.2.0 documentation focused gates
+Date: 2026-10-01
+Accepted client runtime source: edd8019808c923c58f3964528bb57832f79b72d6
+Accepted integrated root: fa6c40ab2955c5f517394726794851bf9785858d
+No native packaged desktop execution or remote CI performed by this worker.
+
+$ python docs/implementation/release/v020/check-preparation.py
+Exit code: 0
+Release versions verified: 0.2.0; Android code 2
+PASS four README languages use 5 byte-verified accepted captures with alt text and Linux/macOS release access
+  • loaded configuration  file=C:\Users\Home\orca\workspaces\fractal\fractal-v020-release\scripts\release-config.cjs
+electron-builder CJS load/schema passed
+PASS: workflow permissions/native matrix, version branch/tag negative gates, artifact names, stable signing failure, icon identity/containers, multilingual links and v26 schema
+
+$ dist/release-tools/actionlint/actionlint.exe -shellcheck= -pyflakes= .github/workflows/release.yml
+Exit code: 0
+(no output)
+
+$ git diff --check; node --check scripts/verify-readme-images.mjs
+Exit code: 0
+warning: in the working copy of 'docs/implementation/release/v020/check-preparation.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'scripts/verify-readme-images.mjs', LF will be replaced by CRLF the next time Git touches it

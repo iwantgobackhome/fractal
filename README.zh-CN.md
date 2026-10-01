@@ -25,7 +25,9 @@
   <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="最新版本" src="https://img.shields.io/github/v/release/iwantgobackhome/fractal?style=for-the-badge&color=3b625b"></a>
 </p>
 
-![Fractal 学术发现界面](docs/implementation/desktop/stage3/discovery-1280-light-en.png)
+![Fractal 发现页面中的 WorldAuditBench 文献信息与首张合适的科学图](docs/assets/readme/v020-desktop-discovery.png)
+
+在学术发现页面一起查看论文及其科学图。
 
 **从正在读的论文，走向下一篇有价值的研究。** 将原始 PDF 与忠实译文并排阅读；向论文提问，再根据回答中的页码回到原文。关注领域内的新论文和新闻，把重要资料收进文献库。Fractal 使用你已登录的 Codex 或 Claude CLI 订阅，无须另填 API 密钥。
 
@@ -39,7 +41,7 @@
 
 发现页面会先尝试论文 HTML 中第一张合适的带说明图，或新闻正文中第一张合适的内容图片。候选获取失败时，会继续尝试后续合适的图片及来源缩略图。标志和占位图会被排除，验证后的图片数据缓存在本机。没有可用图片时，条目保留文字和阅读操作。图片覆盖取决于来源，没有图片不代表没有论文或 PDF。分发形式与功能范围请参阅 [0.2.0 发行说明](docs/releases/0.2.0.md)。
 
-![桌面阅读器中的应用内出版物 PDF](docs/implementation/desktop/pdf-reader-failure/packaged-public-original-read.png)
+![桌面阅读器中的应用内出版物 PDF](docs/assets/readme/v020-reader-original.png)
 
 ### 对照原文阅读
 
@@ -65,13 +67,19 @@
 | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
 | 在各领域内关注预设或自建主题。 | 在应用内以简洁的纯文本视图阅读受支持的公开文章，并快速翻译标题或段落。出版方的限制可能导致正文无法提取。 |
 
+![Fractal 内的 MIT News 文章日期、作者及首张正文图片](docs/assets/readme/v020-desktop-news.png)
+
+在应用内阅读文章与正文图片，也可直接打开出版方原文。
+
 ### 使用已有的 AI 账号
 
 Fractal 通过官方 Codex 和 Claude CLI 连接服务。可以在应用中发起登录，也可以沿用终端中现有的登录；还可以添加独立管理的账号，按服务商切换当前账号。支持的环境可从应用内启动 CLI 安装和登录，否则会显示手动安装命令。你可以设置默认模型和各功能专用模型。5 小时与每周用量仅在服务商提供数据时显示；获取不到时，界面会如实说明。
 
 ### 在 Android 上接着读
 
-<p align="center"><img src="apps/android/qa/pdf-acquisition/screens/phone360-current/exact-user-current-verified-offline-reader.png" width="360" alt="Android 原始 PDF 阅读器"></p>
+<p align="center"><img src="docs/assets/readme/v020-android-papers.png" width="360" alt="原生 Android 发现页面中的 WorldAuditBench 科学图与文献信息"> <img src="docs/assets/readme/v020-android-news.png" width="360" alt="原生 Android 新闻页面中的 MIT News 正文图片与文章信息"></p>
+
+带有真实正文图片的原生 Android 论文与新闻发现页面。
 
 扫描二维码，将 Kotlin/Compose 应用与桌面中枢配对。通过可信的局域网或 Tailscale 同步文献库和批注（包括手写笔迹），并阅读已缓存的 PDF。AI 与发现功能仍由桌面中枢提供。
 

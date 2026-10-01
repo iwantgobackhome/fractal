@@ -25,7 +25,9 @@
   <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/iwantgobackhome/fractal?style=for-the-badge&color=3b625b"></a>
 </p>
 
-![Scholarly discovery in Fractal](docs/implementation/desktop/stage3/discovery-1280-light-en.png)
+![WorldAuditBench metadata and its first suitable scientific figure in Fractal discovery](docs/assets/readme/v020-desktop-discovery.png)
+
+A paper and its scientific figure in the scholarly discovery desk.
 
 **From the paper in front of you to the next one worth reading.** Put the original PDF beside a faithful translation. Ask questions and follow answers back to cited pages. Track papers and news in your fields, then save what matters. Fractal uses the Codex or Claude CLI sign-in tied to your existing subscription; you do not need to supply an API key.
 
@@ -39,7 +41,7 @@ Select the exact characters you need in the original PDF or translation. Open an
 
 Discovery tries the first suitable captioned figure from a paper's HTML, or the first suitable content image from a news article. If a candidate fails, it tries later suitable images and source thumbnails. It excludes logos and placeholders and caches verified image bytes locally. When no usable image is available, the row keeps its text and reading actions. Image coverage depends on the source; a missing image does not imply a missing paper or PDF. See the [0.2.0 release notes](docs/releases/0.2.0.md) for distribution and capability boundaries.
 
-![In-app publication PDF in the desktop reader](docs/implementation/desktop/pdf-reader-failure/packaged-public-original-read.png)
+![In-app publication PDF in the desktop reader](docs/assets/readme/v020-reader-original.png)
 
 ### Read with the source in sight
 
@@ -65,13 +67,19 @@ The home feed brings together arXiv papers, Hugging Face Daily Papers, field new
 | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Follow curated or personal topics within your fields. | Open supported public articles in a plain-text reading view and quickly translate titles or passages. Publisher restrictions can prevent extraction. |
 
+![MIT News article with its date, author and first content image inside Fractal](docs/assets/readme/v020-desktop-news.png)
+
+Read the article and its content image in Fractal, with the original source one click away.
+
 ### Use your AI accounts
 
 Fractal connects through the official Codex and Claude CLIs. Sign in from the app or use an existing terminal login; add separate managed accounts and switch the active account for each provider. The setup screen can install supported CLIs and start sign-in; manual commands are shown where automatic installation is unavailable. Choose a default model and feature-specific overrides. Five-hour and weekly usage bars show provider-reported limits when available, and say so when they are not.
 
 ### Continue on Android
 
-<p align="center"><img src="apps/android/qa/pdf-acquisition/screens/phone360-current/exact-user-current-verified-offline-reader.png" width="360" alt="Android original PDF reader"></p>
+<p align="center"><img src="docs/assets/readme/v020-android-papers.png" width="360" alt="WorldAuditBench scientific figure and publication metadata in native Android discovery"> <img src="docs/assets/readme/v020-android-news.png" width="360" alt="MIT News content image and article metadata in native Android news"></p>
+
+Native Android paper and news discovery, with genuine content images.
 
 Pair the Kotlin/Compose companion with a desktop hub by scanning a QR code. Read cached PDFs and sync the library and annotations, including pen strokes, over a trusted LAN or Tailscale. The desktop hub remains the source for AI and discovery features.
 

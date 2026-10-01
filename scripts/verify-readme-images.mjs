@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 
 const manifest = JSON.parse(await readFile('docs/assets/readme/v020-screens.json', 'utf8'));
 assert.equal(manifest.version, '0.2.0');
-assert.ok(manifest.screens.length >= 3, 'desktop, news and native capture evidence is required');
+assert.equal(manifest.screens.length, 5, 'four current discovery captures and the retained reader illustration are required');
 const accepted = new Map();
 for (const screen of manifest.screens) {
   assert.match(screen.path, /^docs\/assets\/readme\/v020-[a-z0-9-]+\.png$/);
@@ -23,7 +23,7 @@ for (const filename of ['README.md', 'README.ko.md', 'README.ja.md', 'README.zh-
   const text = await readFile(filename, 'utf8');
   const images = [...text.matchAll(/!\[([^\]]*)\]\(([^)]+\.png)\)/g)].map((match) => ({ alt: match[1], path: match[2] }));
   for (const match of text.matchAll(/<img\b[^>]*src="([^"]+\.png)"[^>]*alt="([^"]*)"[^>]*>/g)) images.push({ path: match[1], alt: match[2] });
-  assert.ok(images.length >= 3, filename);
+  assert.equal(images.length, 5, filename);
   for (const image of images) {
     assert.ok(accepted.has(image.path), `unqualified screenshot in ${filename}: ${image.path}`);
     assert.ok(image.alt.trim().length > 8, `missing meaningful alt text in ${filename}`);
@@ -31,6 +31,8 @@ for (const filename of ['README.md', 'README.ko.md', 'README.ja.md', 'README.zh-
   assert.ok(images.some((image) => accepted.get(image.path).role === 'desktop-hero'));
   assert.ok(images.some((image) => accepted.get(image.path).role === 'desktop-news'));
   assert.ok(images.some((image) => accepted.get(image.path).role === 'android-discovery'));
+  assert.ok(images.some((image) => accepted.get(image.path).role === 'android-news'));
+  assert.ok(images.some((image) => accepted.get(image.path).role === 'reader-original'));
   assert.ok(text.includes('Releases-Linux%20x64') && text.includes('Releases-macOS%20arm64%20%7C%20x64'), 'Linux/macOS release access must remain visible');
 }
 console.log(`PASS four README languages use ${accepted.size} byte-verified accepted captures with alt text and Linux/macOS release access`);
