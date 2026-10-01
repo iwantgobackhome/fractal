@@ -23,6 +23,8 @@ const resources = files.map(path => {
   return { path, bytes: shipped.length, sha256: sha(shipped), matchesBuiltSource: true };
 });
 const artifacts = ['Fractal Setup 0.1.0.exe', 'win-unpacked/Fractal.exe', 'win-unpacked/resources/app.asar'].map(path => { const bytes = readFileSync(join(artifactDirectory, path)); return { path, bytes: bytes.length, sha256: sha(bytes) }; });
+const artifactsBeforeRuntime = JSON.parse(readFileSync(join(output, 'new-artifacts-before.json'), 'utf8').replace(/^\uFEFF/, ''));
+assert.deepEqual(artifacts, artifactsBeforeRuntime, 'new installer/EXE/ASAR remain immutable across actual runtime verification');
 const tracked = execFileSync('git', ['ls-tree', '-r', '--name-only', acceptedSource, '--', 'packages/ui', 'packages/shared', 'packages/hub', 'apps/desktop', 'scripts/build-desktop.mjs', 'package.json', 'package-lock.json'], { encoding: 'utf8' }).trim().split(/\r?\n/).filter(path => !/(?:[/\\]tools[/\\]|[/\\]test[/\\]|\.test\.(?:ts|tsx)$|\.md$)/.test(path));
 const textExtensions = new Set(['.ts', '.tsx', '.js', '.mjs', '.cjs', '.css', '.json', '.html', '.svg', '.sql', '.kt']);
 const sourceFiles = tracked.map(path => {

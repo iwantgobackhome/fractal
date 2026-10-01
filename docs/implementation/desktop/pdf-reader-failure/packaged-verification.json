@@ -1,0 +1,333 @@
+{
+  "mode": "packaged",
+  "source": "c0a01b88a6f0141c57fb427344cb0e86ef011141",
+  "directory": "C:\\Users\\Home\\AppData\\Local\\Temp\\fractal-reader-failure-packaged-zCIOhX",
+  "output": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\dist\\pdf-reader-failure-evidence\\packaged",
+  "seededPdfBytes": false,
+  "externalNavigation": [],
+  "cases": [
+    {
+      "name": "actual-runtime-public-acquisition-Read",
+      "runtime": "packaged",
+      "canonicalHash": "d87d482d5ae7960e2e43d7dd6d21377e60e73e8fce1bf2a01aff7aca8a08c537",
+      "mountedPdf": true
+    },
+    {
+      "name": "localized-corrupted-primary-Read",
+      "language": "en",
+      "heading": "Could not open the original PDF",
+      "context": "Original",
+      "display": "The stored PDF no longer matches its recorded hash. The cached file was not replaced. Check the stored file or open the publication site.",
+      "rawKeyAbsent": true,
+      "retryWorked": true,
+      "mountedPdf": false,
+      "recordedRecent": false,
+      "acquisitionSkipped": true,
+      "metadataPreserved": true
+    },
+    {
+      "name": "localized-corrupted-primary-Read",
+      "language": "ko",
+      "heading": "원본 PDF를 열지 못했습니다",
+      "context": "원문",
+      "display": "저장된 PDF가 기록된 해시와 일치하지 않습니다. 캐시 파일은 교체되지 않았습니다. 저장 파일을 확인하거나 출판물 사이트를 여세요.",
+      "rawKeyAbsent": true,
+      "retryWorked": true,
+      "mountedPdf": false,
+      "recordedRecent": false,
+      "acquisitionSkipped": true,
+      "metadataPreserved": true
+    },
+    {
+      "name": "restored-primary-Read",
+      "exactOriginalHash": "d87d482d5ae7960e2e43d7dd6d21377e60e73e8fce1bf2a01aff7aca8a08c537",
+      "mountedPdf": true,
+      "recentAfterActualRead": true,
+      "retainedMetadataPreserved": true
+    }
+  ],
+  "reference": {
+    "url": "https://papers.nips.cc/paper_files/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf",
+    "bytes": 569417,
+    "sha256": "d87d482d5ae7960e2e43d7dd6d21377e60e73e8fce1bf2a01aff7aca8a08c537",
+    "paperKey": "pub-a7f082412c26f4efd83d74e27f6ac2df66e63468821bfe416ceb86eea9486777"
+  },
+  "wrapperIdentity": {
+    "ProcessId": 51856,
+    "ParentProcessId": 38292,
+    "ExecutablePath": "C:\\WINDOWS\\system32\\cmd.exe",
+    "CommandLine": "C:\\WINDOWS\\system32\\cmd.exe /d /s /c \"\"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\dist\\installer-pdf-reader-failure\\win-unpacked\\Fractal.exe\" \"--inspect=0\" \"--remote-debugging-port=0\"\"",
+    "CreationDate": "/Date(1790837053615)/"
+  },
+  "runtimeIdentity": {
+    "ProcessId": 7924,
+    "ParentProcessId": 51856,
+    "ExecutablePath": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\dist\\installer-pdf-reader-failure\\win-unpacked\\Fractal.exe",
+    "CommandLine": "\"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\dist\\installer-pdf-reader-failure\\win-unpacked\\Fractal.exe\"  \"--inspect=0\" \"--remote-debugging-port=0\"",
+    "CreationDate": "/Date(1790837053707)/"
+  },
+  "isPackaged": true,
+  "origin": "http://127.0.0.1:7195",
+  "baselineMetadataSetup": "Cleared own first-read Recent/progress before corruption comparison; public bytes unchanged.",
+  "before": {
+    "library": [
+      {
+        "id": "pub-a7f082412c26f4efd83d74e27f6ac2df66e63468821bfe416ceb86eea9486777",
+        "paperKey": "pub-a7f082412c26f4efd83d74e27f6ac2df66e63468821bfe416ceb86eea9486777",
+        "title": "Attention is All you Need",
+        "authors": [
+          {
+            "given": "Ashish",
+            "family": "Vaswani"
+          }
+        ],
+        "year": 2017,
+        "venue": "NeurIPS",
+        "doi": null,
+        "arxivId": null,
+        "url": "https://papers.nips.cc/paper_files/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html",
+        "abstract": null,
+        "tags": [
+          "cache-integrity"
+        ],
+        "collections": [
+          "child"
+        ],
+        "addedAt": "2026-10-01T06:44:13.583Z",
+        "updatedAt": "2026-10-01T06:44:20.982Z",
+        "status": "unread",
+        "bibtexKey": "publicationddb2e1330f0f",
+        "publication": {
+          "year": 2017,
+          "venue": "NeurIPS",
+          "publicationKind": "conference",
+          "publicationDate": null,
+          "sources": [
+            "user"
+          ],
+          "oaAvailability": "open",
+          "oaPdfUrl": "https://papers.nips.cc/paper_files/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf"
+        },
+        "saved": true,
+        "savedAt": "2026-10-01T06:44:13.586Z",
+        "lastReadAt": null,
+        "readProgress": {
+          "page": 1,
+          "fraction": 0.1
+        },
+        "rev": 5,
+        "deviceId": "hub"
+      }
+    ],
+    "paper": {
+      "paper": {
+        "paperKey": "pub-a7f082412c26f4efd83d74e27f6ac2df66e63468821bfe416ceb86eea9486777",
+        "sourceKind": "publication",
+        "catalogKey": "pub-a7f082412c26f4efd83d74e27f6ac2df66e63468821bfe416ceb86eea9486777",
+        "arxivId": null,
+        "version": null,
+        "title": "Attention is All you Need",
+        "authors": [
+          "Ashish Vaswani"
+        ],
+        "sourceUrl": "https://papers.nips.cc/paper_files/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html",
+        "pdfSha256": "d87d482d5ae7960e2e43d7dd6d21377e60e73e8fce1bf2a01aff7aca8a08c537",
+        "pageCount": 11,
+        "extractionVersion": "pdfjs6-lines-v4",
+        "status": "ready",
+        "coverage": {
+          "totalPages": 11,
+          "textPages": 11,
+          "unsupportedPages": []
+        },
+        "createdAt": "2026-10-01T06:44:17.740Z"
+      },
+      "blocks": {
+        "count": 158,
+        "sha256": "eeef2463154e02ee36e918315659e834215e6afca4f899cc2ca58782fe74b8be"
+      },
+      "translations": [],
+      "job": null
+    },
+    "folders": [
+      {
+        "id": "child",
+        "name": "Preserved child",
+        "parentId": "parent",
+        "updatedAt": "2026-10-01T06:44:13.592Z",
+        "deleted": false,
+        "rev": 1,
+        "deviceId": "hub"
+      },
+      {
+        "id": "parent",
+        "name": "Preserved parent",
+        "parentId": null,
+        "updatedAt": "2026-10-01T06:44:13.591Z",
+        "deleted": false,
+        "rev": 1,
+        "deviceId": "hub"
+      }
+    ],
+    "history": {
+      "history": [
+        {
+          "id": "preserved-history",
+          "paperKey": "pub-a7f082412c26f4efd83d74e27f6ac2df66e63468821bfe416ceb86eea9486777",
+          "kind": "question",
+          "question": "Preserved question",
+          "text": "Preserved answer",
+          "status": "completed",
+          "createdAt": "2026-10-01T06:44:12.311Z",
+          "updatedAt": "2026-10-01T06:44:13.596Z",
+          "completedAt": "2026-10-01T06:44:12.311Z",
+          "requestId": null,
+          "context": {},
+          "answer": null,
+          "error": null,
+          "rev": 1,
+          "deviceId": "hub",
+          "deleted": false
+        }
+      ]
+    },
+    "fullStateSha256": "0a9068e8a0ca8310fd8a17f5346d86b87b8f465fe357104b03fafd0c1ab10d77"
+  },
+  "after": {
+    "library": [
+      {
+        "id": "pub-a7f082412c26f4efd83d74e27f6ac2df66e63468821bfe416ceb86eea9486777",
+        "paperKey": "pub-a7f082412c26f4efd83d74e27f6ac2df66e63468821bfe416ceb86eea9486777",
+        "title": "Attention is All you Need",
+        "authors": [
+          {
+            "given": "Ashish",
+            "family": "Vaswani"
+          }
+        ],
+        "year": 2017,
+        "venue": "NeurIPS",
+        "doi": null,
+        "arxivId": null,
+        "url": "https://papers.nips.cc/paper_files/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html",
+        "abstract": null,
+        "tags": [
+          "cache-integrity"
+        ],
+        "collections": [
+          "child"
+        ],
+        "addedAt": "2026-10-01T06:44:13.583Z",
+        "updatedAt": "2026-10-01T06:44:27.620Z",
+        "status": "unread",
+        "bibtexKey": "publicationddb2e1330f0f",
+        "publication": {
+          "year": 2017,
+          "venue": "NeurIPS",
+          "publicationKind": "conference",
+          "publicationDate": null,
+          "sources": [
+            "user"
+          ],
+          "oaAvailability": "open",
+          "oaPdfUrl": "https://papers.nips.cc/paper_files/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf"
+        },
+        "saved": true,
+        "savedAt": "2026-10-01T06:44:13.586Z",
+        "lastReadAt": "2026-10-01T06:44:27.620Z",
+        "readProgress": {
+          "page": 1,
+          "fraction": 0,
+          "scrollOffset": 0
+        },
+        "rev": 6,
+        "deviceId": "hub"
+      }
+    ],
+    "paper": {
+      "paper": {
+        "paperKey": "pub-a7f082412c26f4efd83d74e27f6ac2df66e63468821bfe416ceb86eea9486777",
+        "sourceKind": "publication",
+        "catalogKey": "pub-a7f082412c26f4efd83d74e27f6ac2df66e63468821bfe416ceb86eea9486777",
+        "arxivId": null,
+        "version": null,
+        "title": "Attention is All you Need",
+        "authors": [
+          "Ashish Vaswani"
+        ],
+        "sourceUrl": "https://papers.nips.cc/paper_files/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html",
+        "pdfSha256": "d87d482d5ae7960e2e43d7dd6d21377e60e73e8fce1bf2a01aff7aca8a08c537",
+        "pageCount": 11,
+        "extractionVersion": "pdfjs6-lines-v4",
+        "status": "ready",
+        "coverage": {
+          "totalPages": 11,
+          "textPages": 11,
+          "unsupportedPages": []
+        },
+        "createdAt": "2026-10-01T06:44:17.740Z"
+      },
+      "blocks": {
+        "count": 158,
+        "sha256": "eeef2463154e02ee36e918315659e834215e6afca4f899cc2ca58782fe74b8be"
+      },
+      "translations": [],
+      "job": null
+    },
+    "folders": [
+      {
+        "id": "child",
+        "name": "Preserved child",
+        "parentId": "parent",
+        "updatedAt": "2026-10-01T06:44:13.592Z",
+        "deleted": false,
+        "rev": 1,
+        "deviceId": "hub"
+      },
+      {
+        "id": "parent",
+        "name": "Preserved parent",
+        "parentId": null,
+        "updatedAt": "2026-10-01T06:44:13.591Z",
+        "deleted": false,
+        "rev": 1,
+        "deviceId": "hub"
+      }
+    ],
+    "history": {
+      "history": [
+        {
+          "id": "preserved-history",
+          "paperKey": "pub-a7f082412c26f4efd83d74e27f6ac2df66e63468821bfe416ceb86eea9486777",
+          "kind": "question",
+          "question": "Preserved question",
+          "text": "Preserved answer",
+          "status": "completed",
+          "createdAt": "2026-10-01T06:44:12.311Z",
+          "updatedAt": "2026-10-01T06:44:13.596Z",
+          "completedAt": "2026-10-01T06:44:12.311Z",
+          "requestId": null,
+          "context": {},
+          "answer": null,
+          "error": null,
+          "rev": 1,
+          "deviceId": "hub",
+          "deleted": false
+        }
+      ]
+    },
+    "fullStateSha256": "efdc097cf25e9876627767893df6f2db31202c7bfb5441adb312d62921bd50b7"
+  },
+  "status": "passed",
+  "listenerOwnership": [
+    {
+      "LocalAddress": "127.0.0.1",
+      "LocalPort": 7195,
+      "OwningProcess": 7924
+    }
+  ],
+  "ownedProcessExited": true,
+  "ownedWrapperExited": true,
+  "listenerReleased": true,
+  "errors": []
+}

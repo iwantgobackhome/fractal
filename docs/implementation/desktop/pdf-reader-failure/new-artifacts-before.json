@@ -1,0 +1,17 @@
+﻿[
+    {
+        "path":  "Fractal Setup 0.1.0.exe",
+        "bytes":  117592673,
+        "sha256":  "f886937cd5c520ef818e9cbbe40b8c1f4828c7ead678fde4a6d21e9368f7393a"
+    },
+    {
+        "path":  "win-unpacked/Fractal.exe",
+        "bytes":  246032896,
+        "sha256":  "f49fdd4ad96f095276724d4901c72fcd4d294f856b88a182b93a2b0ad0c3cd82"
+    },
+    {
+        "path":  "win-unpacked/resources/app.asar",
+        "bytes":  13210075,
+        "sha256":  "e2c12283acb4f41a5d27f4b3e03dd4b05c40dac171312f7d98ad28aed1058b80"
+    }
+]
