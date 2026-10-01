@@ -63,4 +63,4 @@ $manifest = [ordered]@{
     productionMainTrees=$trees;productionInputHashes=$inputs;packagedResourceHashes=$resources
 }
 Write-Utf8 (Join-Path $PSScriptRoot 'artifact-manifest.json') ($manifest | ConvertTo-Json -Depth 10)
-Write-Output ($manifest | Select-Object sourceFreezeCommit, acceptedBackendSupply, artifactPath, apkSha256, apkBytes, applicationQaClassHits | ConvertTo-Json -Depth 3)
+Write-Output ([pscustomobject]$manifest | Select-Object sourceFreezeCommit, acceptedBackendSupply, artifactPath, apkSha256, apkBytes, applicationQaClassHits | ConvertTo-Json -Depth 3)

@@ -1,0 +1,163 @@
+{
+    "started":  "2026-10-01T06:17:05.4116771Z",
+    "oldHelper":  {
+                      "command":  "\"C:\\Program Files\\nodejs\\node.exe\" apps/android/qa/pdf-acquisition/data/server.bundle.mjs ",
+                      "executable":  "C:\\Program Files\\nodejs\\node.exe",
+                      "gracefulExited":  true,
+                      "checkedExitAt":  "2026-10-01T05:59:54.3435584Z",
+                      "listenersClosed":  true,
+                      "creationEpochMilliseconds":  1790832853910,
+                      "acceptedSource":  "ecaaef850166292f97680fd62d676906e4da4578",
+                      "pid":  52260,
+                      "stopRequestedAt":  "2026-10-01T05:59:53.1121096Z"
+                  },
+    "emulator":  {
+                     "pid":  39892,
+                     "command":  "C:\\Users\\Home\\AppData\\Local\\Android\\Sdk\\emulator\\qemu\\windows-x86_64\\qemu-system-x86_64-headless.exe -avd Pixel_2_API_34 -port 5562 -read-only -no-window -no-audio -no-snapshot -gpu swiftshader_indirect",
+                     "creationEpochMilliseconds":  1790830903659,
+                     "executable":  "C:\\Users\\Home\\AppData\\Local\\Android\\Sdk\\emulator\\qemu\\windows-x86_64\\qemu-system-x86_64-headless.exe"
+                 },
+    "launcher":  {
+                     "pid":  45404,
+                     "command":  "\"C:\\Users\\Home\\AppData\\Local\\Android\\Sdk\\emulator\\emulator.exe\" -avd Pixel_2_API_34 -port 5562 -read-only -no-window -no-audio -no-snapshot -gpu swiftshader_indirect ",
+                     "creationEpochMilliseconds":  1790830903519,
+                     "executable":  "C:\\Users\\Home\\AppData\\Local\\Android\\Sdk\\emulator\\emulator.exe"
+                 },
+    "emulatorListeners":  [
+                              {
+                                  "LocalAddress":  "::1",
+                                  "LocalPort":  5563,
+                                  "OwningProcess":  39892
+                              },
+                              {
+                                  "LocalAddress":  "::1",
+                                  "LocalPort":  5562,
+                                  "OwningProcess":  39892
+                              },
+                              {
+                                  "LocalAddress":  "127.0.0.1",
+                                  "LocalPort":  5563,
+                                  "OwningProcess":  39892
+                              },
+                              {
+                                  "LocalAddress":  "127.0.0.1",
+                                  "LocalPort":  5562,
+                                  "OwningProcess":  39892
+                              }
+                          ],
+    "helper":  {
+                   "pid":  44008,
+                   "command":  "\"C:\\Program Files\\nodejs\\node.exe\" apps/android/qa/pdf-acquisition/data/server.bundle.mjs ",
+                   "creationEpochMilliseconds":  1790834394997,
+                   "executable":  "C:\\Program Files\\nodejs\\node.exe"
+               },
+    "helperListeners":  [
+                            {
+                                "LocalAddress":  "127.0.0.1",
+                                "LocalPort":  6285,
+                                "OwningProcess":  44008
+                            },
+                            {
+                                "LocalAddress":  "127.0.0.1",
+                                "LocalPort":  6284,
+                                "OwningProcess":  44008
+                            },
+                            {
+                                "LocalAddress":  "127.0.0.1",
+                                "LocalPort":  4321,
+                                "OwningProcess":  44008
+                            },
+                            {
+                                "LocalAddress":  "127.0.0.1",
+                                "LocalPort":  4320,
+                                "OwningProcess":  44008
+                            }
+                        ],
+    "serial":  "emulator-5562",
+    "acceptedHelperSource":  "733be9846870428de95a0f36fec1050b0e013c8f",
+    "deviceRestoration":  [
+                              {
+                                  "output":  "",
+                                  "arguments":  [
+                                                    "shell",
+                                                    "settings",
+                                                    "put",
+                                                    "system",
+                                                    "font_scale",
+                                                    "1"
+                                                ],
+                                  "exit":  0
+                              },
+                              {
+                                  "output":  "",
+                                  "arguments":  [
+                                                    "shell",
+                                                    "wm",
+                                                    "size",
+                                                    "reset"
+                                                ],
+                                  "exit":  0
+                              },
+                              {
+                                  "output":  "",
+                                  "arguments":  [
+                                                    "shell",
+                                                    "wm",
+                                                    "density",
+                                                    "reset"
+                                                ],
+                                  "exit":  0
+                              },
+                              {
+                                  "output":  "",
+                                  "arguments":  [
+                                                    "reverse",
+                                                    "--remove",
+                                                    "tcp:6284"
+                                                ],
+                                  "exit":  0
+                              },
+                              {
+                                  "output":  "",
+                                  "arguments":  [
+                                                    "reverse",
+                                                    "--remove",
+                                                    "tcp:6285"
+                                                ],
+                                  "exit":  0
+                              },
+                              {
+                                  "output":  "",
+                                  "arguments":  [
+                                                    "shell",
+                                                    "rm",
+                                                    "/data/local/tmp/fractal-pdf-acquisition-private.json"
+                                                ],
+                                  "exit":  0
+                              },
+                              {
+                                  "output":  "Success",
+                                  "arguments":  [
+                                                    "uninstall",
+                                                    "app.fractal.reader.test"
+                                                ],
+                                  "exit":  0
+                              },
+                              {
+                                  "output":  "Success",
+                                  "arguments":  [
+                                                    "uninstall",
+                                                    "app.fractal.reader"
+                                                ],
+                                  "exit":  0
+                              }
+                          ],
+    "remainingOwnReverses":  "",
+    "emulatorGracefulExit":  true,
+    "emulatorListenersClosed":  true,
+    "helperGracefulExit":  true,
+    "helperListenersClosed":  true,
+    "rawPrivateCredentialsRemoved":  true,
+    "completed":  "2026-10-01T06:17:13.3746552Z",
+    "remainingAdbDevices":  "List of devices attached\n"
+}
