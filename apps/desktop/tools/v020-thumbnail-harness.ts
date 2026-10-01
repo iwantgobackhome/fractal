@@ -88,6 +88,7 @@ function seed(directory: string) {
   };
   if (documentation) {
     Object.assign(paper, metadata.paper, { source: 'arxiv', dateBasis: 'published' });
+    Object.assign(paper.publication, { publicationDate: metadata.paper.publishedAt.slice(0, 10) });
     Object.assign(news, metadata.news, { source: 'news:MIT News', dateBasis: 'published' });
   }
   const rows = documentation
