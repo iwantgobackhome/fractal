@@ -1,12 +1,50 @@
 {
   "productionSource": "423f46726491b5fd2165d57a1f4c2f05ab3d6d94",
   "qaCheckpoint": "4bfb9c317491c84896b1720dd739414ea48d9efb",
-  "build": { "command": "npm run build", "exitCode": 0, "purpose": "Build this own isolated UI/Hub runtime; no peer dist reuse", "warnings": "Existing bundle size and dependency pure-annotation warnings" },
-  "backend": { "command": "npm run test -w @fractal/hub -- src/publication/open.test.ts", "exitCode": 0, "files": 1, "passed": 35, "durationSeconds": 7.35, "qualification": "Controlled provider/network/signature/identifier/bounded-download application HTTP regressions, separate from actual public bytes" },
-  "pc": { "command": "npm run test -w @fractal/ui -- src/shell/publication-open.test.ts", "exitCode": 0, "files": 1, "passed": 11, "durationSeconds": 0.898, "qualification": "Client contract, concurrency, errors, timeout and stale admission checks; separate from actual browser/native execution" },
-  "independentActualExecution": ["large", "browser", "saved"],
+  "build": {
+    "command": "npm run build",
+    "exitCode": 0,
+    "purpose": "Build this own isolated UI/Hub runtime; no peer dist reuse",
+    "warnings": "Existing bundle size and dependency pure-annotation warnings"
+  },
+  "backend": {
+    "command": "npm run test -w @fractal/hub -- src/publication/open.test.ts",
+    "exitCode": 0,
+    "files": 1,
+    "passed": 35,
+    "durationSeconds": 7.35,
+    "qualification": "Controlled provider/network/signature/identifier/bounded-download application HTTP regressions, separate from actual public bytes"
+  },
+  "pc": {
+    "command": "npm run test -w @fractal/ui -- src/shell/publication-open.test.ts",
+    "exitCode": 0,
+    "files": 1,
+    "passed": 11,
+    "durationSeconds": 0.898,
+    "qualification": "Client contract, concurrency, errors, timeout and stale admission checks; separate from actual browser/native execution"
+  },
+  "independentActualExecution": [
+    "large",
+    "browser",
+    "saved"
+  ],
   "knownIncompleteInvocations": "Initial large/browser helpers completed acquisition but failed post-close PowerShell no-listener receipt before durable JSON; corrected focused runs supplied passed evidence",
-  "routedDefects": ["QA-PDF-1 cached original bytes/hash mismatch"],
+  "routedDefects": [
+    "QA-PDF-1 cached original bytes/hash mismatch"
+  ],
   "unchangedBroadSuitesRerun": false,
-  "macOSClaim": false
+  "macOSClaim": false,
+  "repairSource": "6e592956699d07a6b49e3e1212e65fc9c6a4f0f3",
+  "repairUiBuild": {
+    "command": "npm run build -w @fractal/ui",
+    "exitCode": 0,
+    "purpose": "Changed PDF.js curated409 failure path for own real application browser closure"
+  },
+  "postLinkRepairFocused": {
+    "command": "npm run test -w @fractal/hub -- src/publication/open.test.ts",
+    "passed": 39,
+    "exitCode": 0,
+    "acceptedQaHead": "a9bbc55dbab2c0a5d5c33c778ff86264e86fef53"
+  },
+  "cachedGetIndependentClosure": "passed actual full/range/conditional HTTP and primary Read refusal/preservation/restored original at6e59295; no broad rerun"
 }
