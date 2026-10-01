@@ -1,0 +1,56 @@
+{
+  "sourceCommit": "6080532fe6fad7e40a8dfc262fcdc271a764e339",
+  "capturedAt": "2026-10-01T07:58:06.979Z",
+  "scope": "independent archived actual public byte/HTML checks plus controlled network boundaries and actual isolated Hub API; no live provider aggregation or desktop package claim",
+  "publicArchivedImages": [
+    {
+      "kind": "paper",
+      "source": "https://arxiv.org/html/2609.40325v1/anomaly_taxonomy.png",
+      "sha256": "c4b29afc943f6b8cd2ada156874b70e4967a8f3d5f2951ccb23ce94ca3fa2e84",
+      "archivedServedSha256": "c4b29afc943f6b8cd2ada156874b70e4967a8f3d5f2951ccb23ce94ca3fa2e84",
+      "bytes": 3086692,
+      "route": "/api/feed/images/734f8081f3e1980309cce54586072b22a95053ee1c0d8c3e89971b13fbaabab0",
+      "candidates": [
+        "https://arxiv.org/html/2609.40325v1/anomaly_taxonomy.png",
+        "https://arxiv.org/html/2609.40325v1/data_collection.png",
+        "https://arxiv.org/html/2609.40325v1/auditor_modes.png",
+        "https://arxiv.org/html/2609.40325v1/auditing_time.png",
+        "https://arxiv.org/html/2609.40325v1/assets/annotation/medieval-review-en-submission.jpg"
+      ]
+    },
+    {
+      "kind": "news",
+      "source": "https://news.mit.edu/sites/default/files/styles/news_article__image_gallery/public/images/202403/MIT-DMD.png?itok=oIzEyXxR",
+      "sha256": "ac64b89e3b693917a13f75d638e6c7ce5c6816bb3118d8b22b4d451abafd470c",
+      "archivedServedSha256": "ac64b89e3b693917a13f75d638e6c7ce5c6816bb3118d8b22b4d451abafd470c",
+      "bytes": 678963,
+      "route": "/api/feed/images/bc175c6d20a54ddc9589ed4d2ca6032a2ba78dc14159b8e59a3a7b71dd74c861",
+      "candidates": [
+        "https://news.mit.edu/sites/default/files/styles/news_article__image_gallery/public/images/202403/MIT-DMD.png?itok=oIzEyXxR",
+        "https://news.mit.edu/sites/default/files/images/202403/computer-generated-images.png"
+      ]
+    }
+  ],
+  "controlledBoundaries": {
+    "exclusionAndFigureVariantOrder": "pass",
+    "pdfBodyNeverRead": "pass",
+    "privateRedirectNotContacted": "pass",
+    "stalledDnsCancellation": "pass"
+  },
+  "actualHubApi": {
+    "status": 200,
+    "envelope": {
+      "data": {
+        "papers": []
+      }
+    },
+    "oldPackagedSmokeExpression": false,
+    "correctedExpression": true
+  },
+  "cleanup": {
+    "hubClosed": true,
+    "isolatedProfile": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-v020-independent-qa\\docs\\implementation\\qa\\v020\\data\\hub-1790841487112",
+    "persistentHelperStarted": false,
+    "userOrPeerResourcesChanged": false
+  }
+}
