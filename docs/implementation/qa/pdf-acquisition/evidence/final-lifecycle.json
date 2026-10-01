@@ -1,0 +1,36 @@
+{
+    "checkedAt":  "2026-10-01T06:53:52.9953946Z",
+    "method":  "Read-only targeted CIM and listener inspection; no termination or device command",
+    "scope":  "Current final Windows owner and Android owner cleanup plus own recent closure helpers and own Edge profiles",
+    "processIds":  [
+                       7924,
+                       51856,
+                       54192,
+                       49356,
+                       52520,
+                       44008,
+                       39892,
+                       45404
+                   ],
+    "ports":  [
+                  7195,
+                  5562,
+                  5563,
+                  4320,
+                  4321,
+                  6284,
+                  6285
+              ],
+    "remainingScopedProcesses":  [
+
+                                 ],
+    "remainingScopedListeners":  [
+
+                                 ],
+    "remainingOwnBrowser":  [
+
+                            ],
+    "status":  "passed",
+    "privateProfilesAndPublicBytesRetained":  true,
+    "peerRuntimeOperated":  false
+}

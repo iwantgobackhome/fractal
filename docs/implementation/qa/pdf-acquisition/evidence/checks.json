@@ -46,5 +46,17 @@
     "exitCode": 0,
     "acceptedQaHead": "a9bbc55dbab2c0a5d5c33c778ff86264e86fef53"
   },
-  "cachedGetIndependentClosure": "passed actual full/range/conditional HTTP and primary Read refusal/preservation/restored original at6e59295; no broad rerun"
+  "cachedGetIndependentClosure": "passed actual full/range/conditional HTTP and primary Read refusal/preservation/restored original at6e59295; no broad rerun",
+  "finalStatus": "passed; QA-PDF-1 and QA-PDF-2 closed; all required supplied gates reviewed",
+  "finalAcceptedSupply": "11d9534d0ff62185fdee315a35b8cd3377e9b30c",
+  "finalWindowsSource": "c0a01b88a6f0141c57fb427344cb0e86ef011141",
+  "finalAndroidFrozenSource": "b940fd06d5874412fac29921326c7055f31f99a1",
+  "ownerFocusedGetChecks": {"passed": 41, "source": "6d447165f09e8090292df6a20c2e12ae82fd69f9", "classification": "Reviewed accepted owner test/HTTP proof, separate from own actual closure"},
+  "finalWindowsInspection": {"command": "node docs/implementation/qa/pdf-acquisition/windows-final.mjs", "exitCode": 0, "resources": 176, "inputs": 207, "receipt": "windows-final.json", "peerExecutableLaunched": false},
+  "finalNativeIconInspection": {"command": "python apps/desktop/tools/stage3-icons.py with own QA output and supplied final directory", "exitCode": 0, "classification": "LoadLibraryExW data/resource flags only; no PE execution or installation", "receipt": "windows-final-icons/native-icons.json"},
+  "finalAndroidInspection": {"command": "python docs/implementation/qa/pdf-acquisition/android-artifact.py", "exitCode": 0, "inputs": 93, "declaredResources": 394, "dexClasses": 23232, "qaClassHits": 0, "receipt": "android-artifact.json"},
+  "presentationClosure": {"command": "node docs/implementation/qa/pdf-acquisition/presentation-review.mjs", "exitCode": 0, "receipt": "presentation-review.json", "classification": "Independent supplied source/screenshot/actual owner browser proof review"},
+  "currentNativeExecution": "Reviewed supplied final c0 actual packaged Windows and b940/16ac ordinary MainActivity API34 proof; no peer runtime/device operated; Android backend733be separated from later GET repair",
+  "finalScopedLifecycle": "passed read-only CIM/listener receipts; final current owner and own recent resources absent, public bytes/private own profiles retained",
+  "closedRoutedDefects": ["QA-PDF-1", "QA-PDF-2"]
 }
