@@ -1,4 +1,5 @@
 import type { ReferenceEnrichment, ReferenceEntry } from '@fractal/shared';
+import { openAlexPdfCandidates } from '../scholarly/metadata';
 
 export const ENRICHMENT_CACHE_VERSION = 'reference-match-v2';
 const fields = 'title,abstract,year,venue,externalIds,citationCount,openAccessPdf,authors.name';
@@ -141,7 +142,6 @@ export async function enrichReference(reference: ReferenceEntry, fetcher: typeof
       const data = (await response.json()) as { results?: Array<Record<string, unknown>> };
       for (const work of data.results ?? []) {
         const primary = work.primary_location as Record<string, unknown> | undefined;
-        const best = work.best_oa_location as Record<string, unknown> | undefined;
         const ids = work.ids as Record<string, unknown> | undefined;
         const source = primary?.source as Record<string, unknown> | undefined;
         const externalIds = Object.fromEntries(Object.entries(ids ?? {}).filter((entry): entry is [string, string] => typeof entry[1] === 'string'));
@@ -152,7 +152,7 @@ export async function enrichReference(reference: ReferenceEntry, fetcher: typeof
           venue: stringOrNull(source?.display_name),
           externalIds,
           citationCount: typeof work.cited_by_count === 'number' ? work.cited_by_count : null,
-          openAccessPdf: stringOrNull(best?.pdf_url ?? primary?.pdf_url),
+          openAccessPdf: openAlexPdfCandidates(work)[0] ?? null,
           provider: 'openalex',
         };
         const authorships = Array.isArray(work.authorships) ? (work.authorships as Array<Record<string, unknown>>) : [];

@@ -16,6 +16,10 @@ import { identityMatches, identifiersConflict, normalizeDoi, normalizeArxiv, nor
 
 const sha = (bytes: Uint8Array | string) => createHash('sha256').update(bytes).digest('hex');
 export function bookmark(store: SqlitePaperStore, input: PublicationBookmark): PublicationBookmarkResult {
+  return publicationCatalog(store, input, true);
+}
+/** Resolve catalog identity without changing user state. Only an explicit bookmark saves. */
+export function publicationCatalog(store: SqlitePaperStore, input: PublicationBookmark, save = false): PublicationBookmarkResult {
   const value = publicationBookmarkSchema.parse(input);
   if (!safePublicUrl(value.url)) throw invalidInput('Use a public HTTPS publication URL');
   const doi = normalizeDoi(value.doi),
@@ -38,7 +42,7 @@ export function bookmark(store: SqlitePaperStore, input: PublicationBookmark): P
     );
   const existing = exact ?? (candidates.length === 1 ? candidates[0] : undefined);
   if (existing) {
-    const record = existing.saved ? existing : store.patchLibrary(existing.paperKey, { saved: true });
+    const record = save && !existing.saved ? store.patchLibrary(existing.paperKey, { saved: true }) : existing;
     return { paperKey: record.paperKey, record, hasPdf: !!store.getPdf(record.paperKey) };
   }
   const now = new Date().toISOString();
@@ -65,7 +69,7 @@ export function bookmark(store: SqlitePaperStore, input: PublicationBookmark): P
     updatedAt: now,
     status: 'unread',
     bibtexKey: `publication${sha(key).slice(0, 12)}`,
-    saved: true,
+    saved: save,
   });
   return { paperKey: key, record, hasPdf: false };
 }

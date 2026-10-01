@@ -1,0 +1,102 @@
+{
+  "acceptedBaseline": "e82c0e4",
+  "endpoint": "POST /api/publications/open",
+  "request": {
+    "title": "Model-Independent Online Learning for Influence Maximization",
+    "authors": ["Sharan Vaswani", "Branislav Kveton", "Zheng Wen", "Mohammad Ghavamzadeh", "Laks V. S. Lakshmanan", "Mark Schmidt"],
+    "url": "https://proceedings.mlr.press/v70/vaswani17a.html",
+    "publication": {
+      "year": null,
+      "venue": null,
+      "publicationKind": "unknown",
+      "publicationDate": null,
+      "oaAvailability": "unknown",
+      "oaPdfUrl": null
+    }
+  },
+  "before": {
+    "startedAt": "2026-10-01T05:10:23.864Z",
+    "status": 404,
+    "error": {
+      "code": "NOT_FOUND",
+      "message": "없는 경로입니다.",
+      "retryable": false
+    },
+    "records": 0,
+    "papers": 0,
+    "controlledAlternativeProjection": {
+      "sources": ["openAlex"],
+      "year": null,
+      "venue": null,
+      "publicationKind": "unknown",
+      "publicationDate": null,
+      "oaAvailability": "open",
+      "oaPdfUrl": null
+    },
+    "controlledNoEmailDoi": {
+      "title": "Controlled DOI",
+      "authors": [],
+      "year": null,
+      "venue": null,
+      "doi": "10.1234/controlled",
+      "arxivId": null,
+      "abstract": null,
+      "pdfUrl": null,
+      "url": null
+    }
+  },
+  "after": {
+    "startedAt": "2026-10-01T05:18:32.713Z",
+    "finishedAt": "2026-10-01T05:18:35.418Z",
+    "status": 200,
+    "pdfStatus": 200,
+    "paperKey": "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+    "hasPdf": true,
+    "saved": false,
+    "statusInLibrary": "unread",
+    "lastReadAt": null,
+    "records": 1,
+    "papers": 1,
+    "pages": 10,
+    "blocks": 142,
+    "bytes": 1061253,
+    "sha256": "46d910177e7c2fb91bee441ec2e36a70dba25e9b728e4b565a9f6abfa18c88bf",
+    "independentHash": "46d910177e7c2fb91bee441ec2e36a70dba25e9b728e4b565a9f6abfa18c88bf"
+  },
+  "publisher": {
+    "landingUrl": "https://proceedings.mlr.press/v70/vaswani17a.html",
+    "pdfUrl": "https://proceedings.mlr.press/v70/vaswani17a/vaswani17a.pdf",
+    "metadata": {
+      "pdfUrl": "https://proceedings.mlr.press/v70/vaswani17a/vaswani17a.pdf",
+      "title": "Model-Independent Online Learning for Influence Maximization",
+      "authors": ["Sharan Vaswani", "Branislav Kveton", "Zheng Wen", "Mohammad Ghavamzadeh", "Laks V. S. Lakshmanan", "Mark Schmidt"],
+      "doi": null
+    },
+    "citationMetaTags": [
+      "<meta name=\"citation_publisher\" content=\"PMLR\"/>",
+      "<meta name=\"citation_title\" content=\"Model-Independent Online Learning for Influence Maximization\"/>",
+      "<meta name=\"citation_language\" content=\"en\"/>",
+      "<meta name=\"citation_abstract_html_url\" content=\"https://proceedings.mlr.press/v70/vaswani17a.html\"/>",
+      "<meta name=\"citation_pdf_url\" content=\"http://proceedings.mlr.press/v70/vaswani17a/vaswani17a.pdf\">",
+      "<meta name=\"citation_firstpage\" content=\"3530\">",
+      "<meta name=\"citation_lastpage\" content=\"3539\">",
+      "<meta name=\"citation_author\" content=\"Sharan Vaswani\">",
+      "<meta name=\"citation_author\" content=\"Branislav Kveton\">",
+      "<meta name=\"citation_author\" content=\"Zheng Wen\">",
+      "<meta name=\"citation_author\" content=\"Mohammad Ghavamzadeh\">",
+      "<meta name=\"citation_author\" content=\"Laks V. S. Lakshmanan\">",
+      "<meta name=\"citation_author\" content=\"Mark Schmidt\">",
+      "<meta name=\"citation_publication_date\" content=\"2017/07/17\">",
+      "<meta name=\"citation_inbook_title\" content=\"International Conference on Machine Learning\"/>",
+      "<meta name=\"citation_conference_title\" content=\"International Conference on Machine Learning\"/>",
+      "<meta name=\"citation_issn\" content=\"2640-3498\">"
+    ],
+    "doi": null,
+    "arxivId": null
+  },
+  "qualification": {
+    "publisher": "Actual unmocked public bytes and application HTTP on fresh isolated store",
+    "providers": "Controlled provider wire/auth/cooldown regressions, not live availability guarantees",
+    "originalBytes": "Ignored data/qa-pdf-acquisition/publisher-original.pdf; not committed as a fixture"
+  }
+}

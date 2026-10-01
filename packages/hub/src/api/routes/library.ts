@@ -1,4 +1,5 @@
 import { bookmark, linkPdf } from '../../scholarly/bookmarks';
+import { openPublication } from '../../publication/open';
 import type { IncomingMessage } from 'node:http';
 import { createHash } from 'node:crypto';
 import {
@@ -39,6 +40,8 @@ function pdfBytes(raw: Buffer, type: string): Buffer {
 export async function handleLibrary(method: string, segments: string[], request: IncomingMessage, ctx: RouteContext): Promise<Result | undefined> {
   const s = segments;
   if (s[0] !== 'api') return undefined;
+  if (s[1] === 'publications' && s.length === 3 && s[2] === 'open' && method === 'POST')
+    return json(await openPublication(ctx.store, parseRequest(publicationBookmarkSchema, await jsonBody(request)), ctx.publicationNetwork));
   if (s[1] === 'library') {
     if (s.length === 3 && s[2] === 'bookmarks' && method === 'POST')
       return json(bookmark(ctx.store, parseRequest(publicationBookmarkSchema, await jsonBody(request))), 201);

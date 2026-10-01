@@ -41,6 +41,7 @@ export interface LibraryRouteContext {
   store: SqlitePaperStore;
   acquirer: PaperAcquirer;
   fetcher?: typeof fetch;
+  publicationNetwork?: import('../../publication/open').PublicationAcquisitionOptions;
 }
 
 export const json = (data: unknown, status = 200): Result => ({ kind: 'json', status, data });

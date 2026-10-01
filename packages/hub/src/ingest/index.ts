@@ -7,6 +7,7 @@ import type { SqlitePaperStore } from '../store/sqlite';
 import type { PaperAcquirer } from '../api/index';
 import { appError, invalidInput, notFound } from '../store/errors';
 import { tooLarge } from '../api/routes/types';
+import { crossrefPdfCandidates, openAlexPdfCandidates } from '../scholarly/metadata';
 
 const sha = (bytes: Uint8Array) => createHash('sha256').update(bytes).digest('hex');
 export interface ResolvedMetadata {
@@ -55,8 +56,8 @@ export async function resolveDoi(doi: string, fetcher: typeof fetch = fetch, ema
     dateFields
       .map((field) => (work[field] as { 'date-parts'?: number[][] } | undefined)?.['date-parts']?.[0]?.[0])
       .find((candidate) => typeof candidate === 'number' && Number.isInteger(candidate) && candidate > 0) ?? null;
-  let pdfUrl: null | string = null;
-  if (email) {
+  let pdfUrl: null | string = crossrefPdfCandidates(work)[0] ?? null;
+  if (email && !pdfUrl) {
     try {
       const unpay = await fetcher(`https://api.unpaywall.org/v2/${encodeURIComponent(doi)}?email=${encodeURIComponent(email)}`, {
         headers,
@@ -65,9 +66,18 @@ export async function resolveDoi(doi: string, fetcher: typeof fetch = fetch, ema
       });
       if (!unpay.ok) throw new Error(`Unpaywall HTTP ${unpay.status}`);
       const data = (await unpay.json()) as { best_oa_location?: { url_for_pdf?: string } };
-      pdfUrl = data.best_oa_location?.url_for_pdf ?? null;
+      pdfUrl = data.best_oa_location?.url_for_pdf ?? pdfUrl;
     } catch {
       throw appError('NETWORK', 'Unpaywall에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.', true);
+    }
+  }
+  if (!pdfUrl) {
+    try {
+      const data = await new ScholarlyClient(fetcher).json('openAlex', `https://api.openalex.org/works/${encodeURIComponent(`https://doi.org/${doi}`)}`);
+      pdfUrl = openAlexPdfCandidates(data)[0] ?? null;
+    } catch {
+      // The original DOI landing page is still available for passive discovery.
+      // A missing optional provider must not make a configured email mandatory.
     }
   }
   return {
@@ -183,9 +193,8 @@ export async function ingestUrl(
 ): Promise<Paper> {
   if (/^10\./.test(input) || /^doi:/i.test(input) || /^https?:\/\/(?:dx\.)?doi\.org\//i.test(input)) {
     const meta = await resolveDoi(input, fetcher);
-    if (!meta.pdfUrl) throw invalidInput('이 DOI에서 무료로 공개된 PDF를 찾지 못했습니다. PDF 파일을 직접 올려 주세요.');
     const metadataKey = store.findDuplicate(meta.doi, null, null);
-    const result = await ingestUrl(store, meta.pdfUrl, acquirer, fetcher, metadataKey ?? expectedMetadataKey);
+    const result = await ingestResolvedUrl(store, meta.pdfUrl ?? `https://doi.org/${meta.doi}`, acquirer, metadataKey ?? expectedMetadataKey);
     store.patchLibrary(result.paperKey, {
       doi: meta.doi,
       title: meta.title,
@@ -199,6 +208,9 @@ export async function ingestUrl(
     });
     return result;
   }
+  return ingestResolvedUrl(store, input, acquirer, expectedMetadataKey);
+}
+async function ingestResolvedUrl(store: SqlitePaperStore, input: string, acquirer: PaperAcquirer, expectedMetadataKey?: string): Promise<Paper> {
   const resolved = await acquirer.resolve(input);
   const duplicate = store.findDuplicate(null, resolved.arxivId, resolved.pdfSha256);
   const existing = duplicate ? store.getPaper(duplicate) : null;

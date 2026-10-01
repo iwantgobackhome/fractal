@@ -110,11 +110,39 @@ export const unknownPublication = (): PublicationMetadata => ({
   oaAvailability: 'unknown',
   oaPdfUrl: null,
 });
+/** Main work locations only; candidate evidence does not claim download success. */
+function openAlexLocations(work: Row): Row[] {
+  return [work.best_oa_location, work.primary_location, ...(Array.isArray(work.locations) ? work.locations.slice(0, 100) : [])]
+    .map(row)
+    .filter((location) => location.is_oa === true || location === work.best_oa_location);
+}
+export function openAlexPdfCandidates(work: Row): string[] {
+  return [...new Set(openAlexLocations(work).flatMap((location) => (safePublicUrl(location.pdf_url) ? [safePublicUrl(location.pdf_url)!] : [])))];
+}
+export function openAlexLandingCandidates(work: Row): string[] {
+  return [
+    ...new Set(openAlexLocations(work).flatMap((location) => (safePublicUrl(location.landing_page_url) ? [safePublicUrl(location.landing_page_url)!] : []))),
+  ];
+}
+export function crossrefPdfCandidates(work: Row): string[] {
+  return [
+    ...new Set(
+      (Array.isArray(work.link) ? work.link.slice(0, 100) : [])
+        .map(row)
+        .filter(
+          (link) =>
+            link['content-type'] === 'application/pdf' &&
+            (!link['content-version'] || ['vor', 'am', 'tdm'].includes(String(link['content-version']))) &&
+            !/supplement|appendix|supporting|ancillary/i.test(String(link.URL)),
+        )
+        .flatMap((link) => (safePublicUrl(link.URL) ? [safePublicUrl(link.URL)!] : [])),
+    ),
+  ];
+}
 export function openAlexMetadata(work: Row): PublicationMetadata {
   const location = row(work.primary_location),
     source = row(location.source),
-    oa = row(work.open_access),
-    best = row(work.best_oa_location);
+    oa = row(work.open_access);
   const availability = oa.is_oa === true ? 'open' : oa.is_oa === false ? 'closed' : 'unknown';
   const kind =
     work.type === 'preprint'
@@ -136,7 +164,7 @@ export function openAlexMetadata(work: Row): PublicationMetadata {
     publicationKind: kind,
     publicationDate: validDate,
     oaAvailability: availability,
-    oaPdfUrl: availability === 'open' ? (safePublicUrl(best.pdf_url) ?? (location.is_oa === true ? safePublicUrl(location.pdf_url) : null)) : null,
+    oaPdfUrl: availability === 'open' ? (openAlexPdfCandidates(work)[0] ?? null) : null,
   };
 }
 export function crossrefMetadata(work: Row): PublicationMetadata {

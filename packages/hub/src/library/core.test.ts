@@ -17,6 +17,7 @@ import { handleLibrary } from '../api/routes/library';
 import { handleAnnotations } from '../api/routes/annotations';
 import { handleSync } from '../api/routes/sync';
 import { toHttp } from '../api/errors';
+import { invalidInput } from '../store/errors';
 
 const roots: string[] = [];
 afterEach(() => {
@@ -446,7 +447,10 @@ describe('SQLite library', () => {
       p = paper();
     store.savePaper(p);
     const acquirer = {
-      resolve: async () => p,
+      resolve: async (input: string) => {
+        if (input.startsWith('https://doi.org/')) throw invalidInput('공개 PDF를 찾지 못했습니다. PDF 파일을 직접 올려 주세요.');
+        return p;
+      },
       acquire: async () => ({ paper: p, blocks: [], pdf: Buffer.alloc(0) }),
       reextract: async () => ({ paper: p, blocks: [] }),
     };

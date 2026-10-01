@@ -2,6 +2,7 @@ import type { Block, Paper } from '@fractal/shared';
 import { SourceError } from '../arxiv/index';
 import { extractPdf, inferTitle, sha256 } from '../pdf/index';
 import { publicGet, validatePublicUrl, type PublicNetworkOptions } from './network';
+import { identifiersConflict, normalizeDoi } from '../scholarly/metadata';
 
 export function identifyPublication(input: string): string | null {
   return /^pdf-[a-f0-9]{64}-[a-f0-9]{64}$/.test(input) ? input : null;
@@ -25,7 +26,7 @@ function attributes(tag: string): Record<string, string> {
   return result;
 }
 /** Read passive citation fields or one main PDF anchor only. Scripts, base tags and embedded resources are never used. */
-function discover(html: string, base: string): { pdfUrl: string; title: string | null; authors: string[] } {
+export function discoverPublication(html: string, base: string): { pdfUrl: string; title: string | null; authors: string[]; doi: string | null } {
   html = html.replace(/<!--[\s\S]*?-->/g, '').replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1\s*>/gi, '');
   const metadata = new Map<string, string[]>();
   for (const match of html.matchAll(/<meta\b[^>]*>/gi)) {
@@ -33,15 +34,38 @@ function discover(html: string, base: string): { pdfUrl: string; title: string |
       name = (fields.name ?? fields.property ?? '').toLowerCase();
     if (fields.content) metadata.set(name, [...(metadata.get(name) ?? []), fields.content]);
   }
-  const links = metadata.get('citation_pdf_url') ?? [];
+  const supplementary = /supplement|appendix|supporting|ancillary/i;
+  const links = (metadata.get('citation_pdf_url') ?? []).filter((url) => !supplementary.test(url));
+  if (!links.length) {
+    for (const match of html.matchAll(/<link\b[^>]*>/gi)) {
+      const fields = attributes(match[0]);
+      if (
+        fields.href &&
+        fields.type?.toLowerCase() === 'application/pdf' &&
+        /(?:^|\s)alternate(?:\s|$)/i.test(fields.rel ?? '') &&
+        !supplementary.test(`${fields.href} ${fields.title ?? ''}`)
+      )
+        links.push(fields.href);
+    }
+  }
   if (!links.length) {
     for (const match of html.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a\s*>/gi)) {
-      const href = attributes(match[1]!).href,
+      const fields = attributes(match[1]!),
+        href = fields.href,
         label = text(match[2]!.replace(/<[^>]*>/g, ' '));
-      if (!href || /supplement|appendix|supporting/i.test(label + ' ' + href)) continue;
+      if (!href || supplementary.test(`${label} ${href} ${fields.title ?? ''}`)) continue;
       try {
         const url = new URL(href, base);
-        if (/\.pdf$/i.test(url.pathname) && /^(?:\[?pdf\]?|paper|full\s*(?:text|paper)(?:\s*\(pdf\))?|download(?:\s*pdf)?)$/i.test(label)) links.push(href);
+        const main =
+          /^(?:\[?pdf\]?|(?:download|view|read)(?:\s+(?:the\s+)?(?:paper|article))?\s*(?:\(?pdf\)?)|full\s*(?:text|paper|article)(?:\s*\(pdf\))?)$/i.test(
+            label,
+          );
+        if (
+          main ||
+          (fields.type?.toLowerCase() === 'application/pdf' && /^(?:paper|article|download)$/i.test(label)) ||
+          (/\.pdf$/i.test(url.pathname) && /^(?:paper|download)$/i.test(label))
+        )
+          links.push(href);
       } catch {
         /* ignore unusable anchors */
       }
@@ -49,11 +73,15 @@ function discover(html: string, base: string): { pdfUrl: string; title: string |
   }
   const candidates = [
     ...new Set(
-      links.map((link) => {
-        const url = new URL(link, base);
-        // Some proceedings still advertise HTTP PDF links. Request their HTTPS equivalent only.
-        if (url.protocol === 'http:') url.protocol = 'https:';
-        return validatePublicUrl(url.href).href;
+      links.flatMap((link) => {
+        try {
+          const url = new URL(link, base);
+          // Some proceedings still advertise HTTP PDF links. Request their HTTPS equivalent only.
+          if (url.protocol === 'http:') url.protocol = 'https:';
+          return [validatePublicUrl(url.href).href];
+        } catch {
+          return [];
+        }
       }),
     ),
   ];
@@ -62,6 +90,7 @@ function discover(html: string, base: string): { pdfUrl: string; title: string |
     pdfUrl: candidates[0]!,
     title: metadata.get('citation_title')?.[0]?.slice(0, 2000) ?? null,
     authors: (metadata.get('citation_author') ?? []).slice(0, 100).map((author) => author.slice(0, 300)),
+    doi: normalizeDoi(metadata.get('citation_doi')?.[0]),
   };
 }
 export interface LoadedPublication {
@@ -70,7 +99,11 @@ export interface LoadedPublication {
 }
 
 /** A URL revision is the final PDF URL plus its content hash. It never shares an arXiv revision key. */
-export async function loadPublication(input: string, options: PublicNetworkOptions = {}): Promise<LoadedPublication> {
+export async function loadPublication(
+  input: string,
+  options: PublicNetworkOptions = {},
+  expected?: { doi?: string | null; arxivId?: string | null },
+): Promise<LoadedPublication> {
   const signal = AbortSignal.any([AbortSignal.timeout(options.timeoutMs ?? 60_000), ...(options.signal ? [options.signal] : [])]);
   const first = await publicGet(input.trim(), { ...options, signal });
   let downloaded = first,
@@ -79,7 +112,9 @@ export async function loadPublication(input: string, options: PublicNetworkOptio
   if (!first.bytes.subarray(0, 1024).includes(Buffer.from('%PDF-'))) {
     if (!['text/html', 'application/xhtml+xml'].includes(first.contentType))
       throw new SourceError('UNSUPPORTED_PDF', '이 주소의 응답은 PDF가 아닙니다. PDF 직접 주소를 확인하세요.');
-    const discovered = discover(first.bytes.toString('utf8'), first.url);
+    const discovered = discoverPublication(first.bytes.toString('utf8'), first.url);
+    if (expected && identifiersConflict(expected, discovered))
+      throw new SourceError('INVALID_INPUT', 'Publisher metadata conflicts with the requested publication', false, 'IDENTIFIER_CONFLICT');
     title = discovered.title;
     authors = discovered.authors;
     downloaded = await publicGet(discovered.pdfUrl, { ...options, signal });

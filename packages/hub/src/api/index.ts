@@ -50,6 +50,7 @@ import { handleStructure } from './routes/structure';
 import { StructureService } from '../structure/service';
 import { PdfTextLayoutService } from '../pdf/text-layout-service';
 import { handlePdfText } from './routes/pdf-text';
+import { waitPublicationAcquisitions } from '../publication/open';
 
 export { TOKEN_HEADER, assertLocalRequest, isLoopbackHost, isLoopbackOrigin } from './guard';
 export { HttpError, statusFor, toHttp } from './errors';
@@ -83,6 +84,8 @@ export type ApiLogEvent =
   | { event: 'codex'; action: 'late-breach'; path: 'translation' | 'question'; code: 'UNSAFE_RUNTIME' };
 
 export interface ApiServerOptions {
+  /** Trusted acquisition dependencies; never populated from an HTTP request. */
+  publicationNetwork?: import('../publication/open').PublicationAcquisitionOptions;
   store: PaperStore;
   jobs: JobManager;
   translator: Translator;
@@ -342,6 +345,11 @@ export function injectToken(html: string, token: string): string {
  * credential (see guard.ts). Nothing is ever rendered as HTML here.
  */
 export function createApiServer(options: ApiServerOptions): ApiServer {
+  const publicationAbort = new AbortController();
+  const publicationNetwork = {
+    ...options.publicationNetwork,
+    signal: AbortSignal.any([publicationAbort.signal, ...(options.publicationNetwork?.signal ? [options.publicationNetwork.signal] : [])]),
+  };
   const { store, jobs, translator, pipeline, acquirer } = options;
   const structure = store instanceof SqlitePaperStore ? new StructureService(store) : undefined;
   const pdfText = store instanceof SqlitePaperStore ? new PdfTextLayoutService(store) : undefined;
@@ -507,7 +515,7 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
       if (ai) return ai;
     }
     if (store instanceof SqlitePaperStore) {
-      const libraryCtx = { store, acquirer };
+      const libraryCtx = { store, acquirer, publicationNetwork };
       const textResult = pdfText ? await handlePdfText(method, segments, request, pdfText) : undefined;
       if (textResult !== undefined) return textResult;
       const structureResult = structure ? await handleStructure(method, segments, request, { ...libraryCtx, structure }) : undefined;
@@ -1073,6 +1081,8 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
       }
     },
     async close(): Promise<void> {
+      publicationAbort.abort();
+      if (store instanceof SqlitePaperStore) await waitPublicationAcquisitions(store);
       structure?.stop();
       pipeline.abortAll();
       await related?.close();

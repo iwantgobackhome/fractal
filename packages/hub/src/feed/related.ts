@@ -20,7 +20,7 @@ import { openAlexItem } from './scholarly-sources';
 const FIELDS =
   'paperId,title,references.title,references.authors,references.year,references.venue,references.abstract,references.url,references.externalIds,references.citationCount,references.openAccessPdf,citations.title,citations.authors,citations.year,citations.venue,citations.abstract,citations.url,citations.externalIds,citations.citationCount,citations.openAccessPdf';
 const OA_FIELDS =
-  'id,display_name,authorships,publication_year,publication_date,primary_location,best_oa_location,open_access,type,doi,cited_by_count,abstract_inverted_index';
+  'id,display_name,authorships,publication_year,publication_date,primary_location,best_oa_location,locations,open_access,type,doi,cited_by_count,abstract_inverted_index';
 const oaId = (v: unknown): string | null => (typeof v === 'string' ? (/^https:\/\/openalex\.org\/(W\d+)$/.exec(v)?.[1] ?? null) : null);
 const inLibrary = (item: RelatedPaper, library: LibraryRecord[]) =>
   library.some((r) => identityMatches(item, { ...r, authors: r.authors.map((a) => [a.given, a.family].filter(Boolean).join(' ')) }));

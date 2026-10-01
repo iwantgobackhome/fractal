@@ -75,7 +75,7 @@ function pinnedRequest(url: URL, addresses: PublicAddress[], signal: AbortSignal
         method: 'GET',
         agent: false,
         signal,
-        headers: { Accept: 'application/pdf,text/html;q=0.9', 'User-Agent': 'PaperRead/0.1' },
+        headers: { Accept: 'application/pdf,application/json,text/html;q=0.9', 'User-Agent': 'PaperRead/0.1' },
         lookup: (_hostname, options, callback) => {
           if (typeof options === 'object' && options.all) {
             callback(null, addresses);
@@ -132,8 +132,8 @@ export async function publicGet(input: string, options: PublicNetworkOptions = {
           url = validatePublicUrl(new URL(response.headers.location, url).href);
           continue;
         }
-        if ([401, 403, 404].includes(response.status))
-          throw new SourceError('NOT_FOUND', '로그인 없이 접근할 수 있는 공개 PDF를 찾지 못했습니다. PDF 직접 주소를 확인하세요.');
+        if ([401, 403].includes(response.status)) throw new SourceError('AUTH_REQUIRED', `Public download requires authorization (HTTP ${response.status})`);
+        if (response.status === 404) throw new SourceError('NOT_FOUND', '로그인 없이 접근할 수 있는 공개 PDF를 찾지 못했습니다. PDF 직접 주소를 확인하세요.');
         if (response.status !== 200) throw new SourceError('NETWORK', `논문 다운로드 응답 오류 (${response.status}).`, true);
         const contentType = (response.headers['content-type'] ?? '').split(';')[0]!.trim().toLowerCase();
         const limit = contentType === 'text/html' || contentType === 'application/xhtml+xml' ? Math.min(maxBytes, 2 * 1024 * 1024) : maxBytes;
@@ -151,7 +151,7 @@ export async function publicGet(input: string, options: PublicNetworkOptions = {
         }
         return { url: url.href, bytes: Buffer.concat(chunks, size), contentType };
       } finally {
-        if (iterator.return) await iterator.return().catch(() => {});
+        if (iterator.return) await aborted(iterator.return(), signal).catch(() => {});
       }
     }
     throw new SourceError('NETWORK', '논문 주소의 리디렉션이 너무 많습니다.', true);
