@@ -72,7 +72,7 @@ The version, scholarly UI documentation and first-content thumbnails are deliver
 | macOS Intel | `Fractal-0.2.0-mac-x64.dmg` |
 | Android | `Fractal-0.2.0-android-debug.apk`, versionCode 2 |
 
-All six files and [SHA256SUMS.txt](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.0/SHA256SUMS.txt) are public. The coordinator and independent reviewer separately verified 25 aggregate-listed file hashes, all five full source records, actual native packaged startup/resource records and all 26 uploaded GitHub asset digests/sizes/names. The original 0.1.0 release and both asset hashes remain intact.
+All six files and [SHA256SUMS.txt](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.0/SHA256SUMS.txt) are public. The coordinator and independent reviewer separately verified 25 aggregate-listed file hashes and all 26 uploaded GitHub asset digests/sizes/names. The independent reviewer additionally matched every tracked source record against the tagged Git blobs and checked actual native packaged startup/resource records; the coordinator reviewed that evidence. The original 0.1.0 release and both asset hashes remain intact.
 
 Paper discovery tries the first suitable captioned raster figure from public paper HTML; news tries the first suitable article content image, with responsive/lazy candidates and provider fallbacks. Missing images retain text and reading actions. Bulk PDF figure extraction is outside this path. Actual public images and scholarly desktop/Android captures are documented in the four README languages; the older reader illustration retains its explicit historical qualification.
 
