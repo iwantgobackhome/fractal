@@ -1,0 +1,179 @@
+{
+  "sourceSha": "b6323d1f4b3b00007c7e0f09e7a75545a87301c5",
+  "appVersion": "0.1.0",
+  "packaged": false,
+  "wrapper": {
+    "ProcessId": 47840,
+    "ParentProcessId": 38828,
+    "CreationDate": "/Date(1790841092175)/",
+    "ExecutablePath": "C:\\WINDOWS\\system32\\cmd.exe",
+    "CommandLine": "C:\\WINDOWS\\system32\\cmd.exe /d /s /c \"\"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\node_modules\\electron\\dist\\electron.exe\" \"--inspect=0\" \"--remote-debugging-port=0\" \"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-v020-thumbnails-clients\"\""
+  },
+  "runtime": {
+    "ProcessId": 7556,
+    "ParentProcessId": 47840,
+    "CreationDate": "/Date(1790841092200)/",
+    "ExecutablePath": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\node_modules\\electron\\dist\\electron.exe",
+    "CommandLine": "\"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\node_modules\\electron\\dist\\electron.exe\"  \"--inspect=0\" \"--remote-debugging-port=0\" \"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-v020-thumbnails-clients\""
+  },
+  "screenshots": [
+    "desktop1440-papers",
+    "desktop1440-paper-dossier",
+    "desktop1440-news",
+    "desktop1440-news-dossier",
+    "desktop1440-topics",
+    "desktop1280-papers",
+    "desktop1280-paper-dossier",
+    "desktop1280-news",
+    "desktop1280-news-dossier",
+    "desktop1280-topics"
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:3624",
+      "path": "/api/feed/images/734f8081f3e1980309cce54586072b22a95053ee1c0d8c3e89971b13fbaabab0"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:3624",
+      "path": "http://127.0.0.1:3624/539d8424-c699-4acf-b54a-b941da0dc674"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:3624",
+      "path": "/assets/PretendardVariable.subset.75-CxKdrRNf.woff2"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:3624",
+      "path": "http://127.0.0.1:3624/d61f6956-7a84-4ad7-82b3-05c3fbaf1036"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:3624",
+      "path": "/api/feed/images/bc175c6d20a54ddc9589ed4d2ca6032a2ba78dc14159b8e59a3a7b71dd74c861"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:3624",
+      "path": "/api/feed/images/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:3624",
+      "path": "http://127.0.0.1:3624/d332e093-4b55-48bd-8d44-09d0a000b6c1"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:3624",
+      "path": "/api/news/article"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:3624",
+      "path": "/assets/PretendardVariable.subset.70-BUXiAGMT.woff2"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:3624",
+      "path": "http://127.0.0.1:3624/3c2f28aa-e2a5-4832-ae4d-7bdecc2dd58b"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:3624",
+      "path": "/api/feed/images/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:3624",
+      "path": "http://127.0.0.1:3624/373f4dc2-f8a9-42cd-a664-94f72cc4962f"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:3624",
+      "path": "http://127.0.0.1:3624/d61068d8-03be-4c8d-adf4-e0ba9d2e9176"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:3624",
+      "path": "http://127.0.0.1:3624/caec9575-fef4-4695-8911-b829bfa4daba"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:3624",
+      "path": "/api/feed/images/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:3624",
+      "path": "/api/news/article"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:3624",
+      "path": "http://127.0.0.1:3624/1b775385-ba43-4688-b3e1-d6a1f8e8e24a"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:3624",
+      "path": "/api/feed/images/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:3624",
+      "path": "http://127.0.0.1:3624/45d6882d-0589-416b-86c9-b9f648f84f87"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:3624",
+      "path": "/api/library"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:3624",
+      "path": "/api/sync/pull"
+    }
+  ],
+  "errors": [],
+  "origin": "http://127.0.0.1:3624",
+  "state": {
+    "library": [],
+    "history": []
+  },
+  "imageRequestPaths": [
+    "/api/feed/images/734f8081f3e1980309cce54586072b22a95053ee1c0d8c3e89971b13fbaabab0",
+    "/api/feed/images/bc175c6d20a54ddc9589ed4d2ca6032a2ba78dc14159b8e59a3a7b71dd74c861",
+    "/api/feed/images/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  ],
+  "publicImages": [
+    {
+      "directory": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-v020-thumbnails-clients\\apps\\android\\qa\\v020-thumbnails\\data\\desktop-hub",
+      "name": "paper",
+      "publicSource": "https://arxiv.org/html/2609.40325v1/anomaly_taxonomy.png",
+      "contentSha": "c4b29afc943f6b8cd2ada156874b70e4967a8f3d5f2951ccb23ce94ca3fa2e84",
+      "bytes": 3086692,
+      "image": {
+        "url": "/api/feed/images/734f8081f3e1980309cce54586072b22a95053ee1c0d8c3e89971b13fbaabab0",
+        "width": 1920,
+        "height": 1150,
+        "alt": "WorldAuditBench Figure 1: anomaly taxonomy"
+      }
+    },
+    {
+      "directory": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-v020-thumbnails-clients\\apps\\android\\qa\\v020-thumbnails\\data\\desktop-hub",
+      "name": "news",
+      "publicSource": "https://news.mit.edu/sites/default/files/styles/news_article__image_gallery/public/images/202403/MIT-DMD.png?itok=oIzEyXxR",
+      "contentSha": "ac64b89e3b693917a13f75d638e6c7ce5c6816bb3118d8b22b4d451abafd470c",
+      "bytes": 678963,
+      "image": {
+        "url": "/api/feed/images/bc175c6d20a54ddc9589ed4d2ca6032a2ba78dc14159b8e59a3a7b71dd74c861",
+        "width": 900,
+        "height": 600,
+        "alt": "MIT news: diffusion image synthesis comparison"
+      }
+    }
+  ],
+  "lastText": "READ · DISCOVER / Home\narXiv id, DOI, paper URL or search words\nUpload PDF\nCtrl\nK\nAI connected\n10/01/2026\nFractal\nREAD DEEPER. DISCOVER FURTHER.\n⌂\nDiscover · field news\n▤\nLibrary\n✳\nInterests\n⚙\nAppearance & connections\n\nOctober 1, 2026\n\nResearch & discovery\n\nPapers, publications and reporting from your followed fields.\n\nEdit interests\nSources\nGather now\nPapers\nNews\nTopics\nSource status · View reported source checks\n\nSnapshot: 10/1/2026, 4:33:24 PM\n\nAll sources\n⌄\nAll publication types\n⌄\nRelevance\n⌄\n01\nPreprint\narXiv\n2026\nOpen access\narXiv\nText-only research remains compact and readable\n\nControlled layout metadata\n\nThe figure and reporting images are actual public bytes selected by the backend. This isolated metadata exercises the scholarly list, dossier, and compact text fallback.\n\nInterested in cs.AI\n\nObserved: 10/1/2026 · Publication date unknown\n\nRead PDF\nSave metadata\nTo link your own PDF, choose Save metadata, then Link PDF. Read PDF works without saving.\nPublication source\nPDF availability unknown\n02\nPreprint\narXiv\n2026\nOpen access\narXiv\nUnavailable figure retains the title, metadata and controls\n\nControlled layout metadata\n\nThe figure and reporting images are actual public bytes selected by the backend. This isolated metadata exercises the scholarly list, dossier, and compact text fallback.\n\nInterested in cs.AI\n\nObserved: 10/1/2026 · Publication date unknown\n\nRead PDF\nSave metadata\nTo link your own PDF, choose Save metadata, then Link PDF. Read PDF works without saving.\nPublication source\nPDF availability unknown\n03\nPreprint\narXiv\n2026\nOpen access\narXiv\nWorldAuditBench: physical, spatial, temporal and semantic inconsistencies\n\nControlled layout metadata\n\nThe figure and reporting images are actual public bytes selected by the backend. This isolated metadata exercises the scholarly list, dossier, and compact text fallback.\n\nInterested in cs.AI\n\nObserved: 10/1/2026 · Publication date unknown\n\nRead PDF\nSave metadata\nTo link your own PDF, choose Save metadata, then Link PDF. Read PDF works without saving.\nPublication source\nPDF availability unknown\nFractal · 3 papers · 3 stories",
+  "closed": true
+}

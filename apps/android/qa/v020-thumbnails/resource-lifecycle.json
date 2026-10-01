@@ -1,0 +1,65 @@
+{
+    "port":  5572,
+    "startedUtc":  "2026-10-01T07:29:07.9650088Z",
+    "serial":  "emulator-5572",
+    "launchExe":  "C:\\Users\\Home\\AppData\\Local\\Android\\Sdk\\emulator\\emulator.exe",
+    "arguments":  "-avd Pixel_2_API_34 -port 5572 -read-only -no-window -no-audio -no-snapshot -gpu swiftshader_indirect",
+    "launcherPid":  11252,
+    "emulatorProcesses":  [
+                              {
+                                  "ProcessId":  11252,
+                                  "ParentProcessId":  13732,
+                                  "CreationDate":  "\/Date(1790839747965)\/",
+                                  "ExecutablePath":  "C:\\Users\\Home\\AppData\\Local\\Android\\Sdk\\emulator\\emulator.exe",
+                                  "CommandLine":  "\"C:\\Users\\Home\\AppData\\Local\\Android\\Sdk\\emulator\\emulator.exe\" -avd Pixel_2_API_34 -port 5572 -read-only -no-window -no-audio -no-snapshot -gpu swiftshader_indirect "
+                              },
+                              {
+                                  "ProcessId":  48076,
+                                  "ParentProcessId":  11252,
+                                  "CreationDate":  "\/Date(1790839748101)\/",
+                                  "ExecutablePath":  "C:\\Users\\Home\\AppData\\Local\\Android\\Sdk\\emulator\\qemu\\windows-x86_64\\qemu-system-x86_64-headless.exe",
+                                  "CommandLine":  "C:\\Users\\Home\\AppData\\Local\\Android\\Sdk\\emulator\\qemu\\windows-x86_64\\qemu-system-x86_64-headless.exe -avd Pixel_2_API_34 -port 5572 -read-only -no-window -no-audio -no-snapshot -gpu swiftshader_indirect"
+                              }
+                          ],
+    "emulatorListeners":  [
+                              {
+                                  "LocalAddress":  "::1",
+                                  "LocalPort":  5573,
+                                  "OwningProcess":  48076
+                              },
+                              {
+                                  "LocalAddress":  "::1",
+                                  "LocalPort":  5572,
+                                  "OwningProcess":  48076
+                              },
+                              {
+                                  "LocalAddress":  "127.0.0.1",
+                                  "LocalPort":  5573,
+                                  "OwningProcess":  48076
+                              },
+                              {
+                                  "LocalAddress":  "127.0.0.1",
+                                  "LocalPort":  5572,
+                                  "OwningProcess":  48076
+                              }
+                          ],
+    "helperProcess":  {
+                          "ProcessId":  47252,
+                          "ParentProcessId":  48676,
+                          "CreationDate":  "\/Date(1790840003270)\/",
+                          "ExecutablePath":  "C:\\Program Files\\nodejs\\node.exe",
+                          "CommandLine":  "\"C:\\Program Files\\nodejs\\node.exe\" apps/android/qa/v020-thumbnails/data/harness.mjs"
+                      },
+    "helperListeners":  [
+                            {
+                                "LocalAddress":  "127.0.0.1",
+                                "LocalPort":  6295,
+                                "OwningProcess":  47252
+                            },
+                            {
+                                "LocalAddress":  "127.0.0.1",
+                                "LocalPort":  6294,
+                                "OwningProcess":  47252
+                            }
+                        ]
+}

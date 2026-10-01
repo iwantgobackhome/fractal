@@ -1,0 +1,211 @@
+{
+  "sourceCheckpoint": "f66ba73",
+  "versions": "desktop0.1.0 Android0.1 layout only",
+  "captures": [
+    {
+      "path": "apps/android/qa/v020-thumbnails/screens/phone360/end.png",
+      "sha256": "8f32c3dac97149c9baaf6fd5f8fcb5766c3cd699093cc010f6f00bfd872e6906",
+      "bytes": 61033
+    },
+    {
+      "path": "apps/android/qa/v020-thumbnails/screens/phone360/news-absent.png",
+      "sha256": "b54fa6279586379cba6ddddfdc3ae9096d232d5c10b8a613f0cafbc26d2fabb0",
+      "bytes": 131962
+    },
+    {
+      "path": "apps/android/qa/v020-thumbnails/screens/phone360/news-broken.png",
+      "sha256": "8f32c3dac97149c9baaf6fd5f8fcb5766c3cd699093cc010f6f00bfd872e6906",
+      "bytes": 61033
+    },
+    {
+      "path": "apps/android/qa/v020-thumbnails/screens/phone360/news-dossier.png",
+      "sha256": "b85ae05bc9a1034d03edaf397c1a72e12367e318370d85bbb86e6cffc4f1e2f1",
+      "bytes": 141322
+    },
+    {
+      "path": "apps/android/qa/v020-thumbnails/screens/phone360/news-index.png",
+      "sha256": "f892be1a3a785c6c9c1968ba36b625b761d68d47627db18a53302d533743cbf7",
+      "bytes": 123693
+    },
+    {
+      "path": "apps/android/qa/v020-thumbnails/screens/phone360/paper-absent.png",
+      "sha256": "dd911e5912e6001f0fefa5ff957cc5395f0956a416ec1a9b3366f11255d0d43b",
+      "bytes": 52119
+    },
+    {
+      "path": "apps/android/qa/v020-thumbnails/screens/phone360/paper-broken.png",
+      "sha256": "2c63832e360375782a34eaad41d33e6048f3d079ffff1142bbaa042a2d64e939",
+      "bytes": 96301
+    },
+    {
+      "path": "apps/android/qa/v020-thumbnails/screens/phone360/paper-dossier-actions.png",
+      "sha256": "1274b44460dcbc5565c8b7e15c5b493639339ca71013ab9e6dd38f2a8bc7fe28",
+      "bytes": 50392
+    },
+    {
+      "path": "apps/android/qa/v020-thumbnails/screens/phone360/paper-dossier.png",
+      "sha256": "c0dba87b531c920b230f7875dc909a92403182d8b0fdd9f429bbe6f7843a337f",
+      "bytes": 141064
+    },
+    {
+      "path": "apps/android/qa/v020-thumbnails/screens/phone360/paper-index.png",
+      "sha256": "78c3b74b089edfc54826ed8f87c8758467b0a615e25afefbf1dca6b342036949",
+      "bytes": 95344
+    },
+    {
+      "path": "apps/android/qa/v020-thumbnails/screens/phone360-font2/end.png",
+      "sha256": "ec30495099f2d4209afd68de023d6b8faae738a4711b743b69f08aa7de55f4a6",
+      "bytes": 62374
+    },
+    {
+      "path": "apps/android/qa/v020-thumbnails/screens/phone360-font2/news-absent.png",
+      "sha256": "f050732bf2ff837f151141360d9aa5ae7af420a406449a6199b7bcfb7748faa4",
+      "bytes": 65748
+    },
+    {
+      "path": "apps/android/qa/v020-thumbnails/screens/phone360-font2/news-broken.png",
+      "sha256": "ec30495099f2d4209afd68de023d6b8faae738a4711b743b69f08aa7de55f4a6",
+      "bytes": 62374
+    },
+    {
+      "path": "apps/android/qa/v020-thumbnails/screens/phone360-font2/news-dossier.png",
+      "sha256": "eee156dc48d6fac059f06e9b97414348d4ac89a7f36dd7575d8a3b119c8162ce",
+      "bytes": 148821
+    },
+    {
+      "path": "apps/android/qa/v020-thumbnails/screens/phone360-font2/news-index.png",
+      "sha256": "9560383059c52e9a13baa7159e85f8838c0e3e0a748518b205f70329570377e7",
+      "bytes": 132634
+    },
+    {
+      "path": "apps/android/qa/v020-thumbnails/screens/phone360-font2/paper-absent.png",
+      "sha256": "1938a82883b2501df106de25bb3ac1f01e215039d1e17649500513d32a4020f4",
+      "bytes": 67106
+    },
+    {
+      "path": "apps/android/qa/v020-thumbnails/screens/phone360-font2/paper-broken.png",
+      "sha256": "5b8eccee44b0dd83135a225f0bb4131ac0df888f309d832733d7508594ddc6b2",
+      "bytes": 78635
+    },
+    {
+      "path": "apps/android/qa/v020-thumbnails/screens/phone360-font2/paper-dossier-actions.png",
+      "sha256": "4536589c9508c1aa2819992bdb009301167d5fdfdd89c92d5b9dd8e17eb02738",
+      "bytes": 58377
+    },
+    {
+      "path": "apps/android/qa/v020-thumbnails/screens/phone360-font2/paper-dossier.png",
+      "sha256": "d9cdab912d939cc68e6172060c63abe357516a26fea791e7867896477f07a099",
+      "bytes": 145948
+    },
+    {
+      "path": "apps/android/qa/v020-thumbnails/screens/phone360-font2/paper-index.png",
+      "sha256": "fa8841d1132739d0b757eb8ea2dbdc17f3c211d049508e60c698e5b4a905593f",
+      "bytes": 110495
+    },
+    {
+      "path": "apps/android/qa/v020-thumbnails/screens/tablet1280/end.png",
+      "sha256": "e6fa82f708e17990108172605f1c14fb1771465e33a5774398aea7d8ff6dd537",
+      "bytes": 215983
+    },
+    {
+      "path": "apps/android/qa/v020-thumbnails/screens/tablet1280/news-absent.png",
+      "sha256": "e6fa82f708e17990108172605f1c14fb1771465e33a5774398aea7d8ff6dd537",
+      "bytes": 215983
+    },
+    {
+      "path": "apps/android/qa/v020-thumbnails/screens/tablet1280/news-broken.png",
+      "sha256": "e6fa82f708e17990108172605f1c14fb1771465e33a5774398aea7d8ff6dd537",
+      "bytes": 215983
+    },
+    {
+      "path": "apps/android/qa/v020-thumbnails/screens/tablet1280/news-dossier.png",
+      "sha256": "ba39244e75c4ee4abb987a94284076a43960ab0bae415b7fc6aa3e02b6da3721",
+      "bytes": 380889
+    },
+    {
+      "path": "apps/android/qa/v020-thumbnails/screens/tablet1280/news-index.png",
+      "sha256": "decc7b6308202335d30de45ab8b259d09f81150f68269d89cbef4aca4924f3e4",
+      "bytes": 210231
+    },
+    {
+      "path": "apps/android/qa/v020-thumbnails/screens/tablet1280/paper-absent.png",
+      "sha256": "c8026c89ae4c5ca8b5fd7caeac4d55560b91ef9eb8235cc03102350055881610",
+      "bytes": 114558
+    },
+    {
+      "path": "apps/android/qa/v020-thumbnails/screens/tablet1280/paper-broken.png",
+      "sha256": "c8026c89ae4c5ca8b5fd7caeac4d55560b91ef9eb8235cc03102350055881610",
+      "bytes": 114558
+    },
+    {
+      "path": "apps/android/qa/v020-thumbnails/screens/tablet1280/paper-dossier-actions.png",
+      "sha256": "dbee5a905ebc6e23210c0f180ffbf7bc1a69dc383c463fbf5190fdb6b7ab1347",
+      "bytes": 317896
+    },
+    {
+      "path": "apps/android/qa/v020-thumbnails/screens/tablet1280/paper-dossier.png",
+      "sha256": "8d4b0abfd941f0505aeb9f7b8e79296363cf1440f72a02fb300f449de583e2f4",
+      "bytes": 316974
+    },
+    {
+      "path": "apps/android/qa/v020-thumbnails/screens/tablet1280/paper-index.png",
+      "sha256": "8e62a86f213541a0a4ebab4fa51e137d64cc4f8b832433728c63fbcfc51e8ac3",
+      "bytes": 144205
+    },
+    {
+      "path": "docs/implementation/desktop/v020-thumbnails/screens/desktop1280-news-dossier.png",
+      "sha256": "ddf0fd319153c7b353618436bf5f4206d7e574de86a00ede30a75c6ae3cd82d7",
+      "bytes": 371284
+    },
+    {
+      "path": "docs/implementation/desktop/v020-thumbnails/screens/desktop1280-news.png",
+      "sha256": "0cfa29b6a3a26dcee594623425ad24cb3c622de327dda25c69c29c0c850a189c",
+      "bytes": 141077
+    },
+    {
+      "path": "docs/implementation/desktop/v020-thumbnails/screens/desktop1280-paper-dossier.png",
+      "sha256": "45a24abf71474b4860891faed208176b4d4abecde762b7337f690521b672bf3d",
+      "bytes": 314478
+    },
+    {
+      "path": "docs/implementation/desktop/v020-thumbnails/screens/desktop1280-papers.png",
+      "sha256": "11a041ffaa2f183e140e2959e3258f5b5bb440190b3caae889f2f3bb009278e9",
+      "bytes": 126933
+    },
+    {
+      "path": "docs/implementation/desktop/v020-thumbnails/screens/desktop1280-topics.png",
+      "sha256": "3191b356e29b320c28cf70d1eec124633bdf1fd8468a72c2e8052376dd3be7f8",
+      "bytes": 224633
+    },
+    {
+      "path": "docs/implementation/desktop/v020-thumbnails/screens/desktop1440-news-dossier.png",
+      "sha256": "f95fd71a93b0e1c9c511276d9e30e884199a813721d884cc8c5f24e0e2434965",
+      "bytes": 398835
+    },
+    {
+      "path": "docs/implementation/desktop/v020-thumbnails/screens/desktop1440-news.png",
+      "sha256": "b95df2909ed278f706a72fa0af1b821f0ab3be4e13e9d9ecdc44e63397deb15c",
+      "bytes": 156687
+    },
+    {
+      "path": "docs/implementation/desktop/v020-thumbnails/screens/desktop1440-paper-dossier.png",
+      "sha256": "645ca5dac1b35d03e4d33600e26164b563777698efa689b7039feabbd359e28d",
+      "bytes": 337264
+    },
+    {
+      "path": "docs/implementation/desktop/v020-thumbnails/screens/desktop1440-papers.png",
+      "sha256": "4079f4a90aaa2bb20ad00c0c3c788ab87933ea9d45d29c034b66dd03f40f4d39",
+      "bytes": 178266
+    },
+    {
+      "path": "docs/implementation/desktop/v020-thumbnails/screens/desktop1440-topics.png",
+      "sha256": "0875c4aed1baeb3dba0202c8555c47b3462effdd13ea409868dc9e777aec2683",
+      "bytes": 239641
+    },
+    {
+      "path": "docs/implementation/desktop/v020-thumbnails/screens/last-state.png",
+      "sha256": "6e506635c6da0761a04f4c2d308cc6bb28f7727c8b65868f7fc10d1b7c808b31",
+      "bytes": 179833
+    }
+  ]
+}
