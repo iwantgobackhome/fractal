@@ -31,7 +31,7 @@ class ReaderMigrationTest {
         SQLiteDatabase.openDatabase(context.getDatabasePath(name).path, null, SQLiteDatabase.OPEN_READWRITE).use { old ->
             old.execSQL("DROP TABLE pdf_text_pages"); old.execSQL("DROP TABLE reader_positions"); old.execSQL("DROP TABLE ai_requests"); old.version = 2
         }
-        val migrated = Room.databaseBuilder(context, FractalDatabase::class.java, name).addMigrations(FractalDatabase.MIGRATION_2_3).build()
+        val migrated = Room.databaseBuilder(context, FractalDatabase::class.java, name).addMigrations(FractalDatabase.MIGRATION_2_3, FractalDatabase.MIGRATION_3_4).build()
         try {
             val retained = migrated.library().get("v2-paper")!!
             assertEquals(paper.toString(), retained.json); assertTrue(retained.saved); assertNull(retained.lastReadAt); assertEquals(hash, retained.pdfSha256)

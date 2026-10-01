@@ -19,6 +19,8 @@ import java.util.concurrent.TimeUnit
 
 interface HubDataClient {
     suspend fun data(path: String, method: String = "GET", body: JsonElement? = null): JsonElement
+    /** Optional immutable paired-session capture for a multi-request operation. */
+    fun captured(): HubDataClient = this
 }
 interface HubHistoryClient : HubDataClient {
     suspend fun attachHistory(path: String, body: JsonObject): String
@@ -31,6 +33,11 @@ class HubClient(private val credentials: HubCredentialStore) : HubHistoryClient 
         .connectTimeout(3, TimeUnit.SECONDS)
         .readTimeout(40, TimeUnit.SECONDS)
         .build()
+    // Topic creation has no server idempotency key. A transport retry after admission
+    // can duplicate it before the durable queue gets a chance to reconcile by GET.
+    private val admissionHttp = http.newBuilder().retryOnConnectionFailure(false).build()
+    private fun transport(path: String, method: String) =
+        if (method == "POST" && path.substringBefore('?') == "/api/feed/topics") admissionHttp else http
 
     companion object {
         private val jsonType = "application/json; charset=utf-8".toMediaType()
@@ -60,7 +67,7 @@ class HubClient(private val credentials: HubCredentialStore) : HubHistoryClient 
         headers: Map<String, String> = emptyMap(),
     ): Response {
         val paired = credentials.load() ?: throw IOException("Hub is not paired")
-        return http.newCall(request(paired.url, path, method, body, paired.token, headers)).execute()
+        return transport(path, method).newCall(request(paired.url, path, method, body, paired.token, headers)).execute()
     }
 
     override suspend fun data(path: String, method: String, body: JsonElement?): JsonElement =
@@ -71,6 +78,32 @@ class HubClient(private val credentials: HubCredentialStore) : HubHistoryClient 
                 WireJsonAdapter.data(raw)
             }
         }
+
+    override fun captured(): HubDataClient {
+        val paired = credentials.load() ?: throw IOException("Hub is not paired")
+        return object : HubDataClient {
+            override suspend fun data(path: String, method: String, body: JsonElement?): JsonElement = withContext(Dispatchers.IO) {
+                transport(path, method).newCall(request(paired.url, path, method, body, paired.token)).execute().use {
+                    if (!it.isSuccessful) throw HubHttpException(it.code)
+                    WireJsonAdapter.data(it.body?.string() ?: throw IOException("Empty hub response"))
+                }
+            }
+        }
+    }
+
+    /** Explicit user-selected association. No URL fetching, catalog identity derivation or read event. */
+    suspend fun linkPdf(key: String, bytes: ByteArray): JsonObject = withContext(Dispatchers.IO) {
+        require(bytes.size in 1..(50 * 1024 * 1024)) { "Choose a PDF no larger than 50 MiB." }
+        val paired = credentials.load() ?: throw IOException("Hub is not paired")
+        val request = Request.Builder().url(paired.url.trimEnd('/') + "/api/library/${keyPath(key)}/pdf")
+            .header("Authorization", "Bearer ${paired.token}")
+            .post(bytes.toRequestBody("application/pdf".toMediaType())).build()
+        http.newCall(request).execute().use {
+            if (!it.isSuccessful) throw HubHttpException(it.code)
+            check(credentials.load() == paired) { "Hub changed while linking the PDF; reconnect to reconcile." }
+            WireJsonAdapter.data(it.body?.string() ?: "").jsonObject
+        }
+    }
 
     /** Admission is durable at the Hub. Close this observation as soon as its ID is known. */
     override suspend fun attachHistory(path: String, body: JsonObject): String = withContext(Dispatchers.IO) {

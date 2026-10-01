@@ -46,7 +46,7 @@ class LibraryFoundationTest {
             old.execSQL("INSERT INTO sync_state VALUES(0,'12345678901234567890')")
             old.version = 1
         }
-        val migrated = Room.databaseBuilder(context, FractalDatabase::class.java, name).addMigrations(FractalDatabase.MIGRATION_1_2, FractalDatabase.MIGRATION_2_3).build()
+        val migrated = Room.databaseBuilder(context, FractalDatabase::class.java, name).addMigrations(FractalDatabase.MIGRATION_1_2, FractalDatabase.MIGRATION_2_3, FractalDatabase.MIGRATION_3_4).build()
         try {
             val row = migrated.library().get("p")!!
             assertTrue(row.saved); assertEquals(row.addedAt, row.savedAt); assertNull(row.lastReadAt)

@@ -1,0 +1,140 @@
+﻿{
+    "observation":  "Actual retained D5554 WorkManager immediate sync chain after prior QA HTTP schema and absent-paper failures; no scheduler reset",
+    "stateCounts":  {
+                        "4":  12,
+                        "2":  150,
+                        "0":  1
+                    },
+    "rows":  [
+                 {
+                     "id":  "20c57c98-ca7e-43fb-a3bb-fe52e8633ecc",
+                     "state":  4,
+                     "run_attempt_count":  0,
+                     "last_enqueue_time":  -1,
+                     "backoff_delay_duration":  30000,
+                     "initial_delay":  0,
+                     "schedule_requested_at":  -1,
+                     "next_schedule_time_override":  9223372036854775807
+                 },
+                 {
+                     "id":  "255fe71b-1cd1-47df-8fa1-97dd5a6c3681",
+                     "state":  4,
+                     "run_attempt_count":  0,
+                     "last_enqueue_time":  -1,
+                     "backoff_delay_duration":  30000,
+                     "initial_delay":  0,
+                     "schedule_requested_at":  -1,
+                     "next_schedule_time_override":  9223372036854775807
+                 },
+                 {
+                     "id":  "3346db9c-ca86-46b3-8c26-ddb9c7b3823e",
+                     "state":  4,
+                     "run_attempt_count":  0,
+                     "last_enqueue_time":  -1,
+                     "backoff_delay_duration":  30000,
+                     "initial_delay":  0,
+                     "schedule_requested_at":  -1,
+                     "next_schedule_time_override":  9223372036854775807
+                 },
+                 {
+                     "id":  "39a71c47-a7a1-496d-b0a4-78479ffd8dff",
+                     "state":  4,
+                     "run_attempt_count":  0,
+                     "last_enqueue_time":  -1,
+                     "backoff_delay_duration":  30000,
+                     "initial_delay":  0,
+                     "schedule_requested_at":  -1,
+                     "next_schedule_time_override":  9223372036854775807
+                 },
+                 {
+                     "id":  "3da18d3c-80e8-45f9-bf3f-5dc1fe6721c1",
+                     "state":  4,
+                     "run_attempt_count":  0,
+                     "last_enqueue_time":  -1,
+                     "backoff_delay_duration":  30000,
+                     "initial_delay":  0,
+                     "schedule_requested_at":  -1,
+                     "next_schedule_time_override":  9223372036854775807
+                 },
+                 {
+                     "id":  "4abac0de-470f-41d4-bc09-a34a0d77cd39",
+                     "state":  4,
+                     "run_attempt_count":  0,
+                     "last_enqueue_time":  -1,
+                     "backoff_delay_duration":  30000,
+                     "initial_delay":  0,
+                     "schedule_requested_at":  -1,
+                     "next_schedule_time_override":  9223372036854775807
+                 },
+                 {
+                     "id":  "6b6a6be8-df4c-40df-b24c-36f00d70da6c",
+                     "state":  4,
+                     "run_attempt_count":  0,
+                     "last_enqueue_time":  -1,
+                     "backoff_delay_duration":  30000,
+                     "initial_delay":  0,
+                     "schedule_requested_at":  -1,
+                     "next_schedule_time_override":  9223372036854775807
+                 },
+                 {
+                     "id":  "b8599786-f04b-4db3-93c5-6367bdea6fae",
+                     "state":  4,
+                     "run_attempt_count":  0,
+                     "last_enqueue_time":  -1,
+                     "backoff_delay_duration":  30000,
+                     "initial_delay":  0,
+                     "schedule_requested_at":  -1,
+                     "next_schedule_time_override":  9223372036854775807
+                 },
+                 {
+                     "id":  "b9d604f2-89e2-4b8d-9856-38e9ae55da69",
+                     "state":  4,
+                     "run_attempt_count":  0,
+                     "last_enqueue_time":  -1,
+                     "backoff_delay_duration":  30000,
+                     "initial_delay":  0,
+                     "schedule_requested_at":  -1,
+                     "next_schedule_time_override":  9223372036854775807
+                 },
+                 {
+                     "id":  "bdc1c94c-8790-4fd0-9ccb-01a470501932",
+                     "state":  4,
+                     "run_attempt_count":  0,
+                     "last_enqueue_time":  -1,
+                     "backoff_delay_duration":  30000,
+                     "initial_delay":  0,
+                     "schedule_requested_at":  -1,
+                     "next_schedule_time_override":  9223372036854775807
+                 },
+                 {
+                     "id":  "ca5fd21b-51d4-4331-bb0c-a39b64052d32",
+                     "state":  4,
+                     "run_attempt_count":  0,
+                     "last_enqueue_time":  -1,
+                     "backoff_delay_duration":  30000,
+                     "initial_delay":  0,
+                     "schedule_requested_at":  -1,
+                     "next_schedule_time_override":  9223372036854775807
+                 },
+                 {
+                     "id":  "cbed3417-289e-4936-beb5-3688f0ebcd1b",
+                     "state":  4,
+                     "run_attempt_count":  0,
+                     "last_enqueue_time":  -1,
+                     "backoff_delay_duration":  30000,
+                     "initial_delay":  0,
+                     "schedule_requested_at":  -1,
+                     "next_schedule_time_override":  9223372036854775807
+                 },
+                 {
+                     "id":  "03e72899-8771-4102-a5fb-da3c68e4dc46",
+                     "state":  0,
+                     "run_attempt_count":  7,
+                     "last_enqueue_time":  1790818506169,
+                     "backoff_delay_duration":  30000,
+                     "initial_delay":  0,
+                     "schedule_requested_at":  1790819274990,
+                     "next_schedule_time_override":  9223372036854775807
+                 }
+             ]
+}

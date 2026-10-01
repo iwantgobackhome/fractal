@@ -34,7 +34,8 @@ private fun LibraryEntity.record() = WireJson.format.decodeFromString<LibraryRec
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun ScholarlyLibraryScreen(app: ReaderApplication, onSettings: () -> Unit, onRead: (String) -> Unit) {
+internal fun ScholarlyLibraryScreen(app: ReaderApplication, onSettings: () -> Unit, onRead: (String) -> Unit,
+    embedded: Boolean = false, onRelated: ((LibraryEntity) -> Unit)? = null) {
     val colors = LocalFractalColors.current
     val railWidth = 78.dp * LocalConfiguration.current.fontScale.coerceAtLeast(1f)
     val scope = rememberCoroutineScope()
@@ -108,7 +109,7 @@ internal fun ScholarlyLibraryScreen(app: ReaderApplication, onSettings: () -> Un
             }
             HorizontalDivider(color = colors.rule, thickness = .5.dp)
             Row(Modifier.weight(1f)) {
-                if (!phone) Column(Modifier.width(railWidth).fillMaxHeight().border(.5.dp, colors.rule)) {
+                if (!phone && !embedded) Column(Modifier.width(railWidth).fillMaxHeight().border(.5.dp, colors.rule)) {
                     labels.forEach { (key, label) -> TextButton(onClick = { destination = key; if (key == "folders") showFolders = true },
                         modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp).semantics { this.selected = destination == key }) {
                         Text(label, color = if (destination == key) colors.accent else colors.inkSoft)
@@ -117,6 +118,9 @@ internal fun ScholarlyLibraryScreen(app: ReaderApplication, onSettings: () -> Un
                 Column(Modifier.weight(1f).fillMaxHeight()) {
                     LazyColumn(Modifier.weight(1f)) {
                     item {
+                    if (embedded) ResearchSelector(libraryText("Library view", "서재 보기"), destination, labels, {
+                        destination = it; if (it == "folders") showFolders = true
+                    }, Modifier.padding(horizontal = 16.dp, vertical = 8.dp), showLabel = false)
                     Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                         Text(labels.first { it.first == destination }.second, Modifier.weight(1f), fontFamily = ScholarlySerif, fontSize = 24.sp, color = colors.ink)
                         if (short) TextButton(onClick = { showSearch = true }) { Text(libraryText("Search", "검색")) }
@@ -166,10 +170,13 @@ internal fun ScholarlyLibraryScreen(app: ReaderApplication, onSettings: () -> Un
                                     paper.lastReadAt != null -> libraryText("Read ", "읽음 ") + paper.lastReadAt.orEmpty().take(10)
                                     else -> libraryText("Not read yet", "아직 읽지 않음")
                                 } + if (paper.pdfSha256?.let(app.cache::contains) == true) libraryText(" · Cached", " · 캐시됨") else "", color = colors.inkSoft, fontSize = 12.sp)
-                                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                                    TextButton(onClick = { onRead(paper.paperKey) }) { Text(libraryText("Read", "읽기")) }
+                                FlowRow(Modifier.fillMaxWidth()) {
+                                    TextButton(onClick = { if (paper.pdfSha256 == null && onRelated != null) onRelated(paper) else onRead(paper.paperKey) }) {
+                                        Text(if (paper.pdfSha256 == null && onRelated != null) libraryText("Metadata / PDF", "논문 정보·PDF") else libraryText("Read", "읽기"))
+                                    }
                                     TextButton(onClick = { mutate { app.metadata.save(paper.paperKey, !paper.saved) } }) { Text(if (paper.saved) libraryText("Saved ✓", "저장됨 ✓") else libraryText("Save", "저장")) }
                                     TextButton(onClick = { editPaper = paper }) { Text(libraryText("Organize", "정리")) }
+                                    if (onRelated != null) TextButton(onClick = { onRelated(paper) }) { Text(libraryText("Related", "관련")) }
                                 }
                             }
                             HorizontalDivider(Modifier.padding(horizontal = 16.dp), color = colors.rule, thickness = .5.dp)
@@ -180,10 +187,10 @@ internal fun ScholarlyLibraryScreen(app: ReaderApplication, onSettings: () -> Un
                     if (selected == null) {
                         Text(libraryText("Paper details", "논문 정보"), fontFamily = ScholarlySerif, fontSize = 22.sp)
                         Text(libraryText("Select a title in the research index.", "연구 목록에서 제목을 선택하세요."), color = colors.inkSoft)
-                    } else PaperDetails(app, selected, { onRead(selected.paperKey) }, { editPaper = selected }, { mutate { app.metadata.save(selected.paperKey, !selected.saved) } })
+                    } else PaperDetails(app, selected, { if (selected.pdfSha256 == null && onRelated != null) onRelated(selected) else onRead(selected.paperKey) }, { editPaper = selected }, { mutate { app.metadata.save(selected.paperKey, !selected.saved) } })
                 }
             }
-            if (phone) Row(Modifier.fillMaxWidth().heightIn(min = 66.dp).border(.5.dp, colors.rule), verticalAlignment = Alignment.CenterVertically) {
+            if (phone && !embedded) Row(Modifier.fillMaxWidth().heightIn(min = 66.dp).border(.5.dp, colors.rule), verticalAlignment = Alignment.CenterVertically) {
                 labels.forEachIndexed { index, (key, label) ->
                     if (index > 0) VerticalDivider(Modifier.height(48.dp), color = colors.rule, thickness = .5.dp)
                     TextButton(onClick = { destination = key; if (key == "folders") showFolders = true },
@@ -195,7 +202,7 @@ internal fun ScholarlyLibraryScreen(app: ReaderApplication, onSettings: () -> Un
         }
         if (!detail && selected != null) ModalBottomSheet(onDismissRequest = { selectedKey = null }) {
             Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(24.dp)) {
-                PaperDetails(app, selected, { onRead(selected.paperKey) }, { editPaper = selected }, { mutate { app.metadata.save(selected.paperKey, !selected.saved) } })
+                PaperDetails(app, selected, { if (selected.pdfSha256 == null && onRelated != null) onRelated(selected) else onRead(selected.paperKey) }, { editPaper = selected }, { mutate { app.metadata.save(selected.paperKey, !selected.saved) } })
             }
         }
     }
@@ -273,7 +280,7 @@ private fun PaperDetails(app: ReaderApplication, paper: LibraryEntity, read: () 
     Text(listOfNotNull(paper.venue, paper.year?.toString()).joinToString(" · "), color = colors.inkSoft, fontSize = 12.sp)
     record.abstract?.let { Text(it, Modifier.padding(top = 16.dp), fontSize = 14.sp, lineHeight = 22.sp, color = colors.ink) }
     Text(if (paper.lastReadAt == null) libraryText("Not read yet", "아직 읽지 않음") else libraryText("Last read ", "최근 읽음 ") + paper.lastReadAt.orEmpty().take(10), Modifier.padding(top = 16.dp), fontSize = 12.sp, color = colors.inkSoft)
-    TextButton(onClick = read) { Text(libraryText("Read paper", "논문 읽기")) }
+    TextButton(onClick = read) { Text(if (paper.pdfSha256 == null) libraryText("Metadata and PDF availability", "논문 정보·PDF 상태") else libraryText("Read paper", "논문 읽기")) }
     TextButton(onClick = save) { Text(if (paper.saved) libraryText("Remove from Saved", "저장 해제") else libraryText("Save paper", "논문 저장")) }
     TextButton(onClick = organize) { Text(libraryText("Folders, tags and cache", "폴더·태그·캐시")) }
 }
@@ -292,7 +299,7 @@ private fun FolderEditor(folder: FolderEntity?, folders: List<FolderEntity>, onD
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun PaperOrganizer(app: ReaderApplication, paper: LibraryEntity, folders: List<FolderEntity>, onDismiss: () -> Unit,
+internal fun PaperOrganizer(app: ReaderApplication, paper: LibraryEntity, folders: List<FolderEntity>, onDismiss: () -> Unit,
     onSave: (List<String>, List<String>) -> Unit) {
     val scope = rememberCoroutineScope()
     val record = paper.record()

@@ -191,8 +191,9 @@ interface SyncStateDao {
 @Database(
     entities = [LibraryEntity::class, AnnotationEntity::class, SyncStateEntity::class,
         FolderEntity::class, HistoryEntity::class, SnapshotEntity::class, MetadataMutation::class, MetadataAuthority::class, MetadataConflict::class,
-        PdfTextEntity::class, ReaderPositionEntity::class, AiRequestEntity::class],
-    version = 3,
+        PdfTextEntity::class, ReaderPositionEntity::class, AiRequestEntity::class,
+        DiscoveryCacheEntity::class, DiscoveryIntent::class],
+    version = 4,
     exportSchema = false,
 )
 abstract class FractalDatabase : RoomDatabase() {
@@ -201,6 +202,7 @@ abstract class FractalDatabase : RoomDatabase() {
     abstract fun syncState(): SyncStateDao
     abstract fun metadata(): MetadataDao
     abstract fun reader(): ReaderDao
+    abstract fun discovery(): DiscoveryDao
 
     companion object {
         val MIGRATION_1_2 = object : Migration(1, 2) {
@@ -241,6 +243,12 @@ abstract class FractalDatabase : RoomDatabase() {
                 db.execSQL("CREATE TABLE IF NOT EXISTS ai_requests (requestId TEXT NOT NULL PRIMARY KEY, paperKey TEXT NOT NULL, kind TEXT NOT NULL, bodyJson TEXT NOT NULL, contextJson TEXT NOT NULL, status TEXT NOT NULL, historyId TEXT, error TEXT, cancelRequested INTEGER NOT NULL, createdAt TEXT NOT NULL, updatedAt TEXT NOT NULL)")
             }
         }
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("CREATE TABLE IF NOT EXISTS discovery_cache (scope TEXT NOT NULL, resource TEXT NOT NULL, json TEXT NOT NULL, fetchedAt TEXT NOT NULL, PRIMARY KEY(scope, resource))")
+                db.execSQL("CREATE TABLE IF NOT EXISTS discovery_intents (id TEXT NOT NULL PRIMARY KEY, scope TEXT NOT NULL, kind TEXT NOT NULL, resource TEXT NOT NULL, bodyJson TEXT NOT NULL, createdAt INTEGER NOT NULL, error TEXT)")
+            }
+        }
         @Volatile private var instance: FractalDatabase? = null
 
         fun get(context: Context): FractalDatabase {
@@ -249,7 +257,7 @@ abstract class FractalDatabase : RoomDatabase() {
                     context.applicationContext,
                     FractalDatabase::class.java,
                     "fractal-reader.db",
-                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3).build().also { instance = it }
+                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4).build().also { instance = it }
             }
         }
     }

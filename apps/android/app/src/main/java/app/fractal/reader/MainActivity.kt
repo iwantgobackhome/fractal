@@ -142,7 +142,7 @@ internal fun ReaderApp(
                     ReaderScreen(app, paper, onBack = { screen = "library" })
                 }
             }
-            else -> libraryState.SaveableStateProvider("library") { ScholarlyLibraryScreen(app, onSettings = { screen = "settings" }, onRead = {
+            else -> libraryState.SaveableStateProvider("library") { ResearchDesk(app, onSettings = { screen = "settings" }, onRead = {
                 activePaperKey = it
                 screen = "reader"
             }) }

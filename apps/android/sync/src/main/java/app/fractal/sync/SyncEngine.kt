@@ -15,6 +15,11 @@ class SyncEngine(private val database: FractalDatabase, private val client: HubD
         database.annotations().upsert(WireJson.annotationEntity(value, dirty = true))
     }
 
+    /** Import direct bookmark/link responses through the same pending-edit projection as pulls. */
+    suspend fun acceptPaper(record: JsonObject) = database.withTransaction {
+        project("paper", record.text("paperKey") ?: error("Missing paper key"), record)
+    }
+
     private suspend fun project(kind: String, id: String, remote: JsonObject) {
         val pending = database.metadata().pending(kind, id)
         val key = "$kind:$id"
@@ -183,7 +188,14 @@ class SyncEngine(private val database: FractalDatabase, private val client: HubD
             }
         }
         val push = client.data("/api/sync/push", "POST", buildJsonObject {
-            put("annotations", JsonArray(dirty.map { WireJson.format.parseToJsonElement(it.json) }))
+            put("annotations", JsonArray(dirty.map {
+                val original = WireJson.format.parseToJsonElement(it.json).jsonObject
+                // Legacy Android ink encoded absent optional fields as null. The Hub
+                // contract requires omission; keep stored bytes and ack comparison intact.
+                if (original.text("kind") == "ink") JsonObject(original.filterNot { (key, value) ->
+                    key in setOf("brush", "shape", "tilt") && value == JsonNull
+                }) else original
+            }))
             put("folders", JsonArray(folders.map(::envelope)))
             put("papers", JsonArray(pending.filter { it.kind == "paper" }.map(::envelope)))
             put("history", JsonArray(pending.filter { it.kind == "history" }.map(::envelope)))

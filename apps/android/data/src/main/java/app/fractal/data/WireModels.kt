@@ -36,6 +36,7 @@ data class LibraryRecord(
     val readProgress: ReadProgress? = null,
     val rev: Int = 0,
     val deviceId: String = "",
+    val publication: PublicationMetadata? = null,
 )
 
 @Serializable

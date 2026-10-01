@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -89,10 +90,18 @@ fun PdfPage(
     val changedSelection = libraryText("The PDF changed. Reopen it before selecting text.", "PDF가 변경되었습니다. 다시 열고 텍스트를 선택하세요.")
     var textPage by remember(source, index) { mutableStateOf<OriginalTextPage?>(null) }
     var textStatus by remember(source, index) { mutableStateOf(loadingSelection) }
-    LaunchedEffect(source, index) {
+    var textRetry by remember(source, index) { mutableStateOf(0) }
+    var retryable by remember(source, index) { mutableStateOf(false) }
+    var textLoading by remember(source, index) { mutableStateOf(true) }
+    LaunchedEffect(source, index, textRetry) {
+        textLoading = true
+        retryable = false
+        if (!source.identityUnchanged()) { textStatus = changedSelection; textLoading = false; return@LaunchedEffect }
         val result = withContext(Dispatchers.IO) { app.originalText.page(paperKey, source.pdfSha256, index + 1, source.pageCount) }
         textPage = result.page
         textStatus = if (result.page?.coverage == "no_text") noTextSelection else if (result.page == null) offlineSelection else ""
+        retryable = result.retryable && result.page == null
+        textLoading = false
     }
     val geometry = remember(textPage) { textPage?.let(::OriginalTextGeometry) }
     fun selected(range: OriginalRange): PdfTextSelection = PdfTextSelection(
@@ -237,6 +246,12 @@ fun PdfPage(
                     }
                 }
                 contentOverlay(widthPx, heightPx, textPage)
+            }
+            // This control overlays the fixed paper viewport. It neither inserts a list row nor resets
+            // ink/page state, and only retries this mounted physical page using the captured PDF tuple.
+            if (retryable) TextButton(onClick = { textRetry++ }, enabled = !textLoading,
+                modifier = Modifier.align(Alignment.TopEnd).nativeInkBlocker().background(colors.paper)) {
+                Text(libraryText("Retry original text · page ", "원문 텍스트 다시 시도 · 페이지 ") + (index + 1))
             }
         }
     }

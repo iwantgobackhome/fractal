@@ -21,6 +21,9 @@ class ReaderApplication : Application() {
     val credentials by lazy { HubCredentialStore(this) }
     val client by lazy { HubClient(credentials) }
     val sync by lazy { SyncEngine(database, client) }
+    val discovery by lazy { app.fractal.sync.DiscoveryRepository(database, client, sync) {
+        app.fractal.sync.discoveryScope(credentials.load())
+    } }
     val originalText by lazy { OriginalTextRepository(database, client) }
     private val submissionScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     val history by lazy { HistoryRepository(database, client, submissionScope) }
