@@ -1,0 +1,12 @@
+{
+  "productionSource": "423f46726491b5fd2165d57a1f4c2f05ab3d6d94",
+  "qaCheckpoint": "4bfb9c317491c84896b1720dd739414ea48d9efb",
+  "build": { "command": "npm run build", "exitCode": 0, "purpose": "Build this own isolated UI/Hub runtime; no peer dist reuse", "warnings": "Existing bundle size and dependency pure-annotation warnings" },
+  "backend": { "command": "npm run test -w @fractal/hub -- src/publication/open.test.ts", "exitCode": 0, "files": 1, "passed": 35, "durationSeconds": 7.35, "qualification": "Controlled provider/network/signature/identifier/bounded-download application HTTP regressions, separate from actual public bytes" },
+  "pc": { "command": "npm run test -w @fractal/ui -- src/shell/publication-open.test.ts", "exitCode": 0, "files": 1, "passed": 11, "durationSeconds": 0.898, "qualification": "Client contract, concurrency, errors, timeout and stale admission checks; separate from actual browser/native execution" },
+  "independentActualExecution": ["large", "browser", "saved"],
+  "knownIncompleteInvocations": "Initial large/browser helpers completed acquisition but failed post-close PowerShell no-listener receipt before durable JSON; corrected focused runs supplied passed evidence",
+  "routedDefects": ["QA-PDF-1 cached original bytes/hash mismatch"],
+  "unchangedBroadSuitesRerun": false,
+  "macOSClaim": false
+}

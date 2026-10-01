@@ -1,0 +1,440 @@
+{
+  "source": "4bfb9c317491c84896b1720dd739414ea48d9efb",
+  "mode": "browser",
+  "startedAt": "2026-10-01T05:38:02.695Z",
+  "seededPdfBytes": false,
+  "privateRoot": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\data\\qa-pdf-acquisition\\browser-2026-10-01T05-38-02-638Z",
+  "helperIdentity": {
+    "ProcessId": 25176,
+    "ParentProcessId": 51736,
+    "ExecutablePath": "C:\\Program Files\\nodejs\\node.exe",
+    "CommandLine": "\"C:\\Program Files\\nodejs\\node.exe\" --require C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\node_modules\\tsx\\dist\\preflight.cjs --import file:///C:/Users/Home/orca/workspaces/fractal/fractal-pdf-acquisition-qa/node_modules/tsx/dist/loader.mjs docs/implementation/qa/pdf-acquisition/gate.ts browser",
+    "CreationDate": "/Date(1790833080991)/"
+  },
+  "externalNavigation": [],
+  "cases": [
+    {
+      "name": "actual-passive-publisher-browser-open",
+      "elapsedMs": 3438,
+      "paperKey": "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+      "response": {
+        "paperKey": "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+        "paper": {
+          "paperKey": "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+          "sourceKind": "publication",
+          "catalogKey": "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+          "arxivId": null,
+          "version": null,
+          "title": "Model-Independent Online Learning for Influence Maximization",
+          "authors": [
+            "Sharan Vaswani",
+            "Branislav Kveton",
+            "Zheng Wen",
+            "Mohammad Ghavamzadeh",
+            "Laks V. S. Lakshmanan",
+            "Mark Schmidt"
+          ],
+          "sourceUrl": "https://proceedings.mlr.press/v70/vaswani17a.html",
+          "pdfSha256": "46d910177e7c2fb91bee441ec2e36a70dba25e9b728e4b565a9f6abfa18c88bf",
+          "pageCount": 10,
+          "extractionVersion": "pdfjs6-lines-v4",
+          "coverage": {
+            "totalPages": 10,
+            "textPages": 10,
+            "unsupportedPages": []
+          },
+          "status": "ready",
+          "createdAt": "2026-10-01T05:38:09.247Z"
+        },
+        "record": {
+          "id": "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+          "paperKey": "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+          "title": "Model-Independent Online Learning for Influence Maximization",
+          "authors": [
+            {
+              "given": "Sharan",
+              "family": "Vaswani"
+            },
+            {
+              "given": "Branislav",
+              "family": "Kveton"
+            },
+            {
+              "given": "Zheng",
+              "family": "Wen"
+            },
+            {
+              "given": "Mohammad",
+              "family": "Ghavamzadeh"
+            },
+            {
+              "given": "Laks V. S.",
+              "family": "Lakshmanan"
+            },
+            {
+              "given": "Mark",
+              "family": "Schmidt"
+            }
+          ],
+          "year": null,
+          "venue": null,
+          "doi": null,
+          "arxivId": null,
+          "url": "https://proceedings.mlr.press/v70/vaswani17a.html",
+          "abstract": "Independent review metadata. PDF bytes are downloaded from the public publisher.",
+          "tags": [],
+          "collections": [],
+          "addedAt": "2026-10-01T05:38:06.875Z",
+          "updatedAt": "2026-10-01T05:38:09.252Z",
+          "status": "unread",
+          "bibtexKey": "publication90e00ffcc534",
+          "publication": {
+            "year": null,
+            "venue": null,
+            "publicationKind": "unknown",
+            "publicationDate": null,
+            "oaAvailability": "unknown",
+            "oaPdfUrl": null
+          },
+          "saved": false,
+          "savedAt": null,
+          "lastReadAt": null,
+          "readProgress": null,
+          "rev": 2,
+          "deviceId": "hub"
+        },
+        "hasPdf": true
+      },
+      "readRecord": {
+        "id": "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+        "paperKey": "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+        "title": "Model-Independent Online Learning for Influence Maximization",
+        "authors": [
+          {
+            "given": "Sharan",
+            "family": "Vaswani"
+          },
+          {
+            "given": "Branislav",
+            "family": "Kveton"
+          },
+          {
+            "given": "Zheng",
+            "family": "Wen"
+          },
+          {
+            "given": "Mohammad",
+            "family": "Ghavamzadeh"
+          },
+          {
+            "given": "Laks V. S.",
+            "family": "Lakshmanan"
+          },
+          {
+            "given": "Mark",
+            "family": "Schmidt"
+          }
+        ],
+        "year": null,
+        "venue": null,
+        "doi": null,
+        "arxivId": null,
+        "url": "https://proceedings.mlr.press/v70/vaswani17a.html",
+        "abstract": "Independent review metadata. PDF bytes are downloaded from the public publisher.",
+        "tags": [],
+        "collections": [],
+        "addedAt": "2026-10-01T05:38:06.875Z",
+        "updatedAt": "2026-10-01T05:38:10.109Z",
+        "status": "unread",
+        "bibtexKey": "publication90e00ffcc534",
+        "publication": {
+          "year": null,
+          "venue": null,
+          "publicationKind": "unknown",
+          "publicationDate": null,
+          "oaAvailability": "unknown",
+          "oaPdfUrl": null
+        },
+        "saved": false,
+        "savedAt": null,
+        "lastReadAt": "2026-10-01T05:38:10.108Z",
+        "readProgress": {
+          "page": 1,
+          "fraction": 0,
+          "scrollOffset": 0
+        },
+        "rev": 3,
+        "deviceId": "hub"
+      },
+      "servedHash": "46d910177e7c2fb91bee441ec2e36a70dba25e9b728e4b565a9f6abfa18c88bf",
+      "servedBytes": 1061253
+    },
+    {
+      "name": "actual-public-404-failure",
+      "status": 404,
+      "body": {
+        "error": {
+          "code": "NOT_FOUND",
+          "message": "The requested item was not found.",
+          "retryable": false
+        }
+      },
+      "record": {
+        "id": "pub-2be4120c9d4cd1652b7e61d151422aa8972870a2900a600af5b53ad894332d33",
+        "paperKey": "pub-2be4120c9d4cd1652b7e61d151422aa8972870a2900a600af5b53ad894332d33",
+        "title": "Independent actual missing publisher URL boundary",
+        "authors": [],
+        "year": null,
+        "venue": null,
+        "doi": null,
+        "arxivId": null,
+        "url": "https://proceedings.mlr.press/v70/nonexistent-qa-publication.html",
+        "abstract": "Independent review metadata. PDF bytes are downloaded from the public publisher.",
+        "tags": [],
+        "collections": [],
+        "addedAt": "2026-10-01T05:38:10.867Z",
+        "updatedAt": "2026-10-01T05:38:10.867Z",
+        "status": "unread",
+        "bibtexKey": "publicationc8c4093bf1cc",
+        "publication": {
+          "year": null,
+          "venue": null,
+          "publicationKind": "unknown",
+          "publicationDate": null,
+          "oaAvailability": "unknown",
+          "oaPdfUrl": null
+        },
+        "saved": false,
+        "savedAt": null,
+        "lastReadAt": null,
+        "readProgress": null,
+        "rev": 1,
+        "deviceId": "hub"
+      },
+      "alert": "Could not open PDF. The requested item was not found. Retry Read PDF Dismiss",
+      "focused": true
+    }
+  ],
+  "errors": [],
+  "origin": "http://127.0.0.1:9975",
+  "listenersBefore": "{\"LocalAddress\":\"127.0.0.1\",\"LocalPort\":9975,\"OwningProcess\":25176}",
+  "reference": {
+    "url": "https://proceedings.mlr.press/v70/vaswani17a/vaswani17a.pdf",
+    "contentType": "application/pdf",
+    "bytes": 1061253,
+    "sha256": "46d910177e7c2fb91bee441ec2e36a70dba25e9b728e4b565a9f6abfa18c88bf",
+    "elapsedMs": 48
+  },
+  "browserIdentity": [
+    {
+      "ProcessId": 38900,
+      "ParentProcessId": 25176,
+      "ExecutablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+      "CommandLine": "\"C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe\" --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,Translate,AutoDeElevate,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-updater-scheduler --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --user-data-dir=C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\data\\qa-pdf-acquisition\\browser-2026-10-01T05-38-02-638Z\\browser-profile --remote-debugging-pipe about:blank",
+      "CreationDate": "/Date(1790833085028)/"
+    },
+    {
+      "ProcessId": 45288,
+      "ParentProcessId": 38900,
+      "ExecutablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+      "CommandLine": "\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" --type=crashpad-handler --user-data-dir=C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\data\\qa-pdf-acquisition\\browser-2026-10-01T05-38-02-638Z\\browser-profile /prefetch:4 --monitor-self-annotation=ptype=crashpad-handler --database=C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\data\\qa-pdf-acquisition\\browser-2026-10-01T05-38-02-638Z\\browser-profile\\Crashpad --metrics-dir=C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\data\\qa-pdf-acquisition\\browser-2026-10-01T05-38-02-638Z\\browser-profile --annotation=IsOfficialBuild=1 --annotation=channel= --annotation=chromium-version=154.0.8037.58 \"--annotation=exe=C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" --annotation=plat=Win64 --annotation=prod=Edge --annotation=ver=154.0.4258.37 --initial-client-data=0x17c,0x180,0x184,0x158,0x18c,0x7ffbb45c83e0,0x7ffbb45c83f0,0x7ffbb45c8400",
+      "CreationDate": "/Date(1790833085058)/"
+    },
+    {
+      "ProcessId": 52056,
+      "ParentProcessId": 38900,
+      "ExecutablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+      "CommandLine": "\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" --type=gpu-process --gpu-recent-crash-count=0 --no-sandbox --disable-breakpad --headless --enable-unsafe-swiftshader --noerrdialogs --user-data-dir=\"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\data\\qa-pdf-acquisition\\browser-2026-10-01T05-38-02-638Z\\browser-profile\" --gpu-preferences=WAAAAAAAAADgAAAEAAAAAAAAAAAAAGAAQAAAAAAAAAADAAAAAAAAADgAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAKAAAAAAAAAAoAAAAAAAAAAgAAAAAAAAAEAAAAAIAAAABAAAAAAAAAAgAAAAAAAAACAAAAAAAAAA= --startup-read-main-dll --field-trial-handle=2484,i,4641282565085208661,13792301059375810017,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=2488,i,8898617843719924978,6144863823790851290,4 --trace-process-track-uuid=3190708988185955192 --mojo-platform-channel-handle=2480 /prefetch:2",
+      "CreationDate": "/Date(1790833085220)/"
+    },
+    {
+      "ProcessId": 32316,
+      "ParentProcessId": 38900,
+      "ExecutablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+      "CommandLine": "\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" --type=utility --utility-sub-type=network.mojom.NetworkService --lang=ko --service-sandbox-type=none --no-sandbox --mute-audio --noerrdialogs --user-data-dir=\"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\data\\qa-pdf-acquisition\\browser-2026-10-01T05-38-02-638Z\\browser-profile\" --startup-read-main-dll --field-trial-handle=2484,i,4641282565085208661,13792301059375810017,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=2488,i,8898617843719924978,6144863823790851290,4 --trace-process-track-uuid=3190708989122997041 --mojo-platform-channel-handle=2676 /prefetch:11",
+      "CreationDate": "/Date(1790833085229)/"
+    },
+    {
+      "ProcessId": 53004,
+      "ParentProcessId": 38900,
+      "ExecutablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+      "CommandLine": "\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" --type=utility --utility-sub-type=storage.mojom.StorageService --lang=ko --service-sandbox-type=service --no-sandbox --mute-audio --noerrdialogs --user-data-dir=\"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\data\\qa-pdf-acquisition\\browser-2026-10-01T05-38-02-638Z\\browser-profile\" --startup-read-main-dll --field-trial-handle=2484,i,4641282565085208661,13792301059375810017,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=2488,i,8898617843719924978,6144863823790851290,4 --trace-process-track-uuid=3190708990060038890 --mojo-platform-channel-handle=3064 /prefetch:13",
+      "CreationDate": "/Date(1790833085263)/"
+    },
+    {
+      "ProcessId": 5524,
+      "ParentProcessId": 38900,
+      "ExecutablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+      "CommandLine": "\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" --type=renderer --noerrdialogs --user-data-dir=\"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\data\\qa-pdf-acquisition\\browser-2026-10-01T05-38-02-638Z\\browser-profile\" --pdf-upsell-enabled --no-sandbox --disable-back-forward-cache --disable-background-timer-throttling --disable-breakpad --force-color-profile=srgb --remote-debugging-pipe --allow-pre-commit-input --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --video-capture-use-gpu-memory-buffer --lang=ko --js-flags=--ms-user-locale=ko_KR --device-scale-factor=1 --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=6 --ssd-no-pressure-read-main-dll --launch-time-ticks=49930049359 --field-trial-handle=2484,i,4641282565085208661,13792301059375810017,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=2488,i,8898617843719924978,6144863823790851290,4 --trace-process-track-uuid=3190708991934122588 --mojo-platform-channel-handle=4044 /prefetch:1",
+      "CreationDate": "/Date(1790833085377)/"
+    },
+    {
+      "ProcessId": 40392,
+      "ParentProcessId": 38900,
+      "ExecutablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+      "CommandLine": "\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" --type=renderer --noerrdialogs --user-data-dir=\"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\data\\qa-pdf-acquisition\\browser-2026-10-01T05-38-02-638Z\\browser-profile\" --pdf-upsell-enabled --no-sandbox --disable-back-forward-cache --disable-background-timer-throttling --disable-breakpad --force-color-profile=srgb --remote-debugging-pipe --allow-pre-commit-input --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --video-capture-use-gpu-memory-buffer --lang=ko --js-flags=--ms-user-locale=ko_KR --device-scale-factor=1 --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=5 --skip-read-main-dll --launch-time-ticks=49930060760 --field-trial-handle=2484,i,4641282565085208661,13792301059375810017,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=2488,i,8898617843719924978,6144863823790851290,4 --trace-process-track-uuid=3190708990997080739 --mojo-platform-channel-handle=4160 /prefetch:1",
+      "CreationDate": "/Date(1790833085388)/"
+    },
+    {
+      "ProcessId": 12584,
+      "ParentProcessId": 38900,
+      "ExecutablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+      "CommandLine": "\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" --type=renderer --noerrdialogs --user-data-dir=\"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\data\\qa-pdf-acquisition\\browser-2026-10-01T05-38-02-638Z\\browser-profile\" --pdf-upsell-enabled --no-sandbox --disable-back-forward-cache --disable-background-timer-throttling --disable-breakpad --force-color-profile=srgb --remote-debugging-pipe --allow-pre-commit-input --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --video-capture-use-gpu-memory-buffer --lang=ko --js-flags=--ms-user-locale=ko_KR --device-scale-factor=1 --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=7 --skip-read-main-dll --launch-time-ticks=49930168030 --field-trial-handle=2484,i,4641282565085208661,13792301059375810017,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=2488,i,8898617843719924978,6144863823790851290,4 --trace-process-track-uuid=3190708992871164437 --mojo-platform-channel-handle=5248 /prefetch:1",
+      "CreationDate": "/Date(1790833085496)/"
+    },
+    {
+      "ProcessId": 45236,
+      "ParentProcessId": 25176,
+      "ExecutablePath": "c:\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe",
+      "CommandLine": "powershell.exe -NoProfile -Command \"Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -like '*C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\data\\qa-pdf-acquisition\\browser-2026-10-01T05-38-02-638Z*browser-profile*' } | Select-Object ProcessId,ParentProcessId,ExecutablePath,CommandLine,CreationDate | ConvertTo-Json -Compress\"",
+      "CreationDate": "/Date(1790833085545)/"
+    },
+    {
+      "ProcessId": 52540,
+      "ParentProcessId": 38900,
+      "ExecutablePath": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+      "CommandLine": "\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" --type=utility --utility-sub-type=edge_collections.mojom.CollectionsDataManager --lang=ko --service-sandbox-type=collections --no-sandbox --mute-audio --video-capture-use-gpu-memory-buffer --noerrdialogs --user-data-dir=\"C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\data\\qa-pdf-acquisition\\browser-2026-10-01T05-38-02-638Z\\browser-profile\" --skip-read-main-dll --field-trial-handle=2484,i,4641282565085208661,13792301059375810017,262144 --enable-features=CDPScreenshotNewSurface --disable-features=AutoDeElevate,AvoidUnnecessaryBeforeUnloadCheckSync,BlockOriginHeaderModificationOnRedirect,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,OptimizationHints,PaintHolding,ThirdPartyStoragePartitioning,Translate,msEdgeUpdateLaunchServicesPreferredVersion,msForceBrowserSignIn --variations-seed-version --pseudonymization-salt-handle=2488,i,8898617843719924978,6144863823790851290,4 --trace-process-track-uuid=3190708995682289984 --mojo-platform-channel-handle=5884 /prefetch:14",
+      "CreationDate": "/Date(1790833085896)/"
+    }
+  ],
+  "cachedReopen": {
+    "paperKey": "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+    "acquisitionSkipped": true
+  },
+  "mutations": [
+    {
+      "path": "/api/publications/open",
+      "method": "POST"
+    },
+    {
+      "path": "/api/papers/open",
+      "method": "POST"
+    },
+    {
+      "path": "/api/papers/pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810/read",
+      "method": "POST"
+    },
+    {
+      "path": "/api/papers/open",
+      "method": "POST"
+    },
+    {
+      "path": "/api/papers/pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810/read",
+      "method": "POST"
+    },
+    {
+      "path": "/api/publications/open",
+      "method": "POST"
+    }
+  ],
+  "library": [
+    {
+      "id": "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+      "paperKey": "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+      "title": "Model-Independent Online Learning for Influence Maximization",
+      "authors": [
+        {
+          "given": "Sharan",
+          "family": "Vaswani"
+        },
+        {
+          "given": "Branislav",
+          "family": "Kveton"
+        },
+        {
+          "given": "Zheng",
+          "family": "Wen"
+        },
+        {
+          "given": "Mohammad",
+          "family": "Ghavamzadeh"
+        },
+        {
+          "given": "Laks V. S.",
+          "family": "Lakshmanan"
+        },
+        {
+          "given": "Mark",
+          "family": "Schmidt"
+        }
+      ],
+      "year": null,
+      "venue": null,
+      "doi": null,
+      "arxivId": null,
+      "url": "https://proceedings.mlr.press/v70/vaswani17a.html",
+      "abstract": "Independent review metadata. PDF bytes are downloaded from the public publisher.",
+      "tags": [],
+      "collections": [],
+      "addedAt": "2026-10-01T05:38:06.875Z",
+      "updatedAt": "2026-10-01T05:38:10.848Z",
+      "status": "unread",
+      "bibtexKey": "publication90e00ffcc534",
+      "publication": {
+        "year": null,
+        "venue": null,
+        "publicationKind": "unknown",
+        "publicationDate": null,
+        "oaAvailability": "unknown",
+        "oaPdfUrl": null
+      },
+      "saved": false,
+      "savedAt": null,
+      "lastReadAt": "2026-10-01T05:38:10.847Z",
+      "readProgress": {
+        "page": 1,
+        "fraction": 0,
+        "scrollOffset": 0
+      },
+      "rev": 4,
+      "deviceId": "hub"
+    },
+    {
+      "id": "pub-2be4120c9d4cd1652b7e61d151422aa8972870a2900a600af5b53ad894332d33",
+      "paperKey": "pub-2be4120c9d4cd1652b7e61d151422aa8972870a2900a600af5b53ad894332d33",
+      "title": "Independent actual missing publisher URL boundary",
+      "authors": [],
+      "year": null,
+      "venue": null,
+      "doi": null,
+      "arxivId": null,
+      "url": "https://proceedings.mlr.press/v70/nonexistent-qa-publication.html",
+      "abstract": "Independent review metadata. PDF bytes are downloaded from the public publisher.",
+      "tags": [],
+      "collections": [],
+      "addedAt": "2026-10-01T05:38:10.867Z",
+      "updatedAt": "2026-10-01T05:38:10.867Z",
+      "status": "unread",
+      "bibtexKey": "publicationc8c4093bf1cc",
+      "publication": {
+        "year": null,
+        "venue": null,
+        "publicationKind": "unknown",
+        "publicationDate": null,
+        "oaAvailability": "unknown",
+        "oaPdfUrl": null
+      },
+      "saved": false,
+      "savedAt": null,
+      "lastReadAt": null,
+      "readProgress": null,
+      "rev": 1,
+      "deviceId": "hub"
+    }
+  ],
+  "papers": [
+    "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810"
+  ],
+  "status": "passed",
+  "listenersBeforeStop": "{\"LocalAddress\":\"127.0.0.1\",\"LocalPort\":9975,\"OwningProcess\":25176}",
+  "helperBeforeStop": {
+    "ProcessId": 25176,
+    "ParentProcessId": 51736,
+    "ExecutablePath": "C:\\Program Files\\nodejs\\node.exe",
+    "CommandLine": "\"C:\\Program Files\\nodejs\\node.exe\" --require C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\node_modules\\tsx\\dist\\preflight.cjs --import file:///C:/Users/Home/orca/workspaces/fractal/fractal-pdf-acquisition-qa/node_modules/tsx/dist/loader.mjs docs/implementation/qa/pdf-acquisition/gate.ts browser",
+    "CreationDate": "/Date(1790833080991)/"
+  },
+  "listenersAfterStop": "",
+  "cleanup": "Closed only owned Browser and Service handles; private profile/SQLite/public PDF bytes preserved",
+  "finishedAt": "2026-10-01T05:38:14.659Z"
+}

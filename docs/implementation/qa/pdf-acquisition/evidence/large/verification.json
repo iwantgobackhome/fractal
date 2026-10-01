@@ -1,0 +1,217 @@
+{
+  "source": "4bfb9c317491c84896b1720dd739414ea48d9efb",
+  "mode": "large",
+  "startedAt": "2026-10-01T05:37:52.405Z",
+  "seededPdfBytes": false,
+  "privateRoot": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\data\\qa-pdf-acquisition\\large-2026-10-01T05-37-52-355Z",
+  "helperIdentity": {
+    "ProcessId": 46084,
+    "ParentProcessId": 43928,
+    "ExecutablePath": "C:\\Program Files\\nodejs\\node.exe",
+    "CommandLine": "\"C:\\Program Files\\nodejs\\node.exe\" --require C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\node_modules\\tsx\\dist\\preflight.cjs --import file:///C:/Users/Home/orca/workspaces/fractal/fractal-pdf-acquisition-qa/node_modules/tsx/dist/loader.mjs docs/implementation/qa/pdf-acquisition/gate.ts large",
+    "CreationDate": "/Date(1790833070652)/"
+  },
+  "externalNavigation": [],
+  "cases": [
+    {
+      "name": "exact-large-concurrent-HTTP",
+      "request": {
+        "title": "WorldAuditBench: Interactive 3D World Auditing with Multimodal Agents",
+        "authors": [],
+        "url": "https://arxiv.org/abs/2609.40325v1",
+        "arxivId": "2609.40325",
+        "publication": {
+          "year": 2026,
+          "venue": null,
+          "publicationKind": "preprint",
+          "publicationDate": "2026-09-30",
+          "oaAvailability": "open",
+          "oaPdfUrl": "https://arxiv.org/pdf/2609.40325v1"
+        }
+      },
+      "responses": [
+        {
+          "status": 200,
+          "elapsedMs": 7698,
+          "data": {
+            "paperKey": "pub-32fc1d3ce5ab760587b23fe492bdf6abf032f3adcc5f8a1e0ae8f7e01d18f01f",
+            "paper": {
+              "paperKey": "pub-32fc1d3ce5ab760587b23fe492bdf6abf032f3adcc5f8a1e0ae8f7e01d18f01f",
+              "sourceKind": "publication",
+              "catalogKey": "pub-32fc1d3ce5ab760587b23fe492bdf6abf032f3adcc5f8a1e0ae8f7e01d18f01f",
+              "arxivId": null,
+              "version": null,
+              "title": "WorldAuditBench: Interactive 3D World Auditing with Multimodal Agents",
+              "authors": [],
+              "sourceUrl": "https://arxiv.org/abs/2609.40325v1",
+              "pdfSha256": "d9fdc657534201a7e1df44080ae52fb1c168b791b56581ebf2ddf35d0b087901",
+              "pageCount": 45,
+              "extractionVersion": "pdfjs6-lines-v4",
+              "coverage": {
+                "totalPages": 45,
+                "textPages": 45,
+                "unsupportedPages": []
+              },
+              "status": "ready",
+              "createdAt": "2026-10-01T05:38:03.366Z"
+            },
+            "record": {
+              "id": "pub-32fc1d3ce5ab760587b23fe492bdf6abf032f3adcc5f8a1e0ae8f7e01d18f01f",
+              "paperKey": "pub-32fc1d3ce5ab760587b23fe492bdf6abf032f3adcc5f8a1e0ae8f7e01d18f01f",
+              "title": "WorldAuditBench: Interactive 3D World Auditing with Multimodal Agents",
+              "authors": [],
+              "year": 2026,
+              "venue": null,
+              "doi": null,
+              "arxivId": "2609.40325",
+              "url": "https://arxiv.org/abs/2609.40325v1",
+              "abstract": null,
+              "tags": [],
+              "collections": [],
+              "addedAt": "2026-10-01T05:37:55.825Z",
+              "updatedAt": "2026-10-01T05:38:03.414Z",
+              "status": "unread",
+              "bibtexKey": "publicationcbb5432e0e83",
+              "publication": {
+                "year": 2026,
+                "venue": null,
+                "publicationKind": "preprint",
+                "publicationDate": "2026-09-30",
+                "oaAvailability": "open",
+                "oaPdfUrl": "https://arxiv.org/pdf/2609.40325v1"
+              },
+              "saved": false,
+              "savedAt": null,
+              "lastReadAt": null,
+              "readProgress": null,
+              "rev": 2,
+              "deviceId": "hub"
+            },
+            "hasPdf": true
+          }
+        },
+        {
+          "status": 200,
+          "elapsedMs": 7693,
+          "data": {
+            "paperKey": "pub-32fc1d3ce5ab760587b23fe492bdf6abf032f3adcc5f8a1e0ae8f7e01d18f01f",
+            "paper": {
+              "paperKey": "pub-32fc1d3ce5ab760587b23fe492bdf6abf032f3adcc5f8a1e0ae8f7e01d18f01f",
+              "sourceKind": "publication",
+              "catalogKey": "pub-32fc1d3ce5ab760587b23fe492bdf6abf032f3adcc5f8a1e0ae8f7e01d18f01f",
+              "arxivId": null,
+              "version": null,
+              "title": "WorldAuditBench: Interactive 3D World Auditing with Multimodal Agents",
+              "authors": [],
+              "sourceUrl": "https://arxiv.org/abs/2609.40325v1",
+              "pdfSha256": "d9fdc657534201a7e1df44080ae52fb1c168b791b56581ebf2ddf35d0b087901",
+              "pageCount": 45,
+              "extractionVersion": "pdfjs6-lines-v4",
+              "coverage": {
+                "totalPages": 45,
+                "textPages": 45,
+                "unsupportedPages": []
+              },
+              "status": "ready",
+              "createdAt": "2026-10-01T05:38:03.366Z"
+            },
+            "record": {
+              "id": "pub-32fc1d3ce5ab760587b23fe492bdf6abf032f3adcc5f8a1e0ae8f7e01d18f01f",
+              "paperKey": "pub-32fc1d3ce5ab760587b23fe492bdf6abf032f3adcc5f8a1e0ae8f7e01d18f01f",
+              "title": "WorldAuditBench: Interactive 3D World Auditing with Multimodal Agents",
+              "authors": [],
+              "year": 2026,
+              "venue": null,
+              "doi": null,
+              "arxivId": "2609.40325",
+              "url": "https://arxiv.org/abs/2609.40325v1",
+              "abstract": null,
+              "tags": [],
+              "collections": [],
+              "addedAt": "2026-10-01T05:37:55.825Z",
+              "updatedAt": "2026-10-01T05:38:03.414Z",
+              "status": "unread",
+              "bibtexKey": "publicationcbb5432e0e83",
+              "publication": {
+                "year": 2026,
+                "venue": null,
+                "publicationKind": "preprint",
+                "publicationDate": "2026-09-30",
+                "oaAvailability": "open",
+                "oaPdfUrl": "https://arxiv.org/pdf/2609.40325v1"
+              },
+              "saved": false,
+              "savedAt": null,
+              "lastReadAt": null,
+              "readProgress": null,
+              "rev": 2,
+              "deviceId": "hub"
+            },
+            "hasPdf": true
+          }
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "origin": "http://127.0.0.1:9956",
+  "listenersBefore": "{\"LocalAddress\":\"127.0.0.1\",\"LocalPort\":9956,\"OwningProcess\":46084}",
+  "reference": {
+    "url": "https://arxiv.org/pdf/2609.40325v1",
+    "contentType": "application/pdf",
+    "bytes": 49668700,
+    "sha256": "d9fdc657534201a7e1df44080ae52fb1c168b791b56581ebf2ddf35d0b087901",
+    "elapsedMs": 1178
+  },
+  "cachedKey": "pub-32fc1d3ce5ab760587b23fe492bdf6abf032f3adcc5f8a1e0ae8f7e01d18f01f",
+  "servedHash": "d9fdc657534201a7e1df44080ae52fb1c168b791b56581ebf2ddf35d0b087901",
+  "library": [
+    {
+      "id": "pub-32fc1d3ce5ab760587b23fe492bdf6abf032f3adcc5f8a1e0ae8f7e01d18f01f",
+      "paperKey": "pub-32fc1d3ce5ab760587b23fe492bdf6abf032f3adcc5f8a1e0ae8f7e01d18f01f",
+      "title": "WorldAuditBench: Interactive 3D World Auditing with Multimodal Agents",
+      "authors": [],
+      "year": 2026,
+      "venue": null,
+      "doi": null,
+      "arxivId": "2609.40325",
+      "url": "https://arxiv.org/abs/2609.40325v1",
+      "abstract": null,
+      "tags": [],
+      "collections": [],
+      "addedAt": "2026-10-01T05:37:55.825Z",
+      "updatedAt": "2026-10-01T05:38:03.414Z",
+      "status": "unread",
+      "bibtexKey": "publicationcbb5432e0e83",
+      "publication": {
+        "year": 2026,
+        "venue": null,
+        "publicationKind": "preprint",
+        "publicationDate": "2026-09-30",
+        "oaAvailability": "open",
+        "oaPdfUrl": "https://arxiv.org/pdf/2609.40325v1"
+      },
+      "saved": false,
+      "savedAt": null,
+      "lastReadAt": null,
+      "readProgress": null,
+      "rev": 2,
+      "deviceId": "hub"
+    }
+  ],
+  "papers": [
+    "pub-32fc1d3ce5ab760587b23fe492bdf6abf032f3adcc5f8a1e0ae8f7e01d18f01f"
+  ],
+  "status": "passed",
+  "listenersBeforeStop": "{\"LocalAddress\":\"127.0.0.1\",\"LocalPort\":9956,\"OwningProcess\":46084}",
+  "helperBeforeStop": {
+    "ProcessId": 46084,
+    "ParentProcessId": 43928,
+    "ExecutablePath": "C:\\Program Files\\nodejs\\node.exe",
+    "CommandLine": "\"C:\\Program Files\\nodejs\\node.exe\" --require C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\node_modules\\tsx\\dist\\preflight.cjs --import file:///C:/Users/Home/orca/workspaces/fractal/fractal-pdf-acquisition-qa/node_modules/tsx/dist/loader.mjs docs/implementation/qa/pdf-acquisition/gate.ts large",
+    "CreationDate": "/Date(1790833070652)/"
+  },
+  "listenersAfterStop": "",
+  "cleanup": "Closed only owned Browser and Service handles; private profile/SQLite/public PDF bytes preserved",
+  "finishedAt": "2026-10-01T05:38:07.643Z"
+}

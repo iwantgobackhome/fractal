@@ -1,0 +1,230 @@
+{
+  "source": "4bfb9c317491c84896b1720dd739414ea48d9efb",
+  "startedAt": "2026-10-01T05:41:17.170Z",
+  "paperKey": "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+  "originalHash": "46d910177e7c2fb91bee441ec2e36a70dba25e9b728e4b565a9f6abfa18c88bf",
+  "owner": "backend",
+  "priority": "P1",
+  "controlledLocalCorruption": true,
+  "publicOriginalProvenance": {
+    "url": "https://proceedings.mlr.press/v70/vaswani17a/vaswani17a.pdf",
+    "contentType": "application/pdf",
+    "bytes": 1061253,
+    "sha256": "46d910177e7c2fb91bee441ec2e36a70dba25e9b728e4b565a9f6abfa18c88bf",
+    "elapsedMs": 48
+  },
+  "helperIdentity": {
+    "ProcessId": 36124,
+    "ParentProcessId": 44696,
+    "ExecutablePath": "C:\\Program Files\\nodejs\\node.exe",
+    "CommandLine": "\"C:\\Program Files\\nodejs\\node.exe\" --require C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\node_modules\\tsx\\dist\\preflight.cjs --import file:///C:/Users/Home/orca/workspaces/fractal/fractal-pdf-acquisition-qa/node_modules/tsx/dist/loader.mjs docs/implementation/qa/pdf-acquisition/cached-integrity.ts",
+    "CreationDate": "/Date(1790833275731)/"
+  },
+  "listenersBefore": "{\"LocalAddress\":\"127.0.0.1\",\"LocalPort\":7786,\"OwningProcess\":36124}",
+  "alteredHash": "e16f08cefe1728fdfd37a1c27cc59ab815c5843531ea0fcfcacb389ea9107185",
+  "response": {
+    "status": 200,
+    "body": {
+      "data": {
+        "paperKey": "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+        "record": {
+          "id": "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+          "paperKey": "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+          "title": "Model-Independent Online Learning for Influence Maximization",
+          "authors": [
+            {
+              "given": "Sharan",
+              "family": "Vaswani"
+            },
+            {
+              "given": "Branislav",
+              "family": "Kveton"
+            },
+            {
+              "given": "Zheng",
+              "family": "Wen"
+            },
+            {
+              "given": "Mohammad",
+              "family": "Ghavamzadeh"
+            },
+            {
+              "given": "Laks V. S.",
+              "family": "Lakshmanan"
+            },
+            {
+              "given": "Mark",
+              "family": "Schmidt"
+            }
+          ],
+          "year": null,
+          "venue": null,
+          "doi": null,
+          "arxivId": null,
+          "url": "https://proceedings.mlr.press/v70/vaswani17a.html",
+          "abstract": "Independent review metadata. PDF bytes are downloaded from the public publisher.",
+          "tags": [],
+          "collections": [],
+          "addedAt": "2026-10-01T05:38:06.875Z",
+          "updatedAt": "2026-10-01T05:38:10.848Z",
+          "status": "unread",
+          "bibtexKey": "publication90e00ffcc534",
+          "publication": {
+            "year": null,
+            "venue": null,
+            "publicationKind": "unknown",
+            "publicationDate": null,
+            "oaAvailability": "unknown",
+            "oaPdfUrl": null
+          },
+          "saved": false,
+          "savedAt": null,
+          "lastReadAt": "2026-10-01T05:38:10.847Z",
+          "readProgress": {
+            "page": 1,
+            "fraction": 0,
+            "scrollOffset": 0
+          },
+          "rev": 4,
+          "deviceId": "hub"
+        },
+        "hasPdf": true,
+        "paper": {
+          "paperKey": "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+          "sourceKind": "publication",
+          "catalogKey": "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+          "arxivId": null,
+          "version": null,
+          "title": "Model-Independent Online Learning for Influence Maximization",
+          "authors": [
+            "Sharan Vaswani",
+            "Branislav Kveton",
+            "Zheng Wen",
+            "Mohammad Ghavamzadeh",
+            "Laks V. S. Lakshmanan",
+            "Mark Schmidt"
+          ],
+          "sourceUrl": "https://proceedings.mlr.press/v70/vaswani17a.html",
+          "pdfSha256": "46d910177e7c2fb91bee441ec2e36a70dba25e9b728e4b565a9f6abfa18c88bf",
+          "pageCount": 10,
+          "extractionVersion": "pdfjs6-lines-v4",
+          "status": "ready",
+          "coverage": {
+            "totalPages": 10,
+            "textPages": 10,
+            "unsupportedPages": []
+          },
+          "createdAt": "2026-10-01T05:38:09.247Z"
+        }
+      }
+    }
+  },
+  "served": {
+    "status": 200,
+    "bytes": 1061301,
+    "sha256": "e16f08cefe1728fdfd37a1c27cc59ab815c5843531ea0fcfcacb389ea9107185",
+    "etag": "\"e16f08cefe1728fdfd37a1c27cc59ab815c5843531ea0fcfcacb389ea9107185\""
+  },
+  "paper": {
+    "paperKey": "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+    "sourceKind": "publication",
+    "catalogKey": "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+    "arxivId": null,
+    "version": null,
+    "title": "Model-Independent Online Learning for Influence Maximization",
+    "authors": [
+      "Sharan Vaswani",
+      "Branislav Kveton",
+      "Zheng Wen",
+      "Mohammad Ghavamzadeh",
+      "Laks V. S. Lakshmanan",
+      "Mark Schmidt"
+    ],
+    "sourceUrl": "https://proceedings.mlr.press/v70/vaswani17a.html",
+    "pdfSha256": "46d910177e7c2fb91bee441ec2e36a70dba25e9b728e4b565a9f6abfa18c88bf",
+    "pageCount": 10,
+    "extractionVersion": "pdfjs6-lines-v4",
+    "status": "ready",
+    "coverage": {
+      "totalPages": 10,
+      "textPages": 10,
+      "unsupportedPages": []
+    },
+    "createdAt": "2026-10-01T05:38:09.247Z"
+  },
+  "record": {
+    "id": "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+    "paperKey": "pub-23aa1a8ad11fd9c35be08eeac2a4075183358f30bb0e7eb29d4a7aa5f8b70810",
+    "title": "Model-Independent Online Learning for Influence Maximization",
+    "authors": [
+      {
+        "given": "Sharan",
+        "family": "Vaswani"
+      },
+      {
+        "given": "Branislav",
+        "family": "Kveton"
+      },
+      {
+        "given": "Zheng",
+        "family": "Wen"
+      },
+      {
+        "given": "Mohammad",
+        "family": "Ghavamzadeh"
+      },
+      {
+        "given": "Laks V. S.",
+        "family": "Lakshmanan"
+      },
+      {
+        "given": "Mark",
+        "family": "Schmidt"
+      }
+    ],
+    "year": null,
+    "venue": null,
+    "doi": null,
+    "arxivId": null,
+    "url": "https://proceedings.mlr.press/v70/vaswani17a.html",
+    "abstract": "Independent review metadata. PDF bytes are downloaded from the public publisher.",
+    "tags": [],
+    "collections": [],
+    "addedAt": "2026-10-01T05:38:06.875Z",
+    "updatedAt": "2026-10-01T05:38:10.848Z",
+    "status": "unread",
+    "bibtexKey": "publication90e00ffcc534",
+    "publication": {
+      "year": null,
+      "venue": null,
+      "publicationKind": "unknown",
+      "publicationDate": null,
+      "oaAvailability": "unknown",
+      "oaPdfUrl": null
+    },
+    "saved": false,
+    "savedAt": null,
+    "lastReadAt": "2026-10-01T05:38:10.847Z",
+    "readProgress": {
+      "page": 1,
+      "fraction": 0,
+      "scrollOffset": 0
+    },
+    "rev": 4,
+    "deviceId": "hub"
+  },
+  "expected": "Cached acquisition must reject bytes whose SHA-256 differs from the canonical Paper hash, without changing the hash/key or saved/read/user state.",
+  "actual": "Acquisition returns success hasPdf=true with the original canonical hash, while the PDF route serves different cached bytes and an ETag for the altered hash.",
+  "reproduced": true,
+  "restoredOriginal": true,
+  "helperBeforeStop": {
+    "ProcessId": 36124,
+    "ParentProcessId": 44696,
+    "ExecutablePath": "C:\\Program Files\\nodejs\\node.exe",
+    "CommandLine": "\"C:\\Program Files\\nodejs\\node.exe\" --require C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-pdf-acquisition-qa\\node_modules\\tsx\\dist\\preflight.cjs --import file:///C:/Users/Home/orca/workspaces/fractal/fractal-pdf-acquisition-qa/node_modules/tsx/dist/loader.mjs docs/implementation/qa/pdf-acquisition/cached-integrity.ts",
+    "CreationDate": "/Date(1790833275731)/"
+  },
+  "listenersBeforeStop": "{\"LocalAddress\":\"127.0.0.1\",\"LocalPort\":7786,\"OwningProcess\":36124}",
+  "listenersAfterStop": "",
+  "finishedAt": "2026-10-01T05:41:22.867Z"
+}
