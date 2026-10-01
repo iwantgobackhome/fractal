@@ -1,0 +1,3162 @@
+{
+  "status": "passed",
+  "acceptedSource": "6d447165f09e8090292df6a20c2e12ae82fd69f9",
+  "runtimeSource": "6d447165f09e8090292df6a20c2e12ae82fd69f9",
+  "resources": [
+    {
+      "path": "apps/desktop/main.cjs",
+      "bytes": 5584,
+      "sha256": "7c5fcaa82adc61bb8b2d6ec7c9592e956e78ca62790f01b4ccc857e71308074d",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "apps/desktop/preload.cjs",
+      "bytes": 291,
+      "sha256": "989edc6c4151be817a41287772e77d2a7f6b0ff3c7123d147cdbc6a3c57a0dc1",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "apps/desktop/dist/hub.mjs",
+      "bytes": 3214976,
+      "sha256": "4f32b82b69bd33767a0273dcdbb26aa8214592fcf4cf5de821cbfc6961d31794",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "apps/desktop/dist/pdf.worker.mjs",
+      "bytes": 2395538,
+      "sha256": "df3bf6bf6b8b8dac8a4042d8c4ecf1cf21e1d197e0fe231c192122409eba656b",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/index.html",
+      "bytes": 351,
+      "sha256": "f681bde2e2d09c0706d386d1a569f6b2538116ef4cd646fb33eb0e9828bfe2c0",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "apps/desktop/assets/branch.svg",
+      "bytes": 452,
+      "sha256": "ed1047a4eca5dcc9ad6dd16fd27a541ac392dcf2842d881e2dac0e160230543d",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "apps/desktop/assets/fractal.ico",
+      "bytes": 15480,
+      "sha256": "fbe027c730fe0bee700d1d48832e3c3133a6a261e5d78bdcc658d55192ab8d8d",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "apps/desktop/assets/icon-128.png",
+      "bytes": 3375,
+      "sha256": "0ee1d16ab0240f23d785c6156f2b30761e611a6a771bc3334f84a2ef63cba0de",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "apps/desktop/assets/icon-16.png",
+      "bytes": 429,
+      "sha256": "a2d0e74613b61a87fe49c0de0190146cbf64488573256eee2a1982e5ac7d4d6b",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "apps/desktop/assets/icon-24.png",
+      "bytes": 652,
+      "sha256": "5c4796746601806c2192626232d687c43349f220e24102579b51f5b0f9daff61",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "apps/desktop/assets/icon-256.png",
+      "bytes": 7350,
+      "sha256": "dab351189457896ee2182aab2b2415cc20c9c21158922919a4c55f408355c57a",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "apps/desktop/assets/icon-32.png",
+      "bytes": 780,
+      "sha256": "4287efc4d6d438f61ea48336ccfc9ff9c72d840ea76b94e0de93e32d306ff194",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "apps/desktop/assets/icon-48.png",
+      "bytes": 1193,
+      "sha256": "ecdd62341c9908d1e14b946ddafd28959d71052987ca5c071873b5f75aecd51c",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "apps/desktop/assets/icon-64.png",
+      "bytes": 1583,
+      "sha256": "5d184e62185853722358fabe5645954e9fc77240ddce60ce1cffa5486228866e",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "apps/desktop/assets/icon.svg",
+      "bytes": 499,
+      "sha256": "306d9589f550606fd4c4ab508d009f2a9909e2452724e0788008c707e3f65d0b",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/index-CgyL9Tou.js",
+      "bytes": 1837527,
+      "sha256": "37a6c6ed3de4f96ed617c7c60bd1b4c8b6365d3e8a96e865d0646ae561a450ff",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/index-D-w5iedl.css",
+      "bytes": 183435,
+      "sha256": "fda479f79bc98d99790325c67ba52a1f7371fbacc6c4703a30ba7eebe62881c5",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_AMS-Regular-BQhdFMY1.woff2",
+      "bytes": 28076,
+      "sha256": "0cdd387c9590a1a9f9794560022dbb59654a7d86f187aa0c81495ad42d3a7308",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_AMS-Regular-DMm9YOAa.woff",
+      "bytes": 33516,
+      "sha256": "30da91e84c893f875e252689faebdc590b2871145e8adc7f9a9d4dbd8ce0b251",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_AMS-Regular-DRggAlZN.ttf",
+      "bytes": 63632,
+      "sha256": "68534840bcfdd2bffb6f0e8deb48684dd01e7f04ea2813267577afb906de1d13",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Caligraphic-Bold-ATXxdsX0.ttf",
+      "bytes": 12368,
+      "sha256": "07d8e303ce4fc12b4bb54f1004170dd190a1f3db45d400fe68060df3e0897268",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Caligraphic-Bold-BEiXGLvX.woff",
+      "bytes": 7716,
+      "sha256": "1ae6bd7475590e97e7f145a89e09ccde322f7a6bc0b91607b1c8b8ee28290fed",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Caligraphic-Bold-Dq_IR9rO.woff2",
+      "bytes": 6912,
+      "sha256": "de7701e42cf1f4cf0b766c03fb27977207eee2f4fd5d76fa82188406da43ea4c",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Caligraphic-Regular-CTRA-rTL.woff",
+      "bytes": 7656,
+      "sha256": "3398dd02302557a793f2863f88e02d96ce10df2abffa07c8e9fa90775116e65c",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Caligraphic-Regular-Di6jR-x-.woff2",
+      "bytes": 6908,
+      "sha256": "5d53e70ad607c2352162dec9e0923fb54ecdafaccbf604cd8dcf7d00facb989b",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Caligraphic-Regular-wX97UBjC.ttf",
+      "bytes": 12344,
+      "sha256": "ed0b74372feefcbb9c0666b2e210da37b7e49fa7fbbf3eeb11db5f693dacfbb7",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Fraktur-Bold-BdnERNNW.ttf",
+      "bytes": 19584,
+      "sha256": "9163df9c7122432e6495b4229fa9071cf9ae86a758ae5efc4924ec2e1a6dbce1",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Fraktur-Bold-BsDP51OF.woff",
+      "bytes": 13296,
+      "sha256": "9be7ceb88004ab8ad124082246fbfcca4091e36385d4ec6ed1df67375dad50fb",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Fraktur-Bold-CL6g_b3V.woff2",
+      "bytes": 11348,
+      "sha256": "74444efd593c005e3f4573b44524704c0af0a937fe911cca9e94068d0d140d3f",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Fraktur-Regular-CB_wures.ttf",
+      "bytes": 19572,
+      "sha256": "1e6f9579e90e2cac37f8f60a597c436e075c114385652b7cbeb0dec0421291b3",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Fraktur-Regular-CTYiF6lA.woff2",
+      "bytes": 11316,
+      "sha256": "51814d270d06ff0255dba0799994fa4d8c84d11f09951d47595f4abb1f3602dc",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Fraktur-Regular-Dxdc4cR9.woff",
+      "bytes": 13208,
+      "sha256": "5e28753be717dac97f559f49bc10be9cf3c124ddcabda6659d11cb68febc6463",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Main-Bold-Cx986IdX.woff2",
+      "bytes": 25324,
+      "sha256": "0f60d1b897938ec918c8ce073092411baf9438f6739465693ff18b0f9d20b021",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Main-Bold-Jm3AIy58.woff",
+      "bytes": 29912,
+      "sha256": "c76c5d696297d51b9cb1639c7da4334f0e7dec81b42b11213b5e25ef671bb822",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Main-Bold-waoOVXN0.ttf",
+      "bytes": 51336,
+      "sha256": "138ac28d1663b3037e9c5f52371fa5c63d8324f4a38d22cd573e6ea3a3fd0cf8",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Main-BoldItalic-DxDJ3AOS.woff2",
+      "bytes": 16780,
+      "sha256": "99cd42a3c072d918f2f44984a807cf7aa16e13545fd0875fc07c6c65f99e715b",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Main-BoldItalic-DzxPMmG6.ttf",
+      "bytes": 32968,
+      "sha256": "70ee1f64a20f2048c21940ef46d0144fd215baa953ca69afd1e31e98544f708f",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Main-BoldItalic-SpSLRI95.woff",
+      "bytes": 19412,
+      "sha256": "a6f7ec0d846ac7ad975adb8959c37ed49b94acbc4ae436db9ce9e20287e4a64c",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Main-Italic-3WenGoN9.ttf",
+      "bytes": 33580,
+      "sha256": "0d85ae7cc30f23790a7f1a58c4a112fdca8aae769b6ba11429af1d98b1b6cb3a",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Main-Italic-BMLOBm91.woff",
+      "bytes": 19676,
+      "sha256": "f1d6ef86f3b11a528bd5185199bd2443ecb2b0dead96d88674b5a2c12be24bdf",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Main-Italic-NWA7e6Wa.woff2",
+      "bytes": 16988,
+      "sha256": "97479ca6cce906abc961ecac96faa5f9ca2e61b8e7670d475826bcdee9a7c267",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Main-Regular-B22Nviop.woff2",
+      "bytes": 26272,
+      "sha256": "c2342cd8b869e01752a9321dc17213fc40d4d04c79688c1d43f2cf316abd7866",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Main-Regular-Dr94JaBh.woff",
+      "bytes": 30772,
+      "sha256": "c6368d87e8a1a3a5d337623d83d8dc4b868f242a9ad476237d6f8d1e0f168cdc",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Main-Regular-ypZvNtVU.ttf",
+      "bytes": 53580,
+      "sha256": "d0332f52868370fd83ae7fa46470f90c8f2eab2fcf12bc4f88080b340c95a830",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Math-BoldItalic-B3XSjfu4.ttf",
+      "bytes": 31196,
+      "sha256": "f9377ab0271cda59af24bcffbd46a4d0c8a3572ffafdbb38de2ad5ea7b0d5ee5",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Math-BoldItalic-CZnvNsCZ.woff2",
+      "bytes": 16400,
+      "sha256": "dc47344dbb6cb5b655c8460d561f4df5f501b90c804ad3c6cec65fe322351ab1",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Math-BoldItalic-iY-2wyZ7.woff",
+      "bytes": 18668,
+      "sha256": "850c0af5c2238497febaf5e461d880bf458c341f42f4f330f1b1ab5698b1998e",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Math-Italic-DA0__PXp.woff",
+      "bytes": 18748,
+      "sha256": "8a8d244581371912b8f3f5a23e2437cb2a59cd9bcaebb0346e722c05737a2571",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Math-Italic-flOr_0UB.ttf",
+      "bytes": 31308,
+      "sha256": "08ce98e51b04d58945a301e639e02b6998af29fdfd61a7b8afdd07bbfc479d4a",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Math-Italic-t53AETM-.woff2",
+      "bytes": 16440,
+      "sha256": "7af58c5ec8f132a2ddde9027c6d7814decce4d3b822a11192a42a20e2e973264",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_SansSerif-Bold-CFMepnvq.ttf",
+      "bytes": 24504,
+      "sha256": "1ece03f79f95277d57dc7f6b435a74e1379b0d46104a8530286b60ff49369ea0",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_SansSerif-Bold-D1sUS0GD.woff2",
+      "bytes": 12216,
+      "sha256": "e99ae51144bf1232efcc1bfe5add36262c6866b0faab24fa75740e1b98577a62",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_SansSerif-Bold-DbIhKOiC.woff",
+      "bytes": 14408,
+      "sha256": "ece03cfd83e22c212cdef66feb8442d25a083beb988db3f1883f3f9738d750ba",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_SansSerif-Italic-C3H0VqGB.woff2",
+      "bytes": 12028,
+      "sha256": "00b26ac825e2095056396e0553b8ac26d3f8ad158c3826e28b4c45b385c4714a",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_SansSerif-Italic-DN2j7dab.woff",
+      "bytes": 14112,
+      "sha256": "91ee67500cc0129aa0ace3ac5c61ff1692102f0f31d02b69347fba35dcb75bf2",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_SansSerif-Italic-YYjJ1zSn.ttf",
+      "bytes": 22364,
+      "sha256": "3931dd81faed86ba021bb2bbdc36f5bed9a38d6b4f4077aca59b265aa1b02083",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_SansSerif-Regular-BNo7hRIc.ttf",
+      "bytes": 19436,
+      "sha256": "f36ea897e19f4a2e571d1e900e4e3710e438deb05a842486045ba0a3e616a4ad",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_SansSerif-Regular-CS6fqUqJ.woff",
+      "bytes": 12316,
+      "sha256": "11e4dc8a6471ff6d6ee561d53d10fde8f7489e798257ff449c5d37c197435605",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_SansSerif-Regular-DDBCnlJ7.woff2",
+      "bytes": 10344,
+      "sha256": "68e8c73ef42afd3ccec58bf0fba302cce448938e7fc020a5e31f8a952eee1342",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Script-Regular-C5JkGWo-.ttf",
+      "bytes": 16648,
+      "sha256": "1c67f068fea8bb09bf099c088b1cf64bd27516a6e07f4684344873564bb66a67",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Script-Regular-D3wIWfF6.woff2",
+      "bytes": 9644,
+      "sha256": "036d4e95149b69ff9bcc0cd55771efeb25ffa3947293e69acd78d5ac328c684b",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Script-Regular-D5yQViql.woff",
+      "bytes": 10588,
+      "sha256": "d96cdf2b3bdd4d64a8fd5f74a4c467f123a8a73931cd435889f08ffaf9bf947a",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Size1-Regular-C195tn64.woff",
+      "bytes": 6496,
+      "sha256": "c943cc986384f59e86bea5fd7dc50a9c4dfe567a7c05eb40d6790720dead97c9",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Size1-Regular-Dbsnue_I.ttf",
+      "bytes": 12228,
+      "sha256": "95b6d2f1a50173bfedb8c63e1d1c99b10427d0a4df4201cb44513b226951a22b",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Size1-Regular-mCD8mA8B.woff2",
+      "bytes": 5468,
+      "sha256": "6b47c40166b6dbe21a5dfca7718413f2147fd2399be1ba605d8ad39cedf25dfe",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Size2-Regular-B7gKUWhC.ttf",
+      "bytes": 11508,
+      "sha256": "a6b2099fb555c60e3a0db3a08842ebf1d732c6eb4e4bf44913613bed4fc4e39b",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Size2-Regular-Dy4dx90m.woff2",
+      "bytes": 5208,
+      "sha256": "d04c54219f9eaec6d4d4fd42dfb28785975a4794d6b2fc71e566b9cd6db842dd",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Size2-Regular-oD1tc_U0.woff",
+      "bytes": 6188,
+      "sha256": "2014c523c3210bcc166648c4d4cc57f05b747df07a24277bf71c51e67dc79e3d",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Size3-Regular-CTq5MqoE.woff",
+      "bytes": 4420,
+      "sha256": "6ab6b62e9b62dae2c00dd90f791bd10950be0ecc3490d7d6045f51c2e8fe0949",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Size3-Regular-DgpXs0kz.ttf",
+      "bytes": 7588,
+      "sha256": "500e04d54f0d51666332c9d2089aa803be22aa878eca539e59fa53c6e522b082",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Size3-Regular-gV2CO0n9.woff2",
+      "bytes": 3624,
+      "sha256": "73d591271b1604960cb10bb90fee021670af7297017e0e98480b332d11f51995",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Size4-Regular-BF-4gkZK.woff",
+      "bytes": 5980,
+      "sha256": "99f9c6750b489c9462bf04900bd3f939df9b829339daaaaa99ef5495cdddea58",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Size4-Regular-Dl5lxZxV.woff2",
+      "bytes": 4928,
+      "sha256": "a4af7d414440a1c1790825cfb700cf9cf43b0f2c4b04f0ebc523011ad9853ec0",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Size4-Regular-DWFBv043.ttf",
+      "bytes": 10364,
+      "sha256": "c647367d1dd4e162468717d020e1fc0f1dc5c26ebfdffbe55261713bf88c5877",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Typewriter-Regular-C0xS9mPB.woff",
+      "bytes": 16028,
+      "sha256": "e14fed02b1aba7ce9f5afd5844b5d0321b22351febc720e0de8b8723527609f7",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Typewriter-Regular-CO6r4hn1.woff2",
+      "bytes": 13568,
+      "sha256": "71d517d67827787cfabdf186914cc3358eda539e37931941f2b2fd4a21f68c0b",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/KaTeX_Typewriter-Regular-D3Ib7_Hf.ttf",
+      "bytes": 27556,
+      "sha256": "f01f3e87d9c6a61c0c081ceb577abd864eb00a612f7ac1620dd6915fad2ef5aa",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/pdf.worker.min-Dswkl-cV.mjs",
+      "bytes": 1265413,
+      "sha256": "8ab0e5e30031b4a06ecfddd5ae9562f0227f830ee7ec9ed1a968b134243d2386",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.0-BHUkWNFR.woff2",
+      "bytes": 34568,
+      "sha256": "8713e83342c3f5ed316bf22bf50a3d991a5b5dd16c0c45c54a6ad81f62be7df3",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.1-C-__qv6_.woff2",
+      "bytes": 32044,
+      "sha256": "b1c51b35964614cf67d44166752af0c6cf3a2a4a50daf304af2a7327611242ae",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.10-DzSWztS8.woff2",
+      "bytes": 33032,
+      "sha256": "544f73152519f43c01aeda9489554a82e907019010795aab2fabc990a4e91f5a",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.11-CqVmlKJn.woff2",
+      "bytes": 37400,
+      "sha256": "52f3cb7bf5d9feeadbe77902217113ea49b89a9bc0f135748e5ad599f322549f",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.12-BHuZSgT0.woff2",
+      "bytes": 37940,
+      "sha256": "ba87086a06c38a8eba037034c54756415b5eee8bd386866adf79ccae5e63213d",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.13-C42mj_j2.woff2",
+      "bytes": 35708,
+      "sha256": "f9473c59d65080b75327d6b5f8ea53a3e2c417542d609fd1f12b0e084079e0b2",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.14-Bl512uUX.woff2",
+      "bytes": 36512,
+      "sha256": "dbf5fc513294d1942090faa226a53e882c8a72bebc1c701399b47cf7566c11ec",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.15-D04iXIE3.woff2",
+      "bytes": 35668,
+      "sha256": "d043fdd0fb1d707a57ddec602d3c9c5dd230fe1e8921ae1a6a3d0f6f5c504d6a",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.16-BQUnS2GX.woff2",
+      "bytes": 37916,
+      "sha256": "f9da3e1e2f6ab97babdaaaf67f74308a3c4cb75a7c0e70efab295aaa62ecde67",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.17-BfZSA-Xc.woff2",
+      "bytes": 34940,
+      "sha256": "62a20965ab703ba906359c01e56ac49cb28651e5e23efc4777412ef775e949dd",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.18-CwAxMC3C.woff2",
+      "bytes": 41600,
+      "sha256": "253726dfde6320f522bd7e7895df56e02312b677abb609c17ecbbb7952ce68cf",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.19-CJu4Zcdo.woff2",
+      "bytes": 42328,
+      "sha256": "0c005e3239d3f44ede30e7464171c93d8f4063b1279bb4805508c256ebe83929",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.2-dCZkyKLw.woff2",
+      "bytes": 43920,
+      "sha256": "ddc9557de55b6534fb6802da96e03ca334449474eae71ec1a1eefa9b3fa40fd3",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.20-Ig1-z3n5.woff2",
+      "bytes": 36128,
+      "sha256": "06a4d6ce1c3e1c277239f490df8f17002cd6524b33a2d1e105b0ed16b2e061a1",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.21-yKPEdLXC.woff2",
+      "bytes": 37268,
+      "sha256": "30d4f324dc4e480890682086d9873e4e6ea53617d5cc1526509ac4322b0abcc7",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.22-CSqxKoOs.woff2",
+      "bytes": 38680,
+      "sha256": "5712a4ee03e83532b8c3efeeefcbf2dd105beea873f735a6373dab370c9d38e2",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.23-DK80wi0t.woff2",
+      "bytes": 40284,
+      "sha256": "bf5e603a72bcbd65ef80522c722caca2df7399dbc6dbd14c3b428f2c4571abdb",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.24-CmkE8Q8D.woff2",
+      "bytes": 32300,
+      "sha256": "d0cecc926613d63ef9e82b990f5a7dc721f87360bb5047fb53623b9a24e4be01",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.25-CsoWBIZB.woff2",
+      "bytes": 42032,
+      "sha256": "4b520857cb0e6272a3582a504f7706e530f0f9718a82fec1c7b9cd13fd57f261",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.26-Sozl8dw8.woff2",
+      "bytes": 40324,
+      "sha256": "608a2c01bc4ebe327b68fadf6b78dd842a912582950d16d56c2696594bd4242d",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.27-CT6nuW9L.woff2",
+      "bytes": 35424,
+      "sha256": "8dcc8a46af7069935ab1209094bb8e1c890f854bfce377711bdcc99516e228ef",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.28-CpO0Y96p.woff2",
+      "bytes": 38468,
+      "sha256": "484aaea385bf22d20a06a50c74202275a7a245446451c80ea1da7a96111f494e",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.29-D6hjrUWm.woff2",
+      "bytes": 39288,
+      "sha256": "5481a19ad6067630f96a54432fa76a77943c1234bbd37537fba9aeea54710c9f",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.3-Dqw33sf4.woff2",
+      "bytes": 40648,
+      "sha256": "3af919db7b7432ae34a0ea725f5dbbe4b80f6b351a349437339a07760ae02a62",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.30-CWDM1c0J.woff2",
+      "bytes": 38448,
+      "sha256": "c1ed2a2f2927a3ccef124b6763147e12feb497157edc26752cba38646085d888",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.31-CdmyZ5mm.woff2",
+      "bytes": 41892,
+      "sha256": "95bd711a06b3a13b23b44d1b9aa49dc36e759a5ff1989a239fd6af3d750f8fef",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.32-CGnFWD2i.woff2",
+      "bytes": 40216,
+      "sha256": "a2fb59661363e8f3ce21e344f6cd0c85fe7901b9e910d10a6f805a13c0c2d261",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.33--0OT__YQ.woff2",
+      "bytes": 34916,
+      "sha256": "ec28ff655691820931a57f7b6960922a0f3b7f655fe062c2fd11de86d6893269",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.34-CaCS33Md.woff2",
+      "bytes": 34720,
+      "sha256": "bdaffbd5c9fed912fb2d92866f2476953c6075a1c396817011b158fa146ef29f",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.35-DWFYRGLp.woff2",
+      "bytes": 35352,
+      "sha256": "2f3c1deae8147772bf706b561701ee9a3ba7459436e9fad45c8102066e90f802",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.36-Dn5IBRQB.woff2",
+      "bytes": 34688,
+      "sha256": "d4e7580fb6bd8db8ac2daf2df3a41082b608476b9e4d8867756b28fb941bc6f8",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.37-BD6FyOtY.woff2",
+      "bytes": 27916,
+      "sha256": "e5e19247f5eb141d5ee84994518a3f2fe7f2e4d2978e7451988b8fae73ac52a5",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.38-D4hu443z.woff2",
+      "bytes": 34808,
+      "sha256": "17226de7caa3a041d9deb369db637a8480afa5ee9eeb8e5f8169a28ff54f57bd",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.39-B_7wfth9.woff2",
+      "bytes": 34256,
+      "sha256": "647e3532e8e5b2f5271c85eca2d909f32ae4791a17911cf66a635e8f6f4726c0",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.4-Bvh2YGoc.woff2",
+      "bytes": 35156,
+      "sha256": "993fcd2747f4d21f17b4a60bf5528d1c31825ca6a29ed942280bfba47825bedc",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.40-BDaOfdUe.woff2",
+      "bytes": 29840,
+      "sha256": "12fb5a30e92ed1397b25125c9b75449f24b3b164ed28455968e8eefefd0cae0a",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.41-BUACvzZC.woff2",
+      "bytes": 33188,
+      "sha256": "41d390d3f3201a3714fb37f968f132ee78892d382655b64eb94688046fa97e35",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.42-Dp-5mnyL.woff2",
+      "bytes": 34608,
+      "sha256": "3e347fc722ea29c4c3347b204a139c4e76fe68884bde24159b25b8e0988bd8b5",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.43-DHdpry7N.woff2",
+      "bytes": 30384,
+      "sha256": "97a8be68deee3f724890b64cea61a4f59b2886a1d9f39604e24adec371c457a3",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.44-qHopVhdd.woff2",
+      "bytes": 32136,
+      "sha256": "8bd3bdcc7481b9a61bb570ab14ad1801b5f8a13df3f61d9bf2625bdad28e2a3b",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.45-BniyRFfm.woff2",
+      "bytes": 34664,
+      "sha256": "dff46d20074b8f3d9eeb05f7bea4ba0746d7d9887f8ec2dcb2280cadd2889ff7",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.46-BMRq7xC-.woff2",
+      "bytes": 36540,
+      "sha256": "c443e627e1bc68e004d028eeeef57fad78e6b996ff03adfccc4ab05d551b82e4",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.47-B-cWO2pw.woff2",
+      "bytes": 35720,
+      "sha256": "f242e40d23d0aac4583574da52d460b2a804f31d5f7aa435e5dc58ceaab35ac2",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.48-Ct-fWrPO.woff2",
+      "bytes": 37776,
+      "sha256": "e3dde5ed049d0a2a07050aca649ce4a1a1d7659b30b7871fa1d1bef1fec4da16",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.49-BblQVys9.woff2",
+      "bytes": 36052,
+      "sha256": "5bbf61d013a4a9362841671cc56096a356377773d8b92dcb7ce71c89e3ce23da",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.5-K_MNGNCe.woff2",
+      "bytes": 33624,
+      "sha256": "a4ad435d7abd68580606a20397920be734d9d49f1c420829a6493084e855912f",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.50-C8IyFH7L.woff2",
+      "bytes": 33228,
+      "sha256": "f3bb8007d522f3d67cf6930ed417b0b911189eaaff08a5ab41eed790d18b6bb0",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.51-Bxd0gTAs.woff2",
+      "bytes": 36024,
+      "sha256": "530c8e2d2a5e01cc5bfacc40a947f2b3162ee084a718f3f938e5f084b3458462",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.52-CNgqKOOJ.woff2",
+      "bytes": 34356,
+      "sha256": "93f30e304a97b867e21f8e8a6dbc86df6047e7d1f2d34818261c381e859e1ded",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.53-BSRnyb-u.woff2",
+      "bytes": 34572,
+      "sha256": "d0fe78c3e77b3f2b9ad3ceae3cfcd539b5f39a948af850b7912942cfbf7feefc",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.54-Dt2-cQkx.woff2",
+      "bytes": 33344,
+      "sha256": "37ed0b796e61205cabe4e20590d8800106a9a646d8a6f9e1da38581e637c3b80",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.55-jFgflYjX.woff2",
+      "bytes": 34184,
+      "sha256": "4b170f37c7be9dfa2ca332ce97e35dc02da7cb43531d7e2907d733f291b09222",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.56-BwZdvJZQ.woff2",
+      "bytes": 35184,
+      "sha256": "0f3624847670e49b273c0d638d0c1385a7178c8e38c70f9cd4afc1971880d279",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.57-BwFDg-Fs.woff2",
+      "bytes": 35960,
+      "sha256": "7c6aa4751ceb44a9a4af9c0ed80a7e95bc89d334a89231996ed84634093e128b",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.58-DlucQts_.woff2",
+      "bytes": 41564,
+      "sha256": "cff4a57ea5e9c11218c9a0ca1380a5d6fb8fa7e9d13499038a7b4df12d0e4331",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.59-CMkWjhdo.woff2",
+      "bytes": 38972,
+      "sha256": "4ae337e8895ac35b02a749e19d2b49ccb46ecdfabd09c51433c5eed206221579",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.6-Bxhohlcm.woff2",
+      "bytes": 33968,
+      "sha256": "48b5ad9306b00b620b6d4acb3b8ba697cac7b271ee20da2f6351ba7c1406afa3",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.60-CeHezjjf.woff2",
+      "bytes": 37776,
+      "sha256": "4f6724848817f8a893c21686fd3c666492176cc453a82f2a1c7fad3170bbd13c",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.61-PUuTnod4.woff2",
+      "bytes": 35640,
+      "sha256": "0f36628cfb62fb7c6e4c26c0cac303d07578640c0328cd8cce9dbeaa2290af23",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.62-DGSAWCfb.woff2",
+      "bytes": 34876,
+      "sha256": "1a2f8d760e6bfeb7f8611db8df550260145a7d48e8a4336016b21d699502c90f",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.63-B35xsm4O.woff2",
+      "bytes": 28816,
+      "sha256": "cced20f4434401b2088f1b6e414eaa193779e1575afb51ea43301066e9fec95a",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.64-CTbrgYF9.woff2",
+      "bytes": 8264,
+      "sha256": "4d73796ddeaf1d1584f701f3d3761d091160cd78fd2ef05255f605c747e63ad7",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.65-B66rjuyf.woff2",
+      "bytes": 11108,
+      "sha256": "3bea94ae7ab0adfe697bcbf7a4366da48ae4518ff9ec9bc798ba2e0a271376fa",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.66-C3HqaDeY.woff2",
+      "bytes": 8252,
+      "sha256": "73d60e9ad890a3b2674fe1fe7daf869708d7af6f4e93e364b19bb0a8bffde8d5",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.67-BmuXdlDy.woff2",
+      "bytes": 21840,
+      "sha256": "24e38abacceaba8979f58c6b06bf0b56e915c32921b08be439befa016268abf5",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.68-DS9B48d0.woff2",
+      "bytes": 16340,
+      "sha256": "a0f33cbfd1a49928487778b69574191ea9f636581860aa8d299156c470a6d0f5",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.69-YT16ymcp.woff2",
+      "bytes": 34784,
+      "sha256": "c9aa76582f8ffb946f59639a265ca988a6a794e6d6e2582e9aedad18e6bc4adb",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.7-E2HaA55t.woff2",
+      "bytes": 31912,
+      "sha256": "0edd124bf5f5fee66118c25ce0f7257c701169603817b0ea385707043151bd9c",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.70-BUXiAGMT.woff2",
+      "bytes": 27548,
+      "sha256": "8bccc361d2d7ad5c3891a7914505ffd0ed89cf0bd9a5f1f6c320f85af54cb041",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.71-DuPZj8us.woff2",
+      "bytes": 28324,
+      "sha256": "78ca0ca3a02fb86ff29c68e80c50555c29aa522f37f286e7ab5b3cd8fb0b2a51",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.72-pYYGrEQR.woff2",
+      "bytes": 19508,
+      "sha256": "a2df48a0029fb84736c5570930e1e0f33af665bd1ec18b5930c7ee1077317e22",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.73-DMrK970F.woff2",
+      "bytes": 18336,
+      "sha256": "fe4874885e6450739e9067af520b94cc5f60e56c36538b6db3df3aa7a37baf42",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.74-D4tQnymK.woff2",
+      "bytes": 22392,
+      "sha256": "b935b4839e30b68835341cb7c195ec2653d5df502281a14574af1593f03e63ff",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.75-CxKdrRNf.woff2",
+      "bytes": 19996,
+      "sha256": "07f0ddae65c844dfe5d294087749e19b05e95cfd904b20df3501b040f1a5f61e",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.76-DhPm2b_q.woff2",
+      "bytes": 24924,
+      "sha256": "20ccaae02a27753fe5f5b2cc0e6bb7ee3f4c5b61b6bf91cccc515334e97213ac",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.77-DwaxqOC8.woff2",
+      "bytes": 26044,
+      "sha256": "9ab92ab7b4e3770a6f3a17ed34b0a26df5a0faf2c4f8e2d2685b36cf248ff751",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.78-DhqRbBzT.woff2",
+      "bytes": 26548,
+      "sha256": "67f065415552e8c66da5e60fc67a891ec1ba74bfb9370078261bbf9a718a182f",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.79-XpoyPP38.woff2",
+      "bytes": 26224,
+      "sha256": "0bbdf492d859723843e118154b24573abdd62e781cb3827378e5dc65eeb8e0e9",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.8-CRbJhhyA.woff2",
+      "bytes": 36696,
+      "sha256": "0fcc3858ccf1bfae9d1a13852583f7273e8a9bcb32b6f42fa47fe19d3041905c",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.80-DsV9Qp_h.woff2",
+      "bytes": 28796,
+      "sha256": "3802ad32c6c1bfa889c1019bd22d265c19392a6d52bbbd38e3a6fb99fdb0cf8f",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.81-BZzF9Hb3.woff2",
+      "bytes": 26300,
+      "sha256": "f0ae631ec332bbaf686a493d126ff56a8ac0c6284bdbb7542cef8fedd946fa66",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.82-BgAHe30u.woff2",
+      "bytes": 26500,
+      "sha256": "493e29967aa59d0f5326ae95fe163ca6e0ce9d95610838cc07a1f543a4a2e289",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.83-DF-zBLLe.woff2",
+      "bytes": 26964,
+      "sha256": "f8f1fe652aaf3c759d78f37e48afe1c58c1d335e9261c5be2a2d90ff5bbfb9cc",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.84-Brb8EsYQ.woff2",
+      "bytes": 24492,
+      "sha256": "d28ace2d199ca5c6304a6191f4233e28ddb225d341d6e0b41db040e9447c2cc9",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.85-Byo_x2hf.woff2",
+      "bytes": 25104,
+      "sha256": "757b9fc85ad85a1024fcacc04a9b688ace2db7af393e9ddc3b5dd2ba605b5a9b",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.86-XG7lTN_6.woff2",
+      "bytes": 25716,
+      "sha256": "3e680901e55f16848b58d16d25870596495a6a073d9e3127fe481583ac4439b6",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.87-Lzui2vbK.woff2",
+      "bytes": 24664,
+      "sha256": "04ca8277cfe3d27235573956255b0211575504cb695cdeab644c583df774e257",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.88-CqX6JSgh.woff2",
+      "bytes": 25640,
+      "sha256": "192abc4c6ad933f53d809d8a46ee6237ae71e766bf66199fdce4678841fe12d7",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.89-DOzqWPpX.woff2",
+      "bytes": 21864,
+      "sha256": "44634e793e0d50fcdf803a2ad513d8bf0482d9adccbbd4ef534325cae9b2ee01",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.9-Btb3bmS6.woff2",
+      "bytes": 34012,
+      "sha256": "523e91cb7665f4a87767e3b0b5099753decba1bd33e3ce7733b92f71001da9a5",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.90-BF7RiZjm.woff2",
+      "bytes": 20852,
+      "sha256": "ed2d605d80cbe4f2c1df801852f7a1d8ad5e1a4972b26d8fee93427317f32f09",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/PretendardVariable.subset.91-Csm0YNoH.woff2",
+      "bytes": 37996,
+      "sha256": "fc9fcd1bea9c8f43f97136a1e89bfa6e34db85f820f86538288647b4c24c5b06",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/source-serif-4-cyrillic-ext-wght-normal-cHuGMAiY.woff2",
+      "bytes": 18064,
+      "sha256": "f423aab1098e5b0dae59d200aadbb9433e687f505425c7e73d1f65ae2b59016e",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/source-serif-4-cyrillic-wght-normal-DwHjdM4S.woff2",
+      "bytes": 36468,
+      "sha256": "25e85aef8acff54f91ea7e85c9c2c260caf97101fdef194ed6b8b58bc34ce3eb",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/source-serif-4-greek-wght-normal-ece1310W.woff2",
+      "bytes": 20228,
+      "sha256": "d84b0c5fda036126b6bb9205b144500fe08fec6d54d8bdd60645bc3e6577490b",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/source-serif-4-latin-ext-wght-normal-CxNHBx-q.woff2",
+      "bytes": 42040,
+      "sha256": "41529a5b38008d9ea01e28ec18693a714a3216669ee477d83a5b9db999369625",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/source-serif-4-latin-wght-normal-D9elroTD.woff2",
+      "bytes": 50824,
+      "sha256": "c1df4596be5029233ed2afbb8b2f6ea20784b3fb1aa5d6b5c6519ccd85eb3dfb",
+      "matchesBuiltSource": true
+    },
+    {
+      "path": "packages/ui/dist/assets/source-serif-4-vietnamese-wght-normal-D-yuW59g.woff2",
+      "bytes": 13448,
+      "sha256": "63b54e70d3bfb018162640bfb0015be46a2ec96f3c00d4170c8a02d0ff9d5abd",
+      "matchesBuiltSource": true
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "Fractal Setup 0.1.0.exe",
+      "bytes": 117592913,
+      "sha256": "d03cb493b93c620ac77bf3555358f72b7d3dc1fb51fd00030ae6b2dead2561b8"
+    },
+    {
+      "path": "win-unpacked/Fractal.exe",
+      "bytes": 246032896,
+      "sha256": "0f8872b9d2368019b9056db1d588da6043b371dcd6633cd34d0c83b52a385e54"
+    },
+    {
+      "path": "win-unpacked/resources/app.asar",
+      "bytes": 13209968,
+      "sha256": "5640d8f7924b44fe29cb08dbf6d7b043888a164c767db813fbe28c705456449b"
+    }
+  ],
+  "sourceFiles": [
+    {
+      "path": "apps/desktop/assets/branch.svg",
+      "workingRawSha256": "ed1047a4eca5dcc9ad6dd16fd27a541ac392dcf2842d881e2dac0e160230543d",
+      "gitBlobContentSha256": "cde9efe1e35c33ae773ec45c3a733439a7f3ccb6dcb60298e1ba75a3409e3ac9",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "cde9efe1e35c33ae773ec45c3a733439a7f3ccb6dcb60298e1ba75a3409e3ac9",
+      "gitLfSha256": "cde9efe1e35c33ae773ec45c3a733439a7f3ccb6dcb60298e1ba75a3409e3ac9",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "apps/desktop/assets/fractal.ico",
+      "workingRawSha256": "fbe027c730fe0bee700d1d48832e3c3133a6a261e5d78bdcc658d55192ab8d8d",
+      "gitBlobContentSha256": "fbe027c730fe0bee700d1d48832e3c3133a6a261e5d78bdcc658d55192ab8d8d",
+      "text": false,
+      "rawMatchesGit": true
+    },
+    {
+      "path": "apps/desktop/assets/icon-128.png",
+      "workingRawSha256": "0ee1d16ab0240f23d785c6156f2b30761e611a6a771bc3334f84a2ef63cba0de",
+      "gitBlobContentSha256": "0ee1d16ab0240f23d785c6156f2b30761e611a6a771bc3334f84a2ef63cba0de",
+      "text": false,
+      "rawMatchesGit": true
+    },
+    {
+      "path": "apps/desktop/assets/icon-16.png",
+      "workingRawSha256": "a2d0e74613b61a87fe49c0de0190146cbf64488573256eee2a1982e5ac7d4d6b",
+      "gitBlobContentSha256": "a2d0e74613b61a87fe49c0de0190146cbf64488573256eee2a1982e5ac7d4d6b",
+      "text": false,
+      "rawMatchesGit": true
+    },
+    {
+      "path": "apps/desktop/assets/icon-24.png",
+      "workingRawSha256": "5c4796746601806c2192626232d687c43349f220e24102579b51f5b0f9daff61",
+      "gitBlobContentSha256": "5c4796746601806c2192626232d687c43349f220e24102579b51f5b0f9daff61",
+      "text": false,
+      "rawMatchesGit": true
+    },
+    {
+      "path": "apps/desktop/assets/icon-256.png",
+      "workingRawSha256": "dab351189457896ee2182aab2b2415cc20c9c21158922919a4c55f408355c57a",
+      "gitBlobContentSha256": "dab351189457896ee2182aab2b2415cc20c9c21158922919a4c55f408355c57a",
+      "text": false,
+      "rawMatchesGit": true
+    },
+    {
+      "path": "apps/desktop/assets/icon-32.png",
+      "workingRawSha256": "4287efc4d6d438f61ea48336ccfc9ff9c72d840ea76b94e0de93e32d306ff194",
+      "gitBlobContentSha256": "4287efc4d6d438f61ea48336ccfc9ff9c72d840ea76b94e0de93e32d306ff194",
+      "text": false,
+      "rawMatchesGit": true
+    },
+    {
+      "path": "apps/desktop/assets/icon-48.png",
+      "workingRawSha256": "ecdd62341c9908d1e14b946ddafd28959d71052987ca5c071873b5f75aecd51c",
+      "gitBlobContentSha256": "ecdd62341c9908d1e14b946ddafd28959d71052987ca5c071873b5f75aecd51c",
+      "text": false,
+      "rawMatchesGit": true
+    },
+    {
+      "path": "apps/desktop/assets/icon-64.png",
+      "workingRawSha256": "5d184e62185853722358fabe5645954e9fc77240ddce60ce1cffa5486228866e",
+      "gitBlobContentSha256": "5d184e62185853722358fabe5645954e9fc77240ddce60ce1cffa5486228866e",
+      "text": false,
+      "rawMatchesGit": true
+    },
+    {
+      "path": "apps/desktop/assets/icon.svg",
+      "workingRawSha256": "306d9589f550606fd4c4ab508d009f2a9909e2452724e0788008c707e3f65d0b",
+      "gitBlobContentSha256": "387be9e7eed703c0f4b098ae2123c8442aa4cb35f16e85f481938a30265850d9",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "387be9e7eed703c0f4b098ae2123c8442aa4cb35f16e85f481938a30265850d9",
+      "gitLfSha256": "387be9e7eed703c0f4b098ae2123c8442aa4cb35f16e85f481938a30265850d9",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "apps/desktop/main.cjs",
+      "workingRawSha256": "7c5fcaa82adc61bb8b2d6ec7c9592e956e78ca62790f01b4ccc857e71308074d",
+      "gitBlobContentSha256": "cca3f31583b79552e02f32470547b9392d95c449da80b98f58813179fce9361f",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "cca3f31583b79552e02f32470547b9392d95c449da80b98f58813179fce9361f",
+      "gitLfSha256": "cca3f31583b79552e02f32470547b9392d95c449da80b98f58813179fce9361f",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "apps/desktop/preload.cjs",
+      "workingRawSha256": "989edc6c4151be817a41287772e77d2a7f6b0ff3c7123d147cdbc6a3c57a0dc1",
+      "gitBlobContentSha256": "22d1cfc6e5d0fddc67e46f4153a0a4bd889187d89b7a34c15dc0f9e02ad70638",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "22d1cfc6e5d0fddc67e46f4153a0a4bd889187d89b7a34c15dc0f9e02ad70638",
+      "gitLfSha256": "22d1cfc6e5d0fddc67e46f4153a0a4bd889187d89b7a34c15dc0f9e02ad70638",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "package-lock.json",
+      "workingRawSha256": "795bf22ed30123e1cfe286584e90287836a9febefc1cb9d38b37569b9c14fc5b",
+      "gitBlobContentSha256": "2173f074024c45bf873870ff8e1640fbe640d4ca5f345cfbf1dfe9cb843ea497",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "2173f074024c45bf873870ff8e1640fbe640d4ca5f345cfbf1dfe9cb843ea497",
+      "gitLfSha256": "2173f074024c45bf873870ff8e1640fbe640d4ca5f345cfbf1dfe9cb843ea497",
+      "lfMatchesGit": true,
+      "workingCanonicalJsonSha256": "20a7e9de1f6f4183127fe45c2d74595716a9e38fd892dc68f1744683b1c00dce",
+      "gitCanonicalJsonSha256": "20a7e9de1f6f4183127fe45c2d74595716a9e38fd892dc68f1744683b1c00dce",
+      "canonicalJsonMatchesGit": true
+    },
+    {
+      "path": "package.json",
+      "workingRawSha256": "071896e9ea4b94a444070fc279e882f07cbdb870ff5c16add231c17b34cecd40",
+      "gitBlobContentSha256": "0e82012b5d561e3cbcc8eae2aa6f1fb3d2a6df1442794ca8e3ef008f68a4cb07",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "0e82012b5d561e3cbcc8eae2aa6f1fb3d2a6df1442794ca8e3ef008f68a4cb07",
+      "gitLfSha256": "0e82012b5d561e3cbcc8eae2aa6f1fb3d2a6df1442794ca8e3ef008f68a4cb07",
+      "lfMatchesGit": true,
+      "workingCanonicalJsonSha256": "12209a520cb02f439a6c035ea23886a8a80785408d292168ee31ce05a47b56c0",
+      "gitCanonicalJsonSha256": "12209a520cb02f439a6c035ea23886a8a80785408d292168ee31ce05a47b56c0",
+      "canonicalJsonMatchesGit": true
+    },
+    {
+      "path": "packages/hub/package.json",
+      "workingRawSha256": "875b1fb3c6b09a9b061a9f886d2c4e78c378f3eafcc808c4d0c522de67635429",
+      "gitBlobContentSha256": "b69b42e5f15db5046ad753cce89708af9837b934df27405ed14a3698c988561d",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "b69b42e5f15db5046ad753cce89708af9837b934df27405ed14a3698c988561d",
+      "gitLfSha256": "b69b42e5f15db5046ad753cce89708af9837b934df27405ed14a3698c988561d",
+      "lfMatchesGit": true,
+      "workingCanonicalJsonSha256": "42f2b71ac81c523f64b56008d3ebf2b9a8a5364d36817b756455606b6e6f0f76",
+      "gitCanonicalJsonSha256": "42f2b71ac81c523f64b56008d3ebf2b9a8a5364d36817b756455606b6e6f0f76",
+      "canonicalJsonMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/ai/accounts.ts",
+      "workingRawSha256": "f5305bed24f821213f09b4bd095a7df170b34fdb56924d7201a161a065572450",
+      "gitBlobContentSha256": "577c8974bd5658773b901518926f7a4964438346d85d4ad7a4ad5c4c5f1ca8b4",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "577c8974bd5658773b901518926f7a4964438346d85d4ad7a4ad5c4c5f1ca8b4",
+      "gitLfSha256": "577c8974bd5658773b901518926f7a4964438346d85d4ad7a4ad5c4c5f1ca8b4",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/ai/claude-usage.ts",
+      "workingRawSha256": "2413ae2e6d725f134d8c9c94db4f51468c4b5785659bcc807eb7f3c5d2723595",
+      "gitBlobContentSha256": "1e251c8b91184a9d557bbc1e9bedcff4c01e3402d9c25a1f49f616be4a2de8c4",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "1e251c8b91184a9d557bbc1e9bedcff4c01e3402d9c25a1f49f616be4a2de8c4",
+      "gitLfSha256": "1e251c8b91184a9d557bbc1e9bedcff4c01e3402d9c25a1f49f616be4a2de8c4",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/ai/claude.ts",
+      "workingRawSha256": "ef7121bec2861f5bb622cb035f2b5a9b0d4e677dc0f3f478f114b904c760d38f",
+      "gitBlobContentSha256": "25995d38e8b703955a1a8abdcb424a2854f6443bea00c733d242396ffa0c129a",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "25995d38e8b703955a1a8abdcb424a2854f6443bea00c733d242396ffa0c129a",
+      "gitLfSha256": "25995d38e8b703955a1a8abdcb424a2854f6443bea00c733d242396ffa0c129a",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/ai/codex.ts",
+      "workingRawSha256": "0b1deb83d3b18e4a46e8a68813c1b793bcd7598f8700a6b3951f6727d74587d8",
+      "gitBlobContentSha256": "44dd065e2a80558485accbe0ad45388ca60c3fe7e6d872eba9d32bb2227549a4",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "44dd065e2a80558485accbe0ad45388ca60c3fe7e6d872eba9d32bb2227549a4",
+      "gitLfSha256": "44dd065e2a80558485accbe0ad45388ca60c3fe7e6d872eba9d32bb2227549a4",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/ai/history.ts",
+      "workingRawSha256": "bd89b77ffd51625786edad0421327d9de6e31cfba5d0c030f9d313353b914728",
+      "gitBlobContentSha256": "91fc8ac091fdfd04bb3039b5dedf12d24dfef5b541684ccdf3a5cd75f9e87940",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "91fc8ac091fdfd04bb3039b5dedf12d24dfef5b541684ccdf3a5cd75f9e87940",
+      "gitLfSha256": "91fc8ac091fdfd04bb3039b5dedf12d24dfef5b541684ccdf3a5cd75f9e87940",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/ai/install.ts",
+      "workingRawSha256": "7a740cb8a48c386d3d4c6b6467f70f2f901a54355a62df2af4fccb8f79720be4",
+      "gitBlobContentSha256": "ec797ae9202f7b1f9353b296ffb544d6bd0c9e8f132b1036be1b7cc0a171834c",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "ec797ae9202f7b1f9353b296ffb544d6bd0c9e8f132b1036be1b7cc0a171834c",
+      "gitLfSha256": "ec797ae9202f7b1f9353b296ffb544d6bd0c9e8f132b1036be1b7cc0a171834c",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/ai/legacy-adapter.ts",
+      "workingRawSha256": "5b8907317715aa7ab99b03d4c8cacbb3348b40f1fc050f29a92692f58c594a33",
+      "gitBlobContentSha256": "d0b634f4930d8dce1092dea510738090fb5da079adf5064652837943a728576b",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "d0b634f4930d8dce1092dea510738090fb5da079adf5064652837943a728576b",
+      "gitLfSha256": "d0b634f4930d8dce1092dea510738090fb5da079adf5064652837943a728576b",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/ai/library-search.ts",
+      "workingRawSha256": "d2eba40c42bc002425f9d5d87746520d6a76d2eba7c8dc2799fd0254a45f3adc",
+      "gitBlobContentSha256": "3d5ba977079d0ac0db39f6c30a0f96696c25915919b48b244cd4fd9b5609c09b",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "3d5ba977079d0ac0db39f6c30a0f96696c25915919b48b244cd4fd9b5609c09b",
+      "gitLfSha256": "3d5ba977079d0ac0db39f6c30a0f96696c25915919b48b244cd4fd9b5609c09b",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/ai/provider.ts",
+      "workingRawSha256": "4b1cc19e39a97b8d5e44c449e702a56457b2b1b55dcf9361a51048253d302366",
+      "gitBlobContentSha256": "74df5db13ec49820128e49b9bb4636fd3d2386a2d61d06888199d5893e080328",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "74df5db13ec49820128e49b9bb4636fd3d2386a2d61d06888199d5893e080328",
+      "gitLfSha256": "74df5db13ec49820128e49b9bb4636fd3d2386a2d61d06888199d5893e080328",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/ai/registry.ts",
+      "workingRawSha256": "b0323036a05f14973578097c1d4613c826ab54c5daccd39969df02678139db32",
+      "gitBlobContentSha256": "4fca57fb138f852cfacaaf973c754c209d3c041b67e0de83a025e6909fd8923d",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "4fca57fb138f852cfacaaf973c754c209d3c041b67e0de83a025e6909fd8923d",
+      "gitLfSha256": "4fca57fb138f852cfacaaf973c754c209d3c041b67e0de83a025e6909fd8923d",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/ai/settings.ts",
+      "workingRawSha256": "03dd142734b3935de8c33c60c4ec8f1e98a18736f80f0fabf23ca4b0e94b9039",
+      "gitBlobContentSha256": "b5695297cc7fc4e5aa7118040d79ac4df139a449ac987cb96b72be681b38bc1a",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "b5695297cc7fc4e5aa7118040d79ac4df139a449ac987cb96b72be681b38bc1a",
+      "gitLfSha256": "b5695297cc7fc4e5aa7118040d79ac4df139a449ac987cb96b72be681b38bc1a",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/ai/usage.ts",
+      "workingRawSha256": "3b13051bebc575b54777966150f79aa24c92446e47be2c46045453da3da5089a",
+      "gitBlobContentSha256": "294ed18ac219f4282b2b16d69dfaa7798629c0ed4746c3c01921ea16a1ded9d6",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "294ed18ac219f4282b2b16d69dfaa7798629c0ed4746c3c01921ea16a1ded9d6",
+      "gitLfSha256": "294ed18ac219f4282b2b16d69dfaa7798629c0ed4746c3c01921ea16a1ded9d6",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/api/errors.ts",
+      "workingRawSha256": "157bec3cf1e05cf11f4d120466e5d47ae075b97a55754f76ac1db77c7eceaff2",
+      "gitBlobContentSha256": "7101712447f8590674f6a8ef2dc75af08bce9a2c783baf79ef4576f81301bba7",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "7101712447f8590674f6a8ef2dc75af08bce9a2c783baf79ef4576f81301bba7",
+      "gitLfSha256": "7101712447f8590674f6a8ef2dc75af08bce9a2c783baf79ef4576f81301bba7",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/api/guard.ts",
+      "workingRawSha256": "e3d731923f56648a6fc6a969a386ebe48bbbda9cbb9f5bab3f4fff05a8d14a42",
+      "gitBlobContentSha256": "e7358fb418b3696cd6116c02994188b7af74c7c0ff03cd686420d57de0f52d95",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "e7358fb418b3696cd6116c02994188b7af74c7c0ff03cd686420d57de0f52d95",
+      "gitLfSha256": "e7358fb418b3696cd6116c02994188b7af74c7c0ff03cd686420d57de0f52d95",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/api/index.ts",
+      "workingRawSha256": "a059dccba9cd4911509fd71bb678c5f342aed8c7fc3cad0e0ded230994ca66f1",
+      "gitBlobContentSha256": "4dd87d4e7df0b2a8f6a72ad714d1d26054317e04b312d64c19ad62950378dd2c",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "4dd87d4e7df0b2a8f6a72ad714d1d26054317e04b312d64c19ad62950378dd2c",
+      "gitLfSha256": "4dd87d4e7df0b2a8f6a72ad714d1d26054317e04b312d64c19ad62950378dd2c",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/api/localize.ts",
+      "workingRawSha256": "f2abf07c7929cd1ee0a5cda5c2b230d208f39c1ba70d1f8ba1e9c07ed321d128",
+      "gitBlobContentSha256": "0c5cdacdb77f84dcbc7139ce82326c14f20691e985bca1593bffe8ac30ecb2b4",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "0c5cdacdb77f84dcbc7139ce82326c14f20691e985bca1593bffe8ac30ecb2b4",
+      "gitLfSha256": "0c5cdacdb77f84dcbc7139ce82326c14f20691e985bca1593bffe8ac30ecb2b4",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/api/routes/ai.ts",
+      "workingRawSha256": "2384042b9634055dfe565c71590c8ab55fa9a29d7e280df1509599bbafa8c74e",
+      "gitBlobContentSha256": "4c1ae8f1413447253502ffa9db21f7a6a6bb1b3036e979bffda280cbcb53ff0d",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "4c1ae8f1413447253502ffa9db21f7a6a6bb1b3036e979bffda280cbcb53ff0d",
+      "gitLfSha256": "4c1ae8f1413447253502ffa9db21f7a6a6bb1b3036e979bffda280cbcb53ff0d",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/api/routes/annotations.ts",
+      "workingRawSha256": "ef4ddc99728c09e899b6d2201f8b899a5d41cbc58d3bbd29a41a3eaf9488c67e",
+      "gitBlobContentSha256": "af1e33a8a16bb92b7ff9b0e6672534d657a2309b6bbff42848e5c433371e1186",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "af1e33a8a16bb92b7ff9b0e6672534d657a2309b6bbff42848e5c433371e1186",
+      "gitLfSha256": "af1e33a8a16bb92b7ff9b0e6672534d657a2309b6bbff42848e5c433371e1186",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/api/routes/feed.ts",
+      "workingRawSha256": "a07b25fd1707e8dcad2b04a9b8dd794ee15bbcc4ba67cbc9fd242eb31f187b9e",
+      "gitBlobContentSha256": "fa98d9d0b127aa1d0c6d121cd0899887db5c8afa49915e9f792e5e817e965a55",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "fa98d9d0b127aa1d0c6d121cd0899887db5c8afa49915e9f792e5e817e965a55",
+      "gitLfSha256": "fa98d9d0b127aa1d0c6d121cd0899887db5c8afa49915e9f792e5e817e965a55",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/api/routes/history.ts",
+      "workingRawSha256": "ea7ac83d28aecddce3e728412e8d8ecf68e1f6437dd7471359e0a8410924a5ee",
+      "gitBlobContentSha256": "deaca8c241364b27170478fe651aa0e703b59e7f330555ab5ab6fed7c03d9546",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "deaca8c241364b27170478fe651aa0e703b59e7f330555ab5ab6fed7c03d9546",
+      "gitLfSha256": "deaca8c241364b27170478fe651aa0e703b59e7f330555ab5ab6fed7c03d9546",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/api/routes/hub.ts",
+      "workingRawSha256": "8b9e7008fbf647226fd83ccf1242bbceb926d1a34ecfac5bfb83ee91015bc93a",
+      "gitBlobContentSha256": "985bc71b01ad584c4e8568082db71e9706b48a7ce7801347e1fd5db50907bd38",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "985bc71b01ad584c4e8568082db71e9706b48a7ce7801347e1fd5db50907bd38",
+      "gitLfSha256": "985bc71b01ad584c4e8568082db71e9706b48a7ce7801347e1fd5db50907bd38",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/api/routes/library.ts",
+      "workingRawSha256": "7b1f2d5963083443788403595901dd73d6a1036a5e058dfaef63453a75507cc7",
+      "gitBlobContentSha256": "067a200c740451603fda9639d5ae6d9f60b87d3f05d84a0f2e41cbe63dbfa26f",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "067a200c740451603fda9639d5ae6d9f60b87d3f05d84a0f2e41cbe63dbfa26f",
+      "gitLfSha256": "067a200c740451603fda9639d5ae6d9f60b87d3f05d84a0f2e41cbe63dbfa26f",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/api/routes/pairing.ts",
+      "workingRawSha256": "f9a3a61787b6ceb185e0c5d53dfa4a1379ddd15d06f63f09a24e1333f617e940",
+      "gitBlobContentSha256": "2b08a2182de21692f4cdc82bbbe1b047c837fdd023e0eca360ca6c7a0abc1b50",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "2b08a2182de21692f4cdc82bbbe1b047c837fdd023e0eca360ca6c7a0abc1b50",
+      "gitLfSha256": "2b08a2182de21692f4cdc82bbbe1b047c837fdd023e0eca360ca6c7a0abc1b50",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/api/routes/pdf-text.ts",
+      "workingRawSha256": "47f0f597a38fc1aef19f1e59541b6f471691a32fac6c402cbab818b0a4653f1a",
+      "gitBlobContentSha256": "daf8b2ba99ab2949b1296140453dbb04e6cc2eb61cb16fd077ca23487a37dd20",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "daf8b2ba99ab2949b1296140453dbb04e6cc2eb61cb16fd077ca23487a37dd20",
+      "gitLfSha256": "daf8b2ba99ab2949b1296140453dbb04e6cc2eb61cb16fd077ca23487a37dd20",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/api/routes/structure.ts",
+      "workingRawSha256": "0a0cdcd0e7a77e6bc39f02cf910e8ea6a8146d54299217b0be00ea65b0417fe1",
+      "gitBlobContentSha256": "de6ff0e124a38055e7041507d05e5d79da804fa81582db4d12d401eb0721565b",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "de6ff0e124a38055e7041507d05e5d79da804fa81582db4d12d401eb0721565b",
+      "gitLfSha256": "de6ff0e124a38055e7041507d05e5d79da804fa81582db4d12d401eb0721565b",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/api/routes/sync.ts",
+      "workingRawSha256": "0d9f861bc2f22d04c5536c0c1fd4b3cc6cffa5d83eef4f1af617ecc675551752",
+      "gitBlobContentSha256": "00175e514a277e3e900d7ae08cfb65855ab96c822db653647ba2e518a46a3a9f",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "00175e514a277e3e900d7ae08cfb65855ab96c822db653647ba2e518a46a3a9f",
+      "gitLfSha256": "00175e514a277e3e900d7ae08cfb65855ab96c822db653647ba2e518a46a3a9f",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/api/routes/types.ts",
+      "workingRawSha256": "cd9c74c183688bb974d68fa9c07a5b447922ade4c77a737422c9a9caa648cfa0",
+      "gitBlobContentSha256": "dc0764921569507bf03ef5b4200e4210876d3b750bbe46ef9a1af7c13d6d02ac",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "dc0764921569507bf03ef5b4200e4210876d3b750bbe46ef9a1af7c13d6d02ac",
+      "gitLfSha256": "dc0764921569507bf03ef5b4200e4210876d3b750bbe46ef9a1af7c13d6d02ac",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/arxiv/acquire.ts",
+      "workingRawSha256": "0c17bf5da9cbc2e8852ff4fd3bcdc253f3e0175d9c39556dbbeed41cc3bfef6e",
+      "gitBlobContentSha256": "98d2a89d65421e7d112e1acdf29e717639fe0ec40052b28cd78e34d4b7f7da4e",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "98d2a89d65421e7d112e1acdf29e717639fe0ec40052b28cd78e34d4b7f7da4e",
+      "gitLfSha256": "98d2a89d65421e7d112e1acdf29e717639fe0ec40052b28cd78e34d4b7f7da4e",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/arxiv/index.ts",
+      "workingRawSha256": "373a5da62f07fee3b9a3d7081a9142960a18cc56db1c7aa10c2e0b94b2d802d2",
+      "gitBlobContentSha256": "52b3c19459e00f12f1e661a36ded1bc238bbc0e7065d3446bf94ffd5fb136e6c",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "52b3c19459e00f12f1e661a36ded1bc238bbc0e7065d3446bf94ffd5fb136e6c",
+      "gitLfSha256": "52b3c19459e00f12f1e661a36ded1bc238bbc0e7065d3446bf94ffd5fb136e6c",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/chat/index.ts",
+      "workingRawSha256": "744b55d62f57941c57bc4b2797c3933bd5e9bcc05b6e7cb2672310f9fb7a3205",
+      "gitBlobContentSha256": "5dc09aab0f183aa556530542487061715a6099714fbf970727f0545b4ba88415",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "5dc09aab0f183aa556530542487061715a6099714fbf970727f0545b4ba88415",
+      "gitLfSha256": "5dc09aab0f183aa556530542487061715a6099714fbf970727f0545b4ba88415",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/chat/paper-text.ts",
+      "workingRawSha256": "843812f4410f66076e5f7cbc7938cf72beb44e4e4d63aa3febe5f5b13c6ea225",
+      "gitBlobContentSha256": "6c9405de736987b2655bc966dfc56988c765cd1b87763633654948921eda7eaf",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "6c9405de736987b2655bc966dfc56988c765cd1b87763633654948921eda7eaf",
+      "gitLfSha256": "6c9405de736987b2655bc966dfc56988c765cd1b87763633654948921eda7eaf",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/codex/chat.ts",
+      "workingRawSha256": "8ef3d2ab3005cc07234ed5dcf13880c768f5f3eeee8602061f2b70d9ff80499f",
+      "gitBlobContentSha256": "6f13012a46b31493d90763cea7347c0f1edbc9ab828797941effe33937081dc7",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "6f13012a46b31493d90763cea7347c0f1edbc9ab828797941effe33937081dc7",
+      "gitLfSha256": "6f13012a46b31493d90763cea7347c0f1edbc9ab828797941effe33937081dc7",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/codex/index.ts",
+      "workingRawSha256": "0b3bdb4f638f39449c929eab17d38fa7b26cb3fd3937b8129008892de5d3042b",
+      "gitBlobContentSha256": "46b3663403fe191aed62ad6666991693330933aace5e29c3daf457a346fb7d63",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "46b3663403fe191aed62ad6666991693330933aace5e29c3daf457a346fb7d63",
+      "gitLfSha256": "46b3663403fe191aed62ad6666991693330933aace5e29c3daf457a346fb7d63",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/codex/isolation.ts",
+      "workingRawSha256": "661a2e62470c666aec928d1506ffa2f75fa628f3f120bced07aeb669be764849",
+      "gitBlobContentSha256": "6d8ac5c0a1788cad6906d7165ff3ec0db246de420272e5e0d0cac1f492494913",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "6d8ac5c0a1788cad6906d7165ff3ec0db246de420272e5e0d0cac1f492494913",
+      "gitLfSha256": "6d8ac5c0a1788cad6906d7165ff3ec0db246de420272e5e0d0cac1f492494913",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/codex/rpc.ts",
+      "workingRawSha256": "95cce5ba6c3c0ee59c0d6cdedf2bb2228e12863d490042c99bc3246e13c97909",
+      "gitBlobContentSha256": "496b5c2af0327f127ca9417dd927b6b9429f617d9311ee648f5c79cb6a45e514",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "496b5c2af0327f127ca9417dd927b6b9429f617d9311ee648f5c79cb6a45e514",
+      "gitLfSha256": "496b5c2af0327f127ca9417dd927b6b9429f617d9311ee648f5c79cb6a45e514",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/codex/runtime.ts",
+      "workingRawSha256": "170cb9df2a90ac1229daf8dada168ee955fca5cdbb92156c19fde808cf82ae22",
+      "gitBlobContentSha256": "9aa781c4362611049adf629ff95d3ada33aef1d9048ef617ab68a7f36540e96f",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "9aa781c4362611049adf629ff95d3ada33aef1d9048ef617ab68a7f36540e96f",
+      "gitLfSha256": "9aa781c4362611049adf629ff95d3ada33aef1d9048ef617ab68a7f36540e96f",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/export/index.ts",
+      "workingRawSha256": "94e263eed082c2602a834d133aa18125fdf5025339a509c12fddfecdc9de7f30",
+      "gitBlobContentSha256": "9c93f67d4be962cf7e879d27ae96c17ae2e76393388895c363765f38308bd838",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "9c93f67d4be962cf7e879d27ae96c17ae2e76393388895c363765f38308bd838",
+      "gitLfSha256": "9c93f67d4be962cf7e879d27ae96c17ae2e76393388895c363765f38308bd838",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/feed/article.ts",
+      "workingRawSha256": "943f1344388e42198d96d5f93c5a83e1df46fa6f1c65c9c79f07dd2a490be78c",
+      "gitBlobContentSha256": "bff1d184994cae3ed9c6db6612b34e27afd8cd3e821559b11991bc0a2f1fd36d",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "bff1d184994cae3ed9c6db6612b34e27afd8cd3e821559b11991bc0a2f1fd36d",
+      "gitLfSha256": "bff1d184994cae3ed9c6db6612b34e27afd8cd3e821559b11991bc0a2f1fd36d",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/feed/fixtures/blog.html",
+      "workingRawSha256": "d58bbc2030ba6dd57465d1a935c2389439377ded8adaa2a21ebe62b1a51624cb",
+      "gitBlobContentSha256": "75823b3937b2b648e27d75ad1f22ea4a693cf1130c63b1bdbf203e1a8b9c0b2b",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "75823b3937b2b648e27d75ad1f22ea4a693cf1130c63b1bdbf203e1a8b9c0b2b",
+      "gitLfSha256": "75823b3937b2b648e27d75ad1f22ea4a693cf1130c63b1bdbf203e1a8b9c0b2b",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/feed/fixtures/news.html",
+      "workingRawSha256": "dae431b836439764619c0f44175bb1397f3921f533c8225e8c047aa4a25ba8c7",
+      "gitBlobContentSha256": "c57f5fd7317c5f2d3a74bfd52b2f9a1bf4a3f255f2150ea862df4713f400f360",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "c57f5fd7317c5f2d3a74bfd52b2f9a1bf4a3f255f2150ea862df4713f400f360",
+      "gitLfSha256": "c57f5fd7317c5f2d3a74bfd52b2f9a1bf4a3f255f2150ea862df4713f400f360",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/feed/fixtures/paywall.html",
+      "workingRawSha256": "bf3e4fc3661bb338f980f4387d81e88591a9b391d4c5ea991481aacbe77fe17e",
+      "gitBlobContentSha256": "7e473e9326f27ca8e6760686cd12b24f4f51b150f885e4d3491ae81358eebd38",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "7e473e9326f27ca8e6760686cd12b24f4f51b150f885e4d3491ae81358eebd38",
+      "gitLfSha256": "7e473e9326f27ca8e6760686cd12b24f4f51b150f885e4d3491ae81358eebd38",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/feed/images.ts",
+      "workingRawSha256": "64978784865a6e8bbb0b47727b03576888d421c8bae5155f262383ca5194d1f4",
+      "gitBlobContentSha256": "25724f1ec6fc78a0f3bbc2ebafbaabd9523d6957864410a99e8afd05a1c6be03",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "25724f1ec6fc78a0f3bbc2ebafbaabd9523d6957864410a99e8afd05a1c6be03",
+      "gitLfSha256": "25724f1ec6fc78a0f3bbc2ebafbaabd9523d6957864410a99e8afd05a1c6be03",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/feed/index.ts",
+      "workingRawSha256": "7b662d4702f8ba9ffa3c688c918d01c8793d8599de60550e07b1529b14e69719",
+      "gitBlobContentSha256": "0eb9f173dd00751a2a7d722061af632bc1ad82fff1f1b21fd10e4e3d769c7a5b",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "0eb9f173dd00751a2a7d722061af632bc1ad82fff1f1b21fd10e4e3d769c7a5b",
+      "gitLfSha256": "0eb9f173dd00751a2a7d722061af632bc1ad82fff1f1b21fd10e4e3d769c7a5b",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/feed/news-relevance.ts",
+      "workingRawSha256": "a2cb11d42358131b02871b84176a394e6b9b1bdd105bcc8eea2fc1775d7a7537",
+      "gitBlobContentSha256": "b5ce669050eccde67f73ff7af7b1515552123ca6523d83b21aa367d632e6ec13",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "b5ce669050eccde67f73ff7af7b1515552123ca6523d83b21aa367d632e6ec13",
+      "gitLfSha256": "b5ce669050eccde67f73ff7af7b1515552123ca6523d83b21aa367d632e6ec13",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/feed/quick-translate.ts",
+      "workingRawSha256": "e20c6cb093cb914361a081f6a495a0ee197d17896ec5cd753ece06b0f150b84f",
+      "gitBlobContentSha256": "7f58011e94ad3942250cabecf6e57a76f33c977071a8013dab2f0da67625f5dc",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "7f58011e94ad3942250cabecf6e57a76f33c977071a8013dab2f0da67625f5dc",
+      "gitLfSha256": "7f58011e94ad3942250cabecf6e57a76f33c977071a8013dab2f0da67625f5dc",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/feed/ranking.ts",
+      "workingRawSha256": "89b621cb0fd1dbff14bb8d7b6047b644d70dd50d7b208f5f0f91d5e24f75a211",
+      "gitBlobContentSha256": "9edbc9307b7e6669228695395583f6042402978b2a8bc0ac700ab682d2edce96",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "9edbc9307b7e6669228695395583f6042402978b2a8bc0ac700ab682d2edce96",
+      "gitLfSha256": "9edbc9307b7e6669228695395583f6042402978b2a8bc0ac700ab682d2edce96",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/feed/related.ts",
+      "workingRawSha256": "3d8380f18b5133d728e0e0db5dea13e83ed1efc811d3a3ab59e73257b42b70b0",
+      "gitBlobContentSha256": "da0ba481a11d23889ed396252fde30a7195e9dd50f02057a009c86c051f06d31",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "da0ba481a11d23889ed396252fde30a7195e9dd50f02057a009c86c051f06d31",
+      "gitLfSha256": "da0ba481a11d23889ed396252fde30a7195e9dd50f02057a009c86c051f06d31",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/feed/scholarly-sources.ts",
+      "workingRawSha256": "b0b8a984d79f590a99cec997a9422af2b96aee754ff8ca491c56d59b4306deb2",
+      "gitBlobContentSha256": "b7361d1b27cce302990ede7c78a23e4608113c29516e7ff9ef6234a6a2f70a42",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "b7361d1b27cce302990ede7c78a23e4608113c29516e7ff9ef6234a6a2f70a42",
+      "gitLfSha256": "b7361d1b27cce302990ede7c78a23e4608113c29516e7ff9ef6234a6a2f70a42",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/feed/sources.ts",
+      "workingRawSha256": "5990f87e4284bf17499ffb1acb8989da0df86ca63207a6d286f5c08d836cb987",
+      "gitBlobContentSha256": "3c4ee28b889cfff89fc77f60e5a220e10859c8b44bfa237c019dfe5a8ffdd57c",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "3c4ee28b889cfff89fc77f60e5a220e10859c8b44bfa237c019dfe5a8ffdd57c",
+      "gitLfSha256": "3c4ee28b889cfff89fc77f60e5a220e10859c8b44bfa237c019dfe5a8ffdd57c",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/feed/topics.ts",
+      "workingRawSha256": "43081046c761951f4a4a8bc60abcd34dd972597a3477446206b6cac3214a2a27",
+      "gitBlobContentSha256": "2249cae950786145b56d67a833d9e7d89f872b499aa255b607737385fc298029",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "2249cae950786145b56d67a833d9e7d89f872b499aa255b607737385fc298029",
+      "gitLfSha256": "2249cae950786145b56d67a833d9e7d89f872b499aa255b607737385fc298029",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/ingest/index.ts",
+      "workingRawSha256": "c389672c5e44af67927954745d69e714b4c38c40b1c9a53a69e73ae0619da30e",
+      "gitBlobContentSha256": "570fc53be7c97cd7e61c8af5eb3b3fe7117722a83ca861247e51ed465738ccfc",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "570fc53be7c97cd7e61c8af5eb3b3fe7117722a83ca861247e51ed465738ccfc",
+      "gitLfSha256": "570fc53be7c97cd7e61c8af5eb3b3fe7117722a83ca861247e51ed465738ccfc",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/jobs/state.ts",
+      "workingRawSha256": "0cc68092ba12205bbbbec3c15c1648b13ca5dff76856d7ddc5ccd656017ad2c5",
+      "gitBlobContentSha256": "40495e7e6e8fca21228fb381143bc3156c0ee995a9aecbddceb7329fd325e1b7",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "40495e7e6e8fca21228fb381143bc3156c0ee995a9aecbddceb7329fd325e1b7",
+      "gitLfSha256": "40495e7e6e8fca21228fb381143bc3156c0ee995a9aecbddceb7329fd325e1b7",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/library/citation.ts",
+      "workingRawSha256": "af254b942b6af892660c30bf842bc51c7d1d82b6b973494ba618c20ccdc9b0df",
+      "gitBlobContentSha256": "5d9f7a96b8d137a70e302383db50f3d7a6bb84f5ac45b878138a56fcbfac9bd8",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "5d9f7a96b8d137a70e302383db50f3d7a6bb84f5ac45b878138a56fcbfac9bd8",
+      "gitLfSha256": "5d9f7a96b8d137a70e302383db50f3d7a6bb84f5ac45b878138a56fcbfac9bd8",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/library/search.ts",
+      "workingRawSha256": "55dce0b9ca3b6e46e2216686272026de66ee79aa23621b5f04a741588c87f901",
+      "gitBlobContentSha256": "ede420af15d9e69eaed71d851c52f7d141aeeac710bd6bfd610605b9f51e2987",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "ede420af15d9e69eaed71d851c52f7d141aeeac710bd6bfd610605b9f51e2987",
+      "gitLfSha256": "ede420af15d9e69eaed71d851c52f7d141aeeac710bd6bfd610605b9f51e2987",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/main.ts",
+      "workingRawSha256": "19c16455508a829aed59de804c1f8b6ff990e2fbb74a881667fe5e179b0f5bb2",
+      "gitBlobContentSha256": "3a938937c11dd7f59315ff729db0f1c147179e36e9a588220ef53762df141403",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "3a938937c11dd7f59315ff729db0f1c147179e36e9a588220ef53762df141403",
+      "gitLfSha256": "3a938937c11dd7f59315ff729db0f1c147179e36e9a588220ef53762df141403",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/net/index.ts",
+      "workingRawSha256": "fdd6d046801f97305fd9509902101187aa8bb507877a61db482f728d4d418b86",
+      "gitBlobContentSha256": "ca239619a467bd0e0d7d42ffacb786be0eb0c5122b28f47367678db188b3a69e",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "ca239619a467bd0e0d7d42ffacb786be0eb0c5122b28f47367678db188b3a69e",
+      "gitLfSha256": "ca239619a467bd0e0d7d42ffacb786be0eb0c5122b28f47367678db188b3a69e",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/net/manager.ts",
+      "workingRawSha256": "6126f6de08ca2ce071e92412a19a2e2a33971345a460000eae69d3e81eeefd39",
+      "gitBlobContentSha256": "ec1ade7cc55e917227991985edcbd7919f7109fb0dbbe7a0a91210a303ad32ad",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "ec1ade7cc55e917227991985edcbd7919f7109fb0dbbe7a0a91210a303ad32ad",
+      "gitLfSha256": "ec1ade7cc55e917227991985edcbd7919f7109fb0dbbe7a0a91210a303ad32ad",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/pairing/session.ts",
+      "workingRawSha256": "69033171825ca906bbd239bb691180982c99ba1d56679939f72535509547b331",
+      "gitBlobContentSha256": "3bbcbf9357aa6249ee95f9895c1fcd6d4ad2a361a97cd11a386aea0b029f543d",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "3bbcbf9357aa6249ee95f9895c1fcd6d4ad2a361a97cd11a386aea0b029f543d",
+      "gitLfSha256": "3bbcbf9357aa6249ee95f9895c1fcd6d4ad2a361a97cd11a386aea0b029f543d",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/pairing/store.ts",
+      "workingRawSha256": "6afd8ff82f5648a3cee0389b6301eed9f90338ba9bdfebd4203b5e00ab94f8a9",
+      "gitBlobContentSha256": "b9d4a6d1fae0f4937a272eaa5d754aa4baa06339617e177d38b150817dca9840",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "b9d4a6d1fae0f4937a272eaa5d754aa4baa06339617e177d38b150817dca9840",
+      "gitLfSha256": "b9d4a6d1fae0f4937a272eaa5d754aa4baa06339617e177d38b150817dca9840",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/pdf/index.ts",
+      "workingRawSha256": "1aeb38b797a50ae905b8c8cef25fb83963e5fd97fadd1f439d9a0140c63d09d1",
+      "gitBlobContentSha256": "cbaf13f34f7b3cb00ef39fc5f0cfb6f89ec7e025c1d2363112c397757b4792c6",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "cbaf13f34f7b3cb00ef39fc5f0cfb6f89ec7e025c1d2363112c397757b4792c6",
+      "gitLfSha256": "cbaf13f34f7b3cb00ef39fc5f0cfb6f89ec7e025c1d2363112c397757b4792c6",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/pdf/text-layout-service.ts",
+      "workingRawSha256": "d904720be6cb9cf96c394b37837726d92970b0e4f3be13b2967f4ff1698f0983",
+      "gitBlobContentSha256": "aeb4f48fcefc5af1723408d3b0a823ce38a59486d9df5162709c4d1d7ef44fe9",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "aeb4f48fcefc5af1723408d3b0a823ce38a59486d9df5162709c4d1d7ef44fe9",
+      "gitLfSha256": "aeb4f48fcefc5af1723408d3b0a823ce38a59486d9df5162709c4d1d7ef44fe9",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/pdf/text-layout.ts",
+      "workingRawSha256": "2ec58f77934e451aa8e5fb711d3a236604d924fbc0577d9019f5eaffaf0ecbaa",
+      "gitBlobContentSha256": "10e7a80557172d377510e1cf415f289001df4ba0aa11034e3fa9ad1e7dbcda9d",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "10e7a80557172d377510e1cf415f289001df4ba0aa11034e3fa9ad1e7dbcda9d",
+      "gitLfSha256": "10e7a80557172d377510e1cf415f289001df4ba0aa11034e3fa9ad1e7dbcda9d",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/publication/index.ts",
+      "workingRawSha256": "9e6c791dd745aa115d960f58b1021b69a868757a09aab918801c063cbbc63769",
+      "gitBlobContentSha256": "2e53f357f925a4a1ca06f58e3a748ed5b24eec227f644f9cb81e01b93aa869a0",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "2e53f357f925a4a1ca06f58e3a748ed5b24eec227f644f9cb81e01b93aa869a0",
+      "gitLfSha256": "2e53f357f925a4a1ca06f58e3a748ed5b24eec227f644f9cb81e01b93aa869a0",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/publication/network.ts",
+      "workingRawSha256": "85d04b96e42451029ac714c41549dfa9c32c6a1494c974d45a8a351258a9d4b4",
+      "gitBlobContentSha256": "6a4dda3de1fe779f0aed74e16591c31c38e50090e5ea0f93a96a1258670b5e3d",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "6a4dda3de1fe779f0aed74e16591c31c38e50090e5ea0f93a96a1258670b5e3d",
+      "gitLfSha256": "6a4dda3de1fe779f0aed74e16591c31c38e50090e5ea0f93a96a1258670b5e3d",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/publication/open.ts",
+      "workingRawSha256": "06d2b7f1c28faf686d485ab9fcd5afca6dc9ab055f1e6a52aaf437f45107ce28",
+      "gitBlobContentSha256": "e76b319fc606d3eaa239ce599004ce759b615b0c15436f574c46313d122e5c2a",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "e76b319fc606d3eaa239ce599004ce759b615b0c15436f574c46313d122e5c2a",
+      "gitLfSha256": "e76b319fc606d3eaa239ce599004ce759b615b0c15436f574c46313d122e5c2a",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/scholarly/bookmarks.ts",
+      "workingRawSha256": "19c29e25310248a4652e4e51aaea392e133a80b653e73c68d2056693be103f4d",
+      "gitBlobContentSha256": "f2b00d24ba30bc24235a47246180889bc9fccbf1c8655858f091282e6243c90e",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "f2b00d24ba30bc24235a47246180889bc9fccbf1c8655858f091282e6243c90e",
+      "gitLfSha256": "f2b00d24ba30bc24235a47246180889bc9fccbf1c8655858f091282e6243c90e",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/scholarly/client.ts",
+      "workingRawSha256": "1a6cda3c5de7fdca701ae3638533bdfd66242f4420d85e4b6edc19c63e630ac9",
+      "gitBlobContentSha256": "6350b69cf898dcc3ac15e1fe5b0a28e3f327d4814ed32521ac9f156529205d77",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "6350b69cf898dcc3ac15e1fe5b0a28e3f327d4814ed32521ac9f156529205d77",
+      "gitLfSha256": "6350b69cf898dcc3ac15e1fe5b0a28e3f327d4814ed32521ac9f156529205d77",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/scholarly/metadata.ts",
+      "workingRawSha256": "d4b3279e4037186fc3e3d9e9cb85abd2c9a0248d73600fa9c3191b064d69de3f",
+      "gitBlobContentSha256": "0e168da9549f354e538aa6ddc52ed5c9665a168f172b60db9ae317f76b3d9d6d",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "0e168da9549f354e538aa6ddc52ed5c9665a168f172b60db9ae317f76b3d9d6d",
+      "gitLfSha256": "0e168da9549f354e538aa6ddc52ed5c9665a168f172b60db9ae317f76b3d9d6d",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/scholarly/pdf-identifiers.ts",
+      "workingRawSha256": "85f5c079f4bfe7052380de0b522c02dbf9ed1248734679371274326e4e9d5d3d",
+      "gitBlobContentSha256": "e4771ab0562536be7f8825245276ad7f9ae5318e1655c392dbc65df08d8dc077",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "e4771ab0562536be7f8825245276ad7f9ae5318e1655c392dbc65df08d8dc077",
+      "gitLfSha256": "e4771ab0562536be7f8825245276ad7f9ae5318e1655c392dbc65df08d8dc077",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/store/atomic.ts",
+      "workingRawSha256": "4cf765ac2cd76d731ebe7174bb1c66abd5ad69743c7fbb05c1c7fcd31a62aa74",
+      "gitBlobContentSha256": "126163223739172ea0129bd3944254d3ad33cad77385bf7ba857a1052f6f9c12",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "126163223739172ea0129bd3944254d3ad33cad77385bf7ba857a1052f6f9c12",
+      "gitLfSha256": "126163223739172ea0129bd3944254d3ad33cad77385bf7ba857a1052f6f9c12",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/store/errors.ts",
+      "workingRawSha256": "7fe7e08f7274133efbcb355c216b9acb5571d740c92915bccd468f7f4851dff4",
+      "gitBlobContentSha256": "59757a0e3e5b38c5071b081eb29907032d17635d7a1c55328a62d4d7bbbdeb5d",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "59757a0e3e5b38c5071b081eb29907032d17635d7a1c55328a62d4d7bbbdeb5d",
+      "gitLfSha256": "59757a0e3e5b38c5071b081eb29907032d17635d7a1c55328a62d4d7bbbdeb5d",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/store/fixtures/sqlite-v10.sql",
+      "workingRawSha256": "91beba55a03e26795f2615c0f23fa6b5e37078959b75103c32a00f28b6184efc",
+      "gitBlobContentSha256": "fb311f1be69d25886e482584f678f01663a2d1756547e85b8eb4a660c0a0e720",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "fb311f1be69d25886e482584f678f01663a2d1756547e85b8eb4a660c0a0e720",
+      "gitLfSha256": "fb311f1be69d25886e482584f678f01663a2d1756547e85b8eb4a660c0a0e720",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/store/foundation.ts",
+      "workingRawSha256": "043e1e7c298d615fbad79a7d3a06a461e9f5086e2cf4dbcc63dedb5f218b9f13",
+      "gitBlobContentSha256": "64cf3ca1b51034d373b0b63e4ea4d0c6aac75a886b0bad8dca3c713b602e5ca0",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "64cf3ca1b51034d373b0b63e4ea4d0c6aac75a886b0bad8dca3c713b602e5ca0",
+      "gitLfSha256": "64cf3ca1b51034d373b0b63e4ea4d0c6aac75a886b0bad8dca3c713b602e5ca0",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/store/index.ts",
+      "workingRawSha256": "3db8e04a810f760498fc60e2ddf9424c0034974b7cb0dae6adac447e8f5c6090",
+      "gitBlobContentSha256": "24d0833d0e1d7373fd1fab485fc70e9c79db3d10ca8363af8f7215a15b21f4d6",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "24d0833d0e1d7373fd1fab485fc70e9c79db3d10ca8363af8f7215a15b21f4d6",
+      "gitLfSha256": "24d0833d0e1d7373fd1fab485fc70e9c79db3d10ca8363af8f7215a15b21f4d6",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/store/metadata-sync.ts",
+      "workingRawSha256": "2d8428311f3b303c86282d17786130a9062c2220fb8f320c80e690f777ec9a6e",
+      "gitBlobContentSha256": "9a073687379e10c993d4acbcca843bb8f2271ae384d47c5aa452edf0ea592a57",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "9a073687379e10c993d4acbcca843bb8f2271ae384d47c5aa452edf0ea592a57",
+      "gitLfSha256": "9a073687379e10c993d4acbcca843bb8f2271ae384d47c5aa452edf0ea592a57",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/store/restart.ts",
+      "workingRawSha256": "89f5eaf02647dded43c3ba48e52becde0b80df65d42d3c49413b105cf08651f6",
+      "gitBlobContentSha256": "83fe1d4afaefd66937f3409274fed8e8b54a0492f0d7f7c4d147a882f1d3d1ad",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "83fe1d4afaefd66937f3409274fed8e8b54a0492f0d7f7c4d147a882f1d3d1ad",
+      "gitLfSha256": "83fe1d4afaefd66937f3409274fed8e8b54a0492f0d7f7c4d147a882f1d3d1ad",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/store/sqlite.ts",
+      "workingRawSha256": "355ff9979ea0fdc7c34bf6c4fee035f67cb2f5f1b4a86e82aa990bc31c67d245",
+      "gitBlobContentSha256": "0b56bc5f4b1deeb6dd6015e3177ce7aeebec017d2d65ce2fa07c5c41138876b2",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "0b56bc5f4b1deeb6dd6015e3177ce7aeebec017d2d65ce2fa07c5c41138876b2",
+      "gitLfSha256": "0b56bc5f4b1deeb6dd6015e3177ce7aeebec017d2d65ce2fa07c5c41138876b2",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/store/validate.ts",
+      "workingRawSha256": "ce52c8c92b62a412f394594a7def04f46efae62dcde9bd18967a086c42368b6c",
+      "gitBlobContentSha256": "b4a2ad83522418637b7c5f2e5c79712b4c0ecc94b9bdd39da6b9e72814b36d46",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "b4a2ad83522418637b7c5f2e5c79712b4c0ecc94b9bdd39da6b9e72814b36d46",
+      "gitLfSha256": "b4a2ad83522418637b7c5f2e5c79712b4c0ecc94b9bdd39da6b9e72814b36d46",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/structure/detector.ts",
+      "workingRawSha256": "598cca552b75eca33017b53807770a64773ff3cd088c9456a38039b849d3fb77",
+      "gitBlobContentSha256": "8284b0d598ad35cb9e2e7204524f2868583d1fa7b067b292019626924bc63ed8",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "8284b0d598ad35cb9e2e7204524f2868583d1fa7b067b292019626924bc63ed8",
+      "gitLfSha256": "8284b0d598ad35cb9e2e7204524f2868583d1fa7b067b292019626924bc63ed8",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/structure/enrichment.ts",
+      "workingRawSha256": "8088665d4d0fb121bf8c3a7a2bc6b57b4b40c5cbc18d0d89d1ed2fedf8858913",
+      "gitBlobContentSha256": "8ae45ae3a941e41ab036a618968e11fa7fe33efd60245ec57aa99d84432962b4",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "8ae45ae3a941e41ab036a618968e11fa7fe33efd60245ec57aa99d84432962b4",
+      "gitLfSha256": "8ae45ae3a941e41ab036a618968e11fa7fe33efd60245ec57aa99d84432962b4",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/structure/service.ts",
+      "workingRawSha256": "7b8634cbea397fbe834241550e1a17cdf0c08007b1fa050c2585e72aa156408a",
+      "gitBlobContentSha256": "a76a7d32f20ada2e2e4f2af8a8e52061b92ad4f3633459fbedb1412862841db7",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "a76a7d32f20ada2e2e4f2af8a8e52061b92ad4f3633459fbedb1412862841db7",
+      "gitLfSha256": "a76a7d32f20ada2e2e4f2af8a8e52061b92ad4f3633459fbedb1412862841db7",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/structure/source.ts",
+      "workingRawSha256": "568503c4f319f3c271f97d26433bd91a1fe205acbbd71662789a15c5b569a1e2",
+      "gitBlobContentSha256": "ca301bb89c9caee3892c3e21e51162e6ad86d6e597507dafef76e78ed5a9238b",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "ca301bb89c9caee3892c3e21e51162e6ad86d6e597507dafef76e78ed5a9238b",
+      "gitLfSha256": "ca301bb89c9caee3892c3e21e51162e6ad86d6e597507dafef76e78ed5a9238b",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/translation/index.ts",
+      "workingRawSha256": "923f261a779d33b52a24ba71019f6fed15ecfad86862e399825f738219ab536e",
+      "gitBlobContentSha256": "e8d52fa10b994d438d35a92af635c7eeaeede9ad08cbb4a7d7687010490197cb",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "e8d52fa10b994d438d35a92af635c7eeaeede9ad08cbb4a7d7687010490197cb",
+      "gitLfSha256": "e8d52fa10b994d438d35a92af635c7eeaeede9ad08cbb4a7d7687010490197cb",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/src/translation/prompt.ts",
+      "workingRawSha256": "c5dba4aba029f339fd1982057923c15900bd228161842ee21dccd5de72b905d3",
+      "gitBlobContentSha256": "19bab5b856edf9a3bc679fb81a46e8335a8a87b52351c70a7b68beba452e7bfa",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "19bab5b856edf9a3bc679fb81a46e8335a8a87b52351c70a7b68beba452e7bfa",
+      "gitLfSha256": "19bab5b856edf9a3bc679fb81a46e8335a8a87b52351c70a7b68beba452e7bfa",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/hub/tsconfig.json",
+      "workingRawSha256": "7c4c3005230ae00c45e96f3132c0bcf4afd2029b200dcce5fe4a39f50624d6f5",
+      "gitBlobContentSha256": "6aad38206596c609ddd0dc3eb04b2a7ae50b7f42247e98a9a9dddb06e1f19464",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "6aad38206596c609ddd0dc3eb04b2a7ae50b7f42247e98a9a9dddb06e1f19464",
+      "gitLfSha256": "6aad38206596c609ddd0dc3eb04b2a7ae50b7f42247e98a9a9dddb06e1f19464",
+      "lfMatchesGit": true,
+      "workingCanonicalJsonSha256": "fa6537aa5f1e2ccd6e5e4990c025ca2ce41c01d0b82feb16a3ef15f4dc99bccd",
+      "gitCanonicalJsonSha256": "fa6537aa5f1e2ccd6e5e4990c025ca2ce41c01d0b82feb16a3ef15f4dc99bccd",
+      "canonicalJsonMatchesGit": true
+    },
+    {
+      "path": "packages/shared/package.json",
+      "workingRawSha256": "feac1668b6f2104d95bf5a09eb58e58811b7e34caf420af7af9b7c8c051b15ac",
+      "gitBlobContentSha256": "083a30a16e0071e3e11fc393d5d1424ac853a4be2616105f2b4746dcd27b3102",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "083a30a16e0071e3e11fc393d5d1424ac853a4be2616105f2b4746dcd27b3102",
+      "gitLfSha256": "083a30a16e0071e3e11fc393d5d1424ac853a4be2616105f2b4746dcd27b3102",
+      "lfMatchesGit": true,
+      "workingCanonicalJsonSha256": "44c6f8616f0206d000993e63faf7de3c62784ec641fe2fe3e81fd674c59400ef",
+      "gitCanonicalJsonSha256": "44c6f8616f0206d000993e63faf7de3c62784ec641fe2fe3e81fd674c59400ef",
+      "canonicalJsonMatchesGit": true
+    },
+    {
+      "path": "packages/shared/src/contracts/ai.ts",
+      "workingRawSha256": "908281a52ebec506168f6e766673c5f11c5750351e9c172ea236dbe2ba24230b",
+      "gitBlobContentSha256": "1a3929bffda3642f231fcbd06793895f48d715cecd1cf0aab1c3b192ede69ea3",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "1a3929bffda3642f231fcbd06793895f48d715cecd1cf0aab1c3b192ede69ea3",
+      "gitLfSha256": "1a3929bffda3642f231fcbd06793895f48d715cecd1cf0aab1c3b192ede69ea3",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/shared/src/contracts/annotations.ts",
+      "workingRawSha256": "cd4fa1524b574f96ce470f82b85e9d42a6fa5fbd72da37ec42095bf62bae67cc",
+      "gitBlobContentSha256": "46ea220da5d869ed237cf044bb6c99d823a34c62e83cee94b575f0472821b69f",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "46ea220da5d869ed237cf044bb6c99d823a34c62e83cee94b575f0472821b69f",
+      "gitLfSha256": "46ea220da5d869ed237cf044bb6c99d823a34c62e83cee94b575f0472821b69f",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/shared/src/contracts/arxiv.ts",
+      "workingRawSha256": "b6bb3d72a8c45f7cc027fcf216ff5fde7bace2c1cf878797b88e84e3ca53e1bb",
+      "gitBlobContentSha256": "aebb819b1974951238ffc19b19c8b2f721c9b10fcb0bb13d3a12047c1accc5cc",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "aebb819b1974951238ffc19b19c8b2f721c9b10fcb0bb13d3a12047c1accc5cc",
+      "gitLfSha256": "aebb819b1974951238ffc19b19c8b2f721c9b10fcb0bb13d3a12047c1accc5cc",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/shared/src/contracts/common.ts",
+      "workingRawSha256": "30dfbdf67d518024acc19e83e46c43ca0e6e61a4f28ecbfe3b6c0dde88ae91a6",
+      "gitBlobContentSha256": "efa467af1753b39b2dd61db5f22f851c6b2b81468fe6ccf4f65b0a71e8fff1c2",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "efa467af1753b39b2dd61db5f22f851c6b2b81468fe6ccf4f65b0a71e8fff1c2",
+      "gitLfSha256": "efa467af1753b39b2dd61db5f22f851c6b2b81468fe6ccf4f65b0a71e8fff1c2",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/shared/src/contracts/feed.ts",
+      "workingRawSha256": "f2c4f94252f9d9f1918f51a11ae0fda61cc8e893586dda4f4f276539eae285e5",
+      "gitBlobContentSha256": "52088e581d5099d66e3129b84b6d5453b563750b97c5c47e6eb20ff4e7e73695",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "52088e581d5099d66e3129b84b6d5453b563750b97c5c47e6eb20ff4e7e73695",
+      "gitLfSha256": "52088e581d5099d66e3129b84b6d5453b563750b97c5c47e6eb20ff4e7e73695",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/shared/src/contracts/history.ts",
+      "workingRawSha256": "36de762e5dabd4b9523ccc3247bdde6e2c449369300990a55f37d1a911de9c44",
+      "gitBlobContentSha256": "6838323f4b54734c3a8b3c099f14b8a97fa3918544154987321713e366deb78f",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "6838323f4b54734c3a8b3c099f14b8a97fa3918544154987321713e366deb78f",
+      "gitLfSha256": "6838323f4b54734c3a8b3c099f14b8a97fa3918544154987321713e366deb78f",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/shared/src/contracts/ink.ts",
+      "workingRawSha256": "fe5243d04b4b5e4338af51d372e281deab050b8fdd039060b611312e0970f409",
+      "gitBlobContentSha256": "5a1a1198910df47101349608c8a72d18d870b44f0397019fd0d1f8558e703477",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "5a1a1198910df47101349608c8a72d18d870b44f0397019fd0d1f8558e703477",
+      "gitLfSha256": "5a1a1198910df47101349608c8a72d18d870b44f0397019fd0d1f8558e703477",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/shared/src/contracts/library.ts",
+      "workingRawSha256": "8381d289e1f2089409bf98b78914b6f91fdaa09fba7d25ba56c6499c52e765f7",
+      "gitBlobContentSha256": "8658b0a972771502d550cb97cd5e739e647575592f805b4d0df4907b717ac4b8",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "8658b0a972771502d550cb97cd5e739e647575592f805b4d0df4907b717ac4b8",
+      "gitLfSha256": "8658b0a972771502d550cb97cd5e739e647575592f805b4d0df4907b717ac4b8",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/shared/src/contracts/news-keywords.ts",
+      "workingRawSha256": "8aabd45025c5439b34cefbdcd4e61be169048e688218b5c91338d9c465edbc5c",
+      "gitBlobContentSha256": "c515e6aae294803ffeac4725d013b908858e73aac2819106571f36183f908109",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "c515e6aae294803ffeac4725d013b908858e73aac2819106571f36183f908109",
+      "gitLfSha256": "c515e6aae294803ffeac4725d013b908858e73aac2819106571f36183f908109",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/shared/src/contracts/pairing.ts",
+      "workingRawSha256": "32f456eb505c6e9c0a6bd19749b3be436104ddade05a440ab33f378da4c76064",
+      "gitBlobContentSha256": "c7e58573434556eced360c66393669a11e0ddda9b362b5cdbdd7c0e46acbd0f8",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "c7e58573434556eced360c66393669a11e0ddda9b362b5cdbdd7c0e46acbd0f8",
+      "gitLfSha256": "c7e58573434556eced360c66393669a11e0ddda9b362b5cdbdd7c0e46acbd0f8",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/shared/src/contracts/pdf-text.ts",
+      "workingRawSha256": "35bde9768bb9e38390b9b438f259691752e2e3e2e2c0547a3a46c69ad194c9d2",
+      "gitBlobContentSha256": "695a4dde5b74595cb5e55fdc53e18ab960fd69dd5835d932d1fecf9f2060311b",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "695a4dde5b74595cb5e55fdc53e18ab960fd69dd5835d932d1fecf9f2060311b",
+      "gitLfSha256": "695a4dde5b74595cb5e55fdc53e18ab960fd69dd5835d932d1fecf9f2060311b",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/shared/src/contracts/preferences.ts",
+      "workingRawSha256": "eeeff58e7666deeb2cc13b67258ecb0caa2137bf01f1f72c6487c1b5dd5a6c24",
+      "gitBlobContentSha256": "2118e596c75796ba283ef67d272791e2ee15bed8ca37d56f50757f0a72de05ca",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "2118e596c75796ba283ef67d272791e2ee15bed8ca37d56f50757f0a72de05ca",
+      "gitLfSha256": "2118e596c75796ba283ef67d272791e2ee15bed8ca37d56f50757f0a72de05ca",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/shared/src/contracts/provenance.ts",
+      "workingRawSha256": "a2bdb1abe153a5ab2109e294e70457fca5f1d7e1551f62928265596fc5e89ef6",
+      "gitBlobContentSha256": "a182ad9efaffe15806ad74e52993e3564b4bd47eadb46016b91f9114e6a4b22c",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "a182ad9efaffe15806ad74e52993e3564b4bd47eadb46016b91f9114e6a4b22c",
+      "gitLfSha256": "a182ad9efaffe15806ad74e52993e3564b4bd47eadb46016b91f9114e6a4b22c",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/shared/src/contracts/publication.ts",
+      "workingRawSha256": "b2b7fc7ef8a2195767fcff871eabe27d347c0fb3fc8baf7d21d1347be2b6948b",
+      "gitBlobContentSha256": "b9c82dfce305bd27146d1a987b1eb82a9a72aebef82e44b3e5c952d73fc9bd05",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "b9c82dfce305bd27146d1a987b1eb82a9a72aebef82e44b3e5c952d73fc9bd05",
+      "gitLfSha256": "b9c82dfce305bd27146d1a987b1eb82a9a72aebef82e44b3e5c952d73fc9bd05",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/shared/src/contracts/related.ts",
+      "workingRawSha256": "3d5a9457670b477e3bcef72b48d3dab886736943749a8b276b35a524d40a93ff",
+      "gitBlobContentSha256": "4710c5bcee73be420350b741928c0778f7b54cd1855dad12e2b70f1823b410c8",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "4710c5bcee73be420350b741928c0778f7b54cd1855dad12e2b70f1823b410c8",
+      "gitLfSha256": "4710c5bcee73be420350b741928c0778f7b54cd1855dad12e2b70f1823b410c8",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/shared/src/contracts/structure.ts",
+      "workingRawSha256": "19d947d580545b08161e8673dd9320b9f1fac9ba070d7d40830f1f2e36f57cba",
+      "gitBlobContentSha256": "4eef194604c6ef8bcb95b19cd5e9acc9fa8fe7d1bae39494834f5e0ae14c014b",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "4eef194604c6ef8bcb95b19cd5e9acc9fa8fe7d1bae39494834f5e0ae14c014b",
+      "gitLfSha256": "4eef194604c6ef8bcb95b19cd5e9acc9fa8fe7d1bae39494834f5e0ae14c014b",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/shared/src/contracts/sync.ts",
+      "workingRawSha256": "e44e3a1af31fe2de8e2ace51fbb56c56763303913a7e2d3a427feb1c97ac4ce6",
+      "gitBlobContentSha256": "79691cd468dc175d2e8817769e5ccd98f8905203090daf25f53ba0bb7425fe3d",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "79691cd468dc175d2e8817769e5ccd98f8905203090daf25f53ba0bb7425fe3d",
+      "gitLfSha256": "79691cd468dc175d2e8817769e5ccd98f8905203090daf25f53ba0bb7425fe3d",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/shared/src/contracts/topic-seeds.ts",
+      "workingRawSha256": "7d3c789ce47ac19de2a9d860275990433a64494c940d213d89249a748ab88c8f",
+      "gitBlobContentSha256": "602095eda53ad846e94ec8ed3c80cd0fbe62c1062b5f67e5e23eeee300e2f533",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "602095eda53ad846e94ec8ed3c80cd0fbe62c1062b5f67e5e23eeee300e2f533",
+      "gitLfSha256": "602095eda53ad846e94ec8ed3c80cd0fbe62c1062b5f67e5e23eeee300e2f533",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/shared/src/index.ts",
+      "workingRawSha256": "c694fdc40c269d05c91f0c17fddfa05ffc32b463c326d763617f6c77f584c0d8",
+      "gitBlobContentSha256": "7446433de44cf18e42af211606e01aa634ad3e64262e8464d2b5c3a30ed422eb",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "7446433de44cf18e42af211606e01aa634ad3e64262e8464d2b5c3a30ed422eb",
+      "gitLfSha256": "7446433de44cf18e42af211606e01aa634ad3e64262e8464d2b5c3a30ed422eb",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/shared/tokens/generated/FractalTokens.kt",
+      "workingRawSha256": "04f1d0d8bb73b08b285df8c1809d944a2cb69275bb243e99cfb1f874516b3c7e",
+      "gitBlobContentSha256": "355ddb5ce1ac477dc438fc829f9ae2922d06ee32ba28766d4b50131dd4feb0b7",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "355ddb5ce1ac477dc438fc829f9ae2922d06ee32ba28766d4b50131dd4feb0b7",
+      "gitLfSha256": "355ddb5ce1ac477dc438fc829f9ae2922d06ee32ba28766d4b50131dd4feb0b7",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/shared/tokens/tokens.json",
+      "workingRawSha256": "c457abbd2f6f3f4f3b549f739bbb6e55d5641271d346d3096e9fa39f59ffa2cd",
+      "gitBlobContentSha256": "8d3a1e115b166950ff89e27a30ba51098acb58857c869fb48c778d4d3f7a8d2e",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "8d3a1e115b166950ff89e27a30ba51098acb58857c869fb48c778d4d3f7a8d2e",
+      "gitLfSha256": "8d3a1e115b166950ff89e27a30ba51098acb58857c869fb48c778d4d3f7a8d2e",
+      "lfMatchesGit": true,
+      "workingCanonicalJsonSha256": "873be207494dfc5547c4bf01679ac39ea483ac54e7122d341fdb18f4f99e5b65",
+      "gitCanonicalJsonSha256": "873be207494dfc5547c4bf01679ac39ea483ac54e7122d341fdb18f4f99e5b65",
+      "canonicalJsonMatchesGit": true
+    },
+    {
+      "path": "packages/shared/tsconfig.json",
+      "workingRawSha256": "2ccadf0c5e5868ad0372e7e059ad24ca63cb93cc975410df11bdbbc093818a82",
+      "gitBlobContentSha256": "5022340f248a58c31fe21c6ac32a6499aa9c7ccc849416e4ddd62e9f105ed0c1",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "5022340f248a58c31fe21c6ac32a6499aa9c7ccc849416e4ddd62e9f105ed0c1",
+      "gitLfSha256": "5022340f248a58c31fe21c6ac32a6499aa9c7ccc849416e4ddd62e9f105ed0c1",
+      "lfMatchesGit": true,
+      "workingCanonicalJsonSha256": "5dd70f0b4f1442904d70ecf27e962006f4b573986d8495c9527d070829e0b9e0",
+      "gitCanonicalJsonSha256": "5dd70f0b4f1442904d70ecf27e962006f4b573986d8495c9527d070829e0b9e0",
+      "canonicalJsonMatchesGit": true
+    },
+    {
+      "path": "packages/ui/index.html",
+      "workingRawSha256": "94c749c3086d7c738dfe30aad84b84aee630d134e60e2f8a9ac12844c3ec9d49",
+      "gitBlobContentSha256": "d9d9667dbbd6824168a0c50de15c09cb500fe3a0a5f7a6504d8d9e1fb028d6d9",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "d9d9667dbbd6824168a0c50de15c09cb500fe3a0a5f7a6504d8d9e1fb028d6d9",
+      "gitLfSha256": "d9d9667dbbd6824168a0c50de15c09cb500fe3a0a5f7a6504d8d9e1fb028d6d9",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/package.json",
+      "workingRawSha256": "27421aefca55b3f93434ae67374d76fefe97f443aa1201b6bf68ab74301d0443",
+      "gitBlobContentSha256": "a32d2791a30b6c5304280fa7f3832193267c1dc438e08eee4d9f92f00b9956b7",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "a32d2791a30b6c5304280fa7f3832193267c1dc438e08eee4d9f92f00b9956b7",
+      "gitLfSha256": "a32d2791a30b6c5304280fa7f3832193267c1dc438e08eee4d9f92f00b9956b7",
+      "lfMatchesGit": true,
+      "workingCanonicalJsonSha256": "fac07e0730933bc25b2f0bd2936dc661eee8e7a4accd6d1a78e5ee003c81b269",
+      "gitCanonicalJsonSha256": "fac07e0730933bc25b2f0bd2936dc661eee8e7a4accd6d1a78e5ee003c81b269",
+      "canonicalJsonMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/App.tsx",
+      "workingRawSha256": "149789bd303eda99fabc629a8e0d571367047d71e470b64f2269385d0108f0fc",
+      "gitBlobContentSha256": "d5d9bd4d89ef13769b8b6b058b665732812a21b4221af494dc00008c8812ec05",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "d5d9bd4d89ef13769b8b6b058b665732812a21b4221af494dc00008c8812ec05",
+      "gitLfSha256": "d5d9bd4d89ef13769b8b6b058b665732812a21b4221af494dc00008c8812ec05",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/components/ChatBoundary.tsx",
+      "workingRawSha256": "df5cbb161d8939f4b01ab971393a0e4896df1e1fc7615bb42cab99f5ce773a37",
+      "gitBlobContentSha256": "80ae7fabcc2be6d62f5c1fa3c320b3b1a94beb9717a5346a0fc6f653d6073b4b",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "80ae7fabcc2be6d62f5c1fa3c320b3b1a94beb9717a5346a0fc6f653d6073b4b",
+      "gitLfSha256": "80ae7fabcc2be6d62f5c1fa3c320b3b1a94beb9717a5346a0fc6f653d6073b4b",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/components/ChatIcons.tsx",
+      "workingRawSha256": "c599f026a528c4af8b11c72403da64afc6eaa00c938ea5b3781cc0fbc60665a4",
+      "gitBlobContentSha256": "854596bd8595ad8e5bd15cdb89b23c48ed7841467d871759a9392d861fa699a5",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "854596bd8595ad8e5bd15cdb89b23c48ed7841467d871759a9392d861fa699a5",
+      "gitLfSha256": "854596bd8595ad8e5bd15cdb89b23c48ed7841467d871759a9392d861fa699a5",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/components/ChatPanel.tsx",
+      "workingRawSha256": "af7d98c2704f07be237db54f3cdf9010915202d708b79a950d6e6c59cd4e30ba",
+      "gitBlobContentSha256": "f956eed64cc446faeed1a8a50da11519b521d761fbb35ed2700b4b13e0031140",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "f956eed64cc446faeed1a8a50da11519b521d761fbb35ed2700b4b13e0031140",
+      "gitLfSha256": "f956eed64cc446faeed1a8a50da11519b521d761fbb35ed2700b4b13e0031140",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/components/ConfirmDialog.tsx",
+      "workingRawSha256": "011d5b4a82426847138fd15be921451410cc8139fb5218fe597ee62e08947c9d",
+      "gitBlobContentSha256": "ad276a42062f06d6773f024c8349c5a425b8945a4920828ed67a61f47105a56e",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "ad276a42062f06d6773f024c8349c5a425b8945a4920828ed67a61f47105a56e",
+      "gitLfSha256": "ad276a42062f06d6773f024c8349c5a425b8945a4920828ed67a61f47105a56e",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/components/CopyButton.tsx",
+      "workingRawSha256": "e653ad6d0e45d70e5f6127a0d5f5dd3b482466e5679ff4e3a41fa9eced9fefca",
+      "gitBlobContentSha256": "b3c1f8ff0d42fea003ffa3084af46bcf06c057767adb08a340987b87617debb9",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "b3c1f8ff0d42fea003ffa3084af46bcf06c057767adb08a340987b87617debb9",
+      "gitLfSha256": "b3c1f8ff0d42fea003ffa3084af46bcf06c057767adb08a340987b87617debb9",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/components/HighlightLayer.tsx",
+      "workingRawSha256": "ae5d5f04b262d3f1b1038fe5411fa49f326ae0eca8781bc8fdf15bf4c93f53b6",
+      "gitBlobContentSha256": "c9ea666235dd54bcff1ea17032b08d892924ee5e0133ea6b61e0714f6fc8f3b6",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "c9ea666235dd54bcff1ea17032b08d892924ee5e0133ea6b61e0714f6fc8f3b6",
+      "gitLfSha256": "c9ea666235dd54bcff1ea17032b08d892924ee5e0133ea6b61e0714f6fc8f3b6",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/components/KoreanPane.tsx",
+      "workingRawSha256": "4f3fcb0c7c183dc8e3378bba57aa3016952ddd868f5d556d1554be576901de14",
+      "gitBlobContentSha256": "be3656e3a824aa084c66d571d2fa5172ee9dc885f2a0f74291a5a2020b354fac",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "be3656e3a824aa084c66d571d2fa5172ee9dc885f2a0f74291a5a2020b354fac",
+      "gitLfSha256": "be3656e3a824aa084c66d571d2fa5172ee9dc885f2a0f74291a5a2020b354fac",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/components/Markdown.tsx",
+      "workingRawSha256": "613380de827c0876db61d7295b78c14e6e0d4c09cdda8c9e1252952820d16b44",
+      "gitBlobContentSha256": "58f9c192080ffc0c9066f401df351a481143797ce850a58591dd9c4196605694",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "58f9c192080ffc0c9066f401df351a481143797ce850a58591dd9c4196605694",
+      "gitLfSha256": "58f9c192080ffc0c9066f401df351a481143797ce850a58591dd9c4196605694",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/components/PdfPane.tsx",
+      "workingRawSha256": "c90e5d11e435e524d9a77a5bb2ba0264f44647de084505239adfb1c5a6f4a492",
+      "gitBlobContentSha256": "1aa0c76de6eab52192b21a65152ae467ad7d98a4501823d0651034264341d7b9",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "1aa0c76de6eab52192b21a65152ae467ad7d98a4501823d0651034264341d7b9",
+      "gitLfSha256": "1aa0c76de6eab52192b21a65152ae467ad7d98a4501823d0651034264341d7b9",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/components/SelectionQuote.tsx",
+      "workingRawSha256": "ea0c3537b280e3fb1daa6f9fa81d2aee56985e1972b3b8cf9571c341a8aa617f",
+      "gitBlobContentSha256": "807f4c32d5baa8619ccca204bbc206fce97436005b8496b0fbbea8cab2eada3b",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "807f4c32d5baa8619ccca204bbc206fce97436005b8496b0fbbea8cab2eada3b",
+      "gitLfSha256": "807f4c32d5baa8619ccca204bbc206fce97436005b8496b0fbbea8cab2eada3b",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/components/Selector.tsx",
+      "workingRawSha256": "8bba373d3d425d2079b14b53096804d634923030a099e7df5684181e809d46df",
+      "gitBlobContentSha256": "8bba373d3d425d2079b14b53096804d634923030a099e7df5684181e809d46df",
+      "text": true,
+      "rawMatchesGit": true,
+      "workingLfSha256": "8bba373d3d425d2079b14b53096804d634923030a099e7df5684181e809d46df",
+      "gitLfSha256": "8bba373d3d425d2079b14b53096804d634923030a099e7df5684181e809d46df",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/design/discovery.css",
+      "workingRawSha256": "4265e45bc33cc063c058c8432ad5b92777fe3ccc9d921b54abd0d456e42d25c5",
+      "gitBlobContentSha256": "4265e45bc33cc063c058c8432ad5b92777fe3ccc9d921b54abd0d456e42d25c5",
+      "text": true,
+      "rawMatchesGit": true,
+      "workingLfSha256": "4265e45bc33cc063c058c8432ad5b92777fe3ccc9d921b54abd0d456e42d25c5",
+      "gitLfSha256": "4265e45bc33cc063c058c8432ad5b92777fe3ccc9d921b54abd0d456e42d25c5",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/design/index.css",
+      "workingRawSha256": "27ddbfa3ccbc54407fdf6b57eb379c8e6133641e8668bc93834100e89416b4ef",
+      "gitBlobContentSha256": "27ddbfa3ccbc54407fdf6b57eb379c8e6133641e8668bc93834100e89416b4ef",
+      "text": true,
+      "rawMatchesGit": true,
+      "workingLfSha256": "27ddbfa3ccbc54407fdf6b57eb379c8e6133641e8668bc93834100e89416b4ef",
+      "gitLfSha256": "27ddbfa3ccbc54407fdf6b57eb379c8e6133641e8668bc93834100e89416b4ef",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/design/reader.css",
+      "workingRawSha256": "7ee054b4237d9c996b80216472fd9b67e9d4b0d5c832ef459bb7c063f5c717ec",
+      "gitBlobContentSha256": "ee099fd7d1431c5a7fafc3d4a1a16fb17fb3e4782ac157b83380d801466c5764",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "ee099fd7d1431c5a7fafc3d4a1a16fb17fb3e4782ac157b83380d801466c5764",
+      "gitLfSha256": "ee099fd7d1431c5a7fafc3d4a1a16fb17fb3e4782ac157b83380d801466c5764",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/design/shell.css",
+      "workingRawSha256": "f020bb0a5845da3d426780ca7a5c757361d3cdae2f50d527cc40abf453ac0970",
+      "gitBlobContentSha256": "c35ea8123aeaeba4a11bd00da8c45702764d667bf9d59f1a871a6a6a335df900",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "c35ea8123aeaeba4a11bd00da8c45702764d667bf9d59f1a871a6a6a335df900",
+      "gitLfSha256": "c35ea8123aeaeba4a11bd00da8c45702764d667bf9d59f1a871a6a6a335df900",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/design/tokens.css",
+      "workingRawSha256": "ebf66e47178025b5b875672b0d217c64acdf377e9dbb0c9e6b13b2a805a8fd66",
+      "gitBlobContentSha256": "4037043b54b41c2a50927fdebfbfdf1f1cc8b2ffd96f93e98caec7e481833f67",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "4037043b54b41c2a50927fdebfbfdf1f1cc8b2ffd96f93e98caec7e481833f67",
+      "gitLfSha256": "4037043b54b41c2a50927fdebfbfdf1f1cc8b2ffd96f93e98caec7e481833f67",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/i18n/en.ts",
+      "workingRawSha256": "eed9b7ed75abb05c2e6c6ba08145d128ea4bdd152e76d503ff25973c410a867e",
+      "gitBlobContentSha256": "b42247efc901f2c4c0594f5dcd8a809518d8ae1f94ff5545a7c997b102f87595",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "b42247efc901f2c4c0594f5dcd8a809518d8ae1f94ff5545a7c997b102f87595",
+      "gitLfSha256": "b42247efc901f2c4c0594f5dcd8a809518d8ae1f94ff5545a7c997b102f87595",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/i18n/index.ts",
+      "workingRawSha256": "3495d11faed1e3fcfb28649f693f9180c507c51d4d2279fbccaf6d8ce6078bb5",
+      "gitBlobContentSha256": "a2c8adca692298658cf98603c05e3af449e1cbf905d4805474256fb4fcc99a82",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "a2c8adca692298658cf98603c05e3af449e1cbf905d4805474256fb4fcc99a82",
+      "gitLfSha256": "a2c8adca692298658cf98603c05e3af449e1cbf905d4805474256fb4fcc99a82",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/i18n/ko.ts",
+      "workingRawSha256": "5283bec673c729e5df31ad6b8fd1843e31f11817608302c8572d6bbf865e02e2",
+      "gitBlobContentSha256": "787184cbd872cbfd86332dc24042eda08af38ff14e0f4bbc462ac70de2344653",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "787184cbd872cbfd86332dc24042eda08af38ff14e0f4bbc462ac70de2344653",
+      "gitLfSha256": "787184cbd872cbfd86332dc24042eda08af38ff14e0f4bbc462ac70de2344653",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/lib/api.ts",
+      "workingRawSha256": "081dd20132f20c37709a696fc6dc849f823a8b46426b1b5d550ff70e6fc61238",
+      "gitBlobContentSha256": "2de60a4e75d086ad22f5ff15ef2a0d1cace634483fbd98ddc54413c02572cc9c",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "2de60a4e75d086ad22f5ff15ef2a0d1cace634483fbd98ddc54413c02572cc9c",
+      "gitLfSha256": "2de60a4e75d086ad22f5ff15ef2a0d1cace634483fbd98ddc54413c02572cc9c",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/lib/chat.ts",
+      "workingRawSha256": "92d304bf445059f28778f5fbd237e6fdc8c1c7600fe32378b362cd6fa184ef56",
+      "gitBlobContentSha256": "dd7a71bea1601f253c0cdcf505946aac02e0b26354bf50f73c9ed7ff6058e5b7",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "dd7a71bea1601f253c0cdcf505946aac02e0b26354bf50f73c9ed7ff6058e5b7",
+      "gitLfSha256": "dd7a71bea1601f253c0cdcf505946aac02e0b26354bf50f73c9ed7ff6058e5b7",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/lib/geometry.ts",
+      "workingRawSha256": "02868b4bde6f44febd46bdf700f701c5f618f75a9c84a835a4be3521027cadbf",
+      "gitBlobContentSha256": "bb61f525b8ed6dfaa49bb8c1a3bc21768863c0c2e36f14d4272209bc70851592",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "bb61f525b8ed6dfaa49bb8c1a3bc21768863c0c2e36f14d4272209bc70851592",
+      "gitLfSha256": "bb61f525b8ed6dfaa49bb8c1a3bc21768863c0c2e36f14d4272209bc70851592",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/lib/highlights.ts",
+      "workingRawSha256": "218590786ae2a8c35e37057c513e666c371b01a0a343b4e0c3e548fbfed19d77",
+      "gitBlobContentSha256": "6386086cff885411bbba7dcdf7c0ab56d74df9cadbf8e5ce95bfd126a3fbbc31",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "6386086cff885411bbba7dcdf7c0ab56d74df9cadbf8e5ce95bfd126a3fbbc31",
+      "gitLfSha256": "6386086cff885411bbba7dcdf7c0ab56d74df9cadbf8e5ce95bfd126a3fbbc31",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/lib/korean-page.ts",
+      "workingRawSha256": "51fc31daa93614dd5cac538e7711e09d9939b4ee0e27b013697627dc7600772b",
+      "gitBlobContentSha256": "4af71759d0cc0585a14372b033042667094213ca372e0c6a9e1cdd70441529e0",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "4af71759d0cc0585a14372b033042667094213ca372e0c6a9e1cdd70441529e0",
+      "gitLfSha256": "4af71759d0cc0585a14372b033042667094213ca372e0c6a9e1cdd70441529e0",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/lib/markdown.ts",
+      "workingRawSha256": "07064dd804cee0f91d24270c96b8a502112e45c1d23b6ae657744d494af529d6",
+      "gitBlobContentSha256": "6b23e3a1de565ced6c852e902ab4f18f536f991d9b2c47827e10c12b30c5f7a2",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "6b23e3a1de565ced6c852e902ab4f18f536f991d9b2c47827e10c12b30c5f7a2",
+      "gitLfSha256": "6b23e3a1de565ced6c852e902ab4f18f536f991d9b2c47827e10c12b30c5f7a2",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/lib/math.ts",
+      "workingRawSha256": "7dc781c521cd611fd812daa6d541ff3df0ba2742f2240b4399c2a5776fd67271",
+      "gitBlobContentSha256": "66a8c7ef43ad32062e24155c294b35df660170180b5e2adc67c6cb767fdb0943",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "66a8c7ef43ad32062e24155c294b35df660170180b5e2adc67c6cb767fdb0943",
+      "gitLfSha256": "66a8c7ef43ad32062e24155c294b35df660170180b5e2adc67c6cb767fdb0943",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/lib/native-selection.ts",
+      "workingRawSha256": "a12f69fba8056cd356982cbb0e0b0836cfaf56142a4d627263aab136674751dc",
+      "gitBlobContentSha256": "d53103c9289df84a92203a7668428f0be55a71ceba206a1291e778c90134a49b",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "d53103c9289df84a92203a7668428f0be55a71ceba206a1291e778c90134a49b",
+      "gitLfSha256": "d53103c9289df84a92203a7668428f0be55a71ceba206a1291e778c90134a49b",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/lib/pdf.ts",
+      "workingRawSha256": "0a6d13116c481da00c09a0a4150a51c7c50ee0e05e376124f2d754d2d4507651",
+      "gitBlobContentSha256": "27101953c4ba50de482a1600d97375a35bab168f556b1b0944029e55185b7cfb",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "27101953c4ba50de482a1600d97375a35bab168f556b1b0944029e55185b7cfb",
+      "gitLfSha256": "27101953c4ba50de482a1600d97375a35bab168f556b1b0944029e55185b7cfb",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/lib/status.ts",
+      "workingRawSha256": "d1b1d4fd9167dd78f116c3d7b4a29a82dda72a7ee9825f3663e716ce940333b0",
+      "gitBlobContentSha256": "8e0b226d73c11adef79734197f98d7d8dfd88cabe67175ca14c6e3d1ae8b4141",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "8e0b226d73c11adef79734197f98d7d8dfd88cabe67175ca14c6e3d1ae8b4141",
+      "gitLfSha256": "8e0b226d73c11adef79734197f98d7d8dfd88cabe67175ca14c6e3d1ae8b4141",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/lib/sync.ts",
+      "workingRawSha256": "5d13259f442be0107ebd3fb3f6bcb56d38c0198f7046fac419a0928ec0d0b18a",
+      "gitBlobContentSha256": "752718eb0d1c7c32eccce8fc684f6e9a1bca2ce6b20771934c9bd9cda23adfca",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "752718eb0d1c7c32eccce8fc684f6e9a1bca2ce6b20771934c9bd9cda23adfca",
+      "gitLfSha256": "752718eb0d1c7c32eccce8fc684f6e9a1bca2ce6b20771934c9bd9cda23adfca",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/lib/tex.ts",
+      "workingRawSha256": "c18f9e718228f9ced4eed3148eeb6999ebca3bc2184b1579e7f0613c2f6d6d49",
+      "gitBlobContentSha256": "80598687b8c9944061d25da91f5ad0506b8afaa1235a0503575ddcee450847ba",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "80598687b8c9944061d25da91f5ad0506b8afaa1235a0503575ddcee450847ba",
+      "gitLfSha256": "80598687b8c9944061d25da91f5ad0506b8afaa1235a0503575ddcee450847ba",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/lib/view.ts",
+      "workingRawSha256": "545ccf42dfa5f2b422548e9ab4d28a9be5855a9b21e0785372a3640c5dbd0d40",
+      "gitBlobContentSha256": "fb40647922abb2f81301d0e5fb3a30a00065fd0ff2bc83bb73dd7496b5b9ab41",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "fb40647922abb2f81301d0e5fb3a30a00065fd0ff2bc83bb73dd7496b5b9ab41",
+      "gitLfSha256": "fb40647922abb2f81301d0e5fb3a30a00065fd0ff2bc83bb73dd7496b5b9ab41",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/main.tsx",
+      "workingRawSha256": "092fbcec843b8a620c2ff15123653a467e09b176f61b5430894b01e87ca35556",
+      "gitBlobContentSha256": "5df0cf5f0b5502c755ee733096a9fba80f1ea07620e0b8f1f217107a6a7943eb",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "5df0cf5f0b5502c755ee733096a9fba80f1ea07620e0b8f1f217107a6a7943eb",
+      "gitLfSha256": "5df0cf5f0b5502c755ee733096a9fba80f1ea07620e0b8f1f217107a6a7943eb",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/reader/Cards.tsx",
+      "workingRawSha256": "4dcd2b24b10f434c0c380c65f45e0b9d4b7a5a735624c2d65fafabe1b30a73a4",
+      "gitBlobContentSha256": "533ebea10d74a56f0bc70eae564ab0c03e51d193c2d475d46954e165d047078a",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "533ebea10d74a56f0bc70eae564ab0c03e51d193c2d475d46954e165d047078a",
+      "gitLfSha256": "533ebea10d74a56f0bc70eae564ab0c03e51d193c2d475d46954e165d047078a",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/reader/InkLayer.tsx",
+      "workingRawSha256": "0e295934632de0763427fde66dbbdd51d8c5aa7c610b6e61423d906962dd5382",
+      "gitBlobContentSha256": "16a3673bdba326a0f20a27fcca0123469bfff785f43c07d774780017829dd94e",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "16a3673bdba326a0f20a27fcca0123469bfff785f43c07d774780017829dd94e",
+      "gitLfSha256": "16a3673bdba326a0f20a27fcca0123469bfff785f43c07d774780017829dd94e",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/reader/NotesPanel.tsx",
+      "workingRawSha256": "dae977ba946d82b7edcc11842c5eccbf88d6166734f85336e66872995773e01e",
+      "gitBlobContentSha256": "1ea25b5f5ebb65a1efea1727cb684192cd8bc077e5d91b51f3c4141be34438a0",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "1ea25b5f5ebb65a1efea1727cb684192cd8bc077e5d91b51f3c4141be34438a0",
+      "gitLfSha256": "1ea25b5f5ebb65a1efea1727cb684192cd8bc077e5d91b51f3c4141be34438a0",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/reader/PrintView.tsx",
+      "workingRawSha256": "ec91f6de2f9939e0cac21d5af378c336c74a2e02f91030d9b3212a8f5bdab77a",
+      "gitBlobContentSha256": "5a58e77deeba8cd0c394b0c9ad080b5cafd18020be16cd73915cd1fea8c7acb0",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "5a58e77deeba8cd0c394b0c9ad080b5cafd18020be16cd73915cd1fea8c7acb0",
+      "gitLfSha256": "5a58e77deeba8cd0c394b0c9ad080b5cafd18020be16cd73915cd1fea8c7acb0",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/reader/ReaderBar.tsx",
+      "workingRawSha256": "66eb5afa559689b9f21c874bb5e4de4855ea8aa68715e37f33076113a848d1d3",
+      "gitBlobContentSha256": "72f36b185dd9170399d3ec9b72aa97e3c38e5e86520cabd0b3ae98d07d9dbfc2",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "72f36b185dd9170399d3ec9b72aa97e3c38e5e86520cabd0b3ae98d07d9dbfc2",
+      "gitLfSha256": "72f36b185dd9170399d3ec9b72aa97e3c38e5e86520cabd0b3ae98d07d9dbfc2",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/reader/ReaderSourceStatus.tsx",
+      "workingRawSha256": "0ba2a605b9c03aa2f9d23de8144b633bb07f8e70bca5487a757b835e10683190",
+      "gitBlobContentSha256": "0ba2a605b9c03aa2f9d23de8144b633bb07f8e70bca5487a757b835e10683190",
+      "text": true,
+      "rawMatchesGit": true,
+      "workingLfSha256": "0ba2a605b9c03aa2f9d23de8144b633bb07f8e70bca5487a757b835e10683190",
+      "gitLfSha256": "0ba2a605b9c03aa2f9d23de8144b633bb07f8e70bca5487a757b835e10683190",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/reader/RelatedPanel.tsx",
+      "workingRawSha256": "c6212719179e221fc9161d1a1ca858521a4bc43a5b3564ec7c18f05fdd456d62",
+      "gitBlobContentSha256": "c6212719179e221fc9161d1a1ca858521a4bc43a5b3564ec7c18f05fdd456d62",
+      "text": true,
+      "rawMatchesGit": true,
+      "workingLfSha256": "c6212719179e221fc9161d1a1ca858521a4bc43a5b3564ec7c18f05fdd456d62",
+      "gitLfSha256": "c6212719179e221fc9161d1a1ca858521a4bc43a5b3564ec7c18f05fdd456d62",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/reader/ResearchPanel.tsx",
+      "workingRawSha256": "bb17abd7c7353c89ff7badbdfb5cf41eac50fc0ecb58819f9c958e2cebab3f65",
+      "gitBlobContentSha256": "f5510f92dd6b7a654c35e2b07d1590604b51f2d5e51e9fbdb5452994a469803a",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "f5510f92dd6b7a654c35e2b07d1590604b51f2d5e51e9fbdb5452994a469803a",
+      "gitLfSha256": "f5510f92dd6b7a654c35e2b07d1590604b51f2d5e51e9fbdb5452994a469803a",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/reader/SelectionMenu.tsx",
+      "workingRawSha256": "f025317e4de144be1060209f32e63ca3f1e56709916d1445a6177b8be147bdbc",
+      "gitBlobContentSha256": "eaa3d62bd307f06d3966f2dbd9ce039a29f6bde61026a65f1fb9b2e5f15b5abc",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "eaa3d62bd307f06d3966f2dbd9ce039a29f6bde61026a65f1fb9b2e5f15b5abc",
+      "gitLfSha256": "eaa3d62bd307f06d3966f2dbd9ce039a29f6bde61026a65f1fb9b2e5f15b5abc",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/reader/StickyLayer.tsx",
+      "workingRawSha256": "33fd2d8b096c69d18e71159ad519097487a08a532fef76c9165c7f5f37c4a261",
+      "gitBlobContentSha256": "f434b96aa0caac5828864026e8201e4fa56afd608869c3359ed18281c2c9e8e3",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "f434b96aa0caac5828864026e8201e4fa56afd608869c3359ed18281c2c9e8e3",
+      "gitLfSha256": "f434b96aa0caac5828864026e8201e4fa56afd608869c3359ed18281c2c9e8e3",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/reader/StructureLayer.tsx",
+      "workingRawSha256": "195f4f7c35fc93d04b7aa77e9eab9d428ade9ec9252e063658005ba2f984c80d",
+      "gitBlobContentSha256": "8ff61a864d9f8aa498a918be53ed712c9d2ade626ba4b65b100d44c74430198a",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "8ff61a864d9f8aa498a918be53ed712c9d2ade626ba4b65b100d44c74430198a",
+      "gitLfSha256": "8ff61a864d9f8aa498a918be53ed712c9d2ade626ba4b65b100d44c74430198a",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/reader/ink.ts",
+      "workingRawSha256": "2875497a4c2d6664d580a953f3449f4905e0ec0b7527794e046611bba4e1404f",
+      "gitBlobContentSha256": "29c49b3a73ed3760feb5b267d755232b9c89123836af5ee1746fec7f632bff67",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "29c49b3a73ed3760feb5b267d755232b9c89123836af5ee1746fec7f632bff67",
+      "gitLfSha256": "29c49b3a73ed3760feb5b267d755232b9c89123836af5ee1746fec7f632bff67",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/reader/job.ts",
+      "workingRawSha256": "4adbb94719ada62261e7a2ee5e9d04ecb9f3953b3c5aa03fb334291a6df98979",
+      "gitBlobContentSha256": "39b190b0707b93adf07f383dcc3845d2d4776c3a607e4ce3f4e1e22b0e975089",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "39b190b0707b93adf07f383dcc3845d2d4776c3a607e4ce3f4e1e22b0e975089",
+      "gitLfSha256": "39b190b0707b93adf07f383dcc3845d2d4776c3a607e4ce3f4e1e22b0e975089",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/reader/useReaderProvenance.ts",
+      "workingRawSha256": "97fb51a6207ed19bd32a704d27597f97a3241bd23c26dda1d5feaf2eb433a0c8",
+      "gitBlobContentSha256": "97fb51a6207ed19bd32a704d27597f97a3241bd23c26dda1d5feaf2eb433a0c8",
+      "text": true,
+      "rawMatchesGit": true,
+      "workingLfSha256": "97fb51a6207ed19bd32a704d27597f97a3241bd23c26dda1d5feaf2eb433a0c8",
+      "gitLfSha256": "97fb51a6207ed19bd32a704d27597f97a3241bd23c26dda1d5feaf2eb433a0c8",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/shell/AccountsPanel.tsx",
+      "workingRawSha256": "62e211afb0e72144f26fb4975abf3e9c3a330d53c4065aac47c997e57f23d9be",
+      "gitBlobContentSha256": "7a47b449bf4ac77ae4cb1c4e35c8f009fb666f9d4b9ba0b75d268a453e57403b",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "7a47b449bf4ac77ae4cb1c4e35c8f009fb666f9d4b9ba0b75d268a453e57403b",
+      "gitLfSha256": "7a47b449bf4ac77ae4cb1c4e35c8f009fb666f9d4b9ba0b75d268a453e57403b",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/shell/ArticleView.tsx",
+      "workingRawSha256": "168ecc9ffab1bb94cdd9df8e13ec090e72694c3419d9a50e0caa1dfdc3b400aa",
+      "gitBlobContentSha256": "79fdf72dc253c052019641d2edf9617256d604442fd6d707ed70c04e3c04b29d",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "79fdf72dc253c052019641d2edf9617256d604442fd6d707ed70c04e3c04b29d",
+      "gitLfSha256": "79fdf72dc253c052019641d2edf9617256d604442fd6d707ed70c04e3c04b29d",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/shell/CommandPalette.tsx",
+      "workingRawSha256": "272ccfffbd0ad78975c2bfb691cbf88ede2f71d80c94d02f2fd3a60e97909da4",
+      "gitBlobContentSha256": "eb7a89bd84b317b716ec5a28f5141fe8880282736b15742c63364be723c4c38b",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "eb7a89bd84b317b716ec5a28f5141fe8880282736b15742c63364be723c4c38b",
+      "gitLfSha256": "eb7a89bd84b317b716ec5a28f5141fe8880282736b15742c63364be723c4c38b",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/shell/DiscoveryDesk.tsx",
+      "workingRawSha256": "7827c75c41ec2cff8d4061eb412fb45a14e7ab0a343ba3035d32b15dd0c1881a",
+      "gitBlobContentSha256": "6db4853b3b963eaaa0d263ab2742ebf4ec19190f975de22607c8ddb6ff031824",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "6db4853b3b963eaaa0d263ab2742ebf4ec19190f975de22607c8ddb6ff031824",
+      "gitLfSha256": "6db4853b3b963eaaa0d263ab2742ebf4ec19190f975de22607c8ddb6ff031824",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/shell/FractalMark.tsx",
+      "workingRawSha256": "b9260679549fef6b23a7ebae35cd28b8548b52c40b70b9c36b53002cb4ff85a3",
+      "gitBlobContentSha256": "c560bfa59237dd60bdf07bd7f274d58a785f9ad610892404ce3faa14148e2cdd",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "c560bfa59237dd60bdf07bd7f274d58a785f9ad610892404ce3faa14148e2cdd",
+      "gitLfSha256": "c560bfa59237dd60bdf07bd7f274d58a785f9ad610892404ce3faa14148e2cdd",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/shell/HomeScreen.tsx",
+      "workingRawSha256": "3862190ce65c0aa3792ae65462524ca535e4ee318481bda6295099668eac7dc5",
+      "gitBlobContentSha256": "289f5b752634896555d0f0099af1f8b6838abc4680208b6168697dabe2e81426",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "289f5b752634896555d0f0099af1f8b6838abc4680208b6168697dabe2e81426",
+      "gitLfSha256": "289f5b752634896555d0f0099af1f8b6838abc4680208b6168697dabe2e81426",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/shell/InterestPicker.tsx",
+      "workingRawSha256": "2a445df4c07ae69eaffbbf4492c1f893ca153cbffb3aa4f171977a789ac46105",
+      "gitBlobContentSha256": "d14cbb51f25c7d50d272163e1383fb7e7a2152e6880ac6aa22437c3e42afd772",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "d14cbb51f25c7d50d272163e1383fb7e7a2152e6880ac6aa22437c3e42afd772",
+      "gitLfSha256": "d14cbb51f25c7d50d272163e1383fb7e7a2152e6880ac6aa22437c3e42afd772",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/shell/LibraryScreen.tsx",
+      "workingRawSha256": "97f9fe150fa3dab9385884f63c645effd738c8ec65ab1de8b72dd7cba5ed6889",
+      "gitBlobContentSha256": "af6fefd956a029bfee0cba739366bb9aa81f7a9794bdf807de4762d2953fc4f7",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "af6fefd956a029bfee0cba739366bb9aa81f7a9794bdf807de4762d2953fc4f7",
+      "gitLfSha256": "af6fefd956a029bfee0cba739366bb9aa81f7a9794bdf807de4762d2953fc4f7",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/shell/Masthead.tsx",
+      "workingRawSha256": "c1757761f406717b570db9e1e89d290987b180ff1faddb355467d322eafc4ae4",
+      "gitBlobContentSha256": "282fc2acc72e60f81fe0263e8bdfb7f8f870d5526710f3ee8e4ba7a445333c44",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "282fc2acc72e60f81fe0263e8bdfb7f8f870d5526710f3ee8e4ba7a445333c44",
+      "gitLfSha256": "282fc2acc72e60f81fe0263e8bdfb7f8f870d5526710f3ee8e4ba7a445333c44",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/shell/NewsBoard.tsx",
+      "workingRawSha256": "2d75b7bcd56217e1aba9d66191eb3d93781f106521eb54709a0b1111b844c42b",
+      "gitBlobContentSha256": "1b88c312e492b9b301b6a203ff04944381b15b31cc1958700e0936ea1724392b",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "1b88c312e492b9b301b6a203ff04944381b15b31cc1958700e0936ea1724392b",
+      "gitLfSha256": "1b88c312e492b9b301b6a203ff04944381b15b31cc1958700e0936ea1724392b",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/shell/OmniInput.tsx",
+      "workingRawSha256": "2e6e9b05eb3a8d115c60d01bd223959be88ce3bd918d65b6cd670391ec31f5e6",
+      "gitBlobContentSha256": "017c05decdcbf317605bca9416857071a280ea43ec9d8cf433375cbc33875bdb",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "017c05decdcbf317605bca9416857071a280ea43ec9d8cf433375cbc33875bdb",
+      "gitLfSha256": "017c05decdcbf317605bca9416857071a280ea43ec9d8cf433375cbc33875bdb",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/shell/ProviderSetup.tsx",
+      "workingRawSha256": "dc2c3f801f88aae81945038303036d8ed50534e9081c8f13564b259eb5c57000",
+      "gitBlobContentSha256": "0292bb7eec69e4a715c8ed20c5031f5a769d05b07df85a8086333977284b7a01",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "0292bb7eec69e4a715c8ed20c5031f5a769d05b07df85a8086333977284b7a01",
+      "gitLfSha256": "0292bb7eec69e4a715c8ed20c5031f5a769d05b07df85a8086333977284b7a01",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/shell/PublicationControls.tsx",
+      "workingRawSha256": "c1b603dbe630b1d1448faa261c59b19fe688da7f705483d08690e50264e6ac45",
+      "gitBlobContentSha256": "c1b603dbe630b1d1448faa261c59b19fe688da7f705483d08690e50264e6ac45",
+      "text": true,
+      "rawMatchesGit": true,
+      "workingLfSha256": "c1b603dbe630b1d1448faa261c59b19fe688da7f705483d08690e50264e6ac45",
+      "gitLfSha256": "c1b603dbe630b1d1448faa261c59b19fe688da7f705483d08690e50264e6ac45",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/shell/SettingsScreen.tsx",
+      "workingRawSha256": "0aaa9eeefda1ced9f4ab5777324add799ca9195ae542f96d6693b136f3b9bdfd",
+      "gitBlobContentSha256": "7072528684a672e5a42d2d648a4467428b2e16c2256e358beced2b1eb1ec2173",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "7072528684a672e5a42d2d648a4467428b2e16c2256e358beced2b1eb1ec2173",
+      "gitLfSha256": "7072528684a672e5a42d2d648a4467428b2e16c2256e358beced2b1eb1ec2173",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/shell/Sidebar.tsx",
+      "workingRawSha256": "caa9ea2bfaa250c4a72a35bfdf8283f5a614e1f6c1735a7f4824b84629675ec4",
+      "gitBlobContentSha256": "caa9ea2bfaa250c4a72a35bfdf8283f5a614e1f6c1735a7f4824b84629675ec4",
+      "text": true,
+      "rawMatchesGit": true,
+      "workingLfSha256": "caa9ea2bfaa250c4a72a35bfdf8283f5a614e1f6c1735a7f4824b84629675ec4",
+      "gitLfSha256": "caa9ea2bfaa250c4a72a35bfdf8283f5a614e1f6c1735a7f4824b84629675ec4",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/shell/SourceStatus.tsx",
+      "workingRawSha256": "b7eef80133175f2f2f414837df508c02f81a0c73e64fac5917cf6185a4f36d74",
+      "gitBlobContentSha256": "b7eef80133175f2f2f414837df508c02f81a0c73e64fac5917cf6185a4f36d74",
+      "text": true,
+      "rawMatchesGit": true,
+      "workingLfSha256": "b7eef80133175f2f2f414837df508c02f81a0c73e64fac5917cf6185a4f36d74",
+      "gitLfSha256": "b7eef80133175f2f2f414837df508c02f81a0c73e64fac5917cf6185a4f36d74",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/shell/TopicManager.tsx",
+      "workingRawSha256": "025e04fbb684a7df5c052c5e9a5ab06292cb85fe4ebfcf57d851cfc928497cee",
+      "gitBlobContentSha256": "4d4bb91c6e9fb7ad2b16a271472882c1b4843750c83f73d64d469c007a866223",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "4d4bb91c6e9fb7ad2b16a271472882c1b4843750c83f73d64d469c007a866223",
+      "gitLfSha256": "4d4bb91c6e9fb7ad2b16a271472882c1b4843750c83f73d64d469c007a866223",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/shell/UsageBar.tsx",
+      "workingRawSha256": "580cd649d9fb63b194df53d3d71cf90cabfd261760a62fdc21f011e38f8139ec",
+      "gitBlobContentSha256": "5d30438b57e2bf6ac75d7c0de0e79e6994baca647c66bce66c7046bf92990187",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "5d30438b57e2bf6ac75d7c0de0e79e6994baca647c66bce66c7046bf92990187",
+      "gitLfSha256": "5d30438b57e2bf6ac75d7c0de0e79e6994baca647c66bce66c7046bf92990187",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/shell/Welcome.tsx",
+      "workingRawSha256": "a3b825c52a7b2b2267ad20f98878a32d12155a1090438e83b633d5a4d2ce3960",
+      "gitBlobContentSha256": "a8fb23b8a3fcaf18bb50377cb407de7edfc031f6c7876af55effd21227d7fd2e",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "a8fb23b8a3fcaf18bb50377cb407de7edfc031f6c7876af55effd21227d7fd2e",
+      "gitLfSha256": "a8fb23b8a3fcaf18bb50377cb407de7edfc031f6c7876af55effd21227d7fd2e",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/shell/classify.ts",
+      "workingRawSha256": "1c783bc03e0714c8958201c1e3f4d3ce881697933501c3cabb4e720607250a00",
+      "gitBlobContentSha256": "1d007d150612855612cc7ac2ae8a0d58e84d3af1a303c007c1ca304d9e274a69",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "1d007d150612855612cc7ac2ae8a0d58e84d3af1a303c007c1ca304d9e274a69",
+      "gitLfSha256": "1d007d150612855612cc7ac2ae8a0d58e84d3af1a303c007c1ca304d9e274a69",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/shell/fields.ts",
+      "workingRawSha256": "4a5831413b98d20f10354386b1eca88df3b8e799c9e536f9153f82f7a5a3bbf0",
+      "gitBlobContentSha256": "622b4e18be5fb9685f9a0bad514744e97640b2e093e8526094104520e8dccaff",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "622b4e18be5fb9685f9a0bad514744e97640b2e093e8526094104520e8dccaff",
+      "gitLfSha256": "622b4e18be5fb9685f9a0bad514744e97640b2e093e8526094104520e8dccaff",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/shell/hub-api.ts",
+      "workingRawSha256": "dfc83e44df180db32b7310d336dae4db0cae2d63f439abf0f807a04ee013f0a8",
+      "gitBlobContentSha256": "dfc83e44df180db32b7310d336dae4db0cae2d63f439abf0f807a04ee013f0a8",
+      "text": true,
+      "rawMatchesGit": true,
+      "workingLfSha256": "dfc83e44df180db32b7310d336dae4db0cae2d63f439abf0f807a04ee013f0a8",
+      "gitLfSha256": "dfc83e44df180db32b7310d336dae4db0cae2d63f439abf0f807a04ee013f0a8",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/shell/index-copy.ts",
+      "workingRawSha256": "9d17ed5c86140507fd8c7f2ef120eca70a48a56cc18414b77f54144b50eee21b",
+      "gitBlobContentSha256": "9d17ed5c86140507fd8c7f2ef120eca70a48a56cc18414b77f54144b50eee21b",
+      "text": true,
+      "rawMatchesGit": true,
+      "workingLfSha256": "9d17ed5c86140507fd8c7f2ef120eca70a48a56cc18414b77f54144b50eee21b",
+      "gitLfSha256": "9d17ed5c86140507fd8c7f2ef120eca70a48a56cc18414b77f54144b50eee21b",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/shell/library-model.ts",
+      "workingRawSha256": "134ce37f246898ac540e2ed5e87e1bd950028542a3d222442c454b5c5d439dba",
+      "gitBlobContentSha256": "134ce37f246898ac540e2ed5e87e1bd950028542a3d222442c454b5c5d439dba",
+      "text": true,
+      "rawMatchesGit": true,
+      "workingLfSha256": "134ce37f246898ac540e2ed5e87e1bd950028542a3d222442c454b5c5d439dba",
+      "gitLfSha256": "134ce37f246898ac540e2ed5e87e1bd950028542a3d222442c454b5c5d439dba",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/shell/paper-format.ts",
+      "workingRawSha256": "16c3cb9b3929888756c7d4cec6bb885e2be5bd57b67c314dbfaad25cb39f0be6",
+      "gitBlobContentSha256": "347c3186ceb93d2572c32aaf7393ae5c7d76ba0a5eac02e73131f937ee9f1234",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "347c3186ceb93d2572c32aaf7393ae5c7d76ba0a5eac02e73131f937ee9f1234",
+      "gitLfSha256": "347c3186ceb93d2572c32aaf7393ae5c7d76ba0a5eac02e73131f937ee9f1234",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/shell/preferences.ts",
+      "workingRawSha256": "ec76ba814a5eeb70c64a0f11a7a5d971c2dab197a57c9e724e3a8f5c9d444855",
+      "gitBlobContentSha256": "b16534c0bbaae42a8caac81a9afd3398e2437e66cfd6d9f676943e5cbb66c1c5",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "b16534c0bbaae42a8caac81a9afd3398e2437e66cfd6d9f676943e5cbb66c1c5",
+      "gitLfSha256": "b16534c0bbaae42a8caac81a9afd3398e2437e66cfd6d9f676943e5cbb66c1c5",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/shell/publication-model.ts",
+      "workingRawSha256": "04521fa5e6fd6208bd1252b5aa896fc3ab50e12fb166c2a274818527355190e4",
+      "gitBlobContentSha256": "04521fa5e6fd6208bd1252b5aa896fc3ab50e12fb166c2a274818527355190e4",
+      "text": true,
+      "rawMatchesGit": true,
+      "workingLfSha256": "04521fa5e6fd6208bd1252b5aa896fc3ab50e12fb166c2a274818527355190e4",
+      "gitLfSha256": "04521fa5e6fd6208bd1252b5aa896fc3ab50e12fb166c2a274818527355190e4",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/shell/settings-parts.tsx",
+      "workingRawSha256": "25f80f256fa8ad4ea2630dc3b72ed9aae642679429b4c87c5a826a7fcdcd07ac",
+      "gitBlobContentSha256": "6b40181a41db62daf6a30a47ef80c8291eb2d92579d69da4cf7415189c44b018",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "6b40181a41db62daf6a30a47ef80c8291eb2d92579d69da4cf7415189c44b018",
+      "gitLfSha256": "6b40181a41db62daf6a30a47ef80c8291eb2d92579d69da4cf7415189c44b018",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/shell/theme.ts",
+      "workingRawSha256": "fcb8e229fd17d024245ee579f1cebfd8fb3411a7051e6ef8d8a827e30ea866c7",
+      "gitBlobContentSha256": "d2ec482f366b26aeb85f8abea29d4e00cc03ca00b7c3c5dcd7622205d0a352c2",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "d2ec482f366b26aeb85f8abea29d4e00cc03ca00b7c3c5dcd7622205d0a352c2",
+      "gitLfSha256": "d2ec482f366b26aeb85f8abea29d4e00cc03ca00b7c3c5dcd7622205d0a352c2",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/styles.css",
+      "workingRawSha256": "bd0380125c1b68b388685a4180f06e603a652530974c38af13878d4724e96e67",
+      "gitBlobContentSha256": "81c65bcd9bbefe7304c98818753a635bd41a72c5b44c67df552e11cd6209617f",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "81c65bcd9bbefe7304c98818753a635bd41a72c5b44c67df552e11cd6209617f",
+      "gitLfSha256": "81c65bcd9bbefe7304c98818753a635bd41a72c5b44c67df552e11cd6209617f",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/src/vite-env.d.ts",
+      "workingRawSha256": "09961b01a5841f51f841f4a4397d7a83f234f346199f8a3f679ba226afe5b946",
+      "gitBlobContentSha256": "ae153360b53e2cbfcb86028bd927df3a2994d180eae2281dc78c98dbb9cfb661",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "ae153360b53e2cbfcb86028bd927df3a2994d180eae2281dc78c98dbb9cfb661",
+      "gitLfSha256": "ae153360b53e2cbfcb86028bd927df3a2994d180eae2281dc78c98dbb9cfb661",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "packages/ui/tsconfig.json",
+      "workingRawSha256": "12b61766cc5e5fa5660b84e0bbb5a93b93800d0481605bb5cc74e75c35dc97b7",
+      "gitBlobContentSha256": "f3e070445ef064d137be56b2689825bf906cac0b67e4430ce406583d6227c65c",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "f3e070445ef064d137be56b2689825bf906cac0b67e4430ce406583d6227c65c",
+      "gitLfSha256": "f3e070445ef064d137be56b2689825bf906cac0b67e4430ce406583d6227c65c",
+      "lfMatchesGit": true,
+      "workingCanonicalJsonSha256": "5f261924bc8c61f34f79c017eee3c46fd618f02c7a12a2ed4d66a78256325439",
+      "gitCanonicalJsonSha256": "5f261924bc8c61f34f79c017eee3c46fd618f02c7a12a2ed4d66a78256325439",
+      "canonicalJsonMatchesGit": true
+    },
+    {
+      "path": "packages/ui/vite.config.ts",
+      "workingRawSha256": "0afef2795e0f96a7bc4480598d36756a6965bd0d23be42a414f797093796e8cc",
+      "gitBlobContentSha256": "38784e0c5b64b27393dac412dea6406c8315b0d0fb490b95c8078ed72651d5c3",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "38784e0c5b64b27393dac412dea6406c8315b0d0fb490b95c8078ed72651d5c3",
+      "gitLfSha256": "38784e0c5b64b27393dac412dea6406c8315b0d0fb490b95c8078ed72651d5c3",
+      "lfMatchesGit": true
+    },
+    {
+      "path": "scripts/build-desktop.mjs",
+      "workingRawSha256": "6f193d49ecfcb51ba80c1af9216d88a52849c4579bfd09158d79bab3fabdf062",
+      "gitBlobContentSha256": "01c86d9e6ee5f3db121829d84af793cb0e51e34a3ede2aaf235273b0f5ae7a94",
+      "text": true,
+      "rawMatchesGit": false,
+      "workingLfSha256": "01c86d9e6ee5f3db121829d84af793cb0e51e34a3ede2aaf235273b0f5ae7a94",
+      "gitLfSha256": "01c86d9e6ee5f3db121829d84af793cb0e51e34a3ede2aaf235273b0f5ae7a94",
+      "lfMatchesGit": true
+    }
+  ],
+  "textHashPolicy": "Raw working and canonical Git blob content SHA-256 both retained; text compared after CRLF-to-LF, JSON also compared after parse/stringify; binaries compared raw.",
+  "excludedVerificationInputs": true,
+  "installerInstalled": false,
+  "ownedProcessExited": true,
+  "ownedWrapperExited": true,
+  "listenerReleased": true,
+  "earlierArtifactsPreserved": true
+}

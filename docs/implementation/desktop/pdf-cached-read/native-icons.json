@@ -1,0 +1,113 @@
+{
+  "status": "passed",
+  "method": "LoadLibraryExW as data/image resource; native RT_GROUP_ICON/RT_ICON bytes match accepted ICO entries",
+  "installerInstalled": false,
+  "artifacts": [
+    {
+      "path": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\dist\\installer-pdf-cached-read\\win-unpacked\\Fractal.exe",
+      "sha256": "0f8872b9d2368019b9056db1d588da6043b371dcd6633cd34d0c83b52a385e54",
+      "matchingBranchGroups": [
+        {
+          "resourceId": 1,
+          "images": [
+            {
+              "width": 16,
+              "height": 16,
+              "sha256": "a2d0e74613b61a87fe49c0de0190146cbf64488573256eee2a1982e5ac7d4d6b",
+              "equalsAcceptedIco": true
+            },
+            {
+              "width": 24,
+              "height": 24,
+              "sha256": "5c4796746601806c2192626232d687c43349f220e24102579b51f5b0f9daff61",
+              "equalsAcceptedIco": true
+            },
+            {
+              "width": 32,
+              "height": 32,
+              "sha256": "4287efc4d6d438f61ea48336ccfc9ff9c72d840ea76b94e0de93e32d306ff194",
+              "equalsAcceptedIco": true
+            },
+            {
+              "width": 48,
+              "height": 48,
+              "sha256": "ecdd62341c9908d1e14b946ddafd28959d71052987ca5c071873b5f75aecd51c",
+              "equalsAcceptedIco": true
+            },
+            {
+              "width": 64,
+              "height": 64,
+              "sha256": "5d184e62185853722358fabe5645954e9fc77240ddce60ce1cffa5486228866e",
+              "equalsAcceptedIco": true
+            },
+            {
+              "width": 128,
+              "height": 128,
+              "sha256": "0ee1d16ab0240f23d785c6156f2b30761e611a6a771bc3334f84a2ef63cba0de",
+              "equalsAcceptedIco": true
+            },
+            {
+              "width": 256,
+              "height": 256,
+              "sha256": "dab351189457896ee2182aab2b2415cc20c9c21158922919a4c55f408355c57a",
+              "equalsAcceptedIco": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-desktop\\dist\\installer-pdf-cached-read\\Fractal Setup 0.1.0.exe",
+      "sha256": "d03cb493b93c620ac77bf3555358f72b7d3dc1fb51fd00030ae6b2dead2561b8",
+      "matchingBranchGroups": [
+        {
+          "resourceId": 103,
+          "images": [
+            {
+              "width": 16,
+              "height": 16,
+              "sha256": "a2d0e74613b61a87fe49c0de0190146cbf64488573256eee2a1982e5ac7d4d6b",
+              "equalsAcceptedIco": true
+            },
+            {
+              "width": 24,
+              "height": 24,
+              "sha256": "5c4796746601806c2192626232d687c43349f220e24102579b51f5b0f9daff61",
+              "equalsAcceptedIco": true
+            },
+            {
+              "width": 32,
+              "height": 32,
+              "sha256": "4287efc4d6d438f61ea48336ccfc9ff9c72d840ea76b94e0de93e32d306ff194",
+              "equalsAcceptedIco": true
+            },
+            {
+              "width": 48,
+              "height": 48,
+              "sha256": "ecdd62341c9908d1e14b946ddafd28959d71052987ca5c071873b5f75aecd51c",
+              "equalsAcceptedIco": true
+            },
+            {
+              "width": 64,
+              "height": 64,
+              "sha256": "5d184e62185853722358fabe5645954e9fc77240ddce60ce1cffa5486228866e",
+              "equalsAcceptedIco": true
+            },
+            {
+              "width": 128,
+              "height": 128,
+              "sha256": "0ee1d16ab0240f23d785c6156f2b30761e611a6a771bc3334f84a2ef63cba0de",
+              "equalsAcceptedIco": true
+            },
+            {
+              "width": 256,
+              "height": 256,
+              "sha256": "dab351189457896ee2182aab2b2415cc20c9c21158922919a4c55f408355c57a",
+              "equalsAcceptedIco": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

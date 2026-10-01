@@ -128,6 +128,7 @@ try {
   evidence.after = compact(after); evidence.cases.push({ name: 'restored-primary-Read', exactOriginalHash: sha(bytes), mountedPdf: true, recentAfterActualRead: true, retainedMetadataPreserved: true });
   await page.screenshot({ path: join(output, 'restored-primary-read.png') });
   if (mode === 'packaged') {
+    await page.evaluate('window.__name = (value) => value');
     await page.locator('.reader-bar__views button').first().click();
     await page.getByRole('button', { name: 'T', exact: true }).click();
     await page.locator('[data-testid="text-layer-1"] span[data-boundaries]').first().waitFor();

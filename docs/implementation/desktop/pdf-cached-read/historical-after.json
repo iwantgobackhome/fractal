@@ -1,0 +1,47 @@
+[
+  {
+    "path": "dist/installer/Fractal Setup 0.1.0.exe",
+    "bytes": 117588458,
+    "sha256": "8662a9e659428fca7279075d6cc8cef6efb563cb0eb820dc2587d4f8b9c8b557"
+  },
+  {
+    "path": "dist/installer/win-unpacked/Fractal.exe",
+    "bytes": 246032896,
+    "sha256": "5592bd308cc6a486a6d8fda4e4d01c204ac7e0beec6e175aa115ce7d8266c891"
+  },
+  {
+    "path": "dist/installer/win-unpacked/resources/app.asar",
+    "bytes": 13186162,
+    "sha256": "ff789125fbeec83978dac39ec4d6e6aabbdd237cd21dc3e421128297d8082d18"
+  },
+  {
+    "path": "dist/installer-pdf-acquisition/Fractal Setup 0.1.0.exe",
+    "bytes": 117592923,
+    "sha256": "4183b52a77e767755b04816783c6fbfb02fd47e70173d8ab231dfdcd94add97f"
+  },
+  {
+    "path": "dist/installer-pdf-acquisition/win-unpacked/Fractal.exe",
+    "bytes": 246032896,
+    "sha256": "ec0ccd91a298bbb17d2c36e602ce2b231663dc4d83c582931191c311768a9ccf"
+  },
+  {
+    "path": "dist/installer-pdf-acquisition/win-unpacked/resources/app.asar",
+    "bytes": 13208999,
+    "sha256": "993910967f021d82c9a8ea8aaa5d42303c07ead2223a4860b087ceb15cc1d65b"
+  },
+  {
+    "path": "dist/installer-selection-repair/Fractal Setup 0.1.0.exe",
+    "bytes": 117588001,
+    "sha256": "63ee8767cf28671a1d140dada62502b51ebddfb9f2e515c7cc020714cb52b986"
+  },
+  {
+    "path": "dist/installer-selection-repair/win-unpacked/Fractal.exe",
+    "bytes": 246032896,
+    "sha256": "053eb6d3931cee208b54154cb0840fc22f4ffe9a47d6663f7635b189e8fbd9c1"
+  },
+  {
+    "path": "dist/installer-selection-repair/win-unpacked/resources/app.asar",
+    "bytes": 13186982,
+    "sha256": "c0f5e32e378d15dd92e7e84ba8d344e1745991a85a854503cfe0cf671a341ed1"
+  }
+]
