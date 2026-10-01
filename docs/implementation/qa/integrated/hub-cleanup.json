@@ -1,0 +1,38 @@
+{
+    "recordedAtUtc":  "2026-10-01T00:28:48.0799963Z",
+    "sourceSha":  "bf0786a0d3eab20dd428a27e5fec2a38ed076749",
+    "loadedHubSource":  "56230ad52493bff69f6905cd87caaa5a6743b8b2",
+    "bundleSha256":  "30c73b5c66d3ee4556e7aa0c7bc9abcb9fdec5962f5f4cedfab76a4130221fa4",
+    "releaseMessage":  "msg_edd9da5a7080",
+    "dReleaseMessage":  "msg_32290d21ed85",
+    "before":  {
+                   "processId":  40024,
+                   "executable":  "C:\\Program Files\\nodejs\\node.exe",
+                   "startUtc":  "2026-09-30T22:10:16.2834590Z",
+                   "command":  "\"C:\\Program Files\\nodejs\\node.exe\" docs/implementation/qa/native-bridge/server.bundle.mjs ",
+                   "listeners":  [
+                                     {
+                                         "LocalAddress":  "127.0.0.1",
+                                         "LocalPort":  6175,
+                                         "OwningProcess":  40024
+                                     },
+                                     {
+                                         "LocalAddress":  "127.0.0.1",
+                                         "LocalPort":  6174,
+                                         "OwningProcess":  40024
+                                     },
+                                     {
+                                         "LocalAddress":  "127.0.0.1",
+                                         "LocalPort":  3288,
+                                         "OwningProcess":  40024
+                                     }
+                                 ]
+               },
+    "stopMarker":  "C:\\Users\\Home\\orca\\workspaces\\fractal\\fractal-reader-qa\\docs\\implementation\\qa\\native-bridge\\runtime\\stop",
+    "processExited":  true,
+    "remainingListeners":  [
+
+                           ],
+    "privateDataRetained":  "docs/implementation/qa/native-bridge/runtime/http-YYHI5c",
+    "deviceOperation":  "none"
+}
