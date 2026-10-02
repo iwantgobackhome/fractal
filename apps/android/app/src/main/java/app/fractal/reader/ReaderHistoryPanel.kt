@@ -16,7 +16,7 @@ import kotlinx.coroutines.*
 import kotlinx.serialization.json.*
 
 private fun JsonObject.string(name: String) = this[name]?.jsonPrimitive?.contentOrNull.orEmpty()
-private fun selectionContext(value: Pair<Int, PdfTextSelection>?): JsonObject = buildJsonObject {
+internal fun selectionContext(value: Pair<Int, PdfTextSelection>?): JsonObject = buildJsonObject {
     value?.let { (page, selection) ->
         put("page", page); put("text", selection.text); put("origin", selection.origin); put("blockId", selection.blockId)
         put("provenanceLabel", selection.provenance); put("hash", selection.pdfSha256); put("version", selection.extractionVersion)
@@ -25,7 +25,7 @@ private fun selectionContext(value: Pair<Int, PdfTextSelection>?): JsonObject = 
         put("rects", rectangles(selection.rects)); put("originalRects", rectangles(selection.originalRects))
     }
 }
-private fun contextSelection(context: JsonObject): Pair<Int, PdfTextSelection>? {
+internal fun contextSelection(context: JsonObject): Pair<Int, PdfTextSelection>? {
     val page = context["page"]?.jsonPrimitive?.intOrNull ?: return null
     fun rectangles(name: String) = (context[name] as? JsonArray).orEmpty().map { value ->
         val r = value.jsonObject; fun n(name: String) = r[name]?.jsonPrimitive?.floatOrNull ?: 0f
@@ -39,7 +39,7 @@ private fun contextSelection(context: JsonObject): Pair<Int, PdfTextSelection>? 
 
 @Composable
 internal fun DurableReaderPanel(app: ReaderApplication, paperKey: String, annotations: List<AnnotationEntity>, pages: PdfPages?, tab: String,
-    onTabChange: (String) -> Unit, onJump: (Int) -> Unit, modifier: Modifier, incomingQuote: Pair<Int, PdfTextSelection>?, clearQuote: () -> Unit, onClose: () -> Unit) {
+    onTabChange: (String) -> Unit, onJump: (Int) -> Unit, modifier: Modifier, incomingQuote: Pair<Int, PdfTextSelection>?, clearQuote: () -> Unit, onClose: () -> Unit, onRequestCreated: (String, Pair<Int, PdfTextSelection>?) -> Unit = { _, _ -> }) {
     val colors = LocalFractalColors.current
     val offlineMessage = libraryText("Offline: showing retained history.", "오프라인: 저장된 기록을 표시합니다.")
     val unavailableModel = libraryText("Selected model is unavailable. Choose another model or Hub default.", "선택한 모델을 사용할 수 없습니다. 다른 모델이나 허브 기본값을 선택하세요.")
@@ -98,31 +98,10 @@ internal fun DurableReaderPanel(app: ReaderApplication, paperKey: String, annota
                 val selectedModel = resolveReaderModel(model, models)
                 val body = if (!explanation) readerQuestionBody(asked, language, selectedModel, retained) else {
                     val selected = retained ?: error("Choose original text or a region first")
-                    require(selected.second.origin == "original")
-                    val base = readerQuestionBody("", language, selectedModel, selected)
-                    JsonObject(base.filterKeys { it !in listOf("question", "selectedText", "rect") } + buildJsonObject {
-                        put("kind", if (selected.second.text.isBlank()) "figure" else "text")
-                        put("surroundingText", selected.second.text); put("bbox", base["rect"] ?: error("Original region is unavailable"))
-                        if (selected.second.text.isBlank() && pages?.identityUnchanged() == true && pages.pdfSha256 == selected.second.pdfSha256) {
-                            val encoded = withContext(Dispatchers.IO) {
-                                val rect = base["rect"]!!.jsonObject
-                                val image = pages.bitmap(selected.first - 1, 1000)
-                                fun value(name: String) = rect[name]!!.jsonPrimitive.double
-                                val x = (value("x") * image.width).toInt().coerceIn(0, image.width - 1)
-                                val y = (value("y") * image.height).toInt().coerceIn(0, image.height - 1)
-                                val width = (value("width") * image.width).toInt().coerceIn(1, image.width - x)
-                                val height = (value("height") * image.height).toInt().coerceIn(1, image.height - y)
-                                val crop = android.graphics.Bitmap.createBitmap(image, x, y, width, height)
-                                val bytes = java.io.ByteArrayOutputStream()
-                                crop.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, bytes)
-                                if (crop !== image) crop.recycle()
-                                android.util.Base64.encodeToString(bytes.toByteArray(), android.util.Base64.NO_WRAP)
-                            }
-                            if (encoded.length <= 4_000_000) put("croppedPngBase64", encoded)
-                        }
-                    })
+                    withReaderCrop(readerExplainBody(language, selectedModel, selected), pages, selected)
                 }
-                app.history.create(paperKey, if (explanation) "explanation" else "question", body, localContext)
+                val requestId = app.history.create(paperKey, if (explanation) "explanation" else "question", body, localContext)
+                onRequestCreated(requestId, retained)
                 question = ""; saveDraft(); error = ""
             } catch (cancel: CancellationException) { throw cancel }
             catch (failure: Exception) { error = failure.message.orEmpty() }
@@ -209,7 +188,7 @@ internal fun DurableReaderPanel(app: ReaderApplication, paperKey: String, annota
                 val retainedChoice = if (model.isNotEmpty() && models.none { it.value == model }) listOf(model to "$model · $unavailableLabel") else emptyList()
                 ResearchSelector(libraryText("Model", "모델"), model, listOf("" to libraryText("Hub default", "허브 기본값")) + modelOptions + retainedChoice, { model = it; saveDraft() })
                 if (!modelAvailable) Text(unavailableModel, style = MaterialTheme.typography.bodySmall)
-                val languages = listOf("auto" to libraryText("Automatic", "자동"), "en" to "English", "ko" to "한국어", "ja" to "日本語", "zh-CN" to "简体中文", "zh-Hant" to "繁體中文", "de" to "Deutsch", "fr" to "Français", "es" to "Español", "pt-BR" to "Português (Brasil)", "it" to "Italiano", "ar" to "العربية")
+                val languages = readerLanguageOptions()
                 val retainedLanguage = if (languages.none { it.first == language }) listOf(language to java.util.Locale.forLanguageTag(language).getDisplayName(java.util.Locale.getDefault())) else emptyList()
                 ResearchSelector(libraryText("Answer language", "답변 언어"), language, languages + retainedLanguage, { language = it; saveDraft() }, Modifier.padding(top = 8.dp))
                 OutlinedTextField(question, { question = it; saveDraft() }, label = { Text(libraryText("Ask about this paper", "이 논문에 질문")) }, modifier = Modifier.fillMaxWidth().padding(top = 8.dp), minLines = 2, maxLines = 5)

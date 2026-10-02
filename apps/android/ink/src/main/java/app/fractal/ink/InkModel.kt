@@ -107,6 +107,15 @@ class InkPageState {
         val change = InkChange(strokes, after)
         undo.addLast(change); redo.clear(); strokes = after; onChange?.invoke(change)
     }
+    private var gestureBefore: List<InkStroke>? = null
+    fun beginGesture() { gestureBefore = strokes }
+    fun previewGesture(after: List<InkStroke>) { strokes = after }
+    fun finishGesture(commit: Boolean) {
+        val before = gestureBefore ?: return
+        val after = strokes
+        strokes = before; gestureBefore = null
+        if (commit) apply(after)
+    }
     fun undo(): Boolean {
         if (undo.isEmpty()) return false
         val change = undo.removeLast(); redo.addLast(change); strokes = change.before; onChange?.invoke(InkChange(change.after, change.before)); return true
@@ -136,7 +145,7 @@ private fun InkStroke.edited(
     points: List<InkPoint> = this.points,
 ) = copy(deleted = deleted, color = color, points = points, rev = rev + 1, updatedAt = Instant.now().toString())
 
-enum class InkTool { Ballpoint, Fountain, Pencil, Highlighter, Eraser, Shape, Lasso, TextSelection }
+enum class InkTool { Ballpoint, Fountain, Pencil, Highlighter, Eraser, Shape, Lasso }
 enum class EraserMode { Stroke, Partial }
 enum class ShapeMode { Line, Arrow, Rectangle, Ellipse }
 class InkToolState {

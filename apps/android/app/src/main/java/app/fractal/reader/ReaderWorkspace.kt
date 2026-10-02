@@ -10,6 +10,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInWindow
+import androidx.compose.ui.geometry.Rect as ComposeRect
+import androidx.compose.ui.layout.boundsInWindow
+import app.fractal.sync.PaperStructure
 import androidx.compose.ui.platform.*
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.*
@@ -55,6 +61,7 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
     val annotations by app.database.annotations().observePaper(paper.paperKey).collectAsState(emptyList())
     var pages by remember(paper.paperKey) { mutableStateOf<PdfPages?>(null) }
     var status by remember(paper.paperKey) { mutableStateOf(app.getString(R.string.loading_pdf)) }
+    var sourcePageContext by remember(paper.paperKey) { mutableStateOf<Map<Int, String>>(emptyMap()) }
     var blocks by remember(paper.paperKey) { mutableStateOf<List<TranslatedBlock>>(emptyList()) }
     var mode by remember(paper.paperKey) { mutableStateOf("original") }
     var driver by remember { mutableStateOf("original") }
@@ -76,11 +83,29 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
     var viewport by remember { mutableStateOf<Rect?>(null) }
     var noteSelection by remember { mutableStateOf<Pair<Int, PdfTextSelection>?>(null) }
     var toolsMenu by remember { mutableStateOf(false) }
+    var structure by remember(paper.paperKey) { mutableStateOf<PaperStructure?>(null) }
+    var answerTarget by remember(paper.paperKey) { mutableStateOf<ReaderAnswerTarget?>(null) }
+    var answerPosition by remember(paper.paperKey) { mutableStateOf<Offset?>(null) }
+    var rootPosition by remember { mutableStateOf(Offset.Zero) }
+    val pageOrigins = remember(paper.paperKey) { mutableStateMapOf<Int, ComposeRect>() }
+    fun openAnswer(selected: Pair<Int, PdfTextSelection>?, explain: Boolean = false, requestId: String? = null) {
+        val rect = selected?.second?.rects?.firstOrNull()
+        val origin = selected?.first?.let { pageOrigins[it] }
+        val anchor = if (origin != null && rect != null) origin.topLeft - rootPosition + Offset(rect.x * origin.width, (rect.y + rect.height) * origin.height) else null
+        answerTarget = ReaderAnswerTarget(selected, explain = explain, requestId = requestId, anchor = anchor)
+        panel = false
+    }
     var fullTitle by remember { mutableStateOf(false) }
     LaunchedEffect(paper.paperKey) {
-        app.database.metadata().snapshot(paper.paperKey)?.let { blocks = translatedBlocks(WireJson.format.parseToJsonElement(it.json).jsonObject) }
+        app.database.metadata().snapshot(paper.paperKey)?.let {
+            val snapshot = WireJson.format.parseToJsonElement(it.json).jsonObject
+            blocks = translatedBlocks(snapshot); sourcePageContext = structurePageContext(snapshot)
+        }
         runCatching { app.sync.refreshPaperMetadata(paper.paperKey) }.onSuccess {
-            app.database.metadata().snapshot(paper.paperKey)?.let { cached -> blocks = translatedBlocks(WireJson.format.parseToJsonElement(cached.json).jsonObject) }
+            app.database.metadata().snapshot(paper.paperKey)?.let { cached ->
+                val snapshot = WireJson.format.parseToJsonElement(cached.json).jsonObject
+                blocks = translatedBlocks(snapshot); sourcePageContext = structurePageContext(snapshot)
+            }
         }
     }
     LaunchedEffect(paper.paperKey) {
@@ -93,6 +118,12 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
             status = ""
         } catch (error: CancellationException) { throw error }
         catch (error: Exception) { status = app.getString(R.string.offline_unavailable) }
+    }
+    LaunchedEffect(paper.paperKey, pages) {
+        val source = pages ?: return@LaunchedEffect
+        try { app.structure.load(paper.paperKey, source.pdfSha256) { structure = it } }
+        catch (cancel: CancellationException) { throw cancel }
+        catch (_: Exception) { /* Retained structure remains available offline. */ }
     }
     val opened = pages
     DisposableEffect(opened) { onDispose { opened?.close() } }
@@ -156,7 +187,7 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
         val ordinal = indices.indexOfFirst { it.blockId == anchor.block }.coerceAtLeast(0)
         scope.launch { sourceList.restore(anchor.page - 1, (ordinal + anchor.fraction) / indices.size.coerceAtLeast(1)) }
     }
-    BoxWithConstraints(Modifier.fillMaxSize().background(colors.paper)) {
+    BoxWithConstraints(Modifier.fillMaxSize().background(colors.paper).onGloballyPositioned { rootPosition = it.positionInWindow() }) {
         val availableHeight = maxHeight
         val compact = maxWidth < 600.dp
         val split = maxWidth >= 840.dp && mode == "split" && blocks.isNotEmpty()
@@ -207,7 +238,7 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                         TextButton(onClick = { savePosition(); onBack() }) { Text("‹", style = MaterialTheme.typography.headlineSmall) }
                         Text(paper.title ?: paper.paperKey, Modifier.weight(1f).heightIn(min = 48.dp).wrapContentHeight(Alignment.CenterVertically).clickable { fullTitle = true }, style = MaterialTheme.typography.titleMedium.copy(fontFamily = ScholarlySerif), maxLines = 1, overflow = TextOverflow.Ellipsis)
                         TextButton(onClick = { panelTab = "notes"; panel = true }) { Text(libraryText("Notes", "노트")) }
-                        TextButton(onClick = { panelTab = "questions"; panel = true }) { Text(libraryText("Ask", "질문")) }
+                        TextButton(onClick = { openAnswer(selection) }) { Text(libraryText("Ask", "질문")) }
                     }
                     Row(Modifier.fillMaxWidth().height(headerRow).padding(horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                         val modes = listOf("original" to libraryText("Original", "원문"), "translation" to libraryText("Translation", "번역"), "split" to libraryText("Split", "나란히")).filter { it.first == "original" || blocks.isNotEmpty() }
@@ -219,8 +250,7 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                         Text("$activePage / ${pages?.pageCount ?: 0}", Modifier.padding(horizontal = 12.dp), style = MaterialTheme.typography.bodySmall)
                         Box { TextButton(onClick = { toolsMenu = true }) { Text(libraryText("Tools ▾", "도구 ▾")) }
                             DropdownMenu(toolsMenu, { toolsMenu = false }) {
-                                DropdownMenuItem(text = { Text(libraryText("Select original text", "원문 텍스트 선택")) }, enabled = sourceVisible, onClick = { regionMode = false; tool.active = InkTool.TextSelection; toolsMenu = false })
-                                DropdownMenuItem(text = { Text(libraryText("Deliberately select a region", "직접 영역 선택")) }, enabled = sourceVisible, onClick = { regionMode = true; tool.active = InkTool.TextSelection; toolsMenu = false })
+                                DropdownMenuItem(text = { Text(libraryText("Deliberately select a region", "직접 영역 선택")) }, enabled = sourceVisible, onClick = { regionMode = !regionMode; toolsMenu = false })
                                 DropdownMenuItem(text = { Text(libraryText("Fit original page width", "원문 너비 맞춤")) }, enabled = sourceVisible, onClick = { zoom = 1f; toolsMenu = false })
                                 DropdownMenuItem(text = { Text(libraryText("Add source note", "원문 노트 추가")) }, enabled = sourceVisible, onClick = { noteSelection = activePage to PdfTextSelection("", listOf(PdfRect(.08f, .15f, .02f, .02f)), provenance = "deliberate-region", pdfSha256 = pages?.pdfSha256); toolsMenu = false })
                                 DropdownMenuItem(text = { Text(libraryText("Retained history", "저장된 기록")) }, onClick = { panelTab = "history"; panel = true; toolsMenu = false })
@@ -231,11 +261,11 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
             }
             HorizontalDivider(color = colors.rule, thickness = .5.dp)
             if (compact) Box(Modifier.fillMaxWidth().height(48.dp)) {
-                if (sourceVisible) InkToolbar(states.getOrPut(activePage) { InkPageState() }, tool, onToolSelected = { if (it == InkTool.TextSelection) regionMode = false })
+                if (sourceVisible) InkToolbar(states.getOrPut(activePage) { InkPageState() }, tool, onToolSelected = { regionMode = false }, regionMode = regionMode, onRegionToggle = { regionMode = !regionMode })
             }
             Row(Modifier.weight(1f)) {
                 if (!compact) Box(Modifier.width(48.dp).fillMaxHeight()) {
-                    if (sourceVisible) InkToolbar(states.getOrPut(activePage) { InkPageState() }, tool, Modifier.fillMaxSize(), onToolSelected = { if (it == InkTool.TextSelection) regionMode = false })
+                    if (sourceVisible) InkToolbar(states.getOrPut(activePage) { InkPageState() }, tool, Modifier.fillMaxSize(), onToolSelected = { regionMode = false }, regionMode = regionMode, onRegionToggle = { regionMode = !regionMode })
                 }
                 Box(Modifier.weight(1f).fillMaxHeight()) {
                     Row(Modifier.fillMaxSize()) {
@@ -252,7 +282,7 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                                         onFingerGesture = { dy, factor, focusY ->
                                             zoom = (zoom * factor).coerceIn(.5f, 4f)
                                             scope.launch { if (factor != 1f) { withFrameNanos { }; yield() }; sourceList.scrollBy(focusY * (factor - 1f) - dy) }
-                                        }, onWritingStateChanged = { writing = it; if (it && tool.active != InkTool.TextSelection) barVisible = false },
+                                        }, onWritingStateChanged = { writing = it; if (it && !regionMode) barVisible = false },
                                         onSelection = { selection = index + 1 to it; selectionMessage = "" },
                                         onDoubleTap = { zoom = if (zoom == 1f) 1.5f else 1f },
                                         onInkChanged = { before, after -> scope.launch {
@@ -261,6 +291,12 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                                             for (stroke in before.filter { it.id !in new }) app.sync.saveLocal(WireJson.format.parseToJsonElement(InkJson.format.encodeToString(InkStroke.serializer(), stroke.copy(deleted = true, updatedAt = Instant.now().toString()))).jsonObject)
                                             SyncScheduler.now(app, app.settings.getBoolean("wifiOnly", false))
                                         } }, contentOverlay = { width, height, textPage ->
+                                            Box(Modifier.matchParentSize().onGloballyPositioned { pageOrigins[index + 1] = it.boundsInWindow() })
+                                            ReaderStructureOverlay(structure?.items.orEmpty().filter { it.page == index + 1 }, width, height) { item, anchor ->
+                                                answerTarget = ReaderAnswerTarget(structureSelection(item, source.pdfSha256), item,
+                                                    textPage?.text ?: sourcePageContext[index + 1].orEmpty(), explain = true, anchor = anchor - rootPosition)
+                                                panel = false
+                                            }
                                             StickyNotes(app, annotations.filter { it.kind == "memo" && it.page == index + 1 }, width, height, textPage, source.pdfSha256)
                                         })
                                 }
@@ -279,7 +315,7 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                     }
                     if (selectionMessage.isNotBlank()) Surface(Modifier.align(Alignment.BottomCenter).fillMaxWidth().nativeInkBlocker(), color = colors.paper) {
                         Column(Modifier.padding(12.dp)) { Text(selectionMessage, style = MaterialTheme.typography.bodySmall)
-                            Row { TextButton(onClick = { regionMode = true; tool.active = InkTool.TextSelection; selectionMessage = "" }) { Text(libraryText("Select a region", "영역 선택")) }
+                            Row { TextButton(onClick = { regionMode = true; selectionMessage = "" }) { Text(libraryText("Select a region", "영역 선택")) }
                                 TextButton(onClick = { selectionMessage = "" }) { Text(libraryText("Dismiss", "닫기")) } }
                         }
                     }
@@ -290,7 +326,8 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                                 Modifier.padding(horizontal = 12.dp, vertical = 4.dp), maxLines = 2, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodySmall)
                                 Row(Modifier.horizontalScroll(rememberScrollState())) {
                                     TextButton(enabled = selected.second.text.isNotBlank(), onClick = { clipboard.setText(androidx.compose.ui.text.AnnotatedString(selected.second.text)) }) { Text(libraryText("Copy", "복사")) }
-                                    TextButton(onClick = { quote = selected; panelTab = "questions"; panel = true; selection = null }) { Text(libraryText("Quote / explain", "인용 / 설명")) }
+                                    TextButton(onClick = { openAnswer(selected, explain = selected.second.origin == "original"); selection = null }) { Text(libraryText("Quote / explain", "인용 / 설명")) }
+                                    TextButton(onClick = { openAnswer(selected); selection = null }) { Text(libraryText("Ask", "질문")) }
                                     TextButton(onClick = { scope.launch { saveHighlight(app, paper.paperKey, selected.first, selected.second, "yellow") }; selection = null }) { Text(libraryText("Highlight", "강조")) }
                                     TextButton(onClick = { noteSelection = selected; selection = null }) { Text(libraryText("Note", "노트")) }
                                     TextButton(onClick = { selection = null }) { Text(libraryText("Clear", "해제")) }
@@ -299,13 +336,17 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                         }
                     }
                     if (panel && !compact) SidePanel(app, paper.paperKey, annotations, pages, panelTab, { panelTab = it }, ::jump,
-                        Modifier.align(Alignment.CenterEnd).width(panelWidth).fillMaxHeight(), quote, { quote = null }, onClose = { panel = false })
+                        Modifier.align(Alignment.CenterEnd).width(panelWidth).fillMaxHeight(), quote, { quote = null }, onClose = { panel = false }, onRequestCreated = { id, selected -> openAnswer(selected, requestId = id) })
                 }
             }
         }
+        answerTarget?.let { target ->
+            ReaderAnswerCard(app, paper.paperKey, pages, target, answerPosition, { answerPosition = it },
+                with(density) { maxWidth.toPx() }, with(density) { maxHeight.toPx() }, ::jump, { answerTarget = null })
+        }
         if (panel && compact) ModalBottomSheet(onDismissRequest = { panel = false }, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
             SidePanel(app, paper.paperKey, annotations, pages, panelTab, { panelTab = it }, ::jump,
-                Modifier.fillMaxWidth().height(availableHeight * .85f), quote, { quote = null }, onClose = { panel = false })
+                Modifier.fillMaxWidth().height(availableHeight * .85f), quote, { quote = null }, onClose = { panel = false }, onRequestCreated = { id, selected -> openAnswer(selected, requestId = id) })
         }
     }
     noteSelection?.let { (page, selected) -> NoteEditor(null, selected.text, onDismiss = { noteSelection = null }) { text, color ->

@@ -111,7 +111,7 @@ class ReaderStageTest {
         if (compose.activity.resources.configuration.screenWidthDp >= 840) { mode("Split"); capture("reader-hub-cached-split") }
         mode("Translation"); capture("reader-hub-cached-translation")
         mode("Original")
-        compose.onNodeWithText("Ask", substring = false).performClick()
+        compose.onNodeWithText("Notes", substring = false).performClick()
         compose.onNodeWithContentDescription("Reader panel").performClick(); compose.onAllNodesWithText("History").onLast().performClick()
         compose.onNodeWithContentDescription("Filter history").performClick(); compose.onAllNodesWithText("Explanations").onLast().performClick()
         assertTrue(app.database.metadata().observeHistory(cached.paperKey).first().any { it.status == "completed" }); capture("reader-hub-cached-history")
@@ -136,19 +136,21 @@ class ReaderStageTest {
     }
     @Test fun genuineCachedRangeCopyQuoteAndHandles() = runBlocking {
         open()
-        compose.onNodeWithContentDescription("Select text", substring = false).performClick()
         val result = app.originalText.page(key, hash, 1, 5).page!!
         val geometry = OriginalTextGeometry(result)
         val range = geometry.range(4, 7)!!
         val quad = range.displayQuads.first()
         val startX = quad.map { it.x }.average(); val startY = quad.map { it.y }.average()
         val surface = surfaces().first(); val at = IntArray(2)
-        compose.runOnUiThread { surface.getLocationOnScreen(at) }
+        compose.runOnUiThread { surface.getLocationInWindow(at) }
         val x = at[0] + (startX * surface.width).toFloat(); val y = at[1] + (startY * surface.height).toFloat()
         val endQuad = range.displayQuads.last()
         val endX = at[0] + (endQuad.map { it.x }.average() * surface.width).toFloat()
         val endY = at[1] + (endQuad.map { it.y }.average() * surface.height).toFloat()
-        event(MotionEvent.ACTION_DOWN, x, y); event(MotionEvent.ACTION_MOVE, endX, endY); event(MotionEvent.ACTION_UP, endX, endY)
+        event(MotionEvent.ACTION_DOWN, x, y, MotionEvent.TOOL_TYPE_FINGER)
+        SystemClock.sleep(450)
+        event(MotionEvent.ACTION_MOVE, endX, endY, MotionEvent.TOOL_TYPE_FINGER)
+        event(MotionEvent.ACTION_UP, endX, endY, MotionEvent.TOOL_TYPE_FINGER)
         compose.onNodeWithContentDescription("Selection start handle").assertExists()
         compose.onNodeWithContentDescription("Selection end handle").assertExists()
         compose.onNodeWithText("Copy", substring = false).performClick()
@@ -158,7 +160,7 @@ class ReaderStageTest {
         capture("reader-cached-selection")
         compose.onNodeWithText("Quote / explain").performClick()
         compose.onNodeWithText("iii", substring = false).assertExists()
-        compose.onNodeWithText("Close", substring = false).performClick()
+        compose.onNodeWithTag("reader-answer-close").performClick()
         compose.onNodeWithText("Ask", substring = false).performClick()
         compose.onNodeWithText("iii", substring = false).assertExists()
         // Verify actual rendered crop/rotation frames independently from the selection UI.
@@ -267,7 +269,7 @@ class ReaderStageTest {
         compose.onNodeWithText("허브 기본값").assertExists(); compose.onNodeWithText("답변 언어").assertExists()
         capture("reader-ko-quote-selectors")
         compose.onNodeWithText("닫기", substring = false).performClick()
-        compose.onNodeWithText("질문", substring = false).performClick()
+        compose.onNodeWithText("노트", substring = false).performClick()
         compose.onNodeWithContentDescription("읽기 패널").performClick(); compose.onAllNodesWithText("기록").onLast().performClick()
         compose.onNodeWithContentDescription("기록 필터").performClick(); compose.onAllNodesWithText("설명").onLast().performClick()
         capture("reader-ko-history")
