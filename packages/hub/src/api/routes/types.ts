@@ -58,9 +58,7 @@ export function parseRequest<T>(schema: ZodType<T>, input: unknown): T {
 
 /** Long ink strokes need room; all other JSON routes retain the small default. */
 export function jsonBodyLimit(request: IncomingMessage): number {
-  return request.method === 'POST' && new URL(request.url ?? '/', 'http://localhost').pathname === '/api/sync/push'
-    ? 4 * 1024 * 1024
-    : 64 * 1024;
+  return request.method === 'POST' && new URL(request.url ?? '/', 'http://localhost').pathname === '/api/sync/push' ? 4 * 1024 * 1024 : 64 * 1024;
 }
 
 /** The raw request body, refused past `max` bytes. */

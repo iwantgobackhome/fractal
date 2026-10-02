@@ -19,17 +19,37 @@ describe('sync push body limits', () => {
     const headers = { origin: url, 'x-paperread-token': service.token, 'content-type': 'application/json' };
     const paperKey = `pdf-${'a'.repeat(64)}-${'b'.repeat(64)}`;
     service.store.savePaper({
-      paperKey, sourceKind: 'publication', arxivId: null, version: null, title: 'Ink fixture', authors: [],
-      sourceUrl: 'https://example.org/ink.pdf', pdfSha256: 'b'.repeat(64), pageCount: 1,
-      extractionVersion: 'fixture-v1', status: 'ready',
-      coverage: { totalPages: 1, textPages: 1, unsupportedPages: [] }, createdAt: new Date().toISOString(),
+      paperKey,
+      sourceKind: 'publication',
+      arxivId: null,
+      version: null,
+      title: 'Ink fixture',
+      authors: [],
+      sourceUrl: 'https://example.org/ink.pdf',
+      pdfSha256: 'b'.repeat(64),
+      pageCount: 1,
+      extractionVersion: 'fixture-v1',
+      status: 'ready',
+      coverage: { totalPages: 1, textPages: 1, unsupportedPages: [] },
+      createdAt: new Date().toISOString(),
     });
     const payload = {
-      annotations: [{
-        id: randomUUID(), paperKey, updatedAt: new Date().toISOString(), deleted: false,
-        rev: 0, deviceId: 'phone', kind: 'ink', page: 1, tool: 'pen', color: '#000000', width: 1,
-        points: Array.from({ length: 65000 }, (_, i) => [0.5, 0.5, 0.5, i]),
-      }],
+      annotations: [
+        {
+          id: randomUUID(),
+          paperKey,
+          updatedAt: new Date().toISOString(),
+          deleted: false,
+          rev: 0,
+          deviceId: 'phone',
+          kind: 'ink',
+          page: 1,
+          tool: 'pen',
+          color: '#000000',
+          width: 1,
+          points: Array.from({ length: 65000 }, (_, i) => [0.5, 0.5, 0.5, i]),
+        },
+      ],
     };
     const body = JSON.stringify(payload);
     expect(Buffer.byteLength(body)).toBeGreaterThan(1024 * 1024);
@@ -40,13 +60,20 @@ describe('sync push body limits', () => {
     const tooLarge = JSON.stringify({ annotations: [], padding: 'x'.repeat(4 * 1024 * 1024) });
     expect((await fetch(`${url}/api/sync/push`, { method: 'POST', headers, body: tooLarge })).status).toBe(413);
     const oversizedPreferences = await fetch(`${url}/api/preferences`, {
-      method: 'PUT', headers, body: JSON.stringify({ padding: 'x'.repeat(65 * 1024) }),
+      method: 'PUT',
+      headers,
+      body: JSON.stringify({ padding: 'x'.repeat(65 * 1024) }),
     });
     expect(oversizedPreferences.status).toBe(400);
     expect((await oversizedPreferences.json()).error.code).toBe('TOO_LARGE');
-    expect((await fetch(`${url}/api/pairing/claim`, {
-      method: 'POST', headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ padding: 'x'.repeat(65 * 1024) }),
-    })).status).toBe(413);
+    expect(
+      (
+        await fetch(`${url}/api/pairing/claim`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ padding: 'x'.repeat(65 * 1024) }),
+        })
+      ).status,
+    ).toBe(413);
   });
 });
