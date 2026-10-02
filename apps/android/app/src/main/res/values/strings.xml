@@ -78,4 +78,6 @@
     <string name="clipboard_pdf">PDF</string>
     <string name="questions_need_hub">Connect to the hub to ask a question</string>
     <string name="question_failed">Question failed</string>
+    <string name="pairing_enable_network">Enable LAN or Tailscale on your PC before pairing.</string>
+    <string name="connected_sync_failed">Connected. Initial sync failed and will retry: %1$s</string>
 </resources>

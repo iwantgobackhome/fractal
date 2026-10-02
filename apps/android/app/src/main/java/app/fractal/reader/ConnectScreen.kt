@@ -1,6 +1,7 @@
 package app.fractal.reader
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
@@ -34,6 +35,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import app.fractal.design.LocalFractalColors
 import app.fractal.sync.PairingPayloadParser
+import app.fractal.sync.NoPairingUrlsException
+import app.fractal.sync.SyncScheduler
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
@@ -57,6 +60,14 @@ fun ConnectScreen(
     var error by remember { mutableStateOf("") }
     var busy by remember { mutableStateOf(false) }
 
+    suspend fun connected() {
+        runCatching { app.sync.syncOnce() }.onFailure {
+            Toast.makeText(app, app.getString(R.string.connected_sync_failed, it.message.orEmpty()), Toast.LENGTH_LONG).show()
+            SyncScheduler.now(app, app.settings.getBoolean("wifiOnly", false))
+        }
+        onConnected()
+    }
+
     fun pairQr(raw: String) {
         if (busy) return
         busy = true
@@ -64,11 +75,11 @@ fun ConnectScreen(
         scope.launch {
             runCatching {
                 app.client.pair(PairingPayloadParser.parse(raw), android.os.Build.MODEL)
-                app.sync.syncOnce()
             }.onSuccess {
-                onConnected()
+                connected()
             }.onFailure {
-                error = it.message ?: app.getString(R.string.connection_failed)
+                error = if (it is NoPairingUrlsException) app.getString(R.string.pairing_enable_network)
+                    else it.message ?: app.getString(R.string.connection_failed)
                 busy = false
             }
         }
@@ -93,8 +104,7 @@ fun ConnectScreen(
                 scope.launch {
                     runCatching {
                         app.client.claim(url, code, deviceName = android.os.Build.MODEL)
-                        app.sync.syncOnce()
-                    }.onSuccess { onConnected() }.onFailure {
+                    }.onSuccess { connected() }.onFailure {
                         error = it.message ?: app.getString(R.string.connection_failed)
                         busy = false
                     }
