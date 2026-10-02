@@ -1,5 +1,14 @@
 /** Korean interface text. `en.ts` must have the same shape (the type checker enforces it). */
 export const ko = {
+  updates: {
+    available: '새 버전 {version}을 사용할 수 있습니다',
+    update: '업데이트',
+    later: '나중에',
+    downloading: '업데이트 다운로드 중 · {percent}%',
+    progress: '업데이트 다운로드 진행률',
+    restart: '다시 시작하여 업데이트',
+    error: '업데이트하지 못했습니다. 나중에 다시 시도해 주세요.',
+  },
   nav: {
     home: '홈',
     library: '보관함',

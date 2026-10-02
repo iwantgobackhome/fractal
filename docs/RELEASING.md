@@ -23,6 +23,14 @@ The accepted Windows branch icons are preserved. `generate-distribution-icons.mj
 
 After packaging, run `node scripts/smoke-packaged-release.mjs`, then `node scripts/release-manifest.mjs <platform>-<arch>`. The smoke uses the shipped Electron executable in Node mode, imports its ASAR Hub, serves its UI/library API and spawns a terminal through its shipped PTY. It records real unpacked native binary and resource hashes. Package manifests hash the complete app bundle and distribution manifests hash files submitted for release. This proves bundled startup, not a GUI installation or every product feature.
 
+## In-app updates
+
+Packaged Windows NSIS and Linux AppImage/deb builds check the published GitHub release after ten seconds and every six hours. The tray also offers **Check for updates**. Downloads begin only after **Update**, and installation waits for **Restart to update**. **Later** hides that version until a different version appears. Development builds and macOS have no updater; macOS remains DMG-only.
+
+`release-config.cjs` declares the GitHub publish provider for `iwantgobackhome/fractal`, while all builds retain `--publish never`. Upload `latest.yml` and the matching `.exe.blockmap` from Windows, and `latest-linux.yml` and the matching `.AppImage.blockmap` from Linux alongside the installers. AppImage's runtime uses its embedded differential map; the build hook additionally exports the external map for the release checksum contract. Matching `.deb.blockmap` files are copied if present. The manifest and aggregate verifier require the metadata and primary blockmaps, hash them, and reject unknown files even when a platform checksum lists them. Run `node --test scripts/release-artifacts.test.mjs` to exercise copying, aggregate acceptance, missing metadata/maps and unknown-file rejection with isolated fixtures. The packaged Hub/PTY smoke is unchanged and does not launch the updater.
+
+Android checks `releases/latest` at app startup at most once per 24 hours, with a manual **Check for updates** button in Settings. It compares the release tag against `BuildConfig.VERSION_NAME`, downloads the exact `Fractal-<version>-android-debug.apk`, and verifies its SHA-256 against the same release's aggregate `SHA256SUMS.txt` before opening the Android installer. Android may ask the user to allow Fractal to install apps; installation resumes after approval. APK signing identity must still match the installed app. Only published releases are visible to update checks: review and manually publish the draft with all installers, metadata, maps and checksums together.
+
 ## Signing
 
 Without configured Mac credentials, `release-config.cjs` selects an ad-hoc identity (`-`), disables Hardened Runtime and skips notarization. This is not Developer ID signing or notarization and may require the user to approve opening an application in macOS security settings. The two DMGs are not universal builds.
@@ -37,7 +45,7 @@ Set the public repository variable `ANDROID_RELEASE_CERT_SHA256` to the prior AP
 
 ## Aggregate review and draft publication
 
-Each of the five platform jobs uploads a uniquely named artifact. The aggregate job requires all native jobs to succeed, checks six distribution files, verifies every per-platform checksum, checks one source commit and positive desktop Hub/PTY smoke results, and writes `SHA256SUMS.txt`. Only the publication job has `contents: write`; it rechecks versions and the aggregate manifest and refuses to mutate an existing release. It creates a draft with `gh release create --verify-tag --draft`.
+Each of the five platform jobs uploads a uniquely named artifact. The aggregate job requires all native jobs to succeed, checks six installers plus Windows/Linux update metadata and blockmaps, verifies every per-platform checksum, checks one source commit and positive desktop Hub/PTY smoke results, and writes `SHA256SUMS.txt`. Only the publication job has `contents: write`; it rechecks versions and the aggregate manifest and refuses to mutate an existing release. It creates a draft with `gh release create --verify-tag --draft`.
 
 Before promoting that draft, download and verify the files and manifests, inspect each platform's native evidence, compare the reviewed source and bundled resources, and record the actual Actions run URL/commit. Check the Android certificate against 0.1.0 and inspect actual Mac signing results. A prepared configuration, a Windows source run, or a cross-build is not evidence that Mac/Linux native startup passed. Keep final evidence and unresolved limitations separate from preparation checks.
 

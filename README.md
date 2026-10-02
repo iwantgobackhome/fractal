@@ -31,6 +31,8 @@ A paper and its scientific figure in the scholarly discovery desk.
 
 **From the paper in front of you to the next one worth reading.** Put the original PDF beside a faithful translation. Ask questions and follow answers back to cited pages. Track papers and news in your fields, then save what matters. Fractal uses the Codex or Claude CLI sign-in tied to your existing subscription; you do not need to supply an API key.
 
+Windows and Linux installations offer in-app updates from published GitHub releases; Android offers updates at startup and in Settings, with APK checksum verification. macOS updates use the downloaded DMG.
+
 ## Features
 
 ### A scholarly workspace in 0.2.0

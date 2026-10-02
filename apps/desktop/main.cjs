@@ -2,6 +2,7 @@ const { app, BrowserWindow, Menu, Tray, nativeImage, shell, ipcMain, dialog } = 
 const { join, basename } = require('node:path');
 const { pathToFileURL } = require('node:url');
 const { writeFile } = require('node:fs/promises');
+const { readFileSync } = require('node:fs');
 
 app.setName('Fractal');
 app.setAppUserModelId('app.fractal.desktop');
@@ -14,6 +15,78 @@ if (!app.requestSingleInstanceLock()) {
   let window;
   let tray;
   let quitting = false;
+  let updater;
+  let updateState;
+  let updateDownloaded = false;
+  let updateAvailable = false;
+  let availableUpdate;
+  let downloadPromise;
+  let startupCheck;
+  let periodicCheck;
+  function sendUpdate(type, detail = {}) {
+    const event = { type, ...detail };
+    if (type !== 'update-error') updateState = event;
+    if (window && !window.isDestroyed()) window.webContents.send('fractal:update', event);
+  }
+  async function checkUpdates() {
+    if (!updater || downloadPromise || updateDownloaded) return;
+    try {
+      await updater.checkForUpdates();
+    } catch {
+      /* electron-updater emits error */
+    }
+  }
+  function initializeUpdates() {
+    if (!app.isPackaged || !['win32', 'linux'].includes(process.platform)) return;
+    if (process.platform === 'linux' && !process.env.APPIMAGE) {
+      try {
+        if (readFileSync(join(process.resourcesPath, 'package-type'), 'utf8').trim() !== 'deb') return;
+      } catch {
+        return;
+      }
+    }
+    const updates = require('electron-updater');
+    updater = process.platform === 'linux' ? (process.env.APPIMAGE ? new updates.AppImageUpdater() : new updates.DebUpdater()) : updates.autoUpdater;
+    updater.autoDownload = false;
+    updater.autoInstallOnAppQuit = false;
+    updater.on('update-available', (info) => {
+      updateAvailable = true;
+      availableUpdate = { version: info.version, notes: typeof info.releaseNotes === 'string' ? info.releaseNotes : undefined };
+      sendUpdate('update-available', availableUpdate);
+    });
+    updater.on('download-progress', ({ percent }) => sendUpdate('download-progress', { percent }));
+    updater.on('update-downloaded', () => {
+      updateDownloaded = true;
+      sendUpdate('update-downloaded');
+    });
+    updater.on('error', () => {
+      if (!updateDownloaded && availableUpdate) updateState = { type: 'update-available', ...availableUpdate };
+      sendUpdate('update-error');
+    });
+    for (const [action, handler] of Object.entries({
+      state: () => updateState,
+      check: checkUpdates,
+      download: async () => {
+        if (!updateAvailable || updateDownloaded) return;
+        if (!downloadPromise)
+          downloadPromise = updater.downloadUpdate().finally(() => {
+            downloadPromise = undefined;
+          });
+        await downloadPromise;
+      },
+      install: () => {
+        if (updateDownloaded) updater.quitAndInstall(false, true);
+      },
+    })) {
+      ipcMain.handle(`fractal:updates:${action}`, async (event) => {
+        const caller = BrowserWindow.fromWebContents(event.sender);
+        if (!caller || caller.isDestroyed() || new URL(event.sender.getURL()).origin !== new URL(hub.url).origin) throw new Error('Updates are unavailable');
+        return handler();
+      });
+    }
+    startupCheck = setTimeout(() => void checkUpdates(), 10000);
+    periodicCheck = setInterval(() => void checkUpdates(), 6 * 60 * 60 * 1000);
+  }
   const headless = process.argv.includes('--headless');
   const icon = nativeImage.createFromPath(join(__dirname, 'assets', 'icon-256.png'));
   const trayIcon = nativeImage.createFromPath(join(__dirname, 'assets', 'icon-32.png'));
@@ -30,7 +103,13 @@ if (!app.requestSingleInstanceLock()) {
       minWidth: 820,
       minHeight: 600,
       icon,
-      webPreferences: { contextIsolation: true, nodeIntegration: false, sandbox: true, preload: join(__dirname, 'preload.cjs') },
+      webPreferences: {
+        contextIsolation: true,
+        nodeIntegration: false,
+        sandbox: true,
+        preload: join(__dirname, 'preload.cjs'),
+        additionalArguments: updater ? ['--fractal-updates'] : [],
+      },
     });
     window.on('minimize', () => window.hide());
     window.on('close', (event) => {
@@ -48,6 +127,9 @@ if (!app.requestSingleInstanceLock()) {
         event.preventDefault();
         if (/^https?:\/\//.test(url)) void shell.openExternal(url);
       }
+    });
+    window.webContents.on('did-finish-load', () => {
+      if (updateState) window.webContents.send('fractal:update', updateState);
     });
     void window.loadURL(hub.url);
     const screenshot = process.env.FRACTAL_DESKTOP_SCREENSHOT;
@@ -101,12 +183,24 @@ if (!app.requestSingleInstanceLock()) {
         await writeFile(choice.filePath, pdf);
         return { saved: true, path: choice.filePath };
       });
+      initializeUpdates();
       tray = new Tray(trayIcon);
       tray.setToolTip('Fractal');
       tray.setContextMenu(
         Menu.buildFromTemplate([
           { label: 'Open', click: openWindow },
           { label: 'Pairing', click: openPairing },
+          ...(updater
+            ? [
+                {
+                  label: 'Check for updates',
+                  click: () => {
+                    openWindow();
+                    void checkUpdates();
+                  },
+                },
+              ]
+            : []),
           { type: 'separator' },
           { label: 'Quit', click: () => app.quit() },
         ]),
@@ -120,6 +214,8 @@ if (!app.requestSingleInstanceLock()) {
       app.quit();
     });
   app.on('will-quit', () => {
+    clearTimeout(startupCheck);
+    clearInterval(periodicCheck);
     if (hub) void hub.close();
   });
 }
