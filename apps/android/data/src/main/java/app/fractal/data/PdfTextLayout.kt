@@ -83,7 +83,9 @@ class OriginalTextGeometry(val page: OriginalTextPage) {
     private val units = page.runs.flatMap { run ->
         if (run.granularity != "run") run.units else run.units.flatMap { unit ->
             val quad = unit.quad ?: return@flatMap listOf(unit)
-            val boundaries = page.boundaries.subList(page.boundaries.binarySearch(unit.start), page.boundaries.binarySearch(unit.end) + 1)
+            val first = page.boundaries.binarySearch(unit.start); val last = page.boundaries.binarySearch(unit.end)
+            if (first < 0 || last <= first) return@flatMap listOf(unit)
+            val boundaries = page.boundaries.subList(first, last + 1)
             boundaries.zipWithNext().map { (start, end) ->
                 val a = (start - unit.start).toDouble() / (unit.end - unit.start)
                 val b = (end - unit.start).toDouble() / (unit.end - unit.start)

@@ -19,6 +19,15 @@ class OriginalTextGeometryTest {
     private fun center(quad: List<List<Double>>, rotation: Int): TextPoint = rotateTextPoint(
         TextPoint(quad.map { it[0] }.average(), quad.map { it[1] }.average()), rotation)
 
+    @Test fun malformedRunEdgesFallBackWithoutCrashing() {
+        val base = fixtures.first()
+        val quad = listOf(listOf(.1,.3), listOf(.1,.2), listOf(.5,.2), listOf(.5,.3))
+        val run = OriginalTextRun(0, 4, quad, "ltr", "run", "approximate",
+            listOf(OriginalTextUnit(1, 3, quad)), emptyList())
+        val geometry = OriginalTextGeometry(base.copy(text = "test", runs = listOf(run), boundaries = listOf(0, 2, 4), rotation = 0))
+        assertNotNull(geometry.handlePoint(1, false))
+    }
+
     @Test fun publishedRotatedAndCroppedPagesSelectOriginalWords() {
         assertEquals(hash, "f79b45a88b17b236ade1298edf4cafdceae6a9f19907eb29126332a7c9037b96")
         for (page in fixtures.take(3)) {
