@@ -63,7 +63,7 @@ for (const label of labels) {
     assert.ok(listed.has('android-verification.json'));
     const apk = JSON.parse(await readFile(join(directory, 'android-verification.json'), 'utf8'));
     assert.equal(apk.version, version);
-    assert.equal(apk.versionCode, 2);
+    assert.equal(apk.versionCode, 3);
     assert.equal(apk.applicationId, 'app.fractal.reader');
     assert.ok(apk.debugSigned && apk.signatureVerified);
     assert.match(apk.certificateSha256, /^[a-f0-9]{64}$/);
