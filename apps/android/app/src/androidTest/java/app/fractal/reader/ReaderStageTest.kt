@@ -136,19 +136,21 @@ class ReaderStageTest {
     }
     @Test fun genuineCachedRangeCopyQuoteAndHandles() = runBlocking {
         open()
-        compose.onNodeWithContentDescription("Select text", substring = false).performClick()
         val result = app.originalText.page(key, hash, 1, 5).page!!
         val geometry = OriginalTextGeometry(result)
         val range = geometry.range(4, 7)!!
         val quad = range.displayQuads.first()
         val startX = quad.map { it.x }.average(); val startY = quad.map { it.y }.average()
         val surface = surfaces().first(); val at = IntArray(2)
-        compose.runOnUiThread { surface.getLocationOnScreen(at) }
+        compose.runOnUiThread { surface.getLocationInWindow(at) }
         val x = at[0] + (startX * surface.width).toFloat(); val y = at[1] + (startY * surface.height).toFloat()
         val endQuad = range.displayQuads.last()
         val endX = at[0] + (endQuad.map { it.x }.average() * surface.width).toFloat()
         val endY = at[1] + (endQuad.map { it.y }.average() * surface.height).toFloat()
-        event(MotionEvent.ACTION_DOWN, x, y); event(MotionEvent.ACTION_MOVE, endX, endY); event(MotionEvent.ACTION_UP, endX, endY)
+        event(MotionEvent.ACTION_DOWN, x, y, MotionEvent.TOOL_TYPE_FINGER)
+        SystemClock.sleep(450)
+        event(MotionEvent.ACTION_MOVE, endX, endY, MotionEvent.TOOL_TYPE_FINGER)
+        event(MotionEvent.ACTION_UP, endX, endY, MotionEvent.TOOL_TYPE_FINGER)
         compose.onNodeWithContentDescription("Selection start handle").assertExists()
         compose.onNodeWithContentDescription("Selection end handle").assertExists()
         compose.onNodeWithText("Copy", substring = false).performClick()

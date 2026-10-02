@@ -64,7 +64,6 @@ private fun toolLabel(item: InkTool): Int = when (item) {
     InkTool.Eraser -> R.string.tool_eraser
     InkTool.Shape -> R.string.tool_shape
     InkTool.Lasso -> R.string.tool_lasso
-    InkTool.TextSelection -> R.string.tool_text_selection
 }
 private fun eraserLabel(mode: EraserMode): Int =
     if (mode == EraserMode.Stroke) R.string.eraser_stroke else R.string.eraser_partial
@@ -84,14 +83,13 @@ private fun icon(name: InkTool): ImageVector = ImageVector.Builder(name = name.n
             InkTool.Eraser -> { moveTo(3f,16f); lineTo(14f,5f); lineTo(21f,12f); lineTo(12f,21f); lineTo(8f,21f); close(); moveTo(8f,11f); lineTo(15f,18f) }
             InkTool.Shape -> { moveTo(3f,19f); lineTo(12f,5f); lineTo(21f,19f); close() }
             InkTool.Lasso -> { moveTo(5f,9f); curveTo(6f,3f,19f,3f,20f,10f); curveTo(21f,18f,8f,20f,5f,15f); curveTo(3f,12f,6f,10f,9f,12f); lineTo(12f,18f) }
-            InkTool.TextSelection -> { moveTo(5f,5f); lineTo(19f,5f); moveTo(12f,5f); lineTo(12f,19f); moveTo(8f,19f); lineTo(16f,19f) }
         }
     }
 }.build()
 
 /** Compact rail on tablets, top bar on narrow layouts. A second tool tap opens its options. */
 @Composable
-fun InkToolbar(state: InkPageState, tool: InkToolState, modifier: Modifier = Modifier, onAsk: (List<InkStroke>, InkBounds) -> Unit = { _, _ -> }, onToolSelected: (InkTool) -> Unit = {}) {
+fun InkToolbar(state: InkPageState, tool: InkToolState, modifier: Modifier = Modifier, onAsk: (List<InkStroke>, InkBounds) -> Unit = { _, _ -> }, onToolSelected: (InkTool) -> Unit = {}, regionMode: Boolean = false, onRegionToggle: () -> Unit = {}) {
     val colors = LocalFractalColors.current
     val addColorLabel = stringResource(R.string.add_color)
     val undoLabel = stringResource(R.string.undo)
@@ -105,7 +103,7 @@ fun InkToolbar(state: InkPageState, tool: InkToolState, modifier: Modifier = Mod
             Box {
                 Box(
                     Modifier.size(48.dp).clickable {
-                        if (tool.active == item && item != InkTool.TextSelection) popover = item else { tool.active = item; popover = null }
+                        if (tool.active == item) popover = item else { tool.active = item; popover = null }
                         onToolSelected(item)
                     }.semantics { contentDescription = label; selected = tool.active == item },
                     contentAlignment = Alignment.Center
@@ -151,6 +149,7 @@ fun InkToolbar(state: InkPageState, tool: InkToolState, modifier: Modifier = Mod
                     ToolButton(tool.active)
                 } else {
                 InkTool.entries.forEach { ToolButton(it) }
+                TextButton(onClick = onRegionToggle, modifier = Modifier.semantics { contentDescription = "Region"; selected = regionMode }) { Text(stringResource(R.string.tool_region), color = if (regionMode) colors.accent else colors.ink) }
                 Spacer(Modifier.height(8.dp))
                 (listOf(tool.color) + tool.recentColors.filterNot { it == tool.color }.take(4)).forEach { Swatch(it) }
                 TextButton(onClick = { colorDialog = true }, modifier = Modifier.size(48.dp).semantics { contentDescription = addColorLabel }) { Text(stringResource(R.string.add_symbol), color = colors.ink, fontSize = 24.sp) }
@@ -166,6 +165,7 @@ fun InkToolbar(state: InkPageState, tool: InkToolState, modifier: Modifier = Mod
         } else {
             Row(Modifier.fillMaxWidth().background(colors.paper).border(.5.dp,colors.rule).horizontalScroll(rememberScrollState()), verticalAlignment = Alignment.CenterVertically) {
                 InkTool.entries.forEach { ToolButton(it) }
+                TextButton(onClick = onRegionToggle, modifier = Modifier.semantics { contentDescription = "Region"; selected = regionMode }) { Text(stringResource(R.string.tool_region), color = if (regionMode) colors.accent else colors.ink) }
                 (listOf(tool.color) + tool.recentColors.filterNot { it == tool.color }.take(4)).forEach { Swatch(it) }
                 TextButton(onClick = { colorDialog = true }, modifier = Modifier.size(48.dp).semantics { contentDescription = addColorLabel }) { Text(stringResource(R.string.add_symbol), color=colors.ink, fontSize = 24.sp) }
                 TextButton(onClick = { state.undo() }, modifier = Modifier.size(48.dp).semantics { contentDescription = undoLabel }) { Text(stringResource(R.string.undo_symbol), color=colors.ink, fontSize = 24.sp) }

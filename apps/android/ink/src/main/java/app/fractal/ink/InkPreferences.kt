@@ -30,7 +30,7 @@ fun rememberInkToolState(): InkToolState {
     val state = remember { InkToolState() }
     LaunchedEffect(context) {
         val initial = context.inkStore.data.first()
-        state.active = runCatching { InkTool.valueOf(initial[TOOL] ?: "") }.getOrDefault(InkTool.Ballpoint)
+        state.active = migratedInkTool(initial[TOOL])
         state.loadColors(initial[COLORS] ?: "")
         if (initial[COLORS] == null && initial[COLOR] != null) state.color = initial[COLOR]!!
         state.loadWidths(initial[WIDTHS] ?: "")
@@ -48,3 +48,6 @@ fun rememberInkToolState(): InkToolState {
     }
     return state
 }
+
+internal fun migratedInkTool(value: String?): InkTool =
+    runCatching { InkTool.valueOf(value ?: "") }.getOrDefault(InkTool.Ballpoint)

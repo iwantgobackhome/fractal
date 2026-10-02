@@ -156,3 +156,21 @@ fun lassoSelect(strokes: List<InkStroke>, polygon: List<InkPoint>): Set<String> 
     }
     return strokes.filter { s -> !s.deleted && s.points.isNotEmpty() && s.points.count(::inside) >= s.points.size/2 }.map { it.id }.toSet()
 }
+
+/** Width is page-width normalized; both cursor axes and erasure use this same pixel radius. */
+fun eraserRadiusPx(width: Float, pageWidthPx: Float): Float = width * pageWidthPx / 2
+
+fun eraseStrokesOnPage(strokes: List<InkStroke>, path: List<InkPoint>, width: Float,
+    pageWidthPx: Float, pageHeightPx: Float, mode: EraserMode): List<InkStroke> {
+    val aspect = pageHeightPx / pageWidthPx.coerceAtLeast(1f)
+    fun scaled(p: InkPoint) = p.copy(y = p.y * aspect)
+    val scaledStrokes = strokes.map { it.copy(points = it.points.map(::scaled)) }
+    val originals = strokes.associateBy { it.id }
+    val result = eraseStrokes(scaledStrokes, path.map(::scaled),
+        eraserRadiusPx(width, pageWidthPx) / pageWidthPx.coerceAtLeast(1f), mode)
+    return result.map { stroke ->
+        val original = originals[stroke.id]
+        if (original != null) stroke.copy(points = original.points)
+        else stroke.copy(points = stroke.points.map { p -> p.copy(y = p.y / aspect) })
+    }
+}

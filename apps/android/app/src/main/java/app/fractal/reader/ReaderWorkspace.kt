@@ -219,8 +219,7 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                         Text("$activePage / ${pages?.pageCount ?: 0}", Modifier.padding(horizontal = 12.dp), style = MaterialTheme.typography.bodySmall)
                         Box { TextButton(onClick = { toolsMenu = true }) { Text(libraryText("Tools ▾", "도구 ▾")) }
                             DropdownMenu(toolsMenu, { toolsMenu = false }) {
-                                DropdownMenuItem(text = { Text(libraryText("Select original text", "원문 텍스트 선택")) }, enabled = sourceVisible, onClick = { regionMode = false; tool.active = InkTool.TextSelection; toolsMenu = false })
-                                DropdownMenuItem(text = { Text(libraryText("Deliberately select a region", "직접 영역 선택")) }, enabled = sourceVisible, onClick = { regionMode = true; tool.active = InkTool.TextSelection; toolsMenu = false })
+                                DropdownMenuItem(text = { Text(libraryText("Deliberately select a region", "직접 영역 선택")) }, enabled = sourceVisible, onClick = { regionMode = !regionMode; toolsMenu = false })
                                 DropdownMenuItem(text = { Text(libraryText("Fit original page width", "원문 너비 맞춤")) }, enabled = sourceVisible, onClick = { zoom = 1f; toolsMenu = false })
                                 DropdownMenuItem(text = { Text(libraryText("Add source note", "원문 노트 추가")) }, enabled = sourceVisible, onClick = { noteSelection = activePage to PdfTextSelection("", listOf(PdfRect(.08f, .15f, .02f, .02f)), provenance = "deliberate-region", pdfSha256 = pages?.pdfSha256); toolsMenu = false })
                                 DropdownMenuItem(text = { Text(libraryText("Retained history", "저장된 기록")) }, onClick = { panelTab = "history"; panel = true; toolsMenu = false })
@@ -231,11 +230,11 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
             }
             HorizontalDivider(color = colors.rule, thickness = .5.dp)
             if (compact) Box(Modifier.fillMaxWidth().height(48.dp)) {
-                if (sourceVisible) InkToolbar(states.getOrPut(activePage) { InkPageState() }, tool, onToolSelected = { if (it == InkTool.TextSelection) regionMode = false })
+                if (sourceVisible) InkToolbar(states.getOrPut(activePage) { InkPageState() }, tool, onToolSelected = { regionMode = false }, regionMode = regionMode, onRegionToggle = { regionMode = !regionMode })
             }
             Row(Modifier.weight(1f)) {
                 if (!compact) Box(Modifier.width(48.dp).fillMaxHeight()) {
-                    if (sourceVisible) InkToolbar(states.getOrPut(activePage) { InkPageState() }, tool, Modifier.fillMaxSize(), onToolSelected = { if (it == InkTool.TextSelection) regionMode = false })
+                    if (sourceVisible) InkToolbar(states.getOrPut(activePage) { InkPageState() }, tool, Modifier.fillMaxSize(), onToolSelected = { regionMode = false }, regionMode = regionMode, onRegionToggle = { regionMode = !regionMode })
                 }
                 Box(Modifier.weight(1f).fillMaxHeight()) {
                     Row(Modifier.fillMaxSize()) {
@@ -252,7 +251,7 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                                         onFingerGesture = { dy, factor, focusY ->
                                             zoom = (zoom * factor).coerceIn(.5f, 4f)
                                             scope.launch { if (factor != 1f) { withFrameNanos { }; yield() }; sourceList.scrollBy(focusY * (factor - 1f) - dy) }
-                                        }, onWritingStateChanged = { writing = it; if (it && tool.active != InkTool.TextSelection) barVisible = false },
+                                        }, onWritingStateChanged = { writing = it; if (it && !regionMode) barVisible = false },
                                         onSelection = { selection = index + 1 to it; selectionMessage = "" },
                                         onDoubleTap = { zoom = if (zoom == 1f) 1.5f else 1f },
                                         onInkChanged = { before, after -> scope.launch {
@@ -279,7 +278,7 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                     }
                     if (selectionMessage.isNotBlank()) Surface(Modifier.align(Alignment.BottomCenter).fillMaxWidth().nativeInkBlocker(), color = colors.paper) {
                         Column(Modifier.padding(12.dp)) { Text(selectionMessage, style = MaterialTheme.typography.bodySmall)
-                            Row { TextButton(onClick = { regionMode = true; tool.active = InkTool.TextSelection; selectionMessage = "" }) { Text(libraryText("Select a region", "영역 선택")) }
+                            Row { TextButton(onClick = { regionMode = true; selectionMessage = "" }) { Text(libraryText("Select a region", "영역 선택")) }
                                 TextButton(onClick = { selectionMessage = "" }) { Text(libraryText("Dismiss", "닫기")) } }
                         }
                     }
