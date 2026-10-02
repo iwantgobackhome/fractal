@@ -56,8 +56,10 @@ export interface PageCanvasProps {
   /** Whatever the caller wants absolutely-positioned over the rendered page. */
   children?: ReactNode;
   /** Forwarded onto the page container; used for drag-driven highlight creation. */
-  onMouseDown?(event: React.MouseEvent<HTMLDivElement>): void;
-  onMouseUp?(event: React.MouseEvent<HTMLDivElement>): void;
+  onPointerDown?(event: React.PointerEvent<HTMLDivElement>): void;
+  onPointerUp?(event: React.PointerEvent<HTMLDivElement>): void;
+  onPointerMove?(event: React.PointerEvent<HTMLDivElement>): void;
+  onPointerCancel?(): void;
   pageColors?: PageColors;
 }
 
@@ -82,8 +84,10 @@ export function PageCanvas({
   onRendered,
   registerPage,
   children,
-  onMouseDown,
-  onMouseUp,
+  onPointerDown,
+  onPointerUp,
+  onPointerMove,
+  onPointerCancel,
   pageColors,
 }: PageCanvasProps): JSX.Element {
   const renderedCallback = useRef(onRendered);
@@ -141,8 +145,10 @@ export function PageCanvas({
       data-page={page}
       ref={(element) => registerPage(page, element)}
       style={box === null ? undefined : { width: box.width, height: box.height }}
-      onMouseDown={onMouseDown}
-      onMouseUp={onMouseUp}
+      onPointerDown={onPointerDown}
+      onPointerUp={onPointerUp}
+      onPointerMove={onPointerMove}
+      onPointerCancel={onPointerCancel}
     >
       <canvas ref={canvasRef} aria-label={ariaLabel ?? t('misc.pageOriginal', { page })} />
       {children}
@@ -268,17 +274,41 @@ function PageView({
 }: PageViewProps): JSX.Element {
   const pageHighlights = useMemo(() => highlights.filter((h) => h.page === page), [highlights, page]);
   const dragStart = useRef<{ x: number; y: number } | null>(null);
-  const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+  const [liveRegion, setLiveRegion] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
+  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    const start = dragStart.current;
+    if (!regionMode || !start) return;
+    if (!event.buttons) {
+      dragStart.current = null;
+      setLiveRegion(null);
+      return;
+    }
+    const box = event.currentTarget.getBoundingClientRect();
+    const sx = Math.max(0, Math.min(box.width, start.x - box.left));
+    const sy = Math.max(0, Math.min(box.height, start.y - box.top));
+    const ex = Math.max(0, Math.min(box.width, event.clientX - box.left));
+    const ey = Math.max(0, Math.min(box.height, event.clientY - box.top));
+    setLiveRegion({
+      x: Math.min(sx, ex) / box.width,
+      y: Math.min(sy, ey) / box.height,
+      width: Math.abs(ex - sx) / box.width,
+      height: Math.abs(ey - sy) / box.height,
+    });
+  };
+  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
     if (event.button !== 0 || (event.target as HTMLElement).closest('button,textarea,.sticky-note')) return;
     dragStart.current = { x: event.clientX, y: event.clientY };
     if (regionMode) {
+      event.currentTarget.setPointerCapture(event.pointerId);
       event.preventDefault();
       window.getSelection()?.removeAllRanges();
     }
   };
-  const handleMouseUp = (event: React.MouseEvent<HTMLDivElement>) => {
+  const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
     const start = dragStart.current;
     dragStart.current = null;
+    setLiveRegion(null);
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
     if (!start || (event.target as HTMLElement).closest('button,textarea,.sticky-note')) return;
     const dragged = Math.hypot(event.clientX - start.x, event.clientY - start.y) > 3;
     if (regionMode && dragged) {
@@ -293,6 +323,13 @@ function PageView({
     if (dragged || !window.getSelection()?.isCollapsed || event.detail > 1) return;
     const box = event.currentTarget.getBoundingClientRect();
     const block = hitTestBlock(blocks, page, (event.clientX - box.left) / box.width, (event.clientY - box.top) / box.height);
+    const x = (event.clientX - box.left) / box.width,
+      y = (event.clientY - box.top) / box.height;
+    const highlight = pageHighlights.find((h) => h.rects.some((r) => x >= r.x && x <= r.x + r.width && y >= r.y && y <= r.y + r.height));
+    if (highlight) {
+      onOpenHighlight(highlight);
+      return;
+    }
     if (block) onSelectBlock(block);
   };
 
@@ -306,10 +343,22 @@ function PageView({
       onSize={onSize}
       onRendered={onRendered}
       registerPage={registerPage}
-      onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
+      onPointerMove={handlePointerMove}
+      onPointerCancel={() => {
+        dragStart.current = null;
+        setLiveRegion(null);
+      }}
       pageColors={pageColors}
     >
+      {liveRegion ? (
+        <div
+          className="selection-pending selection-live"
+          aria-hidden="true"
+          style={{ left: `${liveRegion.x * 100}%`, top: `${liveRegion.y * 100}%`, width: `${liveRegion.width * 100}%`, height: `${liveRegion.height * 100}%` }}
+        />
+      ) : null}
       <TextLayerOverlay doc={doc} page={page} zoom={zoom} getLayout={getLayout} onCoverage={onCoverage} />
       {memos && onSaveMemo ? <StickyLayer memos={memos.filter((m) => m.page === page)} onSave={onSaveMemo} /> : null}
       {structure !== undefined ? (

@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState, type JSX, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type JSX, type ReactNode, type RefObject } from 'react';
 import type { ReferenceEnrichment, ReferenceEntry, StructureItem } from '@fractal/shared';
 import { Markdown } from '../components/Markdown';
 import { renderTex } from '../lib/tex';
@@ -6,12 +6,29 @@ import { locale, t } from '../i18n';
 import { itemLabel } from './StructureLayer';
 
 /** A card beside what it is about: to its right when there is room, otherwise below. */
-function FloatingCard({ anchor, onClose, label, children }: { anchor: DOMRect; onClose(): void; label: string; children: ReactNode }): JSX.Element {
-  const ref = useRef<HTMLDivElement | null>(null);
+export function FloatingCard({
+  anchor,
+  onClose,
+  label,
+  children,
+  className = '',
+  managed,
+}: {
+  anchor: DOMRect;
+  onClose(): void;
+  label: string;
+  children: ReactNode;
+  className?: string;
+  /** Interactive answer cards manage dragging, collapse, placement, and dismissal themselves. */
+  managed?: { ref: RefObject<HTMLDivElement | null>; position: { left: number; top: number } };
+}): JSX.Element {
+  const localRef = useRef<HTMLDivElement | null>(null);
+  const ref = managed?.ref ?? localRef;
   const [position, setPosition] = useState<{ left: number; top: number } | null>(null);
 
   // Placed again whenever the card grows (a streaming answer), so it never runs off the screen.
   useLayoutEffect(() => {
+    if (managed) return;
     const card = ref.current;
     if (card === null) return;
     const place = () => {
@@ -27,9 +44,10 @@ function FloatingCard({ anchor, onClose, label, children }: { anchor: DOMRect; o
     const observer = new ResizeObserver(place);
     observer.observe(card);
     return () => observer.disconnect();
-  }, [anchor]);
+  }, [anchor, managed]);
 
   useEffect(() => {
+    if (managed) return;
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose();
     };
@@ -42,10 +60,17 @@ function FloatingCard({ anchor, onClose, label, children }: { anchor: DOMRect; o
       window.removeEventListener('keydown', onKey);
       window.removeEventListener('pointerdown', onDown, true);
     };
-  }, [onClose]);
+  }, [onClose, managed]);
 
+  const placed = managed?.position ?? position;
   return (
-    <div ref={ref} className="float-card" role="dialog" aria-label={label} style={position === null ? { visibility: 'hidden', left: 0, top: 0 } : position}>
+    <div
+      ref={ref}
+      className={`float-card ${className}`}
+      role="dialog"
+      aria-label={label}
+      style={placed === null ? { visibility: 'hidden', left: 0, top: 0 } : placed}
+    >
       {children}
     </div>
   );

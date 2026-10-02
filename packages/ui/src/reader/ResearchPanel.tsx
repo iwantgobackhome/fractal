@@ -5,6 +5,7 @@ import { Selector } from '../components/Selector';
 import { useLanguage } from '../i18n';
 import { HubApi, type ProvidersResult } from '../shell/hub-api';
 import { TRANSLATION_LANGUAGES } from '../shell/preferences';
+import { useResearchRequest } from './useResearchRequest';
 import { ReaderSourceStatus } from './ReaderSourceStatus';
 
 export interface ResearchIntent {
@@ -44,7 +45,9 @@ export function ResearchPanel({
   onSettings,
   onQuestion,
   checkSource,
+  popup = false,
 }: {
+  popup?: boolean;
   hub: HubApi;
   paperKey: string;
   open: boolean;
@@ -58,7 +61,9 @@ export function ResearchPanel({
 }): JSX.Element {
   const ko = useLanguage() === 'ko';
   const say = (en: string, kr: string) => (ko ? kr : en);
-  const key = `fractal.research.${paperKey}`;
+  const key = `fractal.research.${popup ? 'popup.' : ''}${paperKey}`;
+  const request = useResearchRequest(hub, paperKey);
+  const autoStarted = useRef<number | null>(null);
   const [draft, setDraft] = useState<Draft>(() => readDraft(key));
   const [entries, setEntries] = useState<HistoryEntry[]>([]);
   const [loaded, setLoaded] = useState(false);
@@ -66,7 +71,7 @@ export function ResearchPanel({
   const [error, setError] = useState<string | null>(null);
   const [historyError, setHistoryError] = useState<string | null>(null);
   const [sendingId, setSendingId] = useState<string | null>(null);
-  const sending = sendingId === draft.requestId;
+  const sending = popup ? sendingId !== null : sendingId === draft.requestId;
   const [kind, setKind] = useState('all');
   const [status, setStatus] = useState('all');
   const [search, setSearch] = useState('');
@@ -121,7 +126,13 @@ export function ResearchPanel({
   useEffect(() => {
     if (!intent || seenIntent.current === intent.id) return;
     seenIntent.current = intent.id;
-    setDraft((d) => ({ ...d, context: intent, text: '', activeId: null, requestId: crypto.randomUUID() }));
+    setDraft((d) => ({
+      ...d,
+      context: intent,
+      text: popup && !intent.rect ? say('Explain this passage.', '이 구절을 설명해 주세요.') : '',
+      activeId: null,
+      requestId: crypto.randomUUID(),
+    }));
     requestAnimationFrame(() => textarea.current?.focus());
   }, [intent]);
   const defaultChoice = providers?.settings.overrides.chat ?? providers?.settings.default;
@@ -155,40 +166,22 @@ export function ResearchPanel({
     setSendingId(current.requestId);
     setError(null);
     try {
-      const stream =
-        explanation && context?.rect
-          ? hub.explain(paperKey, {
-              kind: context.kind ?? 'text',
-              page: context.page,
-              bbox: context.rect,
-              surroundingText: context.text,
-              requestId: current.requestId,
-              selection,
-              ...(context.provenance ? { provenance: context.provenance } : {}),
-              ...(current.answerLanguage ? { answerLanguage: current.answerLanguage } : {}),
-            })
-          : hub.ask(paperKey, {
-              question: current.text.trim(),
-              requestId: current.requestId,
-              selection,
-              ...(current.answerLanguage ? { answerLanguage: current.answerLanguage } : {}),
-              ...(context
-                ? {
-                    page: context.page,
-                    selectedText:
-                      context.from === 'translation'
-                        ? `[Translated text; physical page ${context.page}; no original position mapping]\n${context.text}`
-                        : context.text,
-                    ...(context.from === 'source' && context.rect ? { rect: context.rect } : {}),
-                    ...(context.provenance ? { provenance: context.provenance } : {}),
-                  }
-                : {}),
-            });
-      for await (const event of stream) {
-        if (!alive.current) continue;
-        if (event.historyId) setDraft((d) => (d.requestId === current.requestId ? { ...d, activeId: event.historyId! } : d));
-        await refresh();
-      }
+      await request({
+        context,
+        question:
+          popup && active?.text && !explanation && current.text.length < 3800
+            ? `Previous answer:\n${active.text.slice(0, 3900 - current.text.length)}\n\nFollow-up question:\n${current.text}`
+            : current.text,
+        requestId: current.requestId,
+        selection,
+        answerLanguage: current.answerLanguage,
+        explanation,
+        onHistory: (id) => {
+          if (alive.current) setDraft((d) => (d.requestId === current.requestId ? { ...d, activeId: id } : d));
+        },
+        refresh,
+      });
+      if (popup) setDraft((d) => (d.requestId === current.requestId && d.text === current.text ? { ...d, text: '' } : d));
     } catch (cause) {
       if (alive.current && latest.current.requestId === current.requestId) setError(cause instanceof Error ? cause.message : String(cause));
     } finally {
@@ -198,6 +191,11 @@ export function ResearchPanel({
       }
     }
   };
+  useEffect(() => {
+    if (!popup || !intent || draft.context?.id !== intent.id || !modelAvailable || autoStarted.current === intent.id) return;
+    autoStarted.current = intent.id;
+    void run(Boolean(intent.rect));
+  }, [popup, intent, draft.context, modelAvailable]);
   const newQuestion = () => {
     setDraft((d) => ({ ...d, text: '', context: null, activeId: null, requestId: crypto.randomUUID() }));
     setError(null);
@@ -344,7 +342,7 @@ export function ResearchPanel({
         }
       }}
     >
-      <header>
+      <header hidden={popup}>
         <h2>{historyMode ? say('Research history', '연구 기록') : say('Questions & explanations', '질문과 설명')}</h2>
         <button aria-label={say('Close research panel', '연구 패널 닫기')} onClick={onClose}>
           ×
@@ -410,7 +408,7 @@ export function ResearchPanel({
               </p>
             )}
           </div>
-          <button className="research-new" onClick={newQuestion}>
+          <button hidden={popup} className="research-new" onClick={newQuestion}>
             {say('+ New question', '+ 새 질문')}
           </button>
           <form
@@ -489,7 +487,14 @@ export function ResearchPanel({
                 value={draft.text}
                 maxLength={4000}
                 rows={3}
-                onChange={(e) => setDraft((d) => ({ ...d, text: e.target.value, requestId: crypto.randomUUID(), activeId: null }))}
+                onChange={(e) =>
+                  setDraft((d) => ({
+                    ...d,
+                    text: e.target.value,
+                    requestId: popup && sending ? d.requestId : crypto.randomUUID(),
+                    activeId: popup ? d.activeId : null,
+                  }))
+                }
               />
             </label>
             <button type="submit" disabled={sending || !modelAvailable || !draft.text.trim()}>

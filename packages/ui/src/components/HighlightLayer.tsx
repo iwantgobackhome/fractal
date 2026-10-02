@@ -1,4 +1,4 @@
-import { useRef, useState, type JSX } from 'react';
+import { useLayoutEffect, useRef, useState, type JSX } from 'react';
 import type { Highlight } from '@fractal/shared';
 import { t } from '../i18n';
 
@@ -54,6 +54,7 @@ function HighlightBox({ highlight, onOpen }: HighlightBoxProps): JSX.Element {
 
 export interface HighlightPopoverProps {
   highlight: Highlight;
+  anchor?: DOMRect;
   onSave(note: string, color: Highlight['color']): void;
   onDelete(): void;
   onClose(): void;
@@ -62,7 +63,17 @@ export interface HighlightPopoverProps {
 }
 
 /** The small editor that opens when a highlight is clicked: excerpt, note, color, save/delete/close. */
-export function HighlightPopover({ highlight, onSave, onDelete, onClose, onAsk }: HighlightPopoverProps): JSX.Element {
+export function HighlightPopover({ highlight, anchor, onSave, onDelete, onClose, onAsk }: HighlightPopoverProps): JSX.Element {
+  const popover = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = useState<{ left: number; top: number }>();
+  useLayoutEffect(() => {
+    if (!anchor || !popover.current) return;
+    const box = popover.current.getBoundingClientRect();
+    setPosition({
+      left: Math.max(12, Math.min(anchor.left, window.innerWidth - box.width - 12)),
+      top: Math.max(12, Math.min(anchor.bottom + 8, window.innerHeight - box.height - 12)),
+    });
+  }, [anchor]);
   const [note, setNote] = useState(highlight.note ?? '');
   const [color, setColor] = useState<Highlight['color']>(highlight.color);
   // Saved from the field itself: a click that lands before the typed text re-renders still saves it.
@@ -72,7 +83,9 @@ export function HighlightPopover({ highlight, onSave, onDelete, onClose, onAsk }
 
   return (
     <div
+      ref={popover}
       className="highlight-popover"
+      style={position ? { position: 'fixed', zIndex: 36, ...position } : undefined}
       role="dialog"
       aria-label={t('reader.noteEditor')}
       onKeyDown={(event) => {
@@ -82,6 +95,9 @@ export function HighlightPopover({ highlight, onSave, onDelete, onClose, onAsk }
         }
       }}
     >
+      <button type="button" className="highlight-popover__close" aria-label={t('reader.closeHighlight')} onClick={onClose}>
+        ×
+      </button>
       <p className="highlight-excerpt">{highlight.text.slice(0, 200)}</p>
       <textarea
         ref={noteRef}

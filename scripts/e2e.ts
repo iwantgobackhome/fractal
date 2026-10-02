@@ -60,7 +60,9 @@ class FakeProvider implements AiProvider {
     return [{ id: this.id === 'codex' ? model : 'sonnet', label: 'Stub model' }];
   }
   async *complete(_input: CompleteInput): AsyncIterable<ProviderDelta> {
-    yield { type: 'text', text: 'The result is forty two [p.1].' };
+    yield { type: 'text', text: 'The result is ' };
+    await new Promise((resolve) => setTimeout(resolve, 1200));
+    yield { type: 'text', text: 'forty two [p.1].' };
   }
   async usage() {
     return null;
@@ -141,7 +143,7 @@ async function main(): Promise<void> {
       data: { paper },
     } = (await response.json()) as { data: { paper: { paperKey: string } } };
 
-    browser = await chromium.launch({ channel: 'msedge', headless: true });
+    browser = await chromium.launch({ channel: process.env.FRACTAL_E2E_CHANNEL || 'msedge', headless: true });
     page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
     page.on('pageerror', (error) => console.error('Browser error:', error));
     page.setDefaultTimeout(15_000);
@@ -168,15 +170,16 @@ async function main(): Promise<void> {
     await page.goto(url);
     await page.locator('.welcome').waitFor();
     await page.locator('.welcome__top button').filter({ hasText: '건너뛰기' }).click();
-    await page.locator('.home-front').waitFor();
+    await page.locator('.discovery-desk').waitFor();
     console.log('PASS welcome guide shows first and can be skipped');
     console.log('PASS home renders');
 
     await page.goto(`${url}/#/library`);
-    await page.locator('.paper-row').filter({ hasText: 'Fractal Browser Smoke Paper' }).waitFor();
+    await page.locator('.index-tabs button').filter({ hasText: '이 기기의 논문' }).click();
+    await page.locator('.research-entry').filter({ hasText: 'Fractal Browser Smoke Paper' }).waitFor();
     console.log('PASS library lists uploaded paper');
 
-    await page.locator('.paper-row__open').click();
+    await page.locator('.entry-read').click();
     await page.waitForURL(`**/#/paper/${encodeURIComponent(paper.paperKey)}`);
     const canvas = page.locator('.pdf-page[data-page="1"] canvas');
     await canvas.waitFor().catch(async (error) => {
@@ -187,8 +190,9 @@ async function main(): Promise<void> {
     assert.ok((await canvas.evaluate((element) => (element as HTMLCanvasElement).width)) > 0);
     console.log('PASS reader draws page 1');
 
-    async function selectText() {
-      const span = page.locator('.textLayer span').filter({ hasText: 'A readable line' }).first();
+    async function selectText(text = 'A readable line') {
+      const span = page.locator('.textLayer span').filter({ hasText: text }).first();
+      await span.scrollIntoViewIfNeeded();
       const box = await span.boundingBox();
       assert.ok(box);
       await page.mouse.move(box.x + 5, box.y + box.height / 2);
@@ -207,26 +211,100 @@ async function main(): Promise<void> {
 
     await selectText();
     await page.locator('.selection-menu button').filter({ hasText: '메모' }).click();
-    const editor = page.locator('.highlight-popover textarea');
+    const editor = page.locator('.sticky-note textarea');
     await editor.waitFor();
     await editor.fill('Browser smoke note');
-    await page.locator('.highlight-popover .is-primary').click();
+    await editor.blur();
     await page.locator('.reader-bar__action[aria-controls]').first().click();
     await page.locator('.panel-tabs [role="tab"]').first().click();
     await page.locator('.note__text').filter({ hasText: 'Browser smoke note' }).waitFor();
     console.log('PASS memo saves and appears in notes');
 
-    await page.locator('.panel-tabs [role="tab"]').filter({ hasText: '질문' }).click();
-    await page.locator('.chat__composer textarea').fill('What is the result?');
-    await page.locator('.chat__send').click();
-    await page.locator('.page-ref').first().waitFor();
-    assert.match(await page.locator('.msg--answer').last().innerText(), /forty two/);
-    console.log('PASS question renders stub answer and page reference');
+    await page.locator('.reader-bar__action[aria-controls]').first().click();
+    page.once('dialog', (dialog) => void dialog.accept());
+    await page.locator('.sticky-note button').filter({ hasText: '메모 삭제' }).click();
+    await page.locator('.sticky-note').waitFor({ state: 'detached' });
+    await selectText('The measured result');
+    await page.locator('.selection-menu button').filter({ hasText: '질문' }).click();
+    const popup = page.locator('.answer-popup');
+    await popup.waitFor();
+    await popup.locator('.history-entry .md').filter({ hasText: 'The result is' }).waitFor();
+    assert.match(await popup.locator('.history-entry__status').innerText(), /작성 중/);
+    await popup.locator('.history-entry .md').filter({ hasText: 'forty two' }).waitFor();
+    console.log('PASS text drag Ask opens a popup with a streamed answer');
+
+    const before = await popup.boundingBox();
+    const heading = await popup.locator('.answer-popup__header strong').boundingBox();
+    assert.ok(before && heading);
+    await page.mouse.move(heading.x + 20, heading.y + heading.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(heading.x + 100, heading.y + heading.height / 2 + 45, { steps: 8 });
+    await page.mouse.up();
+    const after = await popup.boundingBox();
+    assert.ok(after && Math.hypot(after.x - before.x, after.y - before.y) > 20);
+    console.log('PASS popup header drag changes position');
+    await page
+      .locator('.pane-body')
+      .first()
+      .evaluate((element) => {
+        element.scrollTop += 60;
+      });
+    const scrolled = await popup.boundingBox();
+    assert.ok(scrolled && Math.abs(scrolled.x - after.x) < 1 && Math.abs(scrolled.y - after.y) < 1);
+    console.log('PASS dragged popup stays fixed while the page scrolls');
+    await popup.getByRole('button', { name: '답변 접기', exact: true }).click();
+    assert.equal(await popup.locator('.answer-popup__content').isVisible(), false);
+    await popup.getByRole('button', { name: '답변 펼치기', exact: true }).click();
+    assert.equal(await popup.locator('.answer-popup__content').isVisible(), true);
+    console.log('PASS popup collapses and expands');
+    await page.keyboard.press('Escape');
+    assert.equal(await popup.locator('.answer-popup__content').isVisible(), false);
+    await popup.getByRole('button', { name: '답변 펼치기', exact: true }).click();
+    console.log('PASS Escape collapses the popup');
+
+    await popup.getByRole('textbox', { name: '질문', exact: true }).fill('Why is that the result?');
+    await popup.locator('button[type="submit"]').click();
+    await popup.locator('.history-entry h3').filter({ hasText: 'Why is that the result?' }).waitFor();
+    await popup.locator('.history-entry .md').filter({ hasText: 'forty two' }).waitFor();
+    console.log('PASS popup accepts an in-place follow-up');
+    await popup.getByRole('button', { name: '답변 닫기', exact: true }).click();
+    await page.locator('.reader-bar__action[aria-controls]').first().click();
+    await page.locator('.panel-tabs [role="tab"]').filter({ hasText: '기록' }).click();
+    await page.locator('.research-panel .history-entry h3').filter({ hasText: 'Why is that the result?' }).waitFor();
+    console.log('PASS popup answers remain in research history');
+    await page.locator('.research-panel > header button').click();
+
+    const highlightBox = await page.locator('.highlight-box').first().boundingBox();
+    assert.ok(highlightBox);
+    await page.mouse.click(highlightBox.x + highlightBox.width / 2, highlightBox.y + highlightBox.height / 2);
+    await page.locator('.highlight-popover').waitFor();
+    await page.locator('.highlight-popover button').filter({ hasText: '삭제' }).click();
+    await page.waitForFunction(() => !document.querySelector('.highlight-box'));
+    const remaining = (await (await fetch(`${url}/api/papers/${paper.paperKey}/highlights`)).json()) as { data: unknown[] };
+    assert.equal(remaining.data.length, 0);
+    console.log('PASS clicking a highlight opens Delete and API confirms removal');
+
+    await page.locator('.original-tools button').filter({ hasText: '영역' }).click();
+    const regionPage = await page.locator('.pdf-page[data-page="1"]').boundingBox();
+    assert.ok(regionPage);
+    await page.mouse.move(regionPage.x + 70, regionPage.y + 210);
+    await page.mouse.down();
+    await page.mouse.move(regionPage.x + 240, regionPage.y + 300, { steps: 8 });
+    const live = page.locator('.selection-live');
+    await live.waitFor();
+    const liveBox = await live.boundingBox();
+    assert.ok(liveBox && liveBox.width > 100 && liveBox.height > 50);
+    console.log('PASS region rectangle is visible before mouseup');
+    await page.mouse.up();
+    await page.locator('.selection-menu').waitFor();
+    assert.equal(await live.count(), 0);
+    await page.keyboard.press('Escape');
 
     await page.goto(`${url}/#/settings`);
     await page.locator('#settings-ai').waitFor();
     await page.getByText('e2e-stub').first().waitFor();
-    await page.locator('.theme-swatch[data-swatch="dark"] .theme-swatch__page').click();
+    await page.locator('#settings-appearance').getByRole('combobox').click();
+    await page.getByRole('option', { name: '어둡게', exact: true }).click();
     assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark');
     console.log('PASS settings providers and dark theme');
   } catch (error) {

@@ -298,6 +298,7 @@ export const ko = {
     region: '영역',
     noNotes: '아직 표시한 곳이 없습니다.',
     highlightLabel: '하이라이트: {text}',
+    closeHighlight: '하이라이트 메뉴 닫기',
     noteEditor: '하이라이트 메모',
     color: '색',
     colorOf: '색 {color}',
