@@ -1445,3 +1445,59 @@
 .sticky-note__actions {
   flex: none;
 }
+
+.answer-popup {
+  padding: 0;
+  overflow: hidden;
+  width: min(420px, calc(100vw - 24px));
+}
+.answer-popup--collapsed {
+  width: min(240px, calc(100vw - 24px));
+}
+.answer-popup__header {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  background: var(--c-surface);
+  border-bottom: 1px solid var(--c-rule-strong);
+}
+.answer-popup__header strong {
+  flex: 1;
+  font-size: var(--fs-small);
+}
+.answer-popup__header button {
+  border: 0;
+  background: transparent;
+  color: var(--c-ink);
+  padding: 4px 8px;
+}
+.answer-popup__content {
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
+}
+.answer-popup .research-panel {
+  height: auto;
+}
+.answer-popup .research-panel__scroll {
+  flex: none;
+  overflow: visible;
+}
+.answer-popup .research-language,
+.answer-popup .research-new,
+.answer-popup .research-panel > header {
+  display: none;
+}
+.highlight-popover__close {
+  float: right;
+  border: 0;
+  background: transparent;
+  color: var(--c-muted);
+}
+.selection-live {
+  border: 1px solid var(--c-accent);
+  z-index: 5;
+}

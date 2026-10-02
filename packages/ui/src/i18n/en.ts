@@ -310,6 +310,7 @@ export const en: Messages = {
     region: 'area',
     noNotes: 'Nothing marked yet.',
     highlightLabel: 'Highlight: {text}',
+    closeHighlight: 'Close highlight menu',
     noteEditor: 'Highlight note',
     color: 'Colour',
     colorOf: 'Colour {color}',

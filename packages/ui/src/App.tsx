@@ -17,6 +17,7 @@ import type {
 } from '@fractal/shared';
 import { useReaderProvenance } from './reader/useReaderProvenance';
 import { useCatalog } from './shell/PublicationControls';
+import { AnswerPopup, type AnswerAnchor } from './reader/AnswerPopup';
 import { ResearchPanel, type ResearchIntent } from './reader/ResearchPanel';
 import { HighlightPopover } from './components/HighlightLayer';
 import { KoreanPages, type SelectVia } from './components/KoreanPane';
@@ -221,6 +222,7 @@ export function App(): JSX.Element {
   const [chatOpen, setChatOpen] = useState(false);
   const [chatMounted, setChatMounted] = useState(false);
   const [chatQuote, setChatQuote] = useState<ResearchIntent | null>(null);
+  const [answerAnchor, setAnswerAnchor] = useState<AnswerAnchor | null>(null);
   const chatButtonRef = useRef<HTMLButtonElement | null>(null);
   const chatDockRef = useRef<HTMLElement | null>(null);
   const quoteCount = useRef(0);
@@ -491,6 +493,7 @@ export function App(): JSX.Element {
     setReplacement(null);
     setChatOpen(false);
     setChatQuote(null);
+    setAnswerAnchor(null);
     window.clearTimeout(koreanJump.current);
   }, []);
 
@@ -514,6 +517,7 @@ export function App(): JSX.Element {
     setReplacement(null);
     setChatOpen(false);
     setChatQuote(null);
+    setAnswerAnchor(null);
     window.clearTimeout(koreanJump.current);
   }, []);
 
@@ -1287,6 +1291,17 @@ export function App(): JSX.Element {
       goToPage(page);
     }
   };
+  const passageAnchor = (page: number, rect?: { x: number; y: number; width: number; height: number }, point?: { x: number; y: number }): AnswerAnchor => {
+    const element = pageNodes.current.get(page);
+    const box = element?.getBoundingClientRect();
+    return {
+      element,
+      rect:
+        box && rect
+          ? new DOMRect(box.left + rect.x * box.width, box.top + rect.y * box.height, rect.width * box.width, rect.height * box.height)
+          : new DOMRect(point?.x ?? box?.left ?? 24, point?.y ?? box?.top ?? 80, 0, 0),
+    };
+  };
   const structureProps = useMemo<StructureProps | undefined>(() => {
     if (paperKey === null || structure === null) return undefined;
     return {
@@ -1327,9 +1342,7 @@ export function App(): JSX.Element {
               }
             : {}),
         });
-        setPanelTab('questions');
-        setChatMounted(true);
-        setChatOpen(true);
+        setAnswerAnchor({ rect: anchor, element: pageNodes.current.get(item.page) });
         setCitation(null);
       },
       onCitation: (marker, anchor) => {
@@ -1521,15 +1534,15 @@ export function App(): JSX.Element {
   );
   const openAiSettings = useCallback(() => openSettingsAt('ai'), [openSettingsAt]);
 
-  /** Open the panel with `text` quoted into the question being written. */
+  /** Open an answer beside the quoted passage. */
   const askAbout = useCallback(
     (text: string, from: Pane, page = currentPage) => {
       quoteCount.current += 1;
       setChatQuote({ id: quoteCount.current, text, page, from, ...(from === 'translation' ? { provenance: { textSource: 'translated' } } : {}) });
-      setPanelTab('questions');
-      if (!chatOpen) showChat(true, from);
+      const range = window.getSelection()?.rangeCount ? window.getSelection()?.getRangeAt(0) : null;
+      setAnswerAnchor(range ? { rect: range.getBoundingClientRect(), element: range.startContainer.parentElement } : passageAnchor(page));
     },
-    [chatOpen, showChat, currentPage],
+    [currentPage],
   );
   const askAboutKorean = useCallback((text: string, page?: number) => askAbout(text, 'translation', page), [askAbout]);
   const askAboutSource = useCallback((text: string) => askAbout(text, 'source'), [askAbout]);
@@ -1926,6 +1939,7 @@ export function App(): JSX.Element {
                   <HighlightPopover
                     key={openHighlightRecord.highlightId}
                     highlight={openHighlightRecord}
+                    anchor={passageAnchor(openHighlightRecord.page, openHighlightRecord.rects[0]).rect}
                     onSave={saveHighlight}
                     onDelete={removeHighlight}
                     onClose={() => setOpenHighlightId(null)}
@@ -1939,8 +1953,7 @@ export function App(): JSX.Element {
                         rect: openHighlightRecord.rects[0],
                         provenance: openHighlightRecord.provenance,
                       });
-                      setPanelTab('questions');
-                      showChat(true, 'source');
+                      setAnswerAnchor(passageAnchor(openHighlightRecord.page, openHighlightRecord.rects[0]));
                     }}
                   />
                 ) : null}
@@ -2089,7 +2102,7 @@ export function App(): JSX.Element {
                     paperKey={paperKey}
                     open={chatOpen}
                     historyMode={panelTab === 'history'}
-                    intent={chatQuote}
+                    intent={null}
                     onClose={closeChat}
                     onQuestion={() => setPanelTab('questions')}
                     onPage={(page) => {
@@ -2114,6 +2127,26 @@ export function App(): JSX.Element {
           paperKey={deleteConfirmation}
           onCancel={() => setDeleteConfirmation(null)}
           onConfirm={() => void confirmDelete(deleteConfirmation)}
+        />
+      ) : null}
+
+      {paperKey && chatQuote && answerAnchor ? (
+        <AnswerPopup
+          key={`${paperKey}:${chatQuote.id}`}
+          hub={hub}
+          paperKey={paperKey}
+          intent={chatQuote}
+          anchor={answerAnchor}
+          onClose={() => {
+            setChatQuote(null);
+            setAnswerAnchor(null);
+          }}
+          onSettings={openAiSettings}
+          onPage={(page) => {
+            chooseView('source');
+            goToPage(page);
+          }}
+          checkSource={provenanceReader.checkSource}
         />
       ) : null}
 
@@ -2155,8 +2188,7 @@ export function App(): JSX.Element {
                   ? { coordinateSpace: 'rendered-page-normalized-v1', textSource: 'original', pdfSha256: provenanceReader.pdfSha256 }
                   : undefined),
             });
-            setPanelTab('questions');
-            showChat(true, 'source');
+            setAnswerAnchor(passageAnchor(selection.page, selection.regions[0], selection.anchor));
           }}
         />
       ) : null}
