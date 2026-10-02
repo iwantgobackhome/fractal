@@ -17,21 +17,42 @@ assert.match(label, /^(win32-x64|linux-x64|darwin-arm64|darwin-x64|android)$/);
 const output = resolve('dist/release', label);
 await mkdir(output, { recursive: true });
 const commit = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
-await writeFile(join(output, `source-${label}.json`), JSON.stringify({ version, commit, runId: process.env.GITHUB_RUN_ID ?? null, files: source }, null, 2) + '\n');
+await writeFile(
+  join(output, `source-${label}.json`),
+  JSON.stringify({ version, commit, runId: process.env.GITHUB_RUN_ID ?? null, files: source }, null, 2) + '\n',
+);
 if (label === 'android') {
   await copyFile('apps/android/app/build/outputs/apk/debug/app-debug.apk', join(output, `Fractal-${version}-android-debug.apk`));
 } else {
   const platform = label.split('-')[0];
   const arch = label.split('-')[1];
-  const expected = platform === 'win32' ? [`Fractal-${version}-win-${arch}.exe`] : platform === 'darwin' ? [`Fractal-${version}-mac-${arch}.dmg`] : [`Fractal-${version}-linux-${arch}.AppImage`, `Fractal-${version}-linux-${arch}.deb`];
+  const expected =
+    platform === 'win32'
+      ? [`Fractal-${version}-win-${arch}.exe`]
+      : platform === 'darwin'
+        ? [`Fractal-${version}-mac-${arch}.dmg`]
+        : [`Fractal-${version}-linux-${arch}.AppImage`, `Fractal-${version}-linux-${arch}.deb`];
   for (const name of expected) await copyFile(join('dist/installer', name), join(output, name));
+  if (platform === 'win32' || platform === 'linux') {
+    const metadata = platform === 'win32' ? 'latest.yml' : 'latest-linux.yml';
+    await copyFile(join('dist/installer', metadata), join(output, metadata));
+    const installerFiles = new Set(await readdir('dist/installer'));
+    for (const name of expected) {
+      if (installerFiles.has(`${name}.blockmap`)) await copyFile(join('dist/installer', `${name}.blockmap`), join(output, `${name}.blockmap`));
+    }
+  }
   const smoke = JSON.parse(await readFile(join(output, `smoke-${label}.json`), 'utf8'));
   assert.equal(smoke.version, version);
   assert.equal(smoke.platform, platform);
   assert.equal(smoke.arch, arch);
   assert.ok(smoke.hubStarted && smoke.uiServed && smoke.libraryApi && smoke.ptySpawn);
   // Hash the actual app bundle, including ASAR, unpacked native binaries and Electron.
-  const bundle = platform === 'win32' ? 'dist/installer/win-unpacked' : platform === 'linux' ? 'dist/installer/linux-unpacked' : `dist/installer/${arch === 'arm64' ? 'mac-arm64' : 'mac'}/Fractal.app`;
+  const bundle =
+    platform === 'win32'
+      ? 'dist/installer/win-unpacked'
+      : platform === 'linux'
+        ? 'dist/installer/linux-unpacked'
+        : `dist/installer/${arch === 'arm64' ? 'mac-arm64' : 'mac'}/Fractal.app`;
   const files = [];
   async function walk(directory) {
     for (const entry of await readdir(directory, { withFileTypes: true })) {

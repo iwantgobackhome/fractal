@@ -81,4 +81,16 @@
     <string name="pairing_enable_network">연결하려면 PC에서 LAN 또는 Tailscale을 활성화해 주세요.</string>
     <string name="connected_sync_failed">연결되었습니다. 첫 동기화에 실패하여 다시 시도합니다: %1$s</string>
     <string name="sync_large_item_pending">Hub가 큰 동기화 항목을 거부하여 이 기기에 보관 중입니다. PC의 Fractal을 업데이트하거나 항목 크기를 줄여 주세요. 다른 항목은 계속 동기화됩니다.</string>
+    <string name="update_check">업데이트 확인</string>
+    <string name="update_checking">업데이트 확인 중…</string>
+    <string name="update_available">새 버전 %1$s</string>
+    <string name="update_action">업데이트</string>
+    <string name="update_later">나중에</string>
+    <string name="update_downloading">업데이트 다운로드 중</string>
+    <string name="update_progress">%1$d%%</string>
+    <string name="update_ready">업데이트 설치 준비 완료</string>
+    <string name="update_install">업데이트 설치</string>
+    <string name="update_error">업데이트하지 못했습니다. 나중에 다시 시도해 주세요.</string>
+    <string name="update_current">최신 버전을 사용하고 있습니다.</string>
+    <string name="update_permission">Fractal의 앱 설치를 허용한 다음 다시 설치해 주세요.</string>
 </resources>

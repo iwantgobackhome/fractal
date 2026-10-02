@@ -1,3 +1,4 @@
+import { UpdateToast } from './updates/UpdateToast';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type JSX, type RefObject } from 'react';
 import type {
   AppError,
@@ -2104,6 +2105,7 @@ export function App(): JSX.Element {
         </main>
       )}
 
+      <UpdateToast />
       <UsageBar hub={hub} onOpenSettings={openAiSettings} />
 
       {deleteConfirmation !== null ? (

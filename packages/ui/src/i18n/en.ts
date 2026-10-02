@@ -2,6 +2,15 @@ import type { Messages } from './ko';
 
 /** English interface text; same shape as `ko.ts`. */
 export const en: Messages = {
+  updates: {
+    available: 'New version {version} available',
+    update: 'Update',
+    later: 'Later',
+    downloading: 'Downloading update · {percent}%',
+    progress: 'Update download progress',
+    restart: 'Restart to update',
+    error: 'Could not update. Please try again later.',
+  },
   nav: {
     home: 'Home',
     library: 'Library',
