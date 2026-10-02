@@ -61,7 +61,11 @@ fun ConnectScreen(
     var busy by remember { mutableStateOf(false) }
 
     suspend fun connected() {
-        runCatching { app.sync.syncOnce() }.onFailure {
+        runCatching { app.sync.syncOnce() }.onSuccess {
+            app.sync.lastWarning?.let {
+                Toast.makeText(app, app.getString(R.string.sync_large_item_pending), Toast.LENGTH_LONG).show()
+            }
+        }.onFailure {
             Toast.makeText(app, app.getString(R.string.connected_sync_failed, it.message.orEmpty()), Toast.LENGTH_LONG).show()
             SyncScheduler.now(app, app.settings.getBoolean("wifiOnly", false))
         }

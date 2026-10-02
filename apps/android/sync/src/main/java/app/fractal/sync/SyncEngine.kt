@@ -10,6 +10,8 @@ import java.util.UUID
 
 class SyncEngine(private val database: FractalDatabase, private val client: HubDataClient) {
     companion object { private val syncMutex = Mutex() }
+    var lastWarning: String? = null
+        private set
 
     suspend fun saveLocal(value: JsonObject) {
         database.annotations().upsert(WireJson.annotationEntity(value, dirty = true))
@@ -135,6 +137,7 @@ class SyncEngine(private val database: FractalDatabase, private val client: HubD
     }
 
     suspend fun syncOnce(): Int = syncMutex.withLock {
+        lastWarning = null
         val before = database.syncState().cursor() ?: "0"
         val pull = client.data("/api/sync/pull?since=$before").jsonObject
         fun entries(name: String) = pull[name] as? JsonArray ?: JsonArray(emptyList())
@@ -213,8 +216,10 @@ class SyncEngine(private val database: FractalDatabase, private val client: HubD
             put("papers", JsonArray(pending.filter { it.kind == "paper" }.map(::envelope)))
             put("history", JsonArray(pending.filter { it.kind == "history" }.map(::envelope)))
         }
-        for (batch in SyncPushBatches.split(payload)) {
-            val push = client.data("/api/sync/push", "POST", batch).jsonObject
+        SyncPushBatches.push(payload, client, onWarning = {
+            lastWarning = it
+            android.util.Log.w("FractalSync", it)
+        }) { push ->
             database.withTransaction {
                 for (result in (push["results"] as? JsonArray ?: JsonArray(emptyList()))) {
                     val row = result.jsonObject

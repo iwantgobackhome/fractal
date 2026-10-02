@@ -56,8 +56,15 @@ export function parseRequest<T>(schema: ZodType<T>, input: unknown): T {
   return parsed.data;
 }
 
+/** Long ink strokes need room; all other JSON routes retain the small default. */
+export function jsonBodyLimit(request: IncomingMessage): number {
+  return request.method === 'POST' && new URL(request.url ?? '/', 'http://localhost').pathname === '/api/sync/push'
+    ? 4 * 1024 * 1024
+    : 64 * 1024;
+}
+
 /** The raw request body, refused past `max` bytes. */
-export async function body(request: IncomingMessage, max = 64 * 1024, sizeMessage?: string): Promise<Buffer> {
+export async function body(request: IncomingMessage, max = jsonBodyLimit(request), sizeMessage?: string): Promise<Buffer> {
   const declared = Number(request.headers['content-length']);
   if (Number.isFinite(declared) && declared > max) throw tooLarge(sizeMessage);
   const chunks: Buffer[] = [];
@@ -71,7 +78,7 @@ export async function body(request: IncomingMessage, max = 64 * 1024, sizeMessag
   return Buffer.concat(chunks);
 }
 
-/** Any JSON value from the body (up to 64 KiB). */
+/** Any JSON value from the body (up to the route body limit). */
 export async function readJson(request: IncomingMessage): Promise<unknown> {
   const raw = await body(request);
   try {
@@ -81,7 +88,7 @@ export async function readJson(request: IncomingMessage): Promise<unknown> {
   }
 }
 
-/** A JSON object from the body (up to 64 KiB). */
+/** A JSON object from the body (up to the route body limit). */
 export async function jsonBody(request: IncomingMessage): Promise<Record<string, unknown>> {
   const parsed = await readJson(request);
   if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw invalidInput('JSON 객체를 보내 주세요.');

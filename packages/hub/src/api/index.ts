@@ -33,7 +33,7 @@ import type { PairingSessions } from '../pairing/session';
 import type { NetworkManager } from '../net/manager';
 import { handleHub } from './routes/hub';
 import { handlePairing } from './routes/pairing';
-import type { RouteContext, Result } from './routes/types';
+import { jsonBodyLimit, type RouteContext, type Result } from './routes/types';
 import { handleAi } from './routes/ai';
 import type { ProviderRegistry } from '../ai/registry';
 import type { AccountManager } from '../ai/accounts';
@@ -57,9 +57,6 @@ export { HttpError, statusFor, toHttp } from './errors';
 
 /** Loopback only. The service is never reachable from another machine. */
 export const LOOPBACK = '127.0.0.1';
-
-/** Largest JSON body the service will read; requests here are tiny by design. */
-const MAX_BODY_BYTES = 64 * 1024;
 
 /**
  * arXiv acquisition, injected so tests never touch the network.
@@ -295,12 +292,13 @@ function requireHighlightRects(body: Record<string, unknown>, page: number): Reg
 }
 
 async function readJsonBody(request: IncomingMessage): Promise<Record<string, unknown>> {
+  const maxBytes = jsonBodyLimit(request);
   const chunks: Buffer[] = [];
   let size = 0;
   for await (const chunk of request) {
     const buffer = chunk as Buffer;
     size += buffer.length;
-    if (size > MAX_BODY_BYTES) throw appError('TOO_LARGE', '요청 본문이 너무 큽니다.', false);
+    if (size > maxBytes) throw appError('TOO_LARGE', '요청 본문이 너무 큽니다.', false);
     chunks.push(buffer);
   }
   if (size === 0) return {};
