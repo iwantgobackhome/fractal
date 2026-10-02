@@ -59,8 +59,9 @@ import kotlinx.serialization.json.put
 @Composable
 fun SidePanel(app: ReaderApplication, paperKey: String, annotations: List<AnnotationEntity>, pages: PdfPages?, tab: String,
     onTabChange: (String) -> Unit, onJump: (Int) -> Unit, modifier: Modifier = Modifier,
-    questionSelection: Pair<Int, PdfTextSelection>? = null, onClearQuestionSelection: () -> Unit = {}, onClose: () -> Unit = {}) =
-    DurableReaderPanel(app, paperKey, annotations, pages, tab, onTabChange, onJump, modifier, questionSelection, onClearQuestionSelection, onClose)
+    questionSelection: Pair<Int, PdfTextSelection>? = null, onClearQuestionSelection: () -> Unit = {}, onClose: () -> Unit = {},
+    onRequestCreated: (String, Pair<Int, PdfTextSelection>?) -> Unit = { _, _ -> }) =
+    DurableReaderPanel(app, paperKey, annotations, pages, tab, onTabChange, onJump, modifier, questionSelection, onClearQuestionSelection, onClose, onRequestCreated)
 
 @Composable
 internal fun RegionThumbnail(pages: PdfPages?, page: Int, annotationJson: String) {
