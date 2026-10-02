@@ -40,6 +40,28 @@ describe('pairing routes', () => {
     });
     expect(proxiedStatus).toBe(401);
     expect((await fetch(`${url}/api/pairing/claim`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: claimBody })).status).toBe(401);
+    expect((await fetch(`${url}/api/papers`, {
+      headers: { host: 'phone.example', authorization: `Bearer ${device.deviceToken}` },
+    })).status).toBe(200);
+    const remoteHeaders = { authorization: `Bearer ${'b'.repeat(64)}`, 'content-type': 'application/json' };
+    for (let n = 0; n < 10; n++) {
+      expect((await fetch(`${url}/api/papers`, { headers: remoteHeaders })).status).toBe(401);
+    }
+    expect((await fetch(`${url}/api/papers`, { headers: remoteHeaders })).status).toBe(429);
+    const restarted = await fetch(`${url}/api/pairing/start`, { method: 'POST', headers, body: '{}' });
+    const fresh = ((await restarted.json()) as { data: { payload: { code: string } } }).data;
+    expect((await fetch(`${url}/api/pairing/claim`, {
+      method: 'POST', headers: remoteHeaders,
+      body: JSON.stringify({ code: fresh.payload.code, name: 'Recovered phone', platform: 'Android' }),
+    })).status).toBe(200);
+    for (let n = 0; n < 10; n++) {
+      expect((await fetch(`${url}/api/pairing/claim`, {
+        method: 'POST', headers: remoteHeaders, body: claimBody,
+      })).status).toBe(401);
+    }
+    expect((await fetch(`${url}/api/pairing/claim`, {
+      method: 'POST', headers: remoteHeaders, body: claimBody,
+    })).status).toBe(429);
     const revoked = await fetch(`${url}/api/pairing/devices/${device.device.id}`, { method: 'DELETE', headers });
     expect(((await revoked.json()) as { data: { revoked: boolean } }).data.revoked).toBe(true);
   });

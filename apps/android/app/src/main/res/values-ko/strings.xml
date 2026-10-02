@@ -78,4 +78,7 @@
     <string name="clipboard_pdf">PDF</string>
     <string name="questions_need_hub">질문하려면 허브가 필요합니다</string>
     <string name="question_failed">질문 실패</string>
+    <string name="pairing_enable_network">연결하려면 PC에서 LAN 또는 Tailscale을 활성화해 주세요.</string>
+    <string name="connected_sync_failed">연결되었습니다. 첫 동기화에 실패하여 다시 시도합니다: %1$s</string>
+    <string name="sync_large_item_pending">Hub가 큰 동기화 항목을 거부하여 이 기기에 보관 중입니다. PC의 Fractal을 업데이트하거나 항목 크기를 줄여 주세요. 다른 항목은 계속 동기화됩니다.</string>
 </resources>

@@ -142,6 +142,7 @@ export const en: Messages = {
     statusNone: 'Connect AI',
   },
   devices: {
+    enableNetwork: 'Enable LAN or Tailscale with a reachable address before pairing your phone.',
     lan: 'Connect on the same Wi-Fi',
     tailscale: 'Connect anywhere with Tailscale',
     noLan: 'No network address found',

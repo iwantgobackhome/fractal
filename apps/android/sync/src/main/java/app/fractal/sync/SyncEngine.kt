@@ -10,6 +10,8 @@ import java.util.UUID
 
 class SyncEngine(private val database: FractalDatabase, private val client: HubDataClient) {
     companion object { private val syncMutex = Mutex() }
+    var lastWarning: String? = null
+        private set
 
     suspend fun saveLocal(value: JsonObject) {
         database.annotations().upsert(WireJson.annotationEntity(value, dirty = true))
@@ -135,6 +137,7 @@ class SyncEngine(private val database: FractalDatabase, private val client: HubD
     }
 
     suspend fun syncOnce(): Int = syncMutex.withLock {
+        lastWarning = null
         val before = database.syncState().cursor() ?: "0"
         val pull = client.data("/api/sync/pull?since=$before").jsonObject
         fun entries(name: String) = pull[name] as? JsonArray ?: JsonArray(emptyList())
@@ -200,7 +203,7 @@ class SyncEngine(private val database: FractalDatabase, private val client: HubD
                 })
             }
         }
-        val push = client.data("/api/sync/push", "POST", buildJsonObject {
+        val payload = buildJsonObject {
             put("annotations", JsonArray(dirty.map {
                 val original = WireJson.format.parseToJsonElement(it.json).jsonObject
                 // Legacy Android ink encoded absent optional fields as null. The Hub
@@ -212,41 +215,46 @@ class SyncEngine(private val database: FractalDatabase, private val client: HubD
             put("folders", JsonArray(folders.map(::envelope)))
             put("papers", JsonArray(pending.filter { it.kind == "paper" }.map(::envelope)))
             put("history", JsonArray(pending.filter { it.kind == "history" }.map(::envelope)))
-        }).jsonObject
-        database.withTransaction {
-            for (result in (push["results"] as? JsonArray ?: JsonArray(emptyList()))) {
-                val row = result.jsonObject
-                if (row.text("applied") != "true") continue
-                val sent = dirty.firstOrNull { it.id == row.text("id") } ?: continue
-                val rev = row.text("rev")?.toIntOrNull() ?: continue
-                val updated = JsonObject(WireJson.format.parseToJsonElement(sent.json).jsonObject + ("rev" to JsonPrimitive(rev)))
-                // Do not clear an annotation edited after this request was sent.
-                database.annotations().markClean(sent.id, sent.json, updated.toString(), rev)
-            }
-            for (result in (push["metadataResults"] as? JsonArray ?: JsonArray(emptyList()))) {
-                val row = result.jsonObject
-                val sent = pending.firstOrNull { it.kind == row.text("kind") && it.entityId == row.text("id") } ?: continue
-                val current = row["current"] as? JsonObject ?: continue
-                if (row.text("applied") == "true") {
-                    database.metadata().acknowledge(sent.requestId)
-                    project(sent.kind, sent.entityId, current)
-                } else if (row.text("conflict") == "true") {
-                    if (sent.kind == "history" && current.text("status") in listOf("pending", "running")) continue
-                    if (current.text("deleted") == "true") {
-                        if (sent.kind == "folder") settleDeletedFolder(sent, current)
-                        continue
-                    }
-                    val latest = database.metadata().authority("${sent.kind}:${sent.entityId}")
-                        ?.takeIf { it.rev > current.revision() }?.let { WireJson.format.parseToJsonElement(it.json).jsonObject } ?: current
-                    val rebased = MetadataMerge.rebase(latest, sent)
-                    database.metadata().acknowledge(sent.requestId)
-                    database.metadata().enqueue(sent.copy(requestId = UUID.randomUUID().toString(),
-                        baseRev = latest.revision(), baseJson = latest.toString(), patchJson = rebased.toString()))
-                    project(sent.kind, sent.entityId, current)
+        }
+        SyncPushBatches.push(payload, client, onWarning = {
+            lastWarning = it
+            android.util.Log.w("FractalSync", it)
+        }) { push ->
+            database.withTransaction {
+                for (result in (push["results"] as? JsonArray ?: JsonArray(emptyList()))) {
+                    val row = result.jsonObject
+                    if (row.text("applied") != "true") continue
+                    val sent = dirty.firstOrNull { it.id == row.text("id") } ?: continue
+                    val rev = row.text("rev")?.toIntOrNull() ?: continue
+                    val updated = JsonObject(WireJson.format.parseToJsonElement(sent.json).jsonObject + ("rev" to JsonPrimitive(rev)))
+                    // Do not clear an annotation edited after this request was sent.
+                    database.annotations().markClean(sent.id, sent.json, updated.toString(), rev)
                 }
+                for (result in (push["metadataResults"] as? JsonArray ?: JsonArray(emptyList()))) {
+                    val row = result.jsonObject
+                    val sent = pending.firstOrNull { it.kind == row.text("kind") && it.entityId == row.text("id") } ?: continue
+                    val current = row["current"] as? JsonObject ?: continue
+                    if (row.text("applied") == "true") {
+                        database.metadata().acknowledge(sent.requestId)
+                        project(sent.kind, sent.entityId, current)
+                    } else if (row.text("conflict") == "true") {
+                        if (sent.kind == "history" && current.text("status") in listOf("pending", "running")) continue
+                        if (current.text("deleted") == "true") {
+                            if (sent.kind == "folder") settleDeletedFolder(sent, current)
+                            continue
+                        }
+                        val latest = database.metadata().authority("${sent.kind}:${sent.entityId}")
+                            ?.takeIf { it.rev > current.revision() }?.let { WireJson.format.parseToJsonElement(it.json).jsonObject } ?: current
+                        val rebased = MetadataMerge.rebase(latest, sent)
+                        database.metadata().acknowledge(sent.requestId)
+                        database.metadata().enqueue(sent.copy(requestId = UUID.randomUUID().toString(),
+                            baseRev = latest.revision(), baseJson = latest.toString(), patchJson = rebased.toString()))
+                        project(sent.kind, sent.entityId, current)
+                    }
+                }
+                // Older hubs omit metadataResults. Keep the queue for a compatible reconnect.
+                projectFolderDeletions()
             }
-            // Older hubs omit metadataResults. Keep the queue for a compatible reconnect.
-            projectFolderDeletions()
         }
         papers.size + annotations.size + dirty.size + pending.size
     }

@@ -140,6 +140,7 @@ export const ko = {
     statusNone: 'AI 연결 필요',
   },
   devices: {
+    enableNetwork: '휴대폰을 연결하려면 접근 가능한 LAN 또는 Tailscale 주소를 활성화해 주세요.',
     lan: '같은 Wi-Fi에서 연결',
     tailscale: 'Tailscale로 어디서나 연결',
     noLan: '네트워크 주소를 찾지 못했습니다',
