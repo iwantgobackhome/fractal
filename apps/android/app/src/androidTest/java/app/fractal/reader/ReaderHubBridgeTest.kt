@@ -127,7 +127,7 @@ class ReaderHubBridgeTest {
         val cancelFlight = "D-FLIGHT-ui-cancel-${UUID.randomUUID()}"
         val cancel = app.history.create(key, "question", request("$cancelFlight QA_WAIT explicit UI cancel"), buildJsonObject { put("text", "Cancel preserves this quote"); put("page", 2) })
         waitStatus(cancel, "attached"); val cancelHistory = app.database.reader().request(cancel)!!.historyId!!
-        compose.onNodeWithText("Ask", substring = false).performClick()
+        compose.onNodeWithText("Notes", substring = false).performClick()
         compose.onNodeWithContentDescription("Reader panel").performClick(); compose.onAllNodesWithText("History").onLast().performClick()
         compose.waitUntil(10000) { compose.onAllNodesWithText("Cancel generation", substring = false).fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("Cancel generation", substring = false).performScrollTo().performClick()
@@ -148,7 +148,7 @@ class ReaderHubBridgeTest {
         }
         val selection = PdfTextSelection(range.text, range.displayQuads.map(::bounds), range.start, range.end,
             provenance = "cached-original-approximate", originalRects = range.originalQuads.map(::bounds), pdfSha256 = paper.pdfSha256, extractionVersion = PDF_TEXT_LAYOUT_VERSION, rotation = text.rotation)
-        compose.onNodeWithText("Ask", substring = false).performClick()
+        compose.onNodeWithText("Notes", substring = false).performClick()
         val body = readerQuestionBody("$flight QA_WAIT Explain this selected source passage.", "ko", "codex" to "gpt-6-sol", 2 to selection)
         val id = app.history.create(key, "question", body, buildJsonObject { put("text", range.text); put("origin", "original"); put("page", 2) })
         waitStatus(id, "attached")
@@ -165,7 +165,7 @@ class ReaderHubBridgeTest {
         assertEquals("current", answer["answer"]!!.jsonObject["contextSourceStatus"]!!.jsonPrimitive.content)
         assertEquals("unrotated-crop-normalized-v1", answer["answer"]!!.jsonObject["citations"]!!.jsonArray.first().jsonObject["region"]!!.jsonObject["provenance"]!!.jsonObject["coordinateSpace"]!!.jsonPrimitive.content)
         compose.runOnIdle { show = true }; compose.waitForIdle()
-        compose.onNodeWithText("Ask", substring = false).performClick()
+        compose.onNodeWithText("Notes", substring = false).performClick()
         withTimeout(10000) { while (app.database.metadata().history(historyId)?.status != "completed") delay(50) }
         compose.onNodeWithText("Close", substring = false).performClick()
         app.credentials.save(credentials.copy(url = "http://127.0.0.1:1"))

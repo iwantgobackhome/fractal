@@ -1,6 +1,6 @@
 {
   "name": "fractal",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "type": "module",
   "workspaces": [
@@ -54,6 +54,23 @@
       "packages/ui/dist/**",
       "node_modules/@lydell/node-pty/**",
       "node_modules/@lydell/node-pty-*/**",
+      "node_modules/argparse/**",
+      "node_modules/builder-util-runtime/**",
+      "node_modules/debug/**",
+      "node_modules/electron-updater/**",
+      "node_modules/electron-updater/node_modules/semver/**",
+      "node_modules/semver/**",
+      "node_modules/fs-extra/**",
+      "node_modules/graceful-fs/**",
+      "node_modules/js-yaml/**",
+      "node_modules/jsonfile/**",
+      "node_modules/lazy-val/**",
+      "node_modules/lodash.escaperegexp/**",
+      "node_modules/lodash.isequal/**",
+      "node_modules/ms/**",
+      "node_modules/sax/**",
+      "node_modules/tiny-typed-emitter/**",
+      "node_modules/universalify/**",
       "package.json"
     ],
     "asar": true,
@@ -112,7 +129,8 @@
     }
   },
   "dependencies": {
-    "@lydell/node-pty": "^1.2.0-beta.15"
+    "@lydell/node-pty": "^1.2.0-beta.15",
+    "electron-updater": "^6.8.9"
   },
   "description": "Research reader, library and discovery desk",
   "license": "Apache-2.0",

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1 — 2026-10-02
+
+In-app updates for Windows NSIS, Linux AppImage/deb and the Android APK (macOS stays DMG-only). Reliable pairing and batched sync for large ink histories. Movable, collapsible answer popups for questions and explanations on desktop and Android. On Android: no text-selection mode (long press then drag selects, the pen inks), precise column-aware selection, a circular live eraser and Explain chips on detected figures, tables and equations. On both platforms: live region rectangles and tap-to-delete highlights. Android versionCode 3. See [release notes](docs/releases/0.2.1.md).
+
 ## 0.2.0 — 2026-10-01
 
 Scholarly desktop and native Android interfaces; persistent research history and annotations; sticky notes; Saved/Recent and nested folders; native News/Topics and split article reading; exact text selection; in-app publication PDF acquisition and cached reading. Discovery tries genuine captioned paper figures or news content images before suitable source thumbnails, caches verified images, and retains text when no usable image is available. Cross-platform packaging now targets Windows x64 NSIS, Linux x64 AppImage/deb, separate macOS arm64/x64 DMGs and a stable debug-signed Android APK (versionCode 2).

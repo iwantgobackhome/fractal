@@ -16,6 +16,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Text
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -82,6 +90,13 @@ fun PdfPage(
     contentOverlay: @Composable BoxScope.(Int, Int, OriginalTextPage?) -> Unit = { _, _, _ -> },
 ) {
     val colors = LocalFractalColors.current
+    val scope = rememberCoroutineScope()
+    var liveSelection by remember(source, index) { mutableStateOf<PdfTextSelection?>(null) }
+    val displayedSelection = liveSelection ?: selection
+    var tappedHighlight by remember { mutableStateOf<JsonObject?>(null) }
+    var tapPosition by remember { mutableStateOf(0f to 0f) }
+    var memoHighlight by remember { mutableStateOf<JsonObject?>(null) }
+    var memoText by remember { mutableStateOf("") }
     val density = LocalDensity.current
     val loadingSelection = libraryText("Text selection is loading.", "텍스트 선택을 준비하고 있습니다.")
     val noTextSelection = libraryText("This page has no selectable text. Choose a region for a scan or figure.", "이 페이지에는 선택할 텍스트가 없습니다. 스캔이나 그림은 영역을 선택하세요.")
@@ -104,6 +119,8 @@ fun PdfPage(
         textLoading = false
     }
     val geometry = remember(textPage) { textPage?.let(::OriginalTextGeometry) }
+    // A cached layout can finish loading between a native event and the next Compose frame.
+    fun currentGeometry() = geometry?.takeIf { it.page == textPage } ?: textPage?.let(::OriginalTextGeometry)
     fun selected(range: OriginalRange): PdfTextSelection = PdfTextSelection(
         text = range.text, rects = range.displayQuads.map(::quadRect), start = range.start, end = range.end,
         provenance = "cached-original-approximate", quads = range.displayQuads.map { quad -> quad.map { it.x.toFloat() to it.y.toFloat() } },
@@ -173,7 +190,12 @@ fun PdfPage(
                             drawCircle(colors.ink, radius = 5.dp.toPx(), center = androidx.compose.ui.geometry.Offset((displayed.x + displayed.width) * size.width, displayed.y * size.height))
                         }
                     }
-                    selection?.quads?.forEach { quad ->
+                    if (displayedSelection?.quads.isNullOrEmpty()) displayedSelection?.rects?.forEach { rect ->
+                        drawRect(colors.focus.copy(alpha = .23f), androidx.compose.ui.geometry.Offset(rect.x * size.width, rect.y * size.height), Size(rect.width * size.width, rect.height * size.height))
+                        drawRect(colors.focus, androidx.compose.ui.geometry.Offset(rect.x * size.width, rect.y * size.height),
+                            Size(rect.width * size.width, rect.height * size.height), style = androidx.compose.ui.graphics.drawscope.Stroke(1.dp.toPx()))
+                    }
+                    displayedSelection?.quads?.forEach { quad ->
                         val path = Path()
                         quad.forEachIndexed { point, (x, y) -> if (point == 0) path.moveTo(x * size.width, y * size.height) else path.lineTo(x * size.width, y * size.height) }
                         path.close()
@@ -195,27 +217,50 @@ fun PdfPage(
                     fingerScrollsParent = true,
                     nativeInkRouting = nativeViewport != null,
                     nativeViewportInWindow = nativeViewport,
-                    onTextSelection = { start, end ->
-                        if (!source.identityUnchanged()) onSelectionUnavailable(changedSelection)
-                        else if (regionMode) onSelection(region(start.x, start.y, end.x, end.y))
-                        else geometry?.select(start.x.toDouble(), start.y.toDouble(), end.x.toDouble(), end.y.toDouble())
-                            ?.let { onSelection(selected(it)) }
-                            ?: onSelectionUnavailable(textStatus.ifBlank { missedSelection })
+                    regionMode = regionMode,
+                    onSelectionCanceled = { liveSelection = null },
+                    onSelectionProgress = { start, end, finished ->
+                        if (source.identityUnchanged()) {
+                            val current = currentGeometry()
+                            val value = if (regionMode) region(start.x, start.y, end.x, end.y)
+                            else if (kotlin.math.hypot(end.x - start.x, end.y - start.y) < .005f)
+                                current?.wordAt(start.x.toDouble(), start.y.toDouble())?.let(::selected)
+                            else current?.select(start.x.toDouble(), start.y.toDouble(), end.x.toDouble(), end.y.toDouble())?.let(::selected)
+                            if (finished) {
+                                val result = value ?: liveSelection
+                                liveSelection = null
+                                if (result != null) onSelection(result) else onSelectionUnavailable(textStatus.ifBlank { missedSelection })
+                            } else liveSelection = value
+                        }
+                    },
+                    onFingerTap = { x, y ->
+                        tappedHighlight = highlights.asReversed().firstNotNullOfOrNull { row ->
+                            val json = runCatching { WireJson.format.parseToJsonElement(row.json).jsonObject }.getOrNull() ?: return@firstNotNullOfOrNull null
+                            val provenance = json["provenance"] as? JsonObject
+                            if (sourceContextStatus(provenance, source.pdfSha256, index + 1, textPage) !in listOf("current", "unknown")) return@firstNotNullOfOrNull null
+                            if (provenance?.get("coordinateSpace")?.jsonPrimitive?.content == "unrotated-crop-normalized-v1" && textPage == null) return@firstNotNullOfOrNull null
+                            json.takeIf { json["rects"]?.jsonArray.orEmpty().any { item ->
+                                val r = item.jsonObject
+                                fun v(key: String) = r[key]?.jsonPrimitive?.content?.toFloatOrNull() ?: 0f
+                                val rect = renderedRect(PdfRect(v("x"), v("y"), v("width"), v("height")), provenance, textPage?.rotation ?: 0)
+                                x in rect.x..(rect.x + rect.width) && y in rect.y..(rect.y + rect.height)
+                            } }
+                        }
+                        tapPosition = x to y
                     },
                     onFingerLongPress = { x, y ->
                         if (!source.identityUnchanged()) onSelectionUnavailable(changedSelection)
-                        else if (regionMode) onSelection(region((x - .08f).coerceAtLeast(0f), (y - .012f).coerceAtLeast(0f), (x + .08f).coerceAtMost(1f), (y + .012f).coerceAtMost(1f)))
-                        else geometry?.wordAt(x.toDouble(), y.toDouble())?.let { onSelection(selected(it)) }
+                        else currentGeometry()?.wordAt(x.toDouble(), y.toDouble())?.let { liveSelection = selected(it) }
                             ?: onSelectionUnavailable(textStatus.ifBlank { missedSelection })
                     },
                     onFingerDoubleTap = onDoubleTap,
                     onWritingStateChanged = onWritingStateChanged,
                 )
                 val heightPx = with(density) { height.roundToPx() }
-                val latestSelection = rememberUpdatedState(selection)
-                if (geometry != null && selection?.start != null && selection.end != null) {
+                val latestSelection = rememberUpdatedState(displayedSelection)
+                if (geometry != null && displayedSelection?.start != null && displayedSelection.end != null) {
                     listOf(false, true).forEach { endHandle ->
-                        val offset = if (endHandle) selection.end else selection.start
+                        val offset = if (endHandle) displayedSelection.end else displayedSelection.start
                         geometry.handlePoint(offset!!, endHandle)?.let { point ->
                             val touchPx = with(density) { 48.dp.toPx() }
                             var dragX by remember(geometry, endHandle) { mutableStateOf(0.0) }
@@ -245,6 +290,34 @@ fun PdfPage(
                         }
                     }
                 }
+                Box(Modifier.offset { IntOffset((tapPosition.first * widthPx).roundToInt(), (tapPosition.second * heightPx).roundToInt()) }.nativeInkBlocker()) {
+                    DropdownMenu(expanded = tappedHighlight != null, onDismissRequest = { tappedHighlight = null }) {
+                        DropdownMenuItem(text = { Text(libraryText("Delete", "삭제")) }, onClick = {
+                            tappedHighlight?.let { original -> scope.launch { editAnnotation(app, original, JsonObject(mapOf("deleted" to JsonPrimitive(true)))) } }
+                            tappedHighlight = null
+                        })
+                        DropdownMenuItem(text = { Text(libraryText("Memo", "메모")) }, onClick = {
+                            memoHighlight = tappedHighlight
+                            memoText = tappedHighlight?.get("note")?.jsonPrimitive?.content?.takeUnless { it == "null" }.orEmpty()
+                            tappedHighlight = null
+                        })
+                        listOf("yellow", "green", "blue", "pink").forEach { color ->
+                            DropdownMenuItem(text = { Text(color) }, onClick = {
+                                tappedHighlight?.let { original -> scope.launch { editAnnotation(app, original, JsonObject(mapOf("color" to JsonPrimitive(color)))) } }
+                                tappedHighlight = null
+                            })
+                        }
+                    }
+                }
+                if (memoHighlight != null) AlertDialog(onDismissRequest = { memoHighlight = null },
+                    title = { Text(libraryText("Highlight memo", "하이라이트 메모")) },
+                    text = { OutlinedTextField(value = memoText, onValueChange = { memoText = it }, minLines = 3) },
+                    confirmButton = { TextButton(onClick = {
+                        val original = memoHighlight; val note = memoText
+                        if (original != null) scope.launch { editAnnotation(app, original, JsonObject(mapOf("note" to JsonPrimitive(note)))) }
+                        memoHighlight = null
+                    }) { Text(libraryText("Save", "저장")) } },
+                    dismissButton = { TextButton(onClick = { memoHighlight = null }) { Text(libraryText("Cancel", "취소")) } })
                 contentOverlay(widthPx, heightPx, textPage)
             }
             // This control overlays the fixed paper viewport. It neither inserts a list row nor resets

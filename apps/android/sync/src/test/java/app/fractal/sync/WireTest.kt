@@ -1,5 +1,7 @@
 package app.fractal.sync
 
+import kotlinx.serialization.json.*
+import kotlinx.coroutines.runBlocking
 import org.testng.Assert.assertEquals
 import org.testng.Assert.assertThrows
 import org.testng.Assert.assertTrue
@@ -12,6 +14,89 @@ class WireTest {
         assertEquals(PairingPayloadParser.parse(json).urls.single(), "http://10.0.2.2:7410")
         assertThrows(IllegalArgumentException::class.java) {
             PairingPayloadParser.parse(json.replace("\"v\":1", "\"v\":2"))
+        }
+    }
+
+    @Test
+    fun pairingExtensionsAndEmptyUrls() {
+        val raw = """{"v":1,"name":"Office","hubId":"123e4567-e89b-12d3-a456-426614174000","urls":["http://host"],"code":"abc","future":true}"""
+        assertEquals(PairingPayloadParser.parse(raw).code, "abc")
+        assertThrows(NoPairingUrlsException::class.java) {
+            PairingPayloadParser.parse(raw.replace("[\"http://host\"]", "[]"))
+        }
+    }
+
+    @Test
+    fun syncBatchesBoundInkBytesAndPreserveOrder() {
+        val ink = (0 until 200).map { buildJsonObject {
+            put("id", it); put("kind", "ink"); put("points", "한".repeat(400))
+        } }
+        val batches = SyncPushBatches.split(buildJsonObject { put("annotations", JsonArray(ink)) })
+        assertTrue(JsonArray(ink).toString().toByteArray(Charsets.UTF_8).size > 200 * 1024)
+        assertTrue(batches.size > 1)
+        assertTrue(batches.all { it.toString().toByteArray(Charsets.UTF_8).size <= SyncPushBatches.MAX_BYTES })
+        assertEquals(batches.flatMap { it.getValue("annotations").jsonArray }, ink)
+    }
+
+    @Test
+    fun syncBatchesBoundArrayCountsAndIsolateOversizedItem() {
+        val rows = (0 until 2001).map { buildJsonObject { put("id", it) } }
+        val batches = SyncPushBatches.split(buildJsonObject { put("folders", JsonArray(rows)) })
+        assertEquals(batches.map { it.getValue("folders").jsonArray.size }, listOf(1000, 1000, 1))
+        assertEquals(batches.flatMap { it.getValue("folders").jsonArray }, rows)
+        val large = JsonPrimitive("x".repeat(50000))
+        val normal = JsonPrimitive("small")
+        val isolated = SyncPushBatches.split(buildJsonObject {
+            put("annotations", JsonArray(listOf(normal, large, normal)))
+        })
+        assertEquals(isolated.map { it.getValue("annotations").jsonArray },
+            listOf(JsonArray(listOf(normal)), JsonArray(listOf(large)), JsonArray(listOf(normal))))
+    }
+
+    @Test
+    fun rejectedLargeBatchDoesNotPreventOtherAcknowledgements() = runBlocking {
+        val large = JsonPrimitive("x".repeat(50000))
+        val normal = JsonPrimitive("small")
+        val requests = mutableListOf<JsonObject>()
+        val accepted = mutableListOf<JsonObject>()
+        val warnings = mutableListOf<String>()
+        val client = object : HubDataClient {
+            override suspend fun data(path: String, method: String, body: JsonElement?): JsonElement {
+                assertEquals(path, "/api/sync/push")
+                assertEquals(method, "POST")
+                val batch = body!!.jsonObject
+                requests += batch
+                if (batch.getValue("annotations").jsonArray == JsonArray(listOf(large))) throw HubHttpException(413)
+                return batch
+            }
+        }
+        SyncPushBatches.push(buildJsonObject {
+            put("annotations", JsonArray(listOf(normal, large, normal)))
+        }, client, onWarning = { warnings += it }) { accepted += it }
+        assertEquals(requests.size, 3)
+        assertEquals(accepted.size, 2)
+        assertEquals(warnings.size, 1)
+        assertTrue(accepted.all { it.getValue("annotations").jsonArray == JsonArray(listOf(normal)) })
+    }
+
+    @Test
+    fun newerHubAcceptsLargeBatchAndNormalFailuresStillPropagate() = runBlocking {
+        val large = buildJsonObject { put("annotations", JsonArray(listOf(JsonPrimitive("x".repeat(50000))))) }
+        var acknowledged = false
+        val client = object : HubDataClient {
+            override suspend fun data(path: String, method: String, body: JsonElement?): JsonElement = body!!
+        }
+        SyncPushBatches.push(large, client, onWarning = { throw AssertionError(it) }) { acknowledged = true }
+        assertTrue(acknowledged)
+        val failing = object : HubDataClient {
+            override suspend fun data(path: String, method: String, body: JsonElement?): JsonElement = throw HubHttpException(413)
+        }
+        try {
+            SyncPushBatches.push(buildJsonObject { put("annotations", JsonArray(listOf(JsonPrimitive("small")))) },
+                failing, onWarning = { throw AssertionError(it) }) { throw AssertionError("Unexpected acknowledgement") }
+            throw AssertionError("Expected normal batch failure")
+        } catch (error: HubHttpException) {
+            assertEquals(error.code, 413)
         }
     }
 

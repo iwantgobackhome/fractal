@@ -282,7 +282,10 @@ export function DevicesSection({ hub }: { hub: HubApi }): JSX.Element {
         lan: kind === 'lan' ? !enabled('lan') : enabled('lan'),
         tailscale: kind === 'tailscale' ? !enabled('tailscale') : enabled('tailscale'),
       });
-      if (next !== null) setNetwork(next);
+      if (next !== null) {
+        setNetwork(next);
+        setPairing(null);
+      }
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : t('devices.changeFailed'));
     }
@@ -293,6 +296,7 @@ export function DevicesSection({ hub }: { hub: HubApi }): JSX.Element {
       .map((a) => a.url.replace(/^https?:\/\//, ''))
       .join(', ');
 
+  const reachable = network.addresses.some((address) => address.kind !== 'loopback' && address.enabled && enabled(address.kind));
   const secondsLeft = pairing === null ? 0 : Math.max(0, Math.round((new Date(pairing.expiresAt).getTime() - now) / 1000));
 
   return (
@@ -318,7 +322,9 @@ export function DevicesSection({ hub }: { hub: HubApi }): JSX.Element {
       ) : null}
 
       <div className="pairing">
-        {pairing !== null && secondsLeft > 0 ? (
+        {!reachable ? (
+          <p className="settings__quiet">{t('devices.enableNetwork')}</p>
+        ) : pairing !== null && secondsLeft > 0 ? (
           <div className="pairing__card">
             <img className="pairing__qr" src={hub.pairingQrUrl(pairing.session)} alt={t('devices.qrAlt')} width={168} height={168} />
             <div>

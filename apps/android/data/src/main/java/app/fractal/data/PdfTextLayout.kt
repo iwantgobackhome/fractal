@@ -80,7 +80,22 @@ fun rotateTextPoint(point: TextPoint, rotation: Int) = when (rotation) {
 class OriginalTextGeometry(val page: OriginalTextPage) {
     private data class Hit(val unit: OriginalTextUnit, val quad: List<TextPoint>)
     private fun displayed(unit: OriginalTextUnit) = unit.quad?.map { rotateTextPoint(TextPoint(it[0], it[1]), page.rotation) }
-    private val units = page.runs.flatMap { it.units }.mapNotNull { unit -> displayed(unit)?.let { Hit(unit, it) } }
+    private val units = page.runs.flatMap { run ->
+        if (run.granularity != "run") run.units else run.units.flatMap { unit ->
+            val quad = unit.quad ?: return@flatMap listOf(unit)
+            val first = page.boundaries.binarySearch(unit.start); val last = page.boundaries.binarySearch(unit.end)
+            if (first < 0 || last <= first) return@flatMap listOf(unit)
+            val boundaries = page.boundaries.subList(first, last + 1)
+            boundaries.zipWithNext().map { (start, end) ->
+                val a = (start - unit.start).toDouble() / (unit.end - unit.start)
+                val b = (end - unit.start).toDouble() / (unit.end - unit.start)
+                fun edge(from: Int, to: Int, t: Double) = listOf(
+                    quad[from][0] + (quad[to][0] - quad[from][0]) * t,
+                    quad[from][1] + (quad[to][1] - quad[from][1]) * t)
+                OriginalTextUnit(start, end, listOf(edge(0, 3, a), edge(1, 2, a), edge(1, 2, b), edge(0, 3, b)))
+            }
+        }
+    }.mapNotNull { unit -> displayed(unit)?.let { Hit(unit, it) } }
     private val words = page.runs.flatMap { it.words }.mapNotNull { unit -> displayed(unit)?.let { Hit(unit, it) } }
 
     private fun contains(quad: List<TextPoint>, point: TextPoint): Boolean {
@@ -96,16 +111,24 @@ class OriginalTextGeometry(val page: OriginalTextPage) {
     }
     private fun hit(point: TextPoint, candidates: List<Hit>) = candidates.firstOrNull { contains(it.quad, point) }
     private fun distance(point: TextPoint, quad: List<TextPoint>): Double {
-        val center = TextPoint(quad.map { it.x }.average(), quad.map { it.y }.average())
-        // Keep adjacent line choice stable before choosing an inline endpoint.
-        val dx = point.x - center.x; val dy = point.y - center.y
+        val dx = maxOf(quad.minOf { it.x } - point.x, 0.0, point.x - quad.maxOf { it.x })
+        val dy = maxOf(quad.minOf { it.y } - point.y, 0.0, point.y - quad.maxOf { it.y })
         return dx * dx + dy * dy
     }
     private fun nearest(point: TextPoint) = units.minByOrNull { distance(point, it.quad) }
 
     fun wordAt(x: Double, y: Double): OriginalRange? {
         val point = TextPoint(x, y)
-        val found = hit(point, words) ?: hit(point, units) ?: return null
+        val unit = hit(point, units) ?: return null
+        val run = page.runs.firstOrNull { unit.unit.start in it.start until it.end }
+        if (run?.granularity == "run") {
+            var start = unit.unit.start; var end = unit.unit.end
+            while (start > run.start && !page.text[start - 1].isWhitespace()) start--
+            while (end < run.end && !page.text[end].isWhitespace()) end++
+            start = page.boundaries.last { it <= start }; end = page.boundaries.first { it >= end }
+            return range(start, end)
+        }
+        val found = hit(point, words) ?: unit
         return range(found.unit.start, found.unit.end)
     }
     fun select(startX: Double, startY: Double, endX: Double, endY: Double): OriginalRange? {
@@ -130,9 +153,26 @@ class OriginalTextGeometry(val page: OriginalTextPage) {
     fun range(first: Int, last: Int): OriginalRange? {
         val start = minOf(first, last); val end = maxOf(first, last)
         if (start == end || start !in page.boundaries || end !in page.boundaries) return null
-        val covered = units.filter { it.unit.start >= start && it.unit.end <= end }
+        val firstHit = units.firstOrNull { it.unit.start >= start } ?: return null
+        val lastHit = units.lastOrNull { it.unit.end <= end } ?: return null
+        // Runs identify line spans. Overlapping endpoint runs establish the selected column.
+        fun runBounds(hit: Hit) = page.runs.firstOrNull { hit.unit.start in it.start until it.end }
+            ?.quad?.map { rotateTextPoint(TextPoint(it[0], it[1]), page.rotation) }
+        val a = runBounds(firstHit); val b = runBounds(lastHit)
+        val left = minOf(a?.minOf { it.x } ?: 0.0, b?.minOf { it.x } ?: 0.0)
+        val right = maxOf(a?.maxOf { it.x } ?: 1.0, b?.maxOf { it.x } ?: 1.0)
+        val sameColumn = a != null && b != null && maxOf(a.minOf { it.x }, b.minOf { it.x }) < minOf(a.maxOf { it.x }, b.maxOf { it.x }) &&
+            page.runs.filter { firstHit.unit.start in it.start until it.end || lastHit.unit.start in it.start until it.end }
+                .none { page.text.substring(it.start, it.end).isBlank() }
+        val top = minOf(firstHit.quad.minOf { it.y }, lastHit.quad.minOf { it.y })
+        val bottom = maxOf(firstHit.quad.maxOf { it.y }, lastHit.quad.maxOf { it.y })
+        val covered = units.filter { it.unit.start >= start && it.unit.end <= end &&
+            (!sameColumn || (it.quad.maxOf { p -> p.x } >= left && it.quad.minOf { p -> p.x } <= right &&
+                it.quad.maxOf { p -> p.y } >= top && it.quad.minOf { p -> p.y } <= bottom)) }
         if (covered.isEmpty()) return null
-        return OriginalRange(start, end, page.text.substring(start, end), covered.map { it.quad },
+        val contiguous = covered.zipWithNext().all { (a, b) -> page.text.substring(a.unit.end, b.unit.start).isBlank() }
+        val text = if (contiguous) page.text.substring(start, end) else covered.joinToString("") { page.text.substring(it.unit.start, it.unit.end) }
+        return OriginalRange(start, end, text, covered.map { it.quad },
             covered.map { it.unit.quad!!.map { point -> TextPoint(point[0], point[1]) } })
     }
 }

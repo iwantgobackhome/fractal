@@ -2,6 +2,15 @@ import type { Messages } from './ko';
 
 /** English interface text; same shape as `ko.ts`. */
 export const en: Messages = {
+  updates: {
+    available: 'New version {version} available',
+    update: 'Update',
+    later: 'Later',
+    downloading: 'Downloading update · {percent}%',
+    progress: 'Update download progress',
+    restart: 'Restart to update',
+    error: 'Could not update. Please try again later.',
+  },
   nav: {
     home: 'Home',
     library: 'Library',
@@ -142,6 +151,7 @@ export const en: Messages = {
     statusNone: 'Connect AI',
   },
   devices: {
+    enableNetwork: 'Enable LAN or Tailscale with a reachable address before pairing your phone.',
     lan: 'Connect on the same Wi-Fi',
     tailscale: 'Connect anywhere with Tailscale',
     noLan: 'No network address found',
@@ -300,6 +310,7 @@ export const en: Messages = {
     region: 'area',
     noNotes: 'Nothing marked yet.',
     highlightLabel: 'Highlight: {text}',
+    closeHighlight: 'Close highlight menu',
     noteEditor: 'Highlight note',
     color: 'Colour',
     colorOf: 'Colour {color}',

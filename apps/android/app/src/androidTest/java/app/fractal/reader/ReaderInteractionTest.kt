@@ -19,7 +19,9 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import app.fractal.ink.R as InkR
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.flow.first
-import app.fractal.data.WireJson
+import app.fractal.data.*
+import app.fractal.pdf.PdfRect
+import app.fractal.pdf.PdfTextSelection
 import kotlinx.serialization.json.*
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.compose.foundation.layout.Box
@@ -46,10 +48,11 @@ import kotlin.math.abs
 class ReaderInteractionTest {
     @get:Rule val compose = createAndroidComposeRule<ReaderFixtureActivity>()
     private var downTime = 0L
+    private fun label(en: String, ko: String) = if (compose.activity.resources.configuration.locales[0].language == "ko") ko else en
 
     private fun reader() {
         val app = compose.activity.application as ReaderApplication
-        val sha = "a".repeat(64)
+        val pdfBytes = java.io.ByteArrayOutputStream()
         // Each test owns a fresh reading origin; production persists this across reader exits.
         runBlocking { app.database.reader().upsert(ReaderPositionEntity("gesture-fixture", "{\"mode\":\"original\",\"page\":1,\"fraction\":0}")) }
         val pdf = PdfDocument()
@@ -60,14 +63,28 @@ class ReaderInteractionTest {
                 page.canvas.drawRect(280f, 340f, 292f, 348f, Paint().apply { color = Color.RED })
                 pdf.finishPage(page)
             }
-            app.cache.file(sha).outputStream().use(pdf::writeTo)
+            pdf.writeTo(pdfBytes)
         } finally { pdf.close() }
+        val localHash = java.security.MessageDigest.getInstance("SHA-256").digest(pdfBytes.toByteArray())
+            .joinToString("") { "%02x".format(it) }
+        app.cache.file(localHash).writeBytes(pdfBytes.toByteArray())
+        runBlocking {
+            val text = "Reader gesture fixture page 1"
+            val quad = listOf(listOf(.066,.155),listOf(.066,.125),listOf(.566,.125),listOf(.566,.155))
+            val run = OriginalTextRun(0,text.length,quad,"ltr","run","approximate",
+                listOf(OriginalTextUnit(0,text.length,quad)),emptyList())
+            val page = OriginalTextPage(1,listOf(0.0,0.0,600.0,800.0),600.0,800.0,1.0,0,text,listOf(run),
+                (0..text.length).toList(),"text",emptyList(),"geometric-heuristic")
+            val envelope = PdfTextLayout("ready","gesture-fixture",PDF_TEXT_LAYOUT_VERSION,localHash,4,page)
+            app.database.reader().upsert(PdfTextEntity(localHash,PDF_TEXT_LAYOUT_VERSION,1,
+                WireJson.format.encodeToString(PdfTextLayout.serializer(),envelope),System.currentTimeMillis()))
+        }
         compose.setContent {
             FractalTheme {
                 ReaderScreen(app, LibraryEntity(
                     paperKey = "gesture-fixture", title = "Fixture", authors = "[]", year = null, venue = null,
                     addedAt = "2026-10-01T00:00:00Z", updatedAt = "2026-10-01T00:00:00Z",
-                    status = "ready", pdfSha256 = sha, pageCount = 4, dirty = false, json = "{}",
+                    status = "ready", pdfSha256 = localHash, pageCount = 4, dirty = false, json = "{}",
                 ), {})
             }
         }
@@ -110,7 +127,11 @@ class ReaderInteractionTest {
             setAxisValue(MotionEvent.AXIS_TILT, contact.tilt)
         } }.toTypedArray()
         val event = MotionEvent.obtain(downTime, SystemClock.uptimeMillis(), action, contacts.size, properties, coords, 0, buttons, 1f, 1f, 0, 0, source, flags)
-        compose.runOnUiThread { compose.activity.dispatchTouchEvent(event) }
+        compose.runOnUiThread {
+            if (action in listOf(MotionEvent.ACTION_HOVER_ENTER,MotionEvent.ACTION_HOVER_MOVE,MotionEvent.ACTION_HOVER_EXIT))
+                compose.activity.dispatchGenericMotionEvent(event)
+            else compose.activity.dispatchTouchEvent(event)
+        }
         event.recycle()
         compose.waitForIdle()
     }
@@ -247,14 +268,15 @@ class ReaderInteractionTest {
         val expectedY = zoomed.y + zoomed.height * (focus.second - before.y) / before.height
         var rendered: Pair<Float, Float>? = null
         compose.waitUntil(15000) { rendered = printedMarker(); rendered?.let { abs(it.first - expectedX) <= 4 && abs(it.second - expectedY) <= 4 } == true }
+        val app = compose.activity.application as ReaderApplication
+        val beforeInk = runBlocking { app.database.annotations().observePaper("gesture-fixture").first().map { it.id }.toSet() }
         event(MotionEvent.ACTION_DOWN, focus.first - 30, focus.second + 70)
         event(MotionEvent.ACTION_MOVE, focus.first, focus.second + 100)
         event(MotionEvent.ACTION_UP, focus.first + 30, focus.second + 120)
         assertEquals(zoomed, bounds())
-        val app = compose.activity.application as ReaderApplication
         var point: JsonArray? = null
         compose.waitUntil(5000) {
-            point = runBlocking { app.database.annotations().observePaper("gesture-fixture").first().filter { it.kind == "ink" }.maxByOrNull { it.updatedAt }?.let {
+            point = runBlocking { app.database.annotations().observePaper("gesture-fixture").first().filter { it.kind == "ink" && it.id !in beforeInk }.maxByOrNull { it.updatedAt }?.let {
                 WireJson.format.parseToJsonElement(it.json).jsonObject["points"]!!.jsonArray.last().jsonArray
             } }; point != null
         }
@@ -289,7 +311,7 @@ class ReaderInteractionTest {
                 Box(Modifier.fillMaxSize()) {
                     InkCanvas(state, tool, Modifier.fillMaxSize(), Size.Zero, nativeInkRouting = true,
                         onWritingStateChanged = writing, onFingerGesture = transform,
-                        onTextSelection = { _, _ -> selected() })
+                        onSelectionProgress = { _, _, finished -> if (finished) selected() })
                 }
             }
         }
@@ -313,7 +335,7 @@ class ReaderInteractionTest {
         compose.runOnIdle { assertEquals(1, state.strokes.size); assertTrue(state.undo()); assertTrue(state.redo()) }
     }
 
-    @Test fun toolChangesApplyToTheNextStrokeAndTextSelectionDoesNotInk() {
+    @Test fun toolChangesApplyToTheNextStrokeAndFingerSelectionDoesNotInk() {
         val state = InkPageState()
         val tool = InkToolState()
         var selections = 0
@@ -328,10 +350,11 @@ class ReaderInteractionTest {
         }
         event(MotionEvent.ACTION_DOWN, 200f, 500f)
         event(MotionEvent.ACTION_UP, 260f, 500f)
-        compose.runOnIdle { assertEquals("highlighter", state.strokes.last().brush); tool.active = InkTool.TextSelection }
-        event(MotionEvent.ACTION_DOWN, 200f, 600f)
-        event(MotionEvent.ACTION_MOVE, 280f, 620f)
-        event(MotionEvent.ACTION_UP, 300f, 620f)
+        compose.runOnIdle { assertEquals("highlighter", state.strokes.last().brush) }
+        event(MotionEvent.ACTION_DOWN, 200f, 600f, MotionEvent.TOOL_TYPE_FINGER)
+        SystemClock.sleep(450)
+        event(MotionEvent.ACTION_MOVE, 280f, 620f, MotionEvent.TOOL_TYPE_FINGER)
+        event(MotionEvent.ACTION_UP, 300f, 620f, MotionEvent.TOOL_TYPE_FINGER)
         compose.runOnIdle { assertEquals(2, state.strokes.size); assertEquals(1, selections) }
     }
 
@@ -447,4 +470,81 @@ class ReaderInteractionTest {
             assertTrue(state.strokes.isEmpty())
         }
     }
+    @Test fun readerLongPressDragShowsLiveHandlesWithoutInkOrScrolling() {
+        reader()
+        val page = bounds()
+        val app = compose.activity.application as ReaderApplication
+        val before = runBlocking { app.database.annotations().observePaper("gesture-fixture").first().count { it.kind == "ink" } }
+        event(MotionEvent.ACTION_DOWN,page.x+page.width*.09f,page.y+page.height*.14f,MotionEvent.TOOL_TYPE_FINGER)
+        SystemClock.sleep(450)
+        event(MotionEvent.ACTION_MOVE,page.x+page.width*.28f,page.y+page.height*.14f,MotionEvent.TOOL_TYPE_FINGER)
+        compose.onNodeWithContentDescription("Selection end handle").assertExists()
+        event(MotionEvent.ACTION_UP,page.x+page.width*.28f,page.y+page.height*.14f,MotionEvent.TOOL_TYPE_FINGER)
+        compose.onNodeWithText(label("Quote / explain", "인용 / 설명")).assertExists()
+        assertEquals(page,bounds())
+        assertEquals(before,runBlocking { app.database.annotations().observePaper("gesture-fixture").first().count { it.kind == "ink" } })
+    }
+
+    @Test fun regionToggleAllowsImmediateFingerAndPenDrag() {
+        reader()
+        compose.onNodeWithContentDescription("Region").performClick()
+        val page = bounds()
+        for (type in listOf(MotionEvent.TOOL_TYPE_FINGER,MotionEvent.TOOL_TYPE_STYLUS)) {
+            event(MotionEvent.ACTION_DOWN,page.x+page.width*.15f,page.y+page.height*.25f,type)
+            event(MotionEvent.ACTION_MOVE,page.x+page.width*.4f,page.y+page.height*.35f,type)
+            event(MotionEvent.ACTION_UP,page.x+page.width*.4f,page.y+page.height*.35f,type)
+            compose.onNodeWithText(label("Deliberately selected original region", "직접 선택한 원문 영역")).assertExists()
+            compose.onNodeWithText(label("Clear", "해제")).performClick()
+            assertEquals(page,bounds())
+        }
+    }
+
+    @Test fun confirmedHighlightTapDeletesTheAnnotation() {
+        reader()
+        val app = compose.activity.application as ReaderApplication
+        runBlocking {
+            app.database.annotations().observePaper("gesture-fixture").first().filter { it.kind == "highlight" }.forEach { row ->
+                editAnnotation(app, WireJson.format.parseToJsonElement(row.json).jsonObject, buildJsonObject { put("deleted",true) })
+            }
+            saveHighlight(app,"gesture-fixture",1,PdfTextSelection("fixture",listOf(PdfRect(.2f,.3f,.2f,.04f)),
+                provenance="deliberate-region"),"yellow")
+        }
+        compose.waitForIdle()
+        val row = runBlocking { app.database.annotations().observePaper("gesture-fixture").first().filter { it.kind == "highlight" }.maxByOrNull { it.updatedAt }!! }
+        val page = bounds()
+        // Room completion alone does not mean Compose has painted the new annotation yet.
+        compose.waitUntil(5000) {
+            val capture = InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot()
+            val bitmap = if (capture.config == Bitmap.Config.HARDWARE) capture.copy(Bitmap.Config.ARGB_8888,false) else capture
+            try {
+                val origin = IntArray(2)
+                compose.runOnUiThread { compose.activity.window.decorView.getLocationOnScreen(origin) }
+                val pixel = bitmap.getPixel((page.x+page.width*.3f+origin[0]).toInt(),(page.y+page.height*.32f+origin[1]).toInt())
+                Color.red(pixel) > 220 && Color.green(pixel) > 200 && Color.blue(pixel) < 230 && Color.red(pixel) > Color.blue(pixel)+20
+            } finally { bitmap.recycle(); if (bitmap !== capture) capture.recycle() }
+        }
+        event(MotionEvent.ACTION_DOWN,page.x+page.width*.3f,page.y+page.height*.32f,MotionEvent.TOOL_TYPE_FINGER)
+        event(MotionEvent.ACTION_UP,page.x+page.width*.3f,page.y+page.height*.32f,MotionEvent.TOOL_TYPE_FINGER)
+        SystemClock.sleep(400)
+        compose.onNodeWithText(label("Delete", "삭제")).performClick()
+        compose.waitUntil(5000) { runBlocking { app.database.annotations().get(row.id)?.deleted == true } }
+    }
+
+    @Test fun eraserMovesLiveAndHoverUsesTruePixelRadius() {
+        val state = InkPageState(); val tool = InkToolState(); canvas(state,tool)
+        event(MotionEvent.ACTION_DOWN,200f,400f); event(MotionEvent.ACTION_MOVE,250f,400f); event(MotionEvent.ACTION_UP,300f,400f)
+        compose.runOnIdle { tool.active = InkTool.Eraser; tool.width = .02f }
+        event(MotionEvent.ACTION_HOVER_ENTER,250f,400f)
+        compose.runOnIdle {
+            val surface = surfaces().first() as ViewGroup
+            val dry = surface.getChildAt(0)
+            val cursor = dry.javaClass.getDeclaredField("eraserCursor").apply { isAccessible=true }.get(dry) as Pair<*,*>
+            assertEquals(surface.width*.01f,cursor.second as Float,.001f)
+        }
+        event(MotionEvent.ACTION_DOWN,250f,350f); event(MotionEvent.ACTION_MOVE,250f,400f)
+        compose.runOnIdle { assertTrue(state.strokes.first().deleted) }
+        event(MotionEvent.ACTION_UP,250f,450f)
+        compose.runOnIdle { assertTrue(state.undo()); assertFalse(state.strokes.first().deleted) }
+    }
+
 }

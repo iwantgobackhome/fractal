@@ -7,23 +7,46 @@ const directory = resolve(process.argv[2] ?? 'dist/release-all');
 const version = JSON.parse(await readFile('package.json', 'utf8')).version;
 const labels = ['win32-x64', 'linux-x64', 'darwin-arm64', 'darwin-x64', 'android'];
 const files = await readdir(directory);
-const payloads = [`Fractal-${version}-win-x64.exe`, `Fractal-${version}-linux-x64.AppImage`, `Fractal-${version}-linux-x64.deb`, `Fractal-${version}-mac-arm64.dmg`, `Fractal-${version}-mac-x64.dmg`, `Fractal-${version}-android-debug.apk`];
+const payloads = [
+  `Fractal-${version}-win-x64.exe`,
+  `Fractal-${version}-linux-x64.AppImage`,
+  `Fractal-${version}-linux-x64.deb`,
+  `Fractal-${version}-mac-arm64.dmg`,
+  `Fractal-${version}-mac-x64.dmg`,
+  `Fractal-${version}-android-debug.apk`,
+];
 for (const name of payloads) assert.ok(files.includes(name), `missing ${name}`);
+const updateFiles = {
+  'win32-x64': ['latest.yml', `Fractal-${version}-win-x64.exe.blockmap`],
+  'linux-x64': ['latest-linux.yml', `Fractal-${version}-linux-x64.AppImage.blockmap`],
+};
 const verified = new Map();
 let commit;
 for (const label of labels) {
   const manifest = await readFile(join(directory, `SHA256SUMS-${label}.txt`), 'utf8');
   const listed = new Set();
+  const distributions = payloads.filter((name) =>
+    label === 'android' ? name.endsWith('-android-debug.apk') : name.includes(`-${label.replace('win32', 'win').replace('darwin', 'mac')}.`),
+  );
+  const allowed = new Set([
+    ...distributions,
+    ...distributions.map((name) => `${name}.blockmap`).filter(() => label === 'win32-x64' || label === 'linux-x64'),
+    ...(updateFiles[label] ?? []),
+    `source-${label}.json`,
+    ...(label === 'android' ? ['android-verification.json'] : [`smoke-${label}.json`, `package-${label}.json`]),
+  ]);
   for (const line of manifest.trim().split('\n')) {
     const match = /^([a-f0-9]{64})  ([^/\\]+)$/.exec(line);
     assert.ok(match, `invalid checksum row: ${line}`);
     const [, hash, name] = match;
+    assert.ok(allowed.has(name), `unexpected file ${name} in ${label}`);
     assert.ok(!verified.has(name), `duplicate artifact ${name}`);
     const bytes = await readFile(join(directory, name));
     assert.equal(createHash('sha256').update(bytes).digest('hex'), hash, name);
     verified.set(name, hash);
     listed.add(name);
   }
+  for (const name of [...distributions, ...(updateFiles[label] ?? [])]) assert.ok(listed.has(name), `missing ${name} in ${label}`);
   assert.ok(listed.has(`source-${label}.json`));
   const source = JSON.parse(await readFile(join(directory, `source-${label}.json`), 'utf8'));
   assert.equal(source.version, version);
@@ -40,7 +63,7 @@ for (const label of labels) {
     assert.ok(listed.has('android-verification.json'));
     const apk = JSON.parse(await readFile(join(directory, 'android-verification.json'), 'utf8'));
     assert.equal(apk.version, version);
-    assert.equal(apk.versionCode, 2);
+    assert.equal(apk.versionCode, 3);
     assert.equal(apk.applicationId, 'app.fractal.reader');
     assert.ok(apk.debugSigned && apk.signatureVerified);
     assert.match(apk.certificateSha256, /^[a-f0-9]{64}$/);
@@ -48,11 +71,14 @@ for (const label of labels) {
   }
 }
 for (const name of payloads) assert.ok(verified.has(name), `unverified distribution ${name}`);
-for (const name of files) assert.ok(verified.has(name) || /^SHA256SUMS-(win32-x64|linux-x64|darwin-arm64|darwin-x64|android)\.txt$/.test(name), `unexpected file ${name}`);
+for (const name of files)
+  assert.ok(verified.has(name) || /^SHA256SUMS-(win32-x64|linux-x64|darwin-arm64|darwin-x64|android)\.txt$/.test(name), `unexpected file ${name}`);
 const lines = [];
 for (const name of files.sort()) {
-  const hash = createHash('sha256').update(await readFile(join(directory, name))).digest('hex');
+  const hash = createHash('sha256')
+    .update(await readFile(join(directory, name)))
+    .digest('hex');
   lines.push(`${hash}  ${name}`);
 }
 await writeFile(join(directory, 'SHA256SUMS.txt'), lines.join('\n') + '\n');
-console.log(`All five native jobs and six distribution files verified at ${commit}`);
+console.log(`All five native jobs and six installers and Windows/Linux update metadata and blockmaps verified at ${commit}`);

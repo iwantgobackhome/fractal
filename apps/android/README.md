@@ -10,4 +10,6 @@ Pair with the desktop Hub using its QR code, then use a trusted LAN or Tailscale
 
 The release pipeline names the debug-signed distribution `Fractal-0.2.0-android-debug.apk`. It restores a stable debug keystore from an Actions secret, binds the build to that explicit temporary signing path, and verifies the public certificate SHA against the previous release before assembly and again on the APK. An update retains the same signing identity; local builds keep their default signing configuration when the CI path is absent. These checks verify APK manifest and signing, without implying emulator, physical-device or API 35 runtime certification. See [release builds](../../docs/RELEASING.md).
 
+The app checks published GitHub releases at startup at most once per 24 hours; Settings also offers Check for updates. Update downloads show progress and verify the APK against the same release’s SHA256SUMS.txt before opening the Android installer. Allow Fractal to install apps if Android asks.
+
 Optional library/demo checks: `./gradlew :ink:testDebugUnitTest :design:assembleDebug :inkdemo:assembleDebug`.

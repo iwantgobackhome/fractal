@@ -233,7 +233,7 @@ class HubClient(private val credentials: HubCredentialStore) : HubHistoryClient 
         }
         val response = http.newCall(request(base, "/api/pairing/claim", "POST", body)).execute()
         response.use {
-            if (!it.isSuccessful) throw IOException("Pairing code rejected (HTTP ${it.code})")
+            if (!it.isSuccessful) throw hubFailure(it)
             val data = WireJsonAdapter.data(it.body?.string() ?: "").jsonObject
             val deviceId = data["device"]?.jsonObject?.get("id")?.jsonPrimitive?.content ?: ""
             val token = data["deviceToken"]?.jsonPrimitive?.content ?: ""

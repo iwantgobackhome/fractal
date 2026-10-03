@@ -87,4 +87,27 @@ class InkEngineTest {
         assertEquals("arrow",recognizeShape(arrow)?.type)
         assertNull(recognizeShape(listOf(p(.1f,.1f),p(.9f,.8f),p(.2f,.7f),p(.7f,.1f))))
     }
+    @Test fun legacySelectionToolMigratesToPen() {
+        assertEquals(migratedInkTool("TextSelection"),InkTool.Ballpoint)
+        assertEquals(migratedInkTool("unknown"),InkTool.Ballpoint)
+        assertEquals(migratedInkTool(null),InkTool.Ballpoint)
+        assertEquals(migratedInkTool("Pencil"),InkTool.Pencil)
+    }
+    @Test fun eraserUsesOnePixelRadiusOnNonSquarePages() {
+        assertEquals(eraserRadiusPx(.02f,1000f),10f)
+        val inside = stroke(listOf(p(.5f,.504f),p(.51f,.504f)))
+        val outside = inside.copy(id="outside",points=listOf(p(.5f,.51f),p(.51f,.51f)))
+        val result = eraseStrokesOnPage(listOf(inside,outside),listOf(p(.5f,.5f)),.02f,1000f,2000f,EraserMode.Stroke)
+        assertTrue(result[0].deleted); assertFalse(result[1].deleted)
+    }
+    @Test fun liveEraseIsOneUndoGestureAndCancelRestoresInk() {
+        val state = InkPageState(); val original = stroke(listOf(p(.1f,.1f),p(.2f,.2f)))
+        state.load(listOf(original)); var changes = 0; state.onChange = { changes++ }
+        state.beginGesture(); state.previewGesture(listOf(original.copy(deleted=true)))
+        assertTrue(state.strokes.single().deleted); assertEquals(changes,0)
+        state.finishGesture(false); assertEquals(state.strokes,listOf(original)); assertFalse(state.undo())
+        state.beginGesture(); state.previewGesture(listOf(original.copy(deleted=true))); state.finishGesture(true)
+        assertEquals(changes,1); assertTrue(state.undo()); assertEquals(state.strokes,listOf(original)); assertFalse(state.undo())
+    }
+
 }

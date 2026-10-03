@@ -17,3 +17,8 @@ internal fun resolveReaderModel(value: String, options: List<ReaderModel>): Pair
     require(options.any { it.value == value && it.available }) { "The explicitly selected model is unavailable" }
     return value.substringBefore('/') to value.substringAfter('/')
 }
+
+@androidx.compose.runtime.Composable
+internal fun readerLanguageOptions() = listOf("auto" to libraryText("Automatic", "자동"), "en" to "English", "ko" to "한국어",
+    "ja" to "日本語", "zh-CN" to "简体中文", "zh-Hant" to "繁體中文", "de" to "Deutsch", "fr" to "Français",
+    "es" to "Español", "pt-BR" to "Português (Brasil)", "it" to "Italiano", "ar" to "العربية")

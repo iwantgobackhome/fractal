@@ -12,20 +12,29 @@ export function isLoopbackPeer(value: string | undefined): boolean {
 }
 
 const failures = new Map<string, { count: number; until: number }>();
-export function recordRemoteFailure(request: IncomingMessage, now = Date.now()): void {
+// Stale device tokens must not consume the pairing-code attempt budget.
+const claimFailures = new Map<string, { count: number; until: number }>();
+export function recordRemoteFailure(request: IncomingMessage, now = Date.now(), claim = false): void {
+  const attempts = claim ? claimFailures : failures;
   const ip = request.socket.remoteAddress ?? 'unknown';
-  const previous = failures.get(ip);
-  failures.set(ip, { count: (previous?.until ?? 0) > now ? previous!.count + 1 : 1, until: now + 60_000 });
+  const previous = attempts.get(ip);
+  const active = previous !== undefined && previous.until > now;
+  attempts.set(ip, { count: active ? previous.count + 1 : 1, until: active ? previous.until : now + 60_000 });
 }
 export function clearRemoteFailures(request: IncomingMessage): void {
   failures.delete(request.socket.remoteAddress ?? 'unknown');
+  claimFailures.delete(request.socket.remoteAddress ?? 'unknown');
 }
-export function assertRemoteRequest(request: IncomingMessage, devices: DeviceStore, allowClaim = false, now = Date.now()): void {
+export function assertRemoteFailureLimit(request: IncomingMessage, now = Date.now(), claim = false): void {
+  const attempts = claim ? claimFailures : failures;
   const ip = request.socket.remoteAddress ?? 'unknown';
-  const previous = failures.get(ip);
+  const previous = attempts.get(ip);
   if (previous !== undefined && previous.until > now && previous.count >= 10)
     throw new HttpError(429, { code: 'QUOTA', message: 'Too many failed authentication attempts', retryable: true });
+}
+export function assertRemoteRequest(request: IncomingMessage, devices: DeviceStore, allowClaim = false, now = Date.now()): void {
   if (allowClaim) return;
+  assertRemoteFailureLimit(request, now);
   const header = request.headers.authorization;
   const match = typeof header === 'string' ? /^Bearer ([0-9a-f]{64})$/i.exec(header) : null;
   if (match !== null && devices.authenticate(match[1]!) !== null) {

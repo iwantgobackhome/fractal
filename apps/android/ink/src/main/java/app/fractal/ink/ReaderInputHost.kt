@@ -24,6 +24,7 @@ class ReaderInputHost(context: Context) : FrameLayout(context) {
     }
     fun unregister(view: View) {
         targets.remove(view)
+        if (hoverTarget?.view == view) hoverTarget = null
         if (owner?.view == view) { owner = null; suppressRemainder = true }
         if (candidate?.view == view) candidate = null
     }
@@ -34,7 +35,7 @@ class ReaderInputHost(context: Context) : FrameLayout(context) {
     private fun findTarget(event: MotionEvent): Target? {
         val index = event.actionIndex
         val pen = event.getToolType(index) in listOf(MotionEvent.TOOL_TYPE_STYLUS, MotionEvent.TOOL_TYPE_ERASER)
-        if (!pen || event.actionMasked !in listOf(MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN)) return null
+        if (!pen || event.actionMasked !in listOf(MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN, MotionEvent.ACTION_HOVER_ENTER, MotionEvent.ACTION_HOVER_MOVE, MotionEvent.ACTION_HOVER_EXIT)) return null
         val windowOrigin = IntArray(2).also(::getLocationInWindow)
         val screenOrigin = IntArray(2).also(::getLocationOnScreen)
         val windowX = event.getX(index) + windowOrigin[0]
@@ -48,6 +49,31 @@ class ReaderInputHost(context: Context) : FrameLayout(context) {
                 target.viewport()?.contains(windowX.toInt(), windowY.toInt()) != false &&
                 target.view.getGlobalVisibleRect(visible) && visible.contains(screenX.toInt(), screenY.toInt())
         }
+    }
+    private var hoverTarget: Target? = null
+    override fun dispatchHoverEvent(event: MotionEvent): Boolean {
+        val target = findTarget(event)
+        if (hoverTarget != target) {
+            hoverTarget?.let { old ->
+                val exit = MotionEvent.obtain(event).apply { action = MotionEvent.ACTION_HOVER_EXIT }
+                try { dispatchLocal(old, exit) } finally { exit.recycle() }
+            }
+        }
+        hoverTarget = if (event.actionMasked == MotionEvent.ACTION_HOVER_EXIT) null else target
+        return target?.let { dispatchLocal(it, event); true } ?: super.dispatchHoverEvent(event)
+    }
+    private fun dispatchLocal(target: Target, event: MotionEvent) {
+        val local = MotionEvent.obtain(event)
+        try {
+            val hostToGlobal = Matrix().also(::transformMatrixToGlobal)
+            val targetToGlobal = Matrix().also(target.view::transformMatrixToGlobal)
+            val inverse = Matrix()
+            if (targetToGlobal.invert(inverse)) {
+                inverse.preConcat(hostToGlobal)
+                local.transform(inverse)
+                target.dispatch(local)
+            }
+        } finally { local.recycle() }
     }
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
         delivered = false

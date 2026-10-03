@@ -22,14 +22,17 @@ data class PairingPayload(
     val code: String,
 )
 
+class NoPairingUrlsException : IllegalArgumentException("Enable LAN or Tailscale on your PC before pairing.")
+
 object PairingPayloadParser {
+    private val format = Json { ignoreUnknownKeys = true }
     fun parse(raw: String): PairingPayload {
-        val value = Json.decodeFromString<PairingPayload>(raw)
+        val value = format.decodeFromString<PairingPayload>(raw)
         require(value.v == 1)
         require(value.name.isNotBlank())
         UUID.fromString(value.hubId)
         require(value.code.isNotBlank())
-        require(value.urls.isNotEmpty())
+        if (value.urls.isEmpty()) throw NoPairingUrlsException()
         require(value.urls.all { it.startsWith("http://") || it.startsWith("https://") })
         return value
     }

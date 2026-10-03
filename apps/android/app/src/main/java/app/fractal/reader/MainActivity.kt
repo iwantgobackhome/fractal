@@ -1,8 +1,11 @@
 package app.fractal.reader
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.view.View
 import android.view.ViewGroup
 import app.fractal.ink.ReaderInputHost
@@ -42,6 +45,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import app.fractal.design.ResearchSelector
 import app.fractal.design.FractalTheme
 import app.fractal.design.LocalFractalColors
@@ -49,9 +55,40 @@ import app.fractal.design.PaperTheme
 import app.fractal.sync.SyncScheduler
 import app.fractal.ink.EraserMode
 import app.fractal.ink.rememberInkToolState
+import app.fractal.reader.update.LocalUpdates
+import app.fractal.reader.update.UpdateDialogs
+import app.fractal.reader.update.UpdateMessage
+import app.fractal.reader.update.UpdateViewModel
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
+    private val updates by lazy { ViewModelProvider(this)[UpdateViewModel::class.java] }
+    private val installPermission = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (packageManager.canRequestPackageInstalls()) installUpdate()
+        else updates.message(UpdateMessage.InstallPermission)
+    }
+    private fun installUpdate() {
+        if (!packageManager.canRequestPackageInstalls()) {
+            try {
+                installPermission.launch(Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:$packageName")))
+            } catch (_: Exception) {
+                updates.message(UpdateMessage.Error)
+            }
+            return
+        }
+        lifecycleScope.launch {
+            try {
+                val apk = updates.verifiedInstaller()
+                val uri = FileProvider.getUriForFile(this@MainActivity, "$packageName.updates", apk)
+                startActivity(Intent(Intent.ACTION_VIEW).setDataAndType(uri, "application/vnd.android.package-archive")
+                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION))
+                updates.installed()
+            } catch (_: Exception) {
+                updates.message(UpdateMessage.Error)
+            }
+        }
+    }
+
     override fun setContentView(view: View?, params: ViewGroup.LayoutParams?) {
         if (view == null || view is ReaderInputHost) super.setContentView(view, params)
         else super.setContentView(ReaderInputHost(this).apply {
@@ -67,6 +104,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         cameraGranted.value = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
         val app = application as ReaderApplication
+        updates.check()
         setContent {
             val themeName = app.settings.getString("theme", "System") ?: "System"
             var theme by remember { mutableStateOf(themeName) }
@@ -78,9 +116,12 @@ class MainActivity : AppCompatActivity() {
                 else -> if (darkSystem) PaperTheme.Dark else PaperTheme.Light
             }
             FractalTheme(paperTheme) {
-                ReaderApp(app, cameraGranted.value, { cameraPermission.launch(Manifest.permission.CAMERA) }, theme) {
-                    theme = it
-                    app.settings.edit().putString("theme", it).apply()
+                CompositionLocalProvider(LocalUpdates provides updates) {
+                    ReaderApp(app, cameraGranted.value, { cameraPermission.launch(Manifest.permission.CAMERA) }, theme) {
+                        theme = it
+                        app.settings.edit().putString("theme", it).apply()
+                    }
+                    UpdateDialogs(updates, ::installUpdate)
                 }
             }
         }
@@ -228,6 +269,13 @@ private fun SettingsScreen(app: ReaderApplication, theme: String, setTheme: (Str
             }, Modifier.padding(16.dp))
             HorizontalDivider(color = colors.rule)
             Text(stringResource(R.string.app_version), Modifier.padding(16.dp), color = colors.inkSoft)
+            val updates = LocalUpdates.current
+            if (updates != null) {
+                val updateStatus by updates.status.collectAsState()
+                TextButton(onClick = { updates.check(manual = true) }, enabled = !updateStatus.checking && updateStatus.progress == null && !updateStatus.ready) {
+                    Text(stringResource(if (updateStatus.checking) R.string.update_checking else R.string.update_check))
+                }
+            }
         }
     }
 }
