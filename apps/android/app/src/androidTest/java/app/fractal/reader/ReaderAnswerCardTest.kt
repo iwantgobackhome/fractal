@@ -51,12 +51,14 @@ class ReaderAnswerCardTest {
         compose.onNodeWithTag("reader-answer-drag").performTouchInput { swipe(center, center + androidx.compose.ui.geometry.Offset(0f, -40f), 400) }
         val secondDrag = compose.onNodeWithTag("reader-answer-card").fetchSemanticsNode().boundsInRoot
         assertTrue("A later drag continues from the current position", secondDrag.top < after.top - 10f)
-        compose.onNodeWithTag("reader-answer-collapse").performClick()
-        compose.onNodeWithTag("reader-answer-question").assertDoesNotExist()
-        compose.onNodeWithTag("reader-answer-collapse").performClick()
-        compose.onNodeWithTag("reader-answer-question").assertExists()
         compose.waitUntil(15000) { runBlocking { app.database.reader().observeRequests(key).first().any { it.kind == "explanation" && it.requestId !in previous } } }
         val row = runBlocking { app.database.reader().observeRequests(key).first().first { it.kind == "explanation" && it.requestId !in previous } }
+        // Minimizing leaves a marker on the page; the marker reopens the same answer.
+        compose.onNodeWithTag("reader-answer-collapse").performClick()
+        compose.onNodeWithTag("reader-answer-card").assertDoesNotExist()
+        compose.waitUntil(15000) { compose.onAllNodesWithTag("reader-answer-pin-${row.requestId}").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithTag("reader-answer-pin-${row.requestId}").performClick()
+        compose.onNodeWithTag("reader-answer-question").assertExists()
         val body = WireJson.format.parseToJsonElement(row.bodyJson).jsonObject
         assertEquals("equation", body["kind"]?.jsonPrimitive?.content)
         assertTrue(body["surroundingText"]?.jsonPrimitive?.content.orEmpty().contains("E=mc^2"))

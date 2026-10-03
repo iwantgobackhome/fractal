@@ -76,16 +76,34 @@ fun rotateTextPoint(point: TextPoint, rotation: Int) = when (rotation) {
     else -> point
 }
 
+private val COMBINING_TYPES = setOf(Character.NON_SPACING_MARK.toInt(), Character.COMBINING_SPACING_MARK.toInt(), Character.ENCLOSING_MARK.toInt())
+
 /** Works in displayed normalized coordinates at every viewport zoom; rotation is applied once here. */
 class OriginalTextGeometry(val page: OriginalTextPage) {
     private data class Hit(val unit: OriginalTextUnit, val quad: List<TextPoint>)
     private fun displayed(unit: OriginalTextUnit) = unit.quad?.map { rotateTextPoint(TextPoint(it[0], it[1]), page.rotation) }
+    // Run-granularity fallbacks only publish run edges. Split them at grapheme edges so a drag
+    // selects characters rather than a whole line; widths are interpolated evenly across the run.
+    private val legal: List<Int> = page.boundaries.toSortedSet().apply {
+        for (run in page.runs) if (run.granularity == "run" && run.direction == "ltr" && none { it > run.start && it < run.end }) {
+            val breaks = java.text.BreakIterator.getCharacterInstance()
+            breaks.setText(page.text.substring(run.start, run.end))
+            var edge = breaks.first()
+            while (edge != java.text.BreakIterator.DONE) {
+                val offset = run.start + edge
+                if (offset == run.start || offset == run.end || page.text[offset - 1] != '\u200d' && page.text[offset] != '\u200d' &&
+                    Character.getType(page.text.codePointAt(offset)) !in COMBINING_TYPES) add(offset)
+                edge = breaks.next()
+            }
+        }
+    }.toList()
+    private val legalSet = legal.toHashSet()
     private val units = page.runs.flatMap { run ->
         if (run.granularity != "run") run.units else run.units.flatMap { unit ->
             val quad = unit.quad ?: return@flatMap listOf(unit)
-            val first = page.boundaries.binarySearch(unit.start); val last = page.boundaries.binarySearch(unit.end)
+            val first = legal.binarySearch(unit.start); val last = legal.binarySearch(unit.end)
             if (first < 0 || last <= first) return@flatMap listOf(unit)
-            val boundaries = page.boundaries.subList(first, last + 1)
+            val boundaries = legal.subList(first, last + 1)
             boundaries.zipWithNext().map { (start, end) ->
                 val a = (start - unit.start).toDouble() / (unit.end - unit.start)
                 val b = (end - unit.start).toDouble() / (unit.end - unit.start)
@@ -125,16 +143,62 @@ class OriginalTextGeometry(val page: OriginalTextPage) {
             var start = unit.unit.start; var end = unit.unit.end
             while (start > run.start && !page.text[start - 1].isWhitespace()) start--
             while (end < run.end && !page.text[end].isWhitespace()) end++
-            start = page.boundaries.last { it <= start }; end = page.boundaries.first { it >= end }
+            start = legal.last { it <= start }; end = legal.first { it >= end }
             return range(start, end)
         }
         val found = hit(point, words) ?: unit
         return range(found.unit.start, found.unit.end)
     }
+    // The published reading order sorts runs strictly by y. Math and sub/superscript runs sit a
+    // hair off their baseline and interleave with the line above, so a drag between two points
+    // of one visual line would grab unrelated text. Rebuild visual lines from geometry instead:
+    // runs that overlap vertically and sit close horizontally share a line, read left to right.
+    private fun runIndexOf(offset: Int): Int {
+        var low = 0; var high = page.runs.size - 1
+        while (low <= high) {
+            val mid = (low + high) ushr 1; val run = page.runs[mid]
+            if (offset < run.start) high = mid - 1 else if (offset >= run.end) low = mid + 1 else return mid
+        }
+        return -1
+    }
+    private val lineOfRun = HashMap<Int, Int>()
+    private val visual: List<Hit> = run {
+        val byRun = units.groupBy { runIndexOf(it.unit.start) }
+        val aspect = if (page.rotation == 90 || page.rotation == 270) page.width / page.height else page.height / page.width
+        class Box(var left: Double, var top: Double, var right: Double, var bottom: Double)
+        fun box(quad: List<TextPoint>) = Box(quad.minOf { it.x }, quad.minOf { it.y }, quad.maxOf { it.x }, quad.maxOf { it.y })
+        val lines = mutableListOf<Pair<Box?, MutableList<Int>>>()
+        for (index in page.runs.indices) {
+            val hits = byRun[index] ?: continue
+            val own = box(hits.flatMap { it.quad })
+            val height = own.bottom - own.top
+            val line = lines.firstOrNull { (bounds, _) ->
+                bounds != null && run {
+                    val overlap = minOf(bounds.bottom, own.bottom) - maxOf(bounds.top, own.top)
+                    val gap = maxOf(0.0, bounds.left - own.right, own.left - bounds.right)
+                    overlap >= .5 * minOf(height, bounds.bottom - bounds.top) && gap <= 1.5 * height * aspect
+                }
+            }
+            if (line == null) lines += own to mutableListOf(index)
+            else {
+                line.first!!.apply { left = minOf(left, own.left); top = minOf(top, own.top); right = maxOf(right, own.right); bottom = maxOf(bottom, own.bottom) }
+                line.second += index
+            }
+        }
+        lines.forEachIndexed { line, (_, runs) -> runs.forEach { lineOfRun[it] = line } }
+        lines.flatMap { (_, runs) -> runs.sortedBy { index -> byRun.getValue(index).minOf { hit -> hit.quad.minOf { it.x } } }
+            .flatMap { byRun.getValue(it) } }
+    }
+    private val position = visual.withIndex().associate { (index, hit) -> hit.unit.start to index }
+    private val endPosition = visual.withIndex().associate { (index, hit) -> hit.unit.end to index }
+    /** Offsets name the boundary before a unit start, or after a unit end, in visual order. */
+    private fun boundary(offset: Int): Int? = position[offset] ?: endPosition[offset]?.plus(1)
+
     fun select(startX: Double, startY: Double, endX: Double, endY: Double): OriginalRange? {
         val start = hit(TextPoint(startX, startY), units) ?: return null
         val end = hit(TextPoint(endX, endY), units) ?: nearest(TextPoint(endX.coerceIn(0.0, 1.0), endY.coerceIn(0.0, 1.0))) ?: return null
-        return range(minOf(start.unit.start, end.unit.start), maxOf(start.unit.end, end.unit.end))
+        val a = position[start.unit.start] ?: return null; val b = position[end.unit.start] ?: return null
+        return slice(minOf(a, b), maxOf(a, b) + 1)
     }
     fun endpointAt(x: Double, y: Double): Int? {
         val point = TextPoint(x.coerceIn(0.0, 1.0), y.coerceIn(0.0, 1.0))
@@ -145,34 +209,48 @@ class OriginalTextGeometry(val page: OriginalTextPage) {
         return if (squared(start) <= squared(end)) found.unit.start else found.unit.end
     }
     fun handlePoint(offset: Int, end: Boolean): TextPoint? {
-        val found = if (end) units.lastOrNull { it.unit.end <= offset } else units.firstOrNull { it.unit.start >= offset }
+        val found = if (end) endPosition[offset]?.let(visual::get) ?: units.lastOrNull { it.unit.end <= offset }
+            else position[offset]?.let(visual::get) ?: units.firstOrNull { it.unit.start >= offset }
         val quad = found?.quad ?: return null
         return if (end) TextPoint((quad[2].x + quad[3].x) / 2, (quad[2].y + quad[3].y) / 2)
         else TextPoint((quad[0].x + quad[1].x) / 2, (quad[0].y + quad[1].y) / 2)
     }
     fun range(first: Int, last: Int): OriginalRange? {
-        val start = minOf(first, last); val end = maxOf(first, last)
-        if (start == end || start !in page.boundaries || end !in page.boundaries) return null
-        val firstHit = units.firstOrNull { it.unit.start >= start } ?: return null
-        val lastHit = units.lastOrNull { it.unit.end <= end } ?: return null
+        if (first == last || first !in legalSet || last !in legalSet) return null
+        val a = boundary(first) ?: return null; val b = boundary(last) ?: return null
+        return slice(minOf(a, b), maxOf(a, b))
+    }
+    private fun slice(from: Int, until: Int): OriginalRange? {
+        if (from >= until) return null
+        val selected = visual.subList(from, until)
+        val firstHit = selected.first(); val lastHit = selected.last()
         // Runs identify line spans. Overlapping endpoint runs establish the selected column.
-        fun runBounds(hit: Hit) = page.runs.firstOrNull { hit.unit.start in it.start until it.end }
+        fun runBounds(hit: Hit) = page.runs.getOrNull(runIndexOf(hit.unit.start))
             ?.quad?.map { rotateTextPoint(TextPoint(it[0], it[1]), page.rotation) }
         val a = runBounds(firstHit); val b = runBounds(lastHit)
         val left = minOf(a?.minOf { it.x } ?: 0.0, b?.minOf { it.x } ?: 0.0)
         val right = maxOf(a?.maxOf { it.x } ?: 1.0, b?.maxOf { it.x } ?: 1.0)
         val sameColumn = a != null && b != null && maxOf(a.minOf { it.x }, b.minOf { it.x }) < minOf(a.maxOf { it.x }, b.maxOf { it.x }) &&
-            page.runs.filter { firstHit.unit.start in it.start until it.end || lastHit.unit.start in it.start until it.end }
+            listOf(firstHit, lastHit).mapNotNull { page.runs.getOrNull(runIndexOf(it.unit.start)) }
                 .none { page.text.substring(it.start, it.end).isBlank() }
         val top = minOf(firstHit.quad.minOf { it.y }, lastHit.quad.minOf { it.y })
         val bottom = maxOf(firstHit.quad.maxOf { it.y }, lastHit.quad.maxOf { it.y })
-        val covered = units.filter { it.unit.start >= start && it.unit.end <= end &&
-            (!sameColumn || (it.quad.maxOf { p -> p.x } >= left && it.quad.minOf { p -> p.x } <= right &&
-                it.quad.maxOf { p -> p.y } >= top && it.quad.minOf { p -> p.y } <= bottom)) }
+        val covered = selected.filter { !sameColumn || (it.quad.maxOf { p -> p.x } >= left && it.quad.minOf { p -> p.x } <= right &&
+            it.quad.maxOf { p -> p.y } >= top && it.quad.minOf { p -> p.y } <= bottom) }
         if (covered.isEmpty()) return null
-        val contiguous = covered.zipWithNext().all { (a, b) -> page.text.substring(a.unit.end, b.unit.start).isBlank() }
-        val text = if (contiguous) page.text.substring(start, end) else covered.joinToString("") { page.text.substring(it.unit.start, it.unit.end) }
-        return OriginalRange(start, end, text, covered.map { it.quad },
+        val text = StringBuilder(page.text.substring(covered.first().unit.start, covered.first().unit.end))
+        covered.zipWithNext().forEach { (previous, next) ->
+            val between = if (next.unit.start >= previous.unit.end) page.text.substring(previous.unit.end, next.unit.start) else null
+            text.append(when {
+                between != null && between.isBlank() -> between
+                runIndexOf(previous.unit.start) == runIndexOf(next.unit.start) -> ""
+                lineOfRun[runIndexOf(previous.unit.start)] != lineOfRun[runIndexOf(next.unit.start)] -> "\n"
+                text.lastOrNull()?.isWhitespace() == true || page.text[next.unit.start].isWhitespace() -> ""
+                else -> " "
+            })
+            text.append(page.text, next.unit.start, next.unit.end)
+        }
+        return OriginalRange(covered.first().unit.start, covered.last().unit.end, text.toString(), covered.map { it.quad },
             covered.map { it.unit.quad!!.map { point -> TextPoint(point[0], point[1]) } })
     }
 }

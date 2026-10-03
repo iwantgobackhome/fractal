@@ -71,6 +71,7 @@ internal fun ScholarlyLibraryScreen(app: ReaderApplication, onSettings: () -> Un
             app.sync.syncOnce()
             // Drain dependent edits after creation/CAS rebases, without an unbounded retry loop.
             repeat(8) { if (app.database.metadata().pending().isNotEmpty()) app.sync.syncOnce() }
+            app.sync.resolveMissingPdfs()
         }.onSuccess { error = "" }.onFailure { error = it.message.orEmpty() }
         syncing = false
     } }
@@ -142,6 +143,7 @@ internal fun ScholarlyLibraryScreen(app: ReaderApplication, onSettings: () -> Un
                     }
                     if (error.isNotBlank()) Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
                         Text(libraryText("Hub unavailable. Cached papers and local edits remain available.", "허브에 연결할 수 없습니다. 캐시된 논문과 로컬 변경은 유지됩니다."), color = colors.inkSoft, fontSize = 13.sp)
+                        Text(error, color = colors.inkSoft, fontSize = 12.sp, maxLines = 3)
                         TextButton(onClick = ::refresh) { Text(libraryText("Retry", "다시 시도")) }
                     }
                     if (conflicts.isNotEmpty()) Column(Modifier.padding(horizontal = 16.dp)) {
@@ -188,7 +190,11 @@ internal fun ScholarlyLibraryScreen(app: ReaderApplication, onSettings: () -> Un
                     if (selected == null) {
                         Text(libraryText("Paper details", "논문 정보"), fontFamily = ScholarlySerif, fontSize = 22.sp)
                         Text(libraryText("Select a title in the research index.", "연구 목록에서 제목을 선택하세요."), color = colors.inkSoft)
-                    } else PaperDetails(app, selected, { if (selected.pdfSha256 == null && onRelated != null) onRelated(selected) else onRead(selected.paperKey) }, { editPaper = selected }, { mutate { app.metadata.save(selected.paperKey, !selected.saved) } })
+                    } else PaperDetails(app, selected, { scope.launch {
+                    // A paper synced from the PC may have a PDF the phone has not learned about yet.
+                    val readable = selected.pdfSha256 != null || runCatching { app.sync.refreshPaperMetadata(selected.paperKey) }.getOrNull() != null
+                    if (!readable && onRelated != null) onRelated(selected) else onRead(selected.paperKey)
+                } }, { editPaper = selected }, { mutate { app.metadata.save(selected.paperKey, !selected.saved) } })
                 }
             }
             if (phone && !embedded) Row(Modifier.fillMaxWidth().heightIn(min = 66.dp).border(.5.dp, colors.rule), verticalAlignment = Alignment.CenterVertically) {

@@ -70,8 +70,12 @@ export function AnswerPopup({
       window.removeEventListener('resize', place);
     };
   }, [anchor]);
+  // Focus the header once. Re-running this on every parent render stole focus from open
+  // controls inside the popup, which closed the model list while it was being used.
   useEffect(() => {
     header.current?.focus({ preventScroll: true });
+  }, []);
+  useEffect(() => {
     const escape = (event: KeyboardEvent) => {
       if (event.key !== 'Escape' || event.defaultPrevented) return;
       event.preventDefault();

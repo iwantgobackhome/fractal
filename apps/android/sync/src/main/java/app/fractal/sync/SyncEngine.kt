@@ -259,6 +259,19 @@ class SyncEngine(private val database: FractalDatabase, private val client: HubD
         papers.size + annotations.size + dirty.size + pending.size
     }
 
+    private val checkedPdfs = java.util.concurrent.ConcurrentHashMap.newKeySet<String>()
+    /** Sync pull omits PDF identity, so papers added on another device looked metadata-only and
+     * opened their detail page instead of the reader. Learn the PDF hash for a few each pass. */
+    suspend fun resolveMissingPdfs(limit: Int = 25) {
+        val missing = database.library().all().filter { it.pdfSha256 == null && it.paperKey !in checkedPdfs }.take(limit)
+        for (paper in missing) {
+            try { refreshPaperMetadata(paper.paperKey); checkedPdfs += paper.paperKey }
+            catch (cancel: kotlinx.coroutines.CancellationException) { throw cancel }
+            catch (_: HubHttpException) { checkedPdfs += paper.paperKey }
+            catch (_: Exception) { return } // Offline: retry on the next pass.
+        }
+    }
+
     suspend fun refreshPaperMetadata(key: String, session: HubDataClient = client, guard: () -> Unit = {}): Pair<String, Int>? {
         guard()
         val snapshot = session.data("/api/papers/${HubClient.keyPath(key)}").jsonObject
