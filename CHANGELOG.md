@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.2 — 2026-10-04
+
+Android: character-level long-press selection that follows visual lines (including inline math), tap elsewhere to clear, answer markers in the page margin that reopen minimized answers, a working fine pen-width slider with a size readout, tool-name tooltips on stylus hover or long press, and desktop-added papers that open in the reader after sync. Desktop: the answer popup model list stays open during translation. Android versionCode 4. See [release notes](docs/releases/0.2.2.md).
+
 ## 0.2.1 — 2026-10-02
 
 In-app updates for Windows NSIS, Linux AppImage/deb and the Android APK (macOS stays DMG-only). Reliable pairing and batched sync for large ink histories. Movable, collapsible answer popups for questions and explanations on desktop and Android. On Android: no text-selection mode (long press then drag selects, the pen inks), precise column-aware selection, a circular live eraser and Explain chips on detected figures, tables and equations. On both platforms: live region rectangles and tap-to-delete highlights. Android versionCode 3. See [release notes](docs/releases/0.2.1.md).
