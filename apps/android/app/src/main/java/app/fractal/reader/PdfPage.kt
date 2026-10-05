@@ -126,8 +126,11 @@ fun PdfPage(
         text = range.text, rects = range.displayQuads.map(::quadRect), start = range.start, end = range.end,
         provenance = "cached-original-approximate", quads = range.displayQuads.map { quad -> quad.map { it.x.toFloat() to it.y.toFloat() } },
         originalRects = range.originalQuads.map(::quadRect), pdfSha256 = source.pdfSha256,
-        extractionVersion = PDF_TEXT_LAYOUT_VERSION, rotation = textPage?.rotation,
+        // Character offsets synthesized inside a run are not published boundaries, so they stay off the layout range.
+        extractionVersion = PDF_TEXT_LAYOUT_VERSION.takeIf { textPage?.let { it.publishes(range.start) && it.publishes(range.end) } == true },
+        rotation = textPage?.rotation,
     )
+    LaunchedEffect(highlights, textPage) { textPage?.let { repairLayoutRanges(app, highlights, it, source.pdfSha256) } }
     fun region(startX: Float, startY: Float, endX: Float, endY: Float) = PdfTextSelection("", listOf(PdfRect(
         minOf(startX, endX), minOf(startY, endY), kotlin.math.abs(endX - startX).coerceAtLeast(.01f),
         kotlin.math.abs(endY - startY).coerceAtLeast(.01f))), provenance = "deliberate-region",

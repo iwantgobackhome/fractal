@@ -15,7 +15,10 @@ const val PDF_TEXT_LAYOUT_VERSION = "pdfjs6-original-advances-v1"
     val page: Int, val cropBox: List<Double>, val width: Double, val height: Double,
     val userUnit: Double, val rotation: Int, val text: String, val runs: List<OriginalTextRun>,
     val boundaries: List<Int>, val coverage: String, val issues: List<String>, val readingOrder: String,
-)
+) {
+    /** Offsets the Hub published; desktop and Hub only accept layout ranges whose ends are among them. */
+    fun publishes(offset: Int) = boundaries.binarySearch(offset) >= 0
+}
 @Serializable data class OriginalTextUnit(val start: Int, val end: Int, val quad: List<List<Double>>? = null)
 @Serializable data class OriginalTextRun(
     val start: Int, val end: Int, val quad: List<List<Double>>? = null,
