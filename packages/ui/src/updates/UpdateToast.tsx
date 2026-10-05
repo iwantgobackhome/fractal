@@ -60,11 +60,17 @@ export function UpdateToast() {
           <button
             type="button"
             onClick={() => {
+              if (state.manual) {
+                // The browser takes over; offer it again on the next launch.
+                dispatch({ type: 'later' });
+                void updates.download().catch(fail);
+                return;
+              }
               dispatch({ type: 'download' });
               void updates.download().catch(fail);
             }}
           >
-            {t('updates.update')}
+            {state.manual ? t('updates.openDownload') : t('updates.update')}
           </button>{' '}
           <button
             type="button"

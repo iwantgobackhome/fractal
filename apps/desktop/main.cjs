@@ -36,8 +36,43 @@ if (!app.requestSingleInstanceLock()) {
       /* electron-updater emits error */
     }
   }
+  // macOS builds are unsigned, so Squirrel.Mac cannot apply updates; announce new releases and open the download page.
+  const RELEASES = 'https://api.github.com/repos/iwantgobackhome/fractal/releases/latest';
+  function newerVersion(latest, current) {
+    const parse = (value) => /^v?(\d+)\.(\d+)\.(\d+)$/.exec(String(value))?.slice(1).map(Number);
+    const a = parse(latest),
+      b = parse(current);
+    if (!a || !b) return false;
+    for (let i = 0; i < 3; i++) if (a[i] !== b[i]) return a[i] > b[i];
+    return false;
+  }
+  function macUpdater() {
+    let releasePage;
+    return {
+      async checkForUpdates() {
+        try {
+          const response = await fetch(RELEASES, { headers: { accept: 'application/vnd.github+json' }, signal: AbortSignal.timeout(15000) });
+          if (!response.ok) throw new Error(`GitHub ${response.status}`);
+          const release = await response.json();
+          if (release.draft || release.prerelease || !newerVersion(release.tag_name, app.getVersion())) return;
+          const version = String(release.tag_name).replace(/^v/, '');
+          releasePage = `https://github.com/iwantgobackhome/fractal/releases/tag/v${version}`;
+          updateAvailable = true;
+          availableUpdate = { version, manual: true };
+          sendUpdate('update-available', availableUpdate);
+        } catch {
+          /* offline or rate-limited: try again at the next check */
+        }
+      },
+      async downloadUpdate() {
+        if (releasePage) await shell.openExternal(releasePage);
+        if (availableUpdate) updateState = undefined;
+      },
+      quitAndInstall() {},
+    };
+  }
   function initializeUpdates() {
-    if (!app.isPackaged || !['win32', 'linux'].includes(process.platform)) return;
+    if (!app.isPackaged || !['win32', 'linux', 'darwin'].includes(process.platform)) return;
     if (process.platform === 'linux' && !process.env.APPIMAGE) {
       try {
         if (readFileSync(join(process.resourcesPath, 'package-type'), 'utf8').trim() !== 'deb') return;
@@ -45,8 +80,14 @@ if (!app.requestSingleInstanceLock()) {
         return;
       }
     }
-    const updates = require('electron-updater');
-    updater = process.platform === 'linux' ? (process.env.APPIMAGE ? new updates.AppImageUpdater() : new updates.DebUpdater()) : updates.autoUpdater;
+    const updates = process.platform === 'darwin' ? undefined : require('electron-updater');
+    updater = process.platform === 'darwin' ? macUpdater() : process.platform === 'linux' ? (process.env.APPIMAGE ? new updates.AppImageUpdater() : new updates.DebUpdater()) : updates.autoUpdater;
+    if (process.platform !== 'darwin') wireUpdater();
+    registerUpdateIpc();
+    startupCheck = setTimeout(() => void checkUpdates(), 10000);
+    periodicCheck = setInterval(() => void checkUpdates(), 6 * 60 * 60 * 1000);
+  }
+  function wireUpdater() {
     updater.autoDownload = false;
     updater.autoInstallOnAppQuit = false;
     updater.on('update-available', (info) => {
@@ -63,6 +104,8 @@ if (!app.requestSingleInstanceLock()) {
       if (!updateDownloaded && availableUpdate) updateState = { type: 'update-available', ...availableUpdate };
       sendUpdate('update-error');
     });
+  }
+  function registerUpdateIpc() {
     for (const [action, handler] of Object.entries({
       state: () => updateState,
       check: checkUpdates,
@@ -84,8 +127,6 @@ if (!app.requestSingleInstanceLock()) {
         return handler();
       });
     }
-    startupCheck = setTimeout(() => void checkUpdates(), 10000);
-    periodicCheck = setInterval(() => void checkUpdates(), 6 * 60 * 60 * 1000);
   }
   const headless = process.argv.includes('--headless');
   const icon = nativeImage.createFromPath(join(__dirname, 'assets', 'icon-256.png'));

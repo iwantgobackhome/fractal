@@ -16,6 +16,10 @@ describe('update notification', () => {
     expect(updateState(state, { type: 'update-downloaded' }).phase).toBe('ready');
     expect(updateState(state, { type: 'download-progress', percent: 110 }).percent).toBe(100);
   });
+  it('marks macOS updates as manual downloads', () => {
+    expect(updateState({ phase: 'idle' }, { type: 'update-available', version: '1.2.0', manual: true }).manual).toBe(true);
+    expect(updateState({ phase: 'idle' }, { type: 'update-available', version: '1.2.0' }).manual).toBe(false);
+  });
   it('allows a failed download to be retried and clears the brief error', () => {
     const failed = updateState({ phase: 'downloading', version: '1.2.0' }, { type: 'update-error' });
     expect(failed.phase).toBe('available');
