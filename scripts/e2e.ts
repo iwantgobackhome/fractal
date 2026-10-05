@@ -262,6 +262,21 @@ async function main(): Promise<void> {
     await popup.getByRole('button', { name: '답변 펼치기', exact: true }).click();
     console.log('PASS Escape collapses the popup');
 
+    const modelPicker = popup.getByRole('combobox', { name: '질문 모델', exact: true });
+    await modelPicker.click();
+    const modelList = page.getByRole('listbox', { name: '질문 모델', exact: true });
+    await modelList.waitFor();
+    // Background refreshes (translation polling, catalog changes) re-render the app; the open
+    // model list must survive them.
+    for (let i = 0; i < 3; i++) {
+      await page.evaluate(() => window.dispatchEvent(new Event('fractal:catalog-changed')));
+      await page.waitForTimeout(400);
+    }
+    assert.equal(await modelList.isVisible(), true);
+    await modelPicker.press('Escape');
+    assert.equal(await popup.locator('.answer-popup__content').isVisible(), true);
+    console.log('PASS popup model list stays open across reader updates');
+
     await popup.getByRole('textbox', { name: '질문', exact: true }).fill('Why is that the result?');
     await popup.locator('button[type="submit"]').click();
     await popup.locator('.history-entry h3').filter({ hasText: 'Why is that the result?' }).waitFor();

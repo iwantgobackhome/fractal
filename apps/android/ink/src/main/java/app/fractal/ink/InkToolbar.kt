@@ -5,6 +5,11 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.hoverable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -26,11 +31,13 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,7 +57,12 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
+import kotlinx.coroutines.delay
 import androidx.compose.ui.unit.sp
 import app.fractal.design.LocalFractalColors
 
@@ -87,6 +99,11 @@ private fun icon(name: InkTool): ImageVector = ImageVector.Builder(name = name.n
     }
 }.build()
 
+private const val MIN_WIDTH = .001f
+private const val MAX_WIDTH = .03f
+/** Widths are page-relative; show them as a 1–30 scale so presets and the slider share one number. */
+internal fun widthDisplay(width: Float): String = String.format(java.util.Locale.ROOT, "%.1f", width.coerceIn(MIN_WIDTH, MAX_WIDTH) * 1000f)
+
 /** Compact rail on tablets, top bar on narrow layouts. A second tool tap opens its options. */
 @Composable
 fun InkToolbar(state: InkPageState, tool: InkToolState, modifier: Modifier = Modifier, onAsk: (List<InkStroke>, InkBounds) -> Unit = { _, _ -> }, onToolSelected: (InkTool) -> Unit = {}, regionMode: Boolean = false, onRegionToggle: () -> Unit = {}) {
@@ -100,9 +117,14 @@ fun InkToolbar(state: InkPageState, tool: InkToolState, modifier: Modifier = Mod
     val body: @Composable (Boolean) -> Unit = { vertical ->
         @Composable fun ToolButton(item: InkTool) {
             val label = stringResource(toolLabel(item))
+            val interaction = remember { MutableInteractionSource() }
+            val hovered by interaction.collectIsHoveredAsState()
+            var pressedLabel by remember { mutableStateOf(false) }
+            LaunchedEffect(pressedLabel) { if (pressedLabel) { delay(1500); pressedLabel = false } }
             Box {
                 Box(
-                    Modifier.size(48.dp).clickable {
+                    Modifier.size(48.dp).hoverable(interaction).combinedClickable(interactionSource = interaction, indication = null,
+                        onLongClick = { pressedLabel = true }) {
                         if (tool.active == item) popover = item else { tool.active = item; popover = null }
                         onToolSelected(item)
                     }.semantics { contentDescription = label; selected = tool.active == item },
@@ -112,6 +134,15 @@ fun InkToolbar(state: InkPageState, tool: InkToolState, modifier: Modifier = Mod
                     Canvas(Modifier.align(if (vertical) Alignment.CenterStart else Alignment.BottomCenter)
                         .then(if (vertical) Modifier.width(2.dp).height(24.dp) else Modifier.width(24.dp).height(2.dp))) {
                         if (tool.active == item) drawRect(colors.ink)
+                    }
+                }
+                // A stylus hover (or a long press) names the tool; the icons alone are ambiguous.
+                if ((hovered || pressedLabel) && popover != item) {
+                    val gap = with(LocalDensity.current) { 52.dp.roundToPx() }
+                    Popup(alignment = Alignment.TopStart, offset = if (vertical) IntOffset(gap, 0) else IntOffset(0, gap),
+                        properties = PopupProperties(focusable = false)) {
+                        Text(label, color = colors.paper, style = MaterialTheme.typography.labelMedium,
+                            modifier = Modifier.background(colors.ink.copy(alpha = .88f), RoundedCornerShape(6.dp)).padding(horizontal = 8.dp, vertical = 4.dp))
                     }
                 }
                 DropdownMenu(expanded = popover == item, onDismissRequest = { popover = null }) {
@@ -130,8 +161,13 @@ fun InkToolbar(state: InkPageState, tool: InkToolState, modifier: Modifier = Mod
                         else -> listOf(.0015f,.003f,.005f)
                     }
                     val widthLabels = listOf(R.string.width_fine, R.string.width_medium, R.string.width_broad)
-                    widths.forEachIndexed { index, value -> DropdownMenuItem(text = { Text(stringResource(widthLabels[index])) }, onClick = { tool.width = value; popover = null }) }
-                    Slider(value = tool.width.coerceIn(.001f,.03f), onValueChange = { tool.width = it }, valueRange = .001f..03f, modifier = Modifier.width(180.dp).padding(horizontal = 12.dp))
+                    widths.forEachIndexed { index, value -> DropdownMenuItem(text = {
+                        Text(stringResource(widthLabels[index]) + if (kotlin.math.abs(tool.width - value) < .0001f) " ✓" else "")
+                    }, onClick = { tool.width = value; popover = null }) }
+                    Text(stringResource(R.string.width_value, widthDisplay(tool.width)), style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
+                    Slider(value = tool.width.coerceIn(MIN_WIDTH, MAX_WIDTH), onValueChange = { tool.width = it }, valueRange = MIN_WIDTH..MAX_WIDTH,
+                        modifier = Modifier.width(200.dp).padding(horizontal = 12.dp).semantics { contentDescription = "Stroke width" })
                 }
             }
         }

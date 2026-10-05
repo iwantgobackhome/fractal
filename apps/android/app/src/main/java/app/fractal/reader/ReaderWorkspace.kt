@@ -88,12 +88,15 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
     var answerPosition by remember(paper.paperKey) { mutableStateOf<Offset?>(null) }
     var rootPosition by remember { mutableStateOf(Offset.Zero) }
     val pageOrigins = remember(paper.paperKey) { mutableStateMapOf<Int, ComposeRect>() }
+    val answerRequests by app.database.reader().observeRequests(paper.paperKey).collectAsState(emptyList())
+    val answerHistory by app.database.metadata().observeHistory(paper.paperKey).collectAsState(emptyList())
+    val answerPins = remember(answerRequests, answerHistory) { readerAnswerPins(answerRequests, answerHistory) }
     fun openAnswer(selected: Pair<Int, PdfTextSelection>?, explain: Boolean = false, requestId: String? = null) {
         val rect = selected?.second?.rects?.firstOrNull()
         val origin = selected?.first?.let { pageOrigins[it] }
         val anchor = if (origin != null && rect != null) origin.topLeft - rootPosition + Offset(rect.x * origin.width, (rect.y + rect.height) * origin.height) else null
         answerTarget = ReaderAnswerTarget(selected, explain = explain, requestId = requestId, anchor = anchor)
-        panel = false
+        answerPosition = null; panel = false
     }
     var fullTitle by remember { mutableStateOf(false) }
     LaunchedEffect(paper.paperKey) {
@@ -279,6 +282,7 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                                         annotations.filter { it.page == index + 1 && it.kind == "highlight" },
                                         nativeViewport = viewport, selection = selection?.takeIf { it.first == index + 1 }?.second, regionMode = regionMode,
                                         onSelectionUnavailable = { selectionMessage = it },
+                                        onBackgroundTap = { selection = null; selectionMessage = "" },
                                         onFingerGesture = { dy, factor, focusY ->
                                             zoom = (zoom * factor).coerceIn(.5f, 4f)
                                             scope.launch { if (factor != 1f) { withFrameNanos { }; yield() }; sourceList.scrollBy(focusY * (factor - 1f) - dy) }
@@ -295,7 +299,12 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                                             ReaderStructureOverlay(structure?.items.orEmpty().filter { it.page == index + 1 }, width, height) { item, anchor ->
                                                 answerTarget = ReaderAnswerTarget(structureSelection(item, source.pdfSha256), item,
                                                     textPage?.text ?: sourcePageContext[index + 1].orEmpty(), explain = true, anchor = anchor - rootPosition)
-                                                panel = false
+                                                answerPosition = null; panel = false
+                                            }
+                                            ReaderAnswerPins(answerPins.filter { pin -> pin.page == index + 1 && answerTarget.let { open -> open == null ||
+                                                    (open.historyId == null || pin.historyId != open.historyId) && (open.requestId == null || pin.requestId != open.requestId) } }, width, height, textPage?.rotation ?: 0) { pin, anchor ->
+                                                answerTarget = ReaderAnswerTarget(pin.selected, requestId = pin.requestId, historyId = pin.historyId, anchor = anchor - rootPosition)
+                                                answerPosition = null; panel = false
                                             }
                                             StickyNotes(app, annotations.filter { it.kind == "memo" && it.page == index + 1 }, width, height, textPage, source.pdfSha256)
                                         })

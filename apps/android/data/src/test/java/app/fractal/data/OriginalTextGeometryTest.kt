@@ -100,7 +100,7 @@ class OriginalTextGeometryTest {
         val geometry = OriginalTextGeometry(page("leftOTHERnext", listOf(
             run(0,"left",.1,.1),run(4,"OTHER",.6,.15),run(9,"next",.1,.2))))
         val range = geometry.select(.11,.115,.38,.215)!!
-        assertEquals(range.text,"leftnext")
+        assertEquals(range.text,"left\nnext")
         assertEquals(range.displayQuads.size,8)
         assertTrue(range.displayQuads.all { quad -> quad.maxOf { it.x } <= .4 })
     }
@@ -121,4 +121,24 @@ class OriginalTextGeometryTest {
         assertTrue(geometry.endpointAt(.3,.115) in unicode.boundaries)
     }
 
+    @Test fun runWithOnlyEdgeBoundariesStillSelectsCharacters() {
+        val text = "abcdefghij"
+        val geometry = OriginalTextGeometry(page(text, listOf(run(0, text, .1, .1, .5))).copy(boundaries = listOf(0, text.length)))
+        val range = geometry.select(.211, .115, .339, .115)!!
+        assertEquals(range.text, "cde")
+        assertEquals(geometry.endpointAt(.299, .115), 4)
+        assertEquals(geometry.range(3, 7)!!.text, "defg")
+    }
+
+    @Test fun mathRunSlightlyAboveBaselineStaysInItsVisualLine() {
+        // Published order puts "6" (a hair higher) before the rest of its own line.
+        val text = "6\nprev line\nThe encoder N = \nidentical"
+        val geometry = OriginalTextGeometry(page(text, listOf(
+            run(0, "6", .52, .199, .02), run(2, "prev line", .1, .15, .5),
+            run(12, "The encoder N = ", .1, .2, .4), run(29, "identical", .55, .2, .2))).copy(boundaries = listOf(0, 1, 2, 11, 12, 28, 29, 38)))
+        val range = geometry.select(.105, .215, .749, .215)!!
+        assertEquals(range.text, "The encoder N = 6 identical")
+        assertFalse(range.text.contains("prev"))
+        assertTrue(range.text.startsWith("The encoder N = 6"))
+    }
 }

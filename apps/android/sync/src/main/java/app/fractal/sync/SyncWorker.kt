@@ -23,6 +23,7 @@ class SyncWorker(context: Context, params: WorkerParameters) : CoroutineWorker(c
             val engine = SyncEngine(database, HubClient(credentials))
             engine.syncOnce()
             repeat(8) { if (database.metadata().pending().isNotEmpty()) engine.syncOnce() }
+            engine.resolveMissingPdfs()
             if (database.metadata().pending().isEmpty()) Result.success() else Result.retry()
         } catch (_: Exception) {
             Result.retry()

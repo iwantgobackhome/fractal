@@ -58,7 +58,7 @@ test('release manifests preserve update metadata and reject unknown or missing a
       'dist/release/android/android-verification.json',
       JSON.stringify({
         version,
-        versionCode: 3,
+        versionCode: 4,
         applicationId: 'app.fractal.reader',
         debugSigned: true,
         signatureVerified: true,
