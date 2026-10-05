@@ -58,7 +58,7 @@ test('release manifests preserve update metadata and reject unknown or missing a
       'dist/release/android/android-verification.json',
       JSON.stringify({
         version,
-        versionCode: 4,
+        versionCode: 5,
         applicationId: 'app.fractal.reader',
         debugSigned: true,
         signatureVerified: true,
@@ -116,7 +116,8 @@ test('desktop updates are gated to supported installed formats and authorize eve
   );
   assert.notEqual(source, original, 'replace only the Hub import for this isolated main-process test');
   for (const scenario of [
-    { platform: 'darwin', packaged: true, enabled: false },
+    { platform: 'darwin', packaged: true, enabled: false, manual: true },
+    { platform: 'darwin', packaged: false, enabled: false },
     { platform: 'win32', packaged: false, enabled: false },
     { platform: 'linux', packaged: true, enabled: false },
     { platform: 'linux', packaged: true, env: { APPIMAGE: '/tmp/Fractal.AppImage' }, enabled: true },
@@ -133,6 +134,7 @@ test('desktop updates are gated to supported installed formats and authorize eve
       requestSingleInstanceLock: () => true,
       whenReady: () => Promise.resolve(),
       getAppPath: () => root,
+      getVersion: () => '0.2.3',
       quit() {},
     });
     let checks = 0,
@@ -162,10 +164,18 @@ test('desktop updates are gated to supported installed formats and authorize eve
       nativeImage: { createFromPath() {} },
       BrowserWindow: { fromWebContents: () => ({ isDestroyed: () => false }) },
       ipcMain: { handle: (channel, handler) => handlers.set(channel, handler) },
+      shell: { openExternal: async (url) => opened.push(url) },
     };
+    const opened = [];
+    let latest = { tag_name: 'v0.2.3', draft: false, prerelease: false };
     runInNewContext(source, {
       __dirname: join(root, 'apps/desktop'),
       URL,
+      AbortSignal,
+      fetch: async (url) => {
+        assert.equal(url, 'https://api.github.com/repos/iwantgobackhome/fractal/releases/latest');
+        return { ok: true, json: async () => latest };
+      },
       process: {
         platform: scenario.platform,
         env: scenario.env ?? {},
@@ -214,6 +224,22 @@ test('desktop updates are gated to supported installed formats and authorize eve
     });
     await new Promise((resolve) => setImmediate(resolve));
     assert.equal(loaded, scenario.enabled ? 1 : 0, JSON.stringify(scenario));
+    if (scenario.manual) {
+      // Unsigned macOS builds never load electron-updater; they announce releases and open the download page.
+      assert.equal(timers[0].ms, 10000);
+      assert.equal(intervals[0].ms, 6 * 60 * 60 * 1000);
+      const trusted = { sender: { getURL: () => 'http://localhost:4567/' } };
+      await assert.rejects(handlers.get('fractal:updates:check')({ sender: { getURL: () => 'https://untrusted.example/' } }), /Updates are unavailable/);
+      await handlers.get('fractal:updates:check')(trusted);
+      assert.equal(await handlers.get('fractal:updates:state')(trusted), undefined, 'same version is not offered');
+      latest = { tag_name: 'v0.2.10', draft: false, prerelease: false };
+      await handlers.get('fractal:updates:check')(trusted);
+      assert.deepEqual({ ...(await handlers.get('fractal:updates:state')(trusted)) }, { type: 'update-available', version: '0.2.10', manual: true });
+      await handlers.get('fractal:updates:download')(trusted);
+      assert.deepEqual(opened, ['https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.10']);
+      await handlers.get('fractal:updates:install')(trusted);
+      continue;
+    }
     if (!scenario.enabled) {
       assert.equal(handlers.has('fractal:updates:check'), false);
       continue;
