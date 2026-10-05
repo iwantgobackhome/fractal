@@ -18,6 +18,21 @@ internal fun selectionProvenance(page: Int, selection: PdfTextSelection): JsonOb
     }
 }
 
+/** 0.2.2 saved character offsets inside runs as layout ranges, which every reader then rejected; drop those ranges. */
+internal suspend fun repairLayoutRanges(app: ReaderApplication, rows: List<AnnotationEntity>, layout: OriginalTextPage, hash: String?) {
+    for (row in rows) {
+        val json = runCatching { WireJson.format.parseToJsonElement(row.json).jsonObject }.getOrNull() ?: continue
+        val provenance = json["provenance"] as? JsonObject ?: continue
+        val range = provenance["layoutRange"] as? JsonObject ?: continue
+        val start = range["start"]?.jsonPrimitive?.intOrNull ?: continue
+        val end = range["end"]?.jsonPrimitive?.intOrNull ?: continue
+        if (hash == null || provenance["pdfSha256"]?.jsonPrimitive?.contentOrNull != hash || layout.page != row.page ||
+            range["page"]?.jsonPrimitive?.intOrNull != row.page || range["extractionVersion"]?.jsonPrimitive?.contentOrNull != PDF_TEXT_LAYOUT_VERSION ||
+            start !in 0 until end || end > layout.text.length || (layout.publishes(start) && layout.publishes(end))) continue
+        editAnnotation(app, json, buildJsonObject { put("provenance", JsonObject(provenance - "layoutRange")) })
+    }
+}
+
 internal fun sourceContextStatus(provenance: JsonObject?, hash: String?, page: Int, layout: OriginalTextPage?): String {
     val declared = provenance?.get("pdfSha256")?.jsonPrimitive?.contentOrNull ?: return "unknown"
     if (hash == null) return "unavailable"

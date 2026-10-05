@@ -4,6 +4,7 @@ export const ko = {
     available: '새 버전 {version}을 사용할 수 있습니다',
     update: '업데이트',
     later: '나중에',
+    openDownload: '다운로드 페이지 열기',
     downloading: '업데이트 다운로드 중 · {percent}%',
     progress: '업데이트 다운로드 진행률',
     restart: '다시 시작하여 업데이트',

@@ -34,6 +34,7 @@ internal fun BoxScope.StickyNotes(app: ReaderApplication, rows: List<AnnotationE
     val scope = rememberCoroutineScope()
     var editing by remember { mutableStateOf<JsonObject?>(null) }
     var deleting by remember { mutableStateOf<JsonObject?>(null) }
+    LaunchedEffect(rows, page) { page?.let { repairLayoutRanges(app, rows, it, pdfHash) } }
     val positioned = rows.mapNotNull { row ->
         val json = runCatching { WireJson.format.parseToJsonElement(row.json).jsonObject }.getOrNull()
         val rect = json?.get("rect") as? JsonObject

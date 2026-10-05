@@ -1,5 +1,5 @@
 export type UpdateEvent =
-  | { type: 'update-available'; version: string; notes?: string }
+  | { type: 'update-available'; version: string; notes?: string; manual?: boolean }
   | { type: 'download-progress'; percent: number }
   | { type: 'update-downloaded' }
   | { type: 'update-error' };
@@ -7,6 +7,8 @@ export type UpdateEvent =
 export interface UpdateState {
   phase: 'idle' | 'available' | 'downloading' | 'ready';
   version?: string;
+  /** macOS has no signed updater: the update opens the download page instead. */
+  manual?: boolean;
   dismissed?: string;
   percent?: number;
   error?: boolean;
@@ -16,7 +18,7 @@ export function updateState(state: UpdateState, event: UpdateEvent | { type: 'la
   switch (event.type) {
     case 'update-available':
       if (event.version === state.dismissed || state.phase === 'downloading' || state.phase === 'ready') return state;
-      return { ...state, phase: 'available', version: event.version, error: false };
+      return { ...state, phase: 'available', version: event.version, manual: event.manual === true, error: false };
     case 'later':
       return { phase: 'idle', dismissed: state.version };
     case 'download':

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.3 — 2026-10-05
+
+Android highlights and notes whose selection ended inside a word are shown again; rows saved by 0.2.2 are repaired on Android and sync to the desktop. Unsigned macOS builds now announce new releases and open the download page. Android versionCode 5. See [release notes](docs/releases/0.2.3.md).
+
 ## 0.2.2 — 2026-10-04
 
 Android: character-level long-press selection that follows visual lines (including inline math), tap elsewhere to clear, answer markers in the page margin that reopen minimized answers, a working fine pen-width slider with a size readout, tool-name tooltips on stylus hover or long press, and desktop-added papers that open in the reader after sync. Desktop: the answer popup model list stays open during translation. Android versionCode 4. See [release notes](docs/releases/0.2.2.md).

@@ -128,6 +128,8 @@ class OriginalTextGeometryTest {
         assertEquals(range.text, "cde")
         assertEquals(geometry.endpointAt(.299, .115), 4)
         assertEquals(geometry.range(3, 7)!!.text, "defg")
+        // Synthesized offsets select characters but are not published layout boundaries.
+        assertFalse(geometry.page.publishes(3)); assertTrue(geometry.page.publishes(text.length))
     }
 
     @Test fun mathRunSlightlyAboveBaselineStaysInItsVisualLine() {

@@ -6,6 +6,7 @@ export const en: Messages = {
     available: 'New version {version} available',
     update: 'Update',
     later: 'Later',
+    openDownload: 'Open download page',
     downloading: 'Downloading update · {percent}%',
     progress: 'Update download progress',
     restart: 'Restart to update',
