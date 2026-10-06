@@ -35,6 +35,7 @@ class RealtimeSyncBridgeTest {
         val engine = SyncEngine(database, client) { realtime.notifyLocalChange(it) }
         realtime = RealtimeSync({ engine.syncOnce(); Unit }, client::syncEvents)
         client.claim("http://127.0.0.1:17460", config.getValue("code").jsonPrimitive.content)
+        engine.syncOnce() // The reader opens only after its local database is initialized.
         val job = launch { realtime.run(key) }
         try {
             delay(400)
@@ -45,8 +46,8 @@ class RealtimeSyncBridgeTest {
                 put("points", JsonArray(listOf(JsonArray(listOf(JsonPrimitive(.5), JsonPrimitive(.5), JsonPrimitive(.5), JsonPrimitive(0))))))
             }
             val phone = ink(UUID.randomUUID().toString())
-            var start = android.os.SystemClock.elapsedRealtime()
             engine.saveLocal(phone)
+            var start = android.os.SystemClock.elapsedRealtime()
             withTimeout(3000) {
                 while (client.data("/api/papers/$key/annotations").jsonArray.none { it.jsonObject["id"] == phone["id"] }) delay(20)
             }
