@@ -12,7 +12,8 @@ export interface CompleteInput {
   effort?: ModelSelection['effort'];
   signal?: AbortSignal;
 }
-export type ProviderDelta = { type: 'text'; text: string } | { type: 'usage'; inputTokens: number | null; outputTokens: number | null };
+export type ProviderDelta =
+  { type: 'text'; text: string } | { type: 'usage'; inputTokens: number | null; outputTokens: number | null; imageFallbackReason?: string };
 export interface AiProvider {
   readonly id: ProviderId;
   status(): Promise<ProviderStatus>;

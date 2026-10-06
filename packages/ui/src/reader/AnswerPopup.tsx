@@ -75,6 +75,7 @@ export function AnswerPopup({
     rect: root.context.rect,
     kind: root.context.explanationKind,
     provenance: root.context.provenance,
+    attachment: root.context.attachment,
   });
   useEffect(() => {
     const scan = () => {

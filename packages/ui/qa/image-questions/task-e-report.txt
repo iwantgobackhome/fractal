@@ -1,0 +1,38 @@
+Task E — image-attached questions, coordinator review follow-up
+Branch: iwantgobackhome/image-questions
+Original feature commit: 141bd5c846d531fc34aa4ec5e91e0e584462835f
+Follow-up commit SHA is included in worker_done.
+
+Review changes:
+1. Removed the newly added direct @napi-rs/canvas dependencies, package inclusion/unpack rules and bundler externals. Root/hub manifests, lockfile and build scripts are restored exactly to their pre-feature versions. The lockfile still contains the pre-existing optional pdfjs-dist canvas dependency at 1.0.9; this feature adds no native dependency or installer packaging changes. No application or test code imports canvas.
+2. Hub validates canonical base64, PNG signature/IHDR or JPEG signature/SOF, decoded size <=2,000,000 bytes, and nonzero header dimensions <=4096 per axis. It never decodes or transforms pixels. Rejected attachments raise INVALID_INPUT with a clear reason. Claude stream-json and Codex app-server data URLs detect PNG/JPEG MIME from magic bytes; unsupported vision still retries text-only and records fallback metadata.
+3. Desktop crops have a <=1600-pixel long edge, use PNG initially, and try JPEG quality 85/65/45 if PNG exceeds 1,500,000 bytes; crops shrink further if necessary. Thumbnail MIME follows the encoded image. Android scales to the same dimension limit and follows the same PNG/JPEG size policy, recycling only private scaled bitmaps. Optional croppedPngBase64 remains the backward-compatible field name for either encoding.
+4. Removed every committed build/test log from this QA directory. Retained the Android attachment-card screenshot and added a desktop attachment-chip screenshot. Updated this durable report. Temporary logs remain outside the repository in /tmp.
+
+Feature retained from the original commit:
+- Both Ask and Explain accept image bytes plus small page/bbox/kind/label descriptors; history/sync retain geometry rather than base64. Old schemas strip unknown fields, so 0.4.x hubs ignore the optional additions.
+- Figure/table/equation/region questions display a short label or typed question; caption/LaTeX and short context remain hidden request context. Desktop and Android show PDF thumbnail chips in input/thread/card/history; text quotes expand from compact previews. Crop retry regenerates from the local PDF after source checks. Existing card placement behavior remains intact.
+- Android request/display edits do not touch ReaderStructureOverlay.kt, ReaderWorkspace.kt or PdfPage.kt; coordinator integration with Task D remains separate.
+
+Follow-up validation (all rerun after replacing image decoding):
+- npm run build -w @fractal/shared: PASS.
+- npm run typecheck: PASS across shared, hub and UI; rerun after the new compression test and formatting also passes.
+- npm test -w @fractal/shared: PASS, 42 tests / 12 files.
+- npm test -w @fractal/ui: PASS, 83 tests / 20 files. Includes crop dimension/JPEG fallback and compact chip/short request checks.
+- npm test -w @fractal/hub -- --maxWorkers=2 --hookTimeout=60000: 266 PASS / 3 known FAIL out of 269 tests, 32 passing / 2 failing files. Only known failures: claude-usage shutdown and publication/open cached-byte localization x2.
+- npm test -w @fractal/hub -- src/ai/images.test.ts src/ai/ai.test.ts: PASS, 17 tests / 2 files, including PNG/JPEG payload builders, malformed/oversized headers and transport, both request endpoints, and unsupported-image fallback metadata.
+- npm run build -w @fractal/ui && FRACTAL_E2E_CHANNEL=chrome npm run e2e: PASS. Figure explain sends an image, shows an attachment chip and short question, excludes a long visible quote, and stores descriptor-only history. Existing card placement/drag/collapse/history checks also pass. desktop-attachment-chip.png captures the resulting card; the synthetic PDF crop is blank white in this fixture.
+- node scripts/build-hub.mjs: PASS; node scripts/build-desktop.mjs: PASS with the original packaging/external configuration.
+- From apps/android: JAVA_HOME=$HOME/Library/Java/JavaVirtualMachines/jdk-17.0.20.1+1/Contents/Home ANDROID_HOME=$HOME/Library/Android/sdk bash ./gradlew --no-daemon -Dorg.gradle.jvmargs=-Xmx2g :app:testDebugUnitTest :app:assembleDebug: PASS (BUILD SUCCESSFUL, 25 unit tests, zero failures/errors).
+- git diff --check: PASS.
+
+Fresh real provider smoke:
+- Chrome canvas encoded an actual red 64x64 JPEG at quality 85, without native canvas. It was sent through both modified hub adapters with image input and tools disabled.
+- Claude Code 2.1.288, model sonnet, stream-json input: PASS; first line: "The square is solid red."
+- codex-cli 0.160.1, model gpt-6-sol, CodexTranslator app-server image URL: PASS; first line: "Red."
+- Both providers were logged in. CLI protocol/help verification and PNG smoke were completed during the original task; the fresh JPEG smoke verifies the changed MIME path.
+
+Prior native display acceptance and remaining unverified work:
+- Original task instrumented run on isolated emulator-5564 passed ReaderAnswerCardTest#explainChipOpensMovableCollapsibleCardAndDurableEquationRequest and ReaderHistoryRepositoryTest#cropBytesStayOutOfRoomAndRetryRebuildsImageAfterRestart: OK (2 tests), 119.076 seconds. android-attachment-card.png retains that short-question/chip evidence. Instrumentation was not rerun for this compression-only follow-up; the requested unit/build checks were rerun.
+- No emulator was started or touched during this follow-up. Original own emulator 5564 was shut down; emulator 5554 was never altered.
+- Full signed installers, a paired Android-to-hub live-model run, and combined Task D integration are unverified. No pushes, tags, releases, version bumps, CHANGELOG or release-doc edits were made.

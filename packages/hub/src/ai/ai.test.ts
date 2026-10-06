@@ -95,6 +95,38 @@ const store = {
 } as unknown as PaperStore;
 
 describe('AI providers and routes', () => {
+  it('forwards bounded crops on both endpoints and keeps the explanation question short', async () => {
+    const provider = new RecordingProvider('claude');
+    const registry = new ProviderRegistry([provider], new MemorySettings());
+    const bbox = { x: 0.1, y: 0.2, width: 0.3, height: 0.4 };
+    const attachment = { page: 2, bbox, kind: 'figure', label: 'Figure 3' };
+    const croppedPngBase64 =
+      'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAAKElEQVR4nO3NsQ0AAAzCMP5/un0CNkuZ41wybXsHAAAAAAAAAAAAxR4yw/wuPL6QkAAAAABJRU5ErkJggg==';
+    for (const endpoint of ['ask', 'explain']) {
+      const result = await handleAi(
+        'POST',
+        ['api', 'papers', 'paper1', endpoint],
+        req({
+          kind: 'figure',
+          page: 2,
+          bbox,
+          rect: bbox,
+          question: 'Figure 3 설명',
+          attachment,
+          croppedPngBase64,
+          surroundingText: 'x'.repeat(6000),
+          selection: { provider: 'claude', model: 'sonnet' },
+        }),
+        { store, registry } as Parameters<typeof handleAi>[3],
+      );
+      if (result?.kind !== 'sse') throw new Error('Expected image question stream');
+      const events = [];
+      for await (const event of result.events) events.push(event);
+      expect(events.at(-1)).toMatchObject({ type: 'done', answer: { imageInput: 'sent' } });
+      expect(provider.seen.at(-1)?.images).toHaveLength(1);
+      expect(provider.seen.at(-1)?.messages[0].content.length).toBeLessThan(3000);
+    }
+  });
   it('keeps Claude available when the Codex runtime check fails', async () => {
     const codex = new FakeProvider('codex');
     codex.status = async () => {

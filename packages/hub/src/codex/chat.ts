@@ -1,3 +1,4 @@
+import { imageMediaType } from '../ai/images';
 import { createHash } from 'node:crypto';
 import { readdir } from 'node:fs/promises';
 import type { AppError, ChatUsage, PaperChat, PaperQuestionInput, PaperQuestionOutput } from '@fractal/shared';
@@ -467,7 +468,7 @@ export class CodexPaperChat implements PaperChat {
       if (input.signal?.aborted) throw canceled();
       progress.requested = true;
       const response = object(
-        await rpc.request('turn/start', { threadId, input: [{ type: 'text', text }], ...(input.effort ? { effort: input.effort } : {}) }),
+        await rpc.request('turn/start', { threadId, input: buildCodexQuestionInput(text, input.images), ...(input.effort ? { effort: input.effort } : {}) }),
       );
       progress.started = true;
       const id = object(response?.turn)?.id;
@@ -522,4 +523,9 @@ export class CodexPaperChat implements PaperChat {
       }
     }
   }
+}
+
+/** App-server v2 accepts image data URLs; no temporary files or filesystem tools are needed. */
+export function buildCodexQuestionInput(text: string, images: string[] = []) {
+  return [{ type: 'text', text, text_elements: [] }, ...images.map((data) => ({ type: 'image', url: `data:${imageMediaType(data)};base64,${data}` }))];
 }

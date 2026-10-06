@@ -11,8 +11,10 @@ import java.util.UUID
 
 /** Local submission intent is separate from Hub-owned generation and settled metadata imports. */
 class HistoryRepository(private val database: FractalDatabase, private val client: HubHistoryClient,
-    private val scope: CoroutineScope) {
+    private val scope: CoroutineScope,
+    private val imageLoader: suspend (String, JsonObject) -> String? = { _, _ -> null }) {
     private val jobs = java.util.concurrent.ConcurrentHashMap<String, Job>()
+    private val requestImages = java.util.concurrent.ConcurrentHashMap<String, JsonElement>()
     private val draftLock = Mutex()
     fun draftId(key: String) = "reader-draft:$key"
 
@@ -31,7 +33,8 @@ class HistoryRepository(private val database: FractalDatabase, private val clien
     suspend fun create(key: String, kind: String, body: JsonObject, context: JsonObject): String {
         require(kind in listOf("question", "explanation"))
         val id = UUID.randomUUID().toString(); val now = Instant.now().toString()
-        val immutable = JsonObject(body + ("requestId" to JsonPrimitive(id)))
+        body["croppedPngBase64"]?.let { requestImages[id] = it }
+        val immutable = JsonObject(body.filterKeys { it != "croppedPngBase64" } + ("requestId" to JsonPrimitive(id)))
         database.reader().upsert(AiRequestEntity(id, key, kind, immutable.toString(), context.toString(), "queued", null, null, false, now, now))
         send(id)
         return id
@@ -61,10 +64,13 @@ class HistoryRepository(private val database: FractalDatabase, private val clien
                 (response as? JsonObject)?.get("history")?.let { cache(it.jsonObject) }
                 database.reader().upsert(row.copy(status = "done", error = null, updatedAt = Instant.now().toString()))
             } else {
-                val body = WireJson.format.parseToJsonElement(row.bodyJson).jsonObject
+                val stored = WireJson.format.parseToJsonElement(row.bodyJson).jsonObject
+                val image = requestImages[id] ?: if (stored["attachment"] != null) imageLoader(row.paperKey, stored)?.let(::JsonPrimitive) else null
+                val body = image?.let { JsonObject(stored + ("croppedPngBase64" to it)) } ?: stored
                 val historyId = row.historyId ?: client.attachHistory(
                     "/api/papers/${HubClient.keyPath(row.paperKey)}/${if (row.kind == "explanation") "explain" else "ask"}", body)
                 database.reader().upsert(row.copy(status = "attached", historyId = historyId, error = null, updatedAt = Instant.now().toString()))
+                requestImages.remove(id)
                 refresh(row.paperKey)
             }
         } catch (error: CancellationException) { throw error }

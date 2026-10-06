@@ -1362,10 +1362,12 @@ export function App(): JSX.Element {
           .filter((b) => b.regions.some((r) => r.page === item.page))
           .map((b) => b.sourceText)
           .join('\n')
-          .slice(0, 6000);
+          .slice(0, 1500);
         setChatQuote({
           id: quoteCount.current,
-          text: [item.label, item.caption, item.latex, surrounding].filter(Boolean).join('\n'),
+          text: item.label || item.kind,
+          surroundingText: [item.label, item.caption, item.latex, surrounding].filter(Boolean).join('\n'),
+          attachment: { page: item.page, bbox: renderedBox ?? item.bbox, kind: item.kind, label: item.label || item.kind },
           page: item.page,
           from: 'source',
           rect: renderedBox ?? item.bbox,
@@ -2229,6 +2231,16 @@ export function App(): JSX.Element {
               from: 'source',
               rect: selection.regions[0],
               kind: 'text',
+              ...(selection.text.trim()
+                ? {}
+                : {
+                    attachment: {
+                      page: selection.page,
+                      bbox: selection.regions[0],
+                      kind: 'region' as const,
+                      label: language === 'ko' ? '선택 영역' : 'Selected region',
+                    },
+                  }),
               provenance:
                 selection.provenance ??
                 (provenanceReader.pdfSha256
