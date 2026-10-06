@@ -25,7 +25,7 @@
   <a href="https://github.com/iwantgobackhome/news-papers/releases/latest"><img alt="최신 릴리스" src="https://img.shields.io/github/v/release/iwantgobackhome/news-papers?style=for-the-badge&color=3b625b"></a>
 </p>
 
-![News Papers 탐색 화면의 WorldAuditBench 논문 정보와 첫 적합한 과학 그림](docs/assets/readme/v020-desktop-discovery.png)
+![News Papers 탐색 화면의 Imagine to Act 논문 정보·초록과 첫 과학 그림](docs/assets/readme/v030-desktop-discovery.png)
 
 학술 탐색 화면에서 논문과 그 과학 그림을 함께 살펴봅니다.
 
@@ -43,7 +43,7 @@ Windows와 Linux 설치 앱은 게시된 GitHub 릴리스의 앱 내 업데이�
 
 탐색에서는 논문 HTML의 첫 적합한 캡션 그림이나 뉴스 기사의 첫 적합한 본문 이미지를 먼저 시도합니다. 후보를 가져오지 못하면 뒤의 적합한 이미지와 출처 썸네일을 시도합니다. 로고와 자리표시자는 제외하고 검증된 이미지 바이트를 로컬에 캐시합니다. 사용 가능한 이미지가 없으면 텍스트와 읽기 동작을 그대로 제공합니다. 이미지 제공 여부는 출처에 따라 다르며, 이미지가 없다고 논문이나 PDF도 없는 것은 아닙니다. 배포 대상과 기능 범위는 [0.2.0 릴리스 노트](docs/releases/0.2.0.md)를 참고하세요.
 
-![데스크톱 리더의 앱 내 출판물 PDF](docs/assets/readme/v020-reader-original.png)
+![arXiv에서 열어 데스크톱 리더에 표시한 Attention Is All You Need](docs/assets/readme/v030-reader-original.png)
 
 ### 원문을 놓치지 않는 리더
 
@@ -69,7 +69,7 @@ arXiv ID, DOI, 공개 논문 주소, 로컬 PDF를 열 수 있습니다. 저장�
 | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | 관심 분야에서 기본 제공 주제와 개인 주제를 팔로우합니다. | 공개 기사를 앱 안의 간결한 텍스트 화면에서 읽고 제목과 본문을 빠르게 번역할 수 있습니다. 언론사 제한으로 본문을 가져오지 못할 수 있습니다. |
 
-![News Papers 안에 표시된 MIT News 기사 날짜·저자와 첫 본문 이미지](docs/assets/readme/v020-desktop-news.png)
+![News Papers의 분야 뉴스: 기사 이미지와 번역된 헤드라인](docs/assets/readme/v030-desktop-news.png)
 
 앱 안에서 기사와 본문 이미지를 읽고 발행처 원문도 바로 열 수 있습니다.
 

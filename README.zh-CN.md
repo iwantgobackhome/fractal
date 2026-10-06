@@ -25,7 +25,7 @@
   <a href="https://github.com/iwantgobackhome/news-papers/releases/latest"><img alt="最新版本" src="https://img.shields.io/github/v/release/iwantgobackhome/news-papers?style=for-the-badge&color=3b625b"></a>
 </p>
 
-![News Papers 发现页面中的 WorldAuditBench 文献信息与首张合适的科学图](docs/assets/readme/v020-desktop-discovery.png)
+![News Papers 发现页面中的 Imagine to Act 文献信息、摘要与首张科学图](docs/assets/readme/v030-desktop-discovery.png)
 
 在学术发现页面一起查看论文及其科学图。
 
@@ -43,7 +43,7 @@ Windows 和 Linux 安装版支持从已发布的 GitHub 版本进行应用内更
 
 发现页面会先尝试论文 HTML 中第一张合适的带说明图，或新闻正文中第一张合适的内容图片。候选获取失败时，会继续尝试后续合适的图片及来源缩略图。标志和占位图会被排除，验证后的图片数据缓存在本机。没有可用图片时，条目保留文字和阅读操作。图片覆盖取决于来源，没有图片不代表没有论文或 PDF。分发形式与功能范围请参阅 [0.2.0 发行说明](docs/releases/0.2.0.md)。
 
-![桌面阅读器中的应用内出版物 PDF](docs/assets/readme/v020-reader-original.png)
+![从 arXiv 打开并在桌面阅读器中显示的 Attention Is All You Need](docs/assets/readme/v030-reader-original.png)
 
 ### 对照原文阅读
 
@@ -69,7 +69,7 @@ Windows 和 Linux 安装版支持从已发布的 GitHub 版本进行应用内更
 | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
 | 在各领域内关注预设或自建主题。 | 在应用内以简洁的纯文本视图阅读受支持的公开文章，并快速翻译标题或段落。出版方的限制可能导致正文无法提取。 |
 
-![News Papers 内的 MIT News 文章日期、作者及首张正文图片](docs/assets/readme/v020-desktop-news.png)
+![News Papers 中的领域新闻：文章图片与翻译后的标题](docs/assets/readme/v030-desktop-news.png)
 
 在应用内阅读文章与正文图片，也可直接打开出版方原文。
 

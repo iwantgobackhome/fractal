@@ -1,10 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 100" role="img" aria-labelledby="title">
-  <title id="title">Fractal</title>
-  <g transform="translate(17 6) scale(3.7)" fill="none" stroke="#93d6bd" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M12 22V14" stroke-width="2"/>
-    <path d="M12 14L6.5 9M12 14l5.5-5" stroke-width="1.75"/>
-    <path d="M6.5 9L4 5.5M6.5 9L9 5.5M17.5 9L15 5.5M17.5 9L20 5.5" stroke-width="1.4"/>
-    <path d="M4 5.5l-1-1.7M4 5.5l1-1.7M9 5.5l-1-1.7M9 5.5l1-1.7M15 5.5l-1-1.7M15 5.5l1-1.7M20 5.5l-1-1.7M20 5.5l1-1.7" stroke-width="1.1"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 470 100" role="img" aria-labelledby="title">
+  <title id="title">News Papers</title>
+  <g transform="translate(3 0) scale(0.17857) translate(-240 -240)">
+    <rect x="244" y="250" width="300" height="420" rx="30" fill="#EDE8DC"/>
+    <rect x="480" y="354" width="300" height="420" rx="30" fill="#3E8A5C"/>
+    <path transform="translate(278 352) scale(0.96)" fill="#1D1C1A" fill-rule="evenodd" d="M0 0H86L150 128V18H124V0H200V18H182V220H140L56 52V202H82V220H0V202H24V18H0Z"/>
+    <path transform="translate(532 454) scale(1.0)" fill="#F9F7F2" fill-rule="evenodd" d="M0 0H118C172 0 200 30 200 66C200 104 172 134 118 134H82V202H112V220H0V202H24V18H0ZM82 20V114H106C134 114 144 94 144 66C144 40 134 20 106 20Z"/>
   </g>
-  <text x="115" y="70" fill="#eef7f2" font-family="Arial,Helvetica,sans-serif" font-size="55" font-weight="700" letter-spacing="-2">Fractal</text>
+  <text x="112" y="68" fill="#EDE8DC" font-family="Georgia,'Times New Roman',serif" font-size="52" font-weight="700" letter-spacing="-1">News Papers</text>
 </svg>
