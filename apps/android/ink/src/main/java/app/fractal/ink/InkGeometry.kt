@@ -161,16 +161,23 @@ fun lassoSelect(strokes: List<InkStroke>, polygon: List<InkPoint>): Set<String> 
 fun eraserRadiusPx(width: Float, pageWidthPx: Float): Float = width * pageWidthPx / 2
 
 fun eraseStrokesOnPage(strokes: List<InkStroke>, path: List<InkPoint>, width: Float,
-    pageWidthPx: Float, pageHeightPx: Float, mode: EraserMode): List<InkStroke> {
+    pageWidthPx: Float, pageHeightPx: Float, mode: EraserMode, cachedBounds: Map<String, InkBounds> = emptyMap()): List<InkStroke> {
     val aspect = pageHeightPx / pageWidthPx.coerceAtLeast(1f)
     fun scaled(p: InkPoint) = p.copy(y = p.y * aspect)
-    val scaledStrokes = strokes.map { it.copy(points = it.points.map(::scaled)) }
-    val originals = strokes.associateBy { it.id }
-    val result = eraseStrokes(scaledStrokes, path.map(::scaled),
-        eraserRadiusPx(width, pageWidthPx) / pageWidthPx.coerceAtLeast(1f), mode)
-    return result.map { stroke ->
-        val original = originals[stroke.id]
-        if (original != null) stroke.copy(points = original.points)
-        else stroke.copy(points = stroke.points.map { p -> p.copy(y = p.y / aspect) })
+    if (path.isEmpty()) return strokes
+    val sweep = InkBounds(path.minOf { it.x }, path.minOf { it.y }, path.maxOf { it.x }, path.maxOf { it.y })
+    return strokes.flatMap { original ->
+        val bounds = cachedBounds[original.id] ?: listOf(original).bounds()
+        val radius = (width + original.width) / 2
+        if (original.deleted || bounds == null || bounds.right < sweep.left - radius || bounds.left > sweep.right + radius ||
+            bounds.bottom < sweep.top - radius / aspect || bounds.top > sweep.bottom + radius / aspect) listOf(original)
+        else {
+            val result = eraseStrokes(listOf(original.copy(points = original.points.map(::scaled))), path.map(::scaled),
+                eraserRadiusPx(width, pageWidthPx) / pageWidthPx.coerceAtLeast(1f), mode)
+            result.map { stroke ->
+                if (stroke.id == original.id) stroke.copy(points = original.points)
+                else stroke.copy(points = stroke.points.map { p -> p.copy(y = p.y / aspect) })
+            }
+        }
     }
 }

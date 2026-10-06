@@ -25,6 +25,8 @@ import app.fractal.pdf.*
 import app.fractal.sync.SyncScheduler
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.*
 import java.time.Instant
 
@@ -51,6 +53,7 @@ private fun Modifier.readingDriver(onDown: () -> Unit) = composed {
 internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, onBack: () -> Unit) {
     val colors = LocalFractalColors.current
     val scope = rememberCoroutineScope()
+    val inkSaveMutex = remember(paper.paperKey) { Mutex() }
     val density = LocalDensity.current
     val clipboard = LocalClipboardManager.current
     val sourceList = rememberLazyListState()
@@ -155,9 +158,17 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
         for (page in states.keys.toList() + grouped.keys.filterNot { it in states }) {
             val state = states.getOrPut(page) { InkPageState() }
             val strokes = grouped[page].orEmpty().mapNotNull { runCatching { InkJson.format.decodeFromString(InkStroke.serializer(), it.json) }.getOrNull() }
-            if (state.strokes != strokes) state.load(strokes)
+            state.reconcile(strokes)
         }
     }
+    suspend fun saveInkChange(before: List<InkStroke>, after: List<InkStroke>) = inkSaveMutex.withLock { withContext(Dispatchers.IO) {
+        val old = before.associateBy { it.id }; val new = after.associateBy { it.id }
+        val changed = after.filter { old[it.id] != it } + before.filter { it.id !in new }.map {
+            it.copy(deleted = true, rev = it.rev + 1, updatedAt = Instant.now().toString())
+        }
+        app.sync.saveLocalBatch(changed.map { WireJson.format.parseToJsonElement(InkJson.format.encodeToString(InkStroke.serializer(), it)).jsonObject })
+        SyncScheduler.now(app, app.settings.getBoolean("wifiOnly", false))
+    } }
     fun savePosition() { scope.launch {
         if (!restored) return@launch
         app.database.reader().upsert(ReaderPositionEntity(paper.paperKey, buildJsonObject {
@@ -285,10 +296,7 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                                         onSelection = { selection = index + 1 to it; selectionMessage = "" },
                                         onDoubleTap = { zoom = if (zoom == 1f) 1.5f else 1f },
                                         onInkChanged = { before, after -> scope.launch {
-                                            val old = before.associateBy { it.id }; val new = after.associateBy { it.id }
-                                            for (stroke in after) if (old[stroke.id] != stroke) app.sync.saveLocal(WireJson.format.parseToJsonElement(InkJson.format.encodeToString(InkStroke.serializer(), stroke)).jsonObject)
-                                            for (stroke in before.filter { it.id !in new }) app.sync.saveLocal(WireJson.format.parseToJsonElement(InkJson.format.encodeToString(InkStroke.serializer(), stroke.copy(deleted = true, updatedAt = Instant.now().toString()))).jsonObject)
-                                            SyncScheduler.now(app, app.settings.getBoolean("wifiOnly", false))
+                                            saveInkChange(before, after)
                                         } }, contentOverlay = { width, height, textPage ->
                                             ReaderStructureOverlay(structure?.items.orEmpty().filter { it.page == index + 1 }, width, height) { item, _ ->
                                                 val thread = java.util.UUID.randomUUID().toString()

@@ -145,6 +145,7 @@ private class InkSurface(
     private var path = mutableListOf<InkPoint>()
     private var tilts = mutableListOf<Float>()
     private var gestureTool = InkTool.Ballpoint
+    private var eraseBounds = emptyMap<String, InkBounds>()
     private var lastEraseIndex = 0
     private var gestureEraser = EraserMode.Stroke
     private var gestureColor = "#1C1B19"
@@ -167,11 +168,23 @@ private class InkSurface(
     private var fingerDownX = 0f
     private var fingerDownY = 0f
     private var lastFingerTapMs = 0L
+    private var movingSelectionByFinger = false
     private var fingerMoved = false
     private val touchSlop = android.view.ViewConfiguration.get(context).scaledTouchSlop
     private val fingerHold = Runnable {
         if (!fingerActive || fingerMoved || penOwnsStream) return@Runnable
         fingerMoved = true
+        val start = fingerStart!!
+        val bounds = state.selection().bounds()
+        if (bounds != null && start.x in bounds.left..bounds.right && start.y in bounds.top..bounds.bottom) {
+            movingSelectionByFinger = true
+            selectionStart = start; selectionBounds = bounds; resizeCorner = -1
+            state.beginGesture()
+            dry.preview = state.strokes.filter { it.id in state.selectedIds }
+            parent?.requestDisallowInterceptTouchEvent(true)
+            lastFingerTapMs = 0L; removeCallbacks(confirmedTap)
+            return@Runnable
+        }
         selectingFinger = true
         onSelectionProgress(fingerStart!!, fingerStart!!, false)
         parent?.requestDisallowInterceptTouchEvent(true)
@@ -187,6 +200,15 @@ private class InkSurface(
             path.size >= 4 && android.os.SystemClock.uptimeMillis() - lastMotion >= 480 &&
             recognizeShape(path) != null) {
             heldSnapped = true
+            dry.shapeColor = gestureColor; dry.shapeWidth = gestureWidth
+            dry.shapeAlpha = if (gestureTool == InkTool.Highlighter) 0x70 else if (gestureTool == InkTool.Pencil) 0xa8 else 255
+            wetId?.let { id ->
+                val now = android.os.SystemClock.uptimeMillis()
+                val event = MotionEvent.obtain(now, now, MotionEvent.ACTION_CANCEL, 0f, 0f, 0)
+                try { wet.cancelStroke(id, event) } finally { event.recycle() }
+            }
+            wetId = null
+            dry.shapePreview = recognizeShape(path)?.points.orEmpty()
         }
     }
 
@@ -203,7 +225,23 @@ private class InkSurface(
         wet.eagerInit()
     }
 
-    fun sync(strokes: List<InkStroke>, selectedIds: Set<String>) { dry.sync(strokes, selectedIds) }
+    fun sync(strokes: List<InkStroke>, selectedIds: Set<String>) {
+        if (state.gestureInProgress && selectionStart != null) dry.preview = strokes.filter { it.id in selectedIds }
+        else { dry.preview = null; dry.sync(strokes, selectedIds) }
+    }
+    private fun previewSelection(end: InkPoint) {
+        val start = selectionStart ?: return
+        val b = selectionBounds ?: return
+        val dx = end.x - start.x; val dy = end.y - start.y
+        if (resizeCorner >= 0) {
+            val left = resizeCorner == 0 || resizeCorner == 3
+            val top = resizeCorner == 0 || resizeCorner == 1
+            val sx = (b.width + if (left) -dx else dx).coerceAtLeast(.005f) / b.width.coerceAtLeast(.005f)
+            val sy = (b.height + if (top) -dy else dy).coerceAtLeast(.005f) / b.height.coerceAtLeast(.005f)
+            state.previewSelectionTransform(if (left) dx else 0f, if (top) dy else 0f, sx, sy)
+        } else state.previewSelectionTransform(dx, dy)
+        dry.preview = state.selection()
+    }
 
     private fun point(event: MotionEvent, index: Int, historical: Int = -1): InkPoint {
         val w = if (pageSize.width > 0) pageSize.width else width.toFloat().coerceAtLeast(1f)
@@ -237,6 +275,8 @@ private class InkSurface(
 
     private fun cancel(event: MotionEvent, releaseStream: Boolean = true) {
         state.finishGesture(false)
+        movingSelectionByFinger = false; selectionStart = null; selectionBounds = null
+        dry.preview = null; dry.shapePreview = emptyList()
         dry.sync(state.strokes, state.selectedIds)
         dry.eraserCursor = null
         if (selectingFinger || selectingRegion) onSelectionCanceled()
@@ -256,7 +296,7 @@ private class InkSurface(
         val cursor = path.lastOrNull() ?: return
         dry.eraserCursor = cursor to eraserRadiusPx(gestureWidth, width.toFloat())
         state.previewGesture(eraseStrokesOnPage(state.strokes, path.subList((lastEraseIndex - 1).coerceAtLeast(0), path.size), gestureWidth,
-            width.toFloat(), height.toFloat(), gestureEraser))
+            width.toFloat(), height.toFloat(), gestureEraser, eraseBounds))
         lastEraseIndex = path.size
         dry.sync(state.strokes, state.selectedIds)
     }
@@ -302,6 +342,10 @@ private class InkSurface(
                 return true
             }
             if (action == MotionEvent.ACTION_MOVE && fingers.isNotEmpty()) {
+                if (movingSelectionByFinger && fingers.size == 1) {
+                    previewSelection(point(event, fingers.first()))
+                    return true
+                }
                 if (selectingFinger && fingers.size == 1) {
                     onSelectionProgress(fingerStart!!, point(event, fingers.first()), false)
                     return true
@@ -330,6 +374,10 @@ private class InkSurface(
                 return true
             }
             if (action == MotionEvent.ACTION_POINTER_DOWN) {
+                if (movingSelectionByFinger) {
+                    state.finishGesture(false); movingSelectionByFinger = false; selectionStart = null
+                    dry.preview = null; dry.sync(state.strokes, state.selectedIds)
+                }
                 if (selectingFinger) onSelectionCanceled()
                 selectingFinger = false; selectingRegion = false
                 removeCallbacks(confirmedTap)
@@ -348,6 +396,11 @@ private class InkSurface(
             }
             if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP) {
                 removeCallbacks(fingerHold)
+                if (action == MotionEvent.ACTION_UP && movingSelectionByFinger) {
+                    previewSelection(point(event, 0)); state.finishGesture(true)
+                    movingSelectionByFinger = false; selectionStart = null; selectionBounds = null
+                    dry.preview = null; dry.sync(state.strokes, state.selectedIds)
+                }
                 if (action == MotionEvent.ACTION_UP && selectingFinger) {
                     onSelectionProgress(fingerStart!!, point(event, 0), true)
                     selectingFinger = false; selectingRegion = false
@@ -399,11 +452,14 @@ private class InkSurface(
             gestureShape = tool.shapeMode
             path.clear(); tilts.clear(); collect(event, index)
             heldSnapped = false
+            selectionStart = null; selectionBounds = null; resizeCorner = -1
+            state.beginGesture()
             if (selectingRegion && gestureTool != InkTool.Eraser) {
                 onSelectionProgress(path.first(), path.last(), false)
             } else if (gestureTool == InkTool.Eraser) {
                 selectingRegion = false
-                lastEraseIndex = 0; state.beginGesture(); eraseLive()
+                eraseBounds = state.strokes.mapNotNull { s -> listOf(s).bounds()?.let { s.id to it } }.toMap()
+                lastEraseIndex = 0; eraseLive()
             } else if (gestureTool == InkTool.Lasso) {
                 val p = path.first()
                 val b = state.selection().bounds()
@@ -412,6 +468,10 @@ private class InkSurface(
                 val within = b != null && p.x in b.left..b.right && p.y in b.top..b.bottom
                 selectionStart = if (within || resizeCorner >= 0) p else null
                 selectionBounds = b
+                if (selectionStart != null) dry.preview = state.selection()
+            } else if (gestureTool == InkTool.Shape) {
+                dry.shapeColor = gestureColor; dry.shapeWidth = gestureWidth; dry.shapeAlpha = 255
+                dry.shapePreview = explicitShape(path.first(), path.last(), gestureShape).points
             } else if (gestureTool != InkTool.Eraser) {
                 wetId = wet.startStroke(event, pointerId, inkBrush(brushName(gestureTool), gestureColor, gestureWidth * width))
             }
@@ -438,7 +498,10 @@ private class InkSurface(
                 }
                 if (selectingRegion) onSelectionProgress(path.first(), path.last(), false)
                 else if (gestureTool == InkTool.Eraser) eraseLive()
-                else if (gestureTool == InkTool.Lasso) dry.transient = path.toList()
+                else if (gestureTool == InkTool.Lasso) {
+                    if (selectionStart != null) previewSelection(path.last()) else dry.transient = path.toList()
+                } else if (gestureTool == InkTool.Shape) dry.shapePreview = explicitShape(path.first(), path.last(), gestureShape).points
+                else if (heldSnapped) dry.shapePreview = recognizeShape(path)?.points.orEmpty()
                 removeCallbacks(hold); postDelayed(hold, 500)
                 return true
             }
@@ -451,7 +514,9 @@ private class InkSurface(
                 wetId = null; pointerId = -1
                 onWritingStateChanged(false)
                 finishGesture()
-                dry.transient = emptyList()
+                dry.transient = emptyList(); dry.shapePreview = emptyList()
+                selectionStart = null; selectionBounds = null
+                dry.preview = null; dry.sync(state.strokes, state.selectedIds)
                 if (action == MotionEvent.ACTION_UP) {
                     penOwnsStream = false
                     parent?.requestDisallowInterceptTouchEvent(false)
@@ -466,23 +531,17 @@ private class InkSurface(
         if (path.isEmpty()) return
         if (selectingRegion) {
             onSelectionProgress(path.first(), path.last(), true)
-            selectingRegion = false; path.clear(); tilts.clear(); return
+            selectingRegion = false; state.finishGesture(false); path.clear(); tilts.clear(); return
         }
         when (gestureTool) {
             InkTool.Eraser -> { eraseLive(); state.finishGesture(true); dry.eraserCursor = null }
             InkTool.Lasso -> {
                 val start = selectionStart
                 if (start != null && selectionBounds != null) {
-                    val end = path.last()
-                    val dx = end.x-start.x; val dy = end.y-start.y
-                    if (resizeCorner >= 0) {
-                        val b = selectionBounds!!
-                        val sx = (b.width + if (resizeCorner == 0 || resizeCorner == 3) -dx else dx).coerceAtLeast(.005f)/b.width.coerceAtLeast(.005f)
-                        val sy = (b.height + if (resizeCorner == 0 || resizeCorner == 1) -dy else dy).coerceAtLeast(.005f)/b.height.coerceAtLeast(.005f)
-                        state.transformSelection(if (resizeCorner == 0 || resizeCorner == 3) dx else 0f,
-                            if (resizeCorner == 0 || resizeCorner == 1) dy else 0f,sx,sy)
-                    } else state.transformSelection(dx,dy)
+                    previewSelection(path.last())
+                    state.finishGesture(true)
                 } else {
+                    state.finishGesture(false)
                     state.select(lassoSelect(state.strokes,path))
                     state.selection().bounds()?.let { onAsk(state.selection(), it) }
                 }
@@ -502,7 +561,8 @@ private class InkSurface(
                     updatedAt = Instant.now().toString(), tool = if (gestureTool == InkTool.Highlighter) "highlighter" else "pen",
                     color = gestureColor, width = gestureWidth, points = points,
                     brush = brushName(gestureTool), shape = shape, tilt = tilts.toList().takeIf { it.size == points.size })
-                state.apply(state.strokes + stroke)
+                state.previewGesture(state.strokes + stroke)
+                state.finishGesture(true)
             }
         }
         path.clear(); tilts.clear()
@@ -519,14 +579,24 @@ private class DryInkView(context: Context) : View(context) {
         set(value) { field = value; invalidate() }
     var transient: List<InkPoint> = emptyList()
         set(value) { field = value; invalidate() }
+    var shapeColor = "#1C1B19"
+    var shapeWidth = .003f
+    var shapeAlpha = 255
+    var shapePreview: List<InkPoint> = emptyList()
+        set(value) { field = value; invalidate() }
+    var preview: List<InkStroke>? = null
+        set(value) { val toggled = (field == null) != (value == null); field = value; if (toggled) rebuild() else invalidate() }
     private val overlayPaint = Paint(3).apply { color = Color.rgb(162,54,42); strokeWidth = 2f; style = Paint.Style.STROKE }
     private val bitmapPaint = Paint(Paint.FILTER_BITMAP_FLAG)
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) { super.onSizeChanged(w,h,oldw,oldh); rebuild() }
     fun sync(strokes: List<InkStroke>, selectedIds: Set<String>) {
         if (current != strokes) {
             val old = current; current = strokes
+            val samePrefix = old.size <= strokes.size && old.indices.all { old[it].sameDrawing(strokes[it]) }
             val target = strokes.lastOrNull()?.let { if (it.brush == "highlighter") highlights else ink }
-            if (strokes.size == old.size + 1 && strokes.dropLast(1) == old && target != null) {
+            if (strokes.size == old.size && samePrefix) {
+                // Only rev/updatedAt changed in a sync receipt; the pixels are already current.
+            } else if (strokes.size == old.size + 1 && samePrefix && target != null) {
                 val stroke = strokes.last()
                 drawCached(target, stroke)
                 dirty(stroke)
@@ -543,7 +613,7 @@ private class DryInkView(context: Context) : View(context) {
         if (width <= 0 || height <= 0) return
         highlights?.recycle(); ink?.recycle()
         highlights = null; ink = null
-        val visible = current.filterNot { it.deleted || it.points.isEmpty() }
+        val visible = current.filterNot { it.deleted || it.points.isEmpty() || (preview != null && it.id in selected) }
         if (visible.isNotEmpty()) {
             // Only derived display caches are bounded. Input and saved normalized vectors retain precision.
             val scale = minOf(1.0, kotlin.math.sqrt(4_194_304.0 / (width.toDouble() * height)), 4096.0 / max(width, height))
@@ -566,6 +636,12 @@ private class DryInkView(context: Context) : View(context) {
     override fun onAttachedToWindow() { super.onAttachedToWindow(); if (current.isNotEmpty()) rebuild() }
     private fun drawStroke(canvas: Canvas, s: InkStroke) {
         if (s.points.isEmpty() || s.deleted) return
+        if (s.shape != null) {
+            val path = Path().apply { moveTo(s.points[0].x * width, s.points[0].y * height); s.points.drop(1).forEach { lineTo(it.x * width, it.y * height) } }
+            val paint = Paint(3).apply { color = Color.parseColor(s.color); alpha = if (s.brush == "highlighter") 0x70 else if (s.brush == "pencil") 0xa8 else 255; strokeWidth = max(.5f, s.width * width); style = Paint.Style.STROKE; strokeJoin = Paint.Join.MITER; strokeCap = Paint.Cap.ROUND }
+            canvas.drawPath(path, paint)
+            return
+        }
         val batch = MutableStrokeInputBatch()
         val startTime = s.points.first().tMillis
         var lastTime = -1L
@@ -602,7 +678,13 @@ private class DryInkView(context: Context) : View(context) {
         val bounds = Rect(0, 0, width, height)
         highlights?.let { canvas.drawBitmap(it, null, bounds, bitmapPaint) }
         ink?.let { canvas.drawBitmap(it, null, bounds, bitmapPaint) }
-        if (selected.isNotEmpty()) current.filter { it.id in selected }.bounds()?.let { b ->
+        preview?.forEach { drawStroke(canvas, it) }
+        if (shapePreview.size > 1) {
+            val shapePath = Path().apply { moveTo(shapePreview[0].x * width, shapePreview[0].y * height); shapePreview.drop(1).forEach { lineTo(it.x * width, it.y * height) } }
+            val paint = Paint(3).apply { color = Color.parseColor(shapeColor); alpha = shapeAlpha; strokeWidth = max(.5f, shapeWidth * width); style = Paint.Style.STROKE; strokeJoin = Paint.Join.MITER; strokeCap = Paint.Cap.ROUND }
+            canvas.drawPath(shapePath, paint)
+        }
+        if (selected.isNotEmpty()) (preview ?: current.filter { it.id in selected }).bounds()?.let { b ->
             canvas.drawRect(b.left*width,b.top*height,b.right*width,b.bottom*height,overlayPaint)
             canvas.drawCircle(b.left*width,b.top*height,8f,overlayPaint)
             canvas.drawCircle(b.right*width,b.top*height,8f,overlayPaint)

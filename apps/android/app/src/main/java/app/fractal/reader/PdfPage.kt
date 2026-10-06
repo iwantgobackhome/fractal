@@ -90,6 +90,9 @@ fun PdfPage(
     onBackgroundTap: () -> Unit = {},
     contentOverlay: @Composable BoxScope.(Int, Int, OriginalTextPage?) -> Unit = { _, _, _ -> },
 ) {
+    val parsedHighlights = remember(highlights) {
+        highlights.map { row -> runCatching { WireJson.format.parseToJsonElement(row.json).jsonObject }.getOrNull() }
+    }
     val colors = LocalFractalColors.current
     val scope = rememberCoroutineScope()
     var liveSelection by remember(source, index) { mutableStateOf<PdfTextSelection?>(null) }
@@ -172,8 +175,7 @@ fun PdfPage(
                         } else null)
                 }
                 Canvas(Modifier.matchParentSize()) {
-                    highlights.forEach { row ->
-                        val json = runCatching { WireJson.format.parseToJsonElement(row.json).jsonObject }.getOrNull()
+                    parsedHighlights.forEach { json ->
                         val provenance = json?.get("provenance") as? kotlinx.serialization.json.JsonObject
                         if (sourceContextStatus(provenance, source.pdfSha256, index + 1, textPage) !in listOf("current", "unknown")) return@forEach
                         if (provenance?.get("coordinateSpace")?.jsonPrimitive?.content == "unrotated-crop-normalized-v1" && textPage == null) return@forEach

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { InkStroke } from '@fractal/shared';
-import { isHighlighter, strokeHits, strokeOutline } from './ink';
+import { isHighlighter, strokeHits, strokeOutline, shapePath } from './ink';
 
 const stroke = (extra: Partial<InkStroke> = {}): InkStroke => ({
   kind: 'ink',
@@ -23,6 +23,10 @@ const stroke = (extra: Partial<InkStroke> = {}): InkStroke => ({
 });
 
 describe('ink', () => {
+  it('keeps snapped rectangle vertices exact without freehand smoothing', () => {
+    expect(shapePath(stroke({ points: [[.1,.2,.5,0],[.4,.2,.5,0],[.4,.6,.5,0],[.1,.6,.5,0],[.1,.2,.5,0]] }), 1000, 2000))
+      .toBe('M100.00,400.00L400.00,400.00L400.00,1200.00L100.00,1200.00L100.00,400.00');
+  });
   it('draws a closed outline in page pixels', () => {
     const d = strokeOutline(stroke(), 800, 1000);
     expect(d.startsWith('M')).toBe(true);

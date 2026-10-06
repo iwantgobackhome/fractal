@@ -547,4 +547,75 @@ class ReaderInteractionTest {
         compose.runOnIdle { assertTrue(state.undo()); assertFalse(state.strokes.first().deleted) }
     }
 
+    @Test fun fingerHoldMovesLassoGroupLiveAndCommitsOnce() {
+        val state = InkPageState(); val tool = InkToolState(); canvas(state,tool)
+        event(MotionEvent.ACTION_DOWN,200f,400f); event(MotionEvent.ACTION_MOVE,250f,450f); event(MotionEvent.ACTION_UP,300f,500f)
+        event(MotionEvent.ACTION_DOWN,320f,400f); event(MotionEvent.ACTION_MOVE,350f,450f); event(MotionEvent.ACTION_UP,400f,500f)
+        compose.runOnIdle { tool.active = InkTool.Lasso }
+        event(MotionEvent.ACTION_DOWN,150f,350f); event(MotionEvent.ACTION_MOVE,450f,350f)
+        event(MotionEvent.ACTION_MOVE,450f,550f); event(MotionEvent.ACTION_MOVE,150f,550f); event(MotionEvent.ACTION_UP,150f,350f)
+        var original = emptyList<app.fractal.ink.InkStroke>(); var changes = 0
+        compose.runOnIdle { assertEquals(2,state.selectedIds.size); original = state.strokes; state.onChange = { changes++ } }
+        event(MotionEvent.ACTION_DOWN,280f,450f,MotionEvent.TOOL_TYPE_FINGER)
+        SystemClock.sleep(450); compose.waitForIdle()
+        event(MotionEvent.ACTION_MOVE,330f,490f,MotionEvent.TOOL_TYPE_FINGER)
+        compose.runOnIdle {
+            assertEquals(0,changes)
+            val dx = state.strokes[0].points[0].x-original[0].points[0].x
+            val dy = state.strokes[0].points[0].y-original[0].points[0].y
+            assertTrue(dx > 0f); assertTrue(dy > 0f)
+            assertEquals(dx,state.strokes[1].points[0].x-original[1].points[0].x,.00001f)
+            assertEquals(dy,state.strokes[1].points[0].y-original[1].points[0].y,.00001f)
+        }
+        event(MotionEvent.ACTION_UP,330f,490f,MotionEvent.TOOL_TYPE_FINGER)
+        compose.runOnIdle { assertEquals(1,changes); assertTrue(state.undo()); assertEquals(original.map { it.points },state.strokes.map { it.points }) }
+    }
+    @Test fun shapeRectangleHasLivePreviewAndCommitsExplicitGeometry() {
+        val state = InkPageState(); val tool = InkToolState()
+        tool.active = InkTool.Shape; tool.shapeMode = app.fractal.ink.ShapeMode.Rectangle
+        canvas(state,tool)
+        event(MotionEvent.ACTION_DOWN,200f,400f); event(MotionEvent.ACTION_MOVE,400f,600f)
+        compose.runOnIdle {
+            assertTrue(state.strokes.isEmpty())
+            val dry = (surfaces().first() as ViewGroup).getChildAt(0)
+            val preview = dry.javaClass.getDeclaredField("shapePreview").apply { isAccessible=true }.get(dry) as List<*>
+            assertEquals(5,preview.size)
+        }
+        event(MotionEvent.ACTION_UP,400f,600f)
+        compose.runOnIdle { assertEquals("rectangle",state.strokes.single().shape?.type); assertEquals(5,state.strokes.single().points.size) }
+    }
+
+    @Test fun wetInkLatencyAndDryAppendPath() {
+        val state = InkPageState(); canvas(state)
+        val samples = java.util.concurrent.CopyOnWriteArrayList<String>()
+        compose.runOnIdle {
+            val wet = (surfaces().first() as ViewGroup).getChildAt(1)
+            assertFalse(wet.javaClass.getMethod("getUseHighLatencyRenderHelper").invoke(wet) as Boolean)
+            val callbackType = Class.forName("androidx.ink.authoring.latency.LatencyDataCallback")
+            val callback = java.lang.reflect.Proxy.newProxyInstance(callbackType.classLoader, arrayOf(callbackType)) { _, method, args ->
+                if (method.name == "onLatencyData") samples.add(args!![0].toString())
+                null
+            }
+            wet.javaClass.getMethod("setLatencyDataCallback",callbackType).invoke(wet,callback)
+        }
+        event(MotionEvent.ACTION_DOWN,200f,400f)
+        repeat(12) { i -> SystemClock.sleep(16); event(MotionEvent.ACTION_MOVE,200f+i*5f,400f+i*3f) }
+        event(MotionEvent.ACTION_UP,270f,445f)
+        compose.waitUntil(5000) { samples.isNotEmpty() }
+        samples.forEach { Log.i("InkLatency",it) }
+        var cached: Any? = null
+        compose.runOnIdle {
+            val dry = (surfaces().first() as ViewGroup).getChildAt(0)
+            cached = dry.javaClass.getDeclaredField("ink").apply { isAccessible=true }.get(dry)
+            assertTrue(cached != null)
+            assertFalse(state.reconcile(state.strokes.reversed()))
+        }
+        event(MotionEvent.ACTION_DOWN,300f,500f); event(MotionEvent.ACTION_UP,370f,545f)
+        compose.runOnIdle {
+            val dry = (surfaces().first() as ViewGroup).getChildAt(0)
+            val after = dry.javaClass.getDeclaredField("ink").apply { isAccessible=true }.get(dry)
+            assertTrue("append should reuse the dry bitmap",cached === after)
+        }
+    }
+
 }

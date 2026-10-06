@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type JSX } from 'react';
 import type { InkStroke } from '@fractal/shared';
-import { isHighlighter, strokeHits, strokeOutline, type InkPoint } from './ink';
+import { isHighlighter, strokeHits, strokeOutline, shapePath, type InkPoint } from './ink';
 
 interface Props {
   enabled?: boolean;
@@ -120,12 +120,16 @@ export function InkLayer({ page, strokes, color, onCreate, onErase, enabled = tr
         <>
           <g className="ink-layer__highlighter">
             {under.map((s) => (
-              <path key={s.id} d={strokeOutline(s, width, height)} fill={s.color} />
+              s.shape ? <path key={s.id} d={shapePath(s, width, height)} fill="none" stroke={s.color}
+                strokeWidth={Math.max(0.6, s.width * width)} strokeLinecap="round" strokeLinejoin="miter" />
+                : <path key={s.id} d={strokeOutline(s, width, height)} fill={s.color} />
             ))}
           </g>
           <g>
             {over.map((s) => (
-              <path key={s.id} d={strokeOutline(s, width, height)} fill={s.color} />
+              s.shape ? <path key={s.id} d={shapePath(s, width, height)} fill="none" stroke={s.color}
+                strokeWidth={Math.max(0.6, s.width * width)} strokeLinecap="round" strokeLinejoin="miter" />
+                : <path key={s.id} d={strokeOutline(s, width, height)} fill={s.color} />
             ))}
             {live !== null ? <path d={strokeOutline({ points: live, width: DESKTOP_PEN_WIDTH }, width, height)} fill={color} /> : null}
           </g>

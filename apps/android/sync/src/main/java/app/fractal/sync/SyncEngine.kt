@@ -17,6 +17,11 @@ class SyncEngine(private val database: FractalDatabase, private val client: HubD
         database.annotations().upsert(WireJson.annotationEntity(value, dirty = true))
     }
 
+    /** One logical ink edit emits one complete Room snapshot. */
+    suspend fun saveLocalBatch(values: List<JsonObject>) = database.withTransaction {
+        for (value in values) saveLocal(value)
+    }
+
     /** Import direct bookmark/link responses through the same pending-edit projection as pulls. */
     suspend fun acceptPaper(record: JsonObject, guard: () -> Unit = {}) = database.withTransaction {
         guard()

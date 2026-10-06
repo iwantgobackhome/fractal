@@ -72,6 +72,11 @@ data class InkStroke(
     val tilt: List<Float>? = null,
 )
 
+/** Sync acknowledgement metadata never invalidates the bitmap contents. */
+fun InkStroke.sameDrawing(other: InkStroke): Boolean = this === other ||
+    (id == other.id && deleted == other.deleted && tool == other.tool && color == other.color && width == other.width &&
+        points == other.points && brush == other.brush && shape == other.shape && tilt == other.tilt)
+
 object InkJson {
     val format = Json { ignoreUnknownKeys = true; encodeDefaults = true }
     fun encode(strokes: List<InkStroke>): String = format.encodeToString(kotlinx.serialization.builtins.ListSerializer(InkStroke.serializer()), strokes)
@@ -101,6 +106,22 @@ class InkPageState {
     private val redo = ArrayDeque<InkChange>()
     var onChange: ((InkChange) -> Unit)? = null
     fun load(strokes: List<InkStroke>) { this.strokes = strokes; selectedIds = emptySet(); undo.clear(); redo.clear() }
+    private var deferredRemote: List<InkStroke>? = null
+    val gestureInProgress get() = gestureBefore != null
+    /** Room echoes have arbitrary ordering. Never replace the page or its edit history. */
+    fun reconcile(remote: List<InkStroke>): Boolean {
+        if (gestureInProgress) { deferredRemote = remote; return false }
+        val local = strokes.associateBy { it.id }
+        if (remote.size == local.size && remote.all { local[it.id]?.let { s -> s.rev == it.rev && s.updatedAt == it.updatedAt } == true }) return false
+        val incoming = remote.associateBy { it.id }
+        val merged = strokes.map { s -> incoming[s.id]?.takeIf {
+            it.updatedAt > s.updatedAt || (it.updatedAt == s.updatedAt && (it.deviceId > s.deviceId || it.rev > s.rev))
+        } ?: s } + remote.filter { it.id !in local }
+        if (merged == strokes) return false
+        strokes = merged
+        selectedIds = selectedIds.intersect(merged.filterNot { it.deleted }.map { it.id }.toSet())
+        return true
+    }
     fun export(): List<InkStroke> = strokes
     fun apply(after: List<InkStroke>) {
         if (after == strokes) return
@@ -115,14 +136,27 @@ class InkPageState {
         val after = strokes
         strokes = before; gestureBefore = null
         if (commit) apply(after)
+        deferredRemote?.let { deferredRemote = null; reconcile(it) }
     }
     fun undo(): Boolean {
         if (undo.isEmpty()) return false
-        val change = undo.removeLast(); redo.addLast(change); strokes = change.before; onChange?.invoke(InkChange(change.after, change.before)); return true
+        val change = undo.removeLast(); redo.addLast(change); val before = strokes; strokes = restoreChange(change.after, change.before); onChange?.invoke(InkChange(before, strokes)); return true
     }
     fun redo(): Boolean {
         if (redo.isEmpty()) return false
-        val change = redo.removeLast(); undo.addLast(change); strokes = change.after; onChange?.invoke(change); return true
+        val change = redo.removeLast(); undo.addLast(change); val before = strokes; strokes = restoreChange(change.before, change.after); onChange?.invoke(InkChange(before, strokes)); return true
+    }
+    // Apply only the history delta so undo cannot erase unrelated incoming strokes.
+    private fun restoreChange(from: List<InkStroke>, to: List<InkStroke>): List<InkStroke> {
+        val old = from.associateBy { it.id }; val target = to.associateBy { it.id }
+        val changed = (old.keys + target.keys).filter { old[it] != target[it] }.toSet()
+        val present = strokes.filterNot { it.id in changed && it.id !in target }.map { current ->
+            if (current.id !in changed) current else target.getValue(current.id)
+                .copy(rev = current.rev + 1, updatedAt = Instant.now().toString())
+        }
+        return present + to.filter { it.id in changed && strokes.none { s -> s.id == it.id } }.map {
+            it.copy(rev = maxOf(it.rev, old[it.id]?.rev ?: 0) + 1, updatedAt = Instant.now().toString())
+        }
     }
     fun select(ids: Set<String>) { selectedIds = ids }
     fun selection(): List<InkStroke> = strokes.filter { it.id in selectedIds && !it.deleted }
@@ -132,11 +166,23 @@ class InkPageState {
         apply(strokes + copies); selectedIds = copies.map { it.id }.toSet()
     }
     fun recolorSelection(color: String) { apply(strokes.map { if (it.id in selectedIds) it.edited(color = color) else it }) }
+    fun previewSelectionTransform(dx: Float, dy: Float, scaleX: Float = 1f, scaleY: Float = 1f) {
+        val before = gestureBefore ?: return
+        previewGesture(transformedSelection(before, dx, dy, scaleX, scaleY))
+    }
+    private fun transformedSelection(before: List<InkStroke>, dx: Float, dy: Float, scaleX: Float, scaleY: Float): List<InkStroke> {
+        if (dx == 0f && dy == 0f && scaleX == 1f && scaleY == 1f) return before
+        val b = before.filter { it.id in selectedIds && !it.deleted }.bounds() ?: return before
+        val moveX = if (scaleX == 1f) dx.coerceIn(-b.left, 1f - b.right) else dx
+        val moveY = if (scaleY == 1f) dy.coerceIn(-b.top, 1f - b.bottom) else dy
+        if (moveX == 0f && moveY == 0f && scaleX == 1f && scaleY == 1f) return before
+        val stamp = Instant.now().toString()
+        return before.map { s -> if (s.id !in selectedIds) s else s.copy(rev = s.rev + 1, updatedAt = stamp, points = s.points.map { p -> p.copy(
+            x = (b.left + (p.x - b.left) * scaleX + moveX).coerceIn(0f, 1f),
+            y = (b.top + (p.y - b.top) * scaleY + moveY).coerceIn(0f, 1f)) }) }
+    }
     fun transformSelection(dx: Float, dy: Float, scaleX: Float = 1f, scaleY: Float = 1f) {
-        val b = selection().bounds() ?: return
-        apply(strokes.map { s -> if (s.id !in selectedIds) s else s.edited(points = s.points.map { p -> p.copy(
-            x = (b.left + (p.x - b.left) * scaleX + dx).coerceIn(0f, 1f),
-            y = (b.top + (p.y - b.top) * scaleY + dy).coerceIn(0f, 1f)) }) })
+        apply(transformedSelection(strokes, dx, dy, scaleX, scaleY))
     }
 }
 private fun InkStroke.edited(
