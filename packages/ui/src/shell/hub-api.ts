@@ -376,6 +376,19 @@ export class HubApi {
     return this.call(`/api/pairing/devices/${encodeURIComponent(id)}`, { method: 'DELETE' });
   }
 
+  async syncEvents(paperKey: string, signal: AbortSignal, onChange: () => void, onOpen: () => void): Promise<void> {
+    const response = await this.fetchImpl(`/api/sync/events?paperKey=${encodeURIComponent(paperKey)}`, {
+      headers: { accept: 'text/event-stream' },
+      credentials: 'same-origin',
+      signal,
+    });
+    if (!response.ok || !response.body) throw new Error(`Sync stream HTTP ${response.status}`);
+    onOpen();
+    for await (const event of readSse(response.body)) {
+      if ((event as { type?: string }).type !== 'error') onChange();
+    }
+  }
+
   annotations(paperKey: string): Promise<Annotation[] | null> {
     return this.call(`/api/papers/${encodeURIComponent(paperKey)}/annotations`);
   }

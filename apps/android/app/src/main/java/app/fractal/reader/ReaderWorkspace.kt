@@ -51,6 +51,7 @@ private fun Modifier.readingDriver(onDown: () -> Unit) = composed {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, onBack: () -> Unit) {
+    app.ReaderRealtimeSync(paper.paperKey)
     val colors = LocalFractalColors.current
     val scope = rememberCoroutineScope()
     val inkSaveMutex = remember(paper.paperKey) { Mutex() }
