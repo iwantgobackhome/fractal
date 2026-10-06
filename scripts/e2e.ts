@@ -278,7 +278,19 @@ async function main(): Promise<void> {
     await page.screenshot({ path: join(qaDir, 'source-highlight.png') });
     await popup.getByRole('button', { name: '답변 접기', exact: true }).click();
     assert.equal(await popup.locator('.answer-popup__content').isVisible(), false);
-    await popup.getByRole('button', { name: '답변 펼치기', exact: true }).click();
+    // The collapsed marker is almost all button: dragging from its centre must move it.
+    const collapsedMarker = popup.getByRole('button', { name: '답변 펼치기', exact: true });
+    const markerBefore = await collapsedMarker.boundingBox();
+    assert.ok(markerBefore);
+    await page.mouse.move(markerBefore.x + markerBefore.width / 2, markerBefore.y + markerBefore.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(markerBefore.x + markerBefore.width / 2 - 90, markerBefore.y + markerBefore.height / 2 + 70, { steps: 8 });
+    await page.mouse.up();
+    const markerAfter = await collapsedMarker.boundingBox();
+    assert.ok(markerAfter && Math.hypot(markerAfter.x - markerBefore.x, markerAfter.y - markerBefore.y) > 40);
+    assert.equal(await popup.locator('.answer-popup__content').isVisible(), false);
+    console.log('PASS collapsed marker drags from its centre without expanding');
+    await collapsedMarker.click();
     assert.equal(await popup.locator('.answer-popup__content').isVisible(), true);
     console.log('PASS popup collapses and expands');
     await page.keyboard.press('Escape');

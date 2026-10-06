@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.2 — 2026-10-06
+
+Collapsed answer cards can be dragged by the whole marker on the desktop (a press on the marker was ignored, so only its 4px edge moved it) and can be dragged at all on Android; the source stays highlighted while dragging. Android versionCode 11. See [release notes](docs/releases/0.4.2.md).
+
 ## 0.4.1 — 2026-10-06
 
 Answer cards are pinned to the page, stay until deleted, are restored with their position when a paper is reopened (synced between desktop and Android), collapse to a marker, and highlight their source passage, figure or equation while hovered or dragged. The desktop and Android apps include the Apache-2.0 license, the PaperRead MIT notice and generated third-party license lists, plus the Electron and Chromium notices on desktop, under Settings → Open-source licenses. Android versionCode 10. See [release notes](docs/releases/0.4.1.md).
