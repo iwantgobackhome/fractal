@@ -791,11 +791,20 @@ export async function extractPdf(bytes: Uint8Array, paperKey: string, options: E
     const data = Uint8Array.from(bytes);
     const { onProgress, ...serializable } = options;
     const source = import.meta.url.endsWith('.ts') ? './extraction-bootstrap.mjs' : './pdf-extraction.worker.mjs';
-    const worker = new Worker(new URL(source, import.meta.url), {
-      workerData: { bytes: data, paperKey, options: serializable },
-      transferList: [data.buffer],
-      resourceLimits: { maxOldGenerationSizeMb: 384, maxYoungGenerationSizeMb: 16 },
-    });
+    // Node worker_threads cannot execute an entrypoint in Electron's virtual ASAR filesystem.
+    const workerUrl = new URL(source, import.meta.url);
+    workerUrl.pathname = workerUrl.pathname.replace('/app.asar/', '/app.asar.unpacked/');
+    let worker: Worker;
+    try {
+      worker = new Worker(workerUrl, {
+        workerData: { bytes: data, paperKey, options: serializable },
+        transferList: [data.buffer],
+        resourceLimits: { maxOldGenerationSizeMb: 384, maxYoungGenerationSizeMb: 16 },
+      });
+    } catch {
+      return await extractPdfInProcess(bytes, paperKey, options);
+    }
+    let workerResponded = false;
     try {
       return await new Promise<PdfExtraction>((resolve, reject) => {
         // The HTTP thread can stop a pathological page even if its worker's JS is blocked.
@@ -805,6 +814,7 @@ export async function extractPdf(bytes: Uint8Array, paperKey: string, options: E
         );
         const done = () => clearTimeout(timer);
         worker.on('message', (message) => {
+          workerResponded = true;
           if (message.progress) {
             timer.refresh();
             onProgress?.(message.progress[0], message.progress[1]);
@@ -827,6 +837,7 @@ export async function extractPdf(bytes: Uint8Array, paperKey: string, options: E
         });
         worker.once('error', (error) => {
           done();
+          if (!workerResponded && !(error as NodeJS.ErrnoException).code) Object.assign(error, { code: 'ERR_WORKER_INIT_FAILED' });
           reject(error);
         });
         worker.once('exit', () => {
@@ -837,6 +848,14 @@ export async function extractPdf(bytes: Uint8Array, paperKey: string, options: E
     } finally {
       await worker.terminate();
     }
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException)?.code ?? '';
+    // Packaging/startup failures must not make otherwise readable papers fail.
+    // Keep decode errors and page watchdog failures visible to the caller.
+    if (code === 'ERR_MODULE_NOT_FOUND' || code === 'MODULE_NOT_FOUND' || code === 'ENOENT' || code.startsWith('ERR_WORKER_')) {
+      return await extractPdfInProcess(bytes, paperKey, options);
+    }
+    throw error;
   } finally {
     release();
   }

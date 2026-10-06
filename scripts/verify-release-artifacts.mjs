@@ -59,7 +59,7 @@ for (const label of labels) {
     const smoke = JSON.parse(await readFile(join(directory, `smoke-${label}.json`), 'utf8'));
     assert.equal(smoke.version, version);
     assert.equal(`${smoke.platform}-${smoke.arch}`, label);
-    assert.ok(smoke.hubStarted && smoke.uiServed && smoke.libraryApi && smoke.ptySpawn);
+    assert.ok(smoke.hubStarted && smoke.uiServed && smoke.libraryApi && smoke.ptySpawn && smoke.pdfWorkerStarted);
   } else {
     assert.ok(listed.has('android-verification.json'));
     const apk = JSON.parse(await readFile(join(directory, 'android-verification.json'), 'utf8'));

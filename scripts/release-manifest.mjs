@@ -47,7 +47,7 @@ if (label === 'android') {
   assert.equal(smoke.version, version);
   assert.equal(smoke.platform, platform);
   assert.equal(smoke.arch, arch);
-  assert.ok(smoke.hubStarted && smoke.uiServed && smoke.libraryApi && smoke.ptySpawn);
+  assert.ok(smoke.hubStarted && smoke.uiServed && smoke.libraryApi && smoke.ptySpawn && smoke.pdfWorkerStarted);
   // Hash the actual app bundle, including ASAR, unpacked native binaries and Electron.
   const bundle =
     platform === 'win32'
