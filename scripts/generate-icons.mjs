@@ -10,6 +10,13 @@ const assets = join(root, 'apps/desktop/assets');
 const res = join(root, 'apps/android/app/src/main/res');
 const appSvg = await readFile(join(assets, 'brand/app-icon.svg'), 'utf8');
 const traySvg = await readFile(join(assets, 'brand/tray.svg'), 'utf8');
+// Windows and Linux draw icons edge to edge; only macOS reserves the icon-grid margin.
+const smallSvg = await readFile(join(assets, 'brand/app-icon-small.svg'), 'utf8');
+const bodyRect = /<rect\b[^>]*\bx="(\d+)"[^>]*\by="(\d+)"[^>]*\bwidth="(\d+)"[^>]*\bheight="(\d+)"/.exec(appSvg);
+if (!bodyRect) throw new Error('app-icon.svg must start with its body rect');
+const fullBleedSvg = appSvg.replace(/viewBox="[^"]*"/, `viewBox="${bodyRect.slice(1).join(' ')}"`);
+// Below 48 px the detailed letters blur, so the hand-drawn small mark is used instead.
+const desktopSource = (size) => (size <= 32 ? smallSvg : fullBleedSvg);
 const sizes = [16, 24, 32, 48, 64, 128, 256, 512, 1024];
 const candidates = [
   process.env.FRACTAL_REVIEW_BROWSER,
@@ -69,13 +76,15 @@ try {
     return Buffer.from(encoded, 'base64');
   }
   const images = [];
+  const desktop = [];
   for (const size of sizes) {
-    const bytes = await render(appSvg, size);
-    images.push({ size, bytes });
+    images.push({ size, bytes: await render(appSvg, size) });
+    const bytes = await render(desktopSource(size), size);
+    desktop.push({ size, bytes });
     await output(join(assets, `icon-${size}.png`), bytes);
   }
-  await output(join(assets, 'icon.svg'), appSvg);
-  await output(join(assets, 'fractal.ico'), ico(images.filter(({ size }) => size <= 256)));
+  await output(join(assets, 'icon.svg'), fullBleedSvg);
+  await output(join(assets, 'fractal.ico'), ico(desktop.filter(({ size }) => size <= 256)));
   const iconset = join(temporary, 'app.iconset');
   await mkdir(iconset);
   for (const size of [16, 32, 128, 256, 512]) {
@@ -109,8 +118,9 @@ try {
   }
   await output(join(assets, 'trayTemplate.png'), await render(traySvg, 16));
   await output(join(assets, 'trayTemplate@2x.png'), await render(traySvg, 32));
-  await output(join(assets, 'tray-color.png'), await render(appSvg, 24));
-  await output(join(root, 'packages/ui/public/favicon.png'), await render(appSvg, 32));
+  await output(join(assets, 'tray-color.png'), await render(smallSvg, 16));
+  await output(join(assets, 'tray-color@2x.png'), await render(smallSvg, 32));
+  await output(join(root, 'packages/ui/public/favicon.png'), await render(smallSvg, 32));
   // Adaptive layers are rasterized from the source SVG, so replacing the mark
   // never requires translating its paths into Android vector syntax.
   const body = /<rect\b[^>]*\bfill="([^"]+)"[^>]*\/>/.exec(appSvg);
