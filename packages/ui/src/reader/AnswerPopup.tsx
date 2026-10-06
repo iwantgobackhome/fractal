@@ -12,6 +12,7 @@ export interface AnswerAnchor {
 
 /** The first position follows the passage; dragging makes the position viewport-relative. */
 export function AnswerPopup({
+  answerLanguage,
   hub,
   paperKey,
   intent,
@@ -21,6 +22,7 @@ export function AnswerPopup({
   onSettings,
   checkSource,
 }: {
+  answerLanguage?: string;
   hub: HubApi;
   paperKey: string;
   intent: ResearchIntent;
@@ -142,6 +144,7 @@ export function AnswerPopup({
       </header>
       <div className="answer-popup__content" hidden={collapsed}>
         <ResearchPanel
+          answerLanguage={answerLanguage}
           popup
           hub={hub}
           paperKey={paperKey}

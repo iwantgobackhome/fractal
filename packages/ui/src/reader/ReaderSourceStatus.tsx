@@ -3,14 +3,16 @@ import type { ContextSourceStatus, OriginalProvenance } from '@fractal/shared';
 import { useLanguage } from '../i18n';
 
 export function ReaderSourceStatus({
+  problemsOnly = false,
   provenance,
   durable,
   checkSource,
 }: {
+  problemsOnly?: boolean;
   provenance?: OriginalProvenance;
   durable?: ContextSourceStatus;
   checkSource(provenance?: OriginalProvenance): Promise<ContextSourceStatus>;
-}): JSX.Element {
+}): JSX.Element | null {
   const ko = useLanguage() === 'ko',
     [status, setStatus] = useState<ContextSourceStatus | undefined>(durable);
   useEffect(() => {
@@ -40,6 +42,7 @@ export function ReaderSourceStatus({
         unavailable: 'Original verification unavailable',
       };
   const stale = !!status && status !== 'current' && status !== 'unknown';
+  if (problemsOnly && !stale) return null;
   return (
     <p className="reader-context-status" data-stale={stale || undefined} role={stale ? 'status' : undefined}>
       {provenance?.textSource === 'translated'

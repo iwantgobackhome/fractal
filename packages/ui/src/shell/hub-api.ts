@@ -1,3 +1,4 @@
+import type { OriginalProvenance } from '@fractal/shared';
 import type {
   AiFeature,
   Article,
@@ -245,6 +246,9 @@ export interface ExplainRequest {
   page: number;
   bbox: StructureBox;
   surroundingText?: string;
+  threadId?: string;
+  answerLanguage?: string;
+  provenance?: OriginalProvenance;
   requestId?: string;
   selection?: ModelSelection;
 }
@@ -394,7 +398,17 @@ export class HubApi {
 
   async *ask(
     paperKey: string,
-    request: { question: string; requestId: string; selectedText?: string; page?: number; rect?: StructureBox; selection?: ModelSelection },
+    request: {
+      question: string;
+      requestId: string;
+      threadId?: string;
+      answerLanguage?: string;
+      provenance?: OriginalProvenance;
+      selectedText?: string;
+      page?: number;
+      rect?: StructureBox;
+      selection?: ModelSelection;
+    },
   ): AsyncGenerator<AiSseEvent> {
     const headers: Record<string, string> = { accept: 'text/event-stream', 'content-type': 'application/json' };
     if (this.token !== null) headers[TOKEN_HEADER] = this.token;

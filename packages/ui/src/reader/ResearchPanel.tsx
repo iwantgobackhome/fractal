@@ -1,13 +1,12 @@
 import { useCallback, useEffect, useRef, useState, type JSX } from 'react';
-import { languageSchema, type ContextSourceStatus, type HistoryEntry, type ModelSelection, type OriginalProvenance, type StructureBox } from '@fractal/shared';
+import type { ContextSourceStatus, HistoryEntry, ModelSelection, OriginalProvenance, StructureBox } from '@fractal/shared';
 import { Markdown } from '../components/Markdown';
 import { Selector } from '../components/Selector';
 import { useLanguage } from '../i18n';
 import { HubApi, type ProvidersResult } from '../shell/hub-api';
-import { TRANSLATION_LANGUAGES } from '../shell/preferences';
 import { useResearchRequest } from './useResearchRequest';
 import { ReaderSourceStatus } from './ReaderSourceStatus';
-
+import { groupThreads, reduceDraft, threadKey, type ResearchDraft } from './research-state';
 export interface ResearchIntent {
   id: number;
   text: string;
@@ -17,22 +16,15 @@ export interface ResearchIntent {
   kind?: 'figure' | 'equation' | 'table' | 'text';
   provenance?: OriginalProvenance;
 }
-interface Draft {
-  text: string;
-  context: ResearchIntent | null;
-  requestId: string;
-  activeId: string | null;
-  model: string;
-  answerLanguage?: string;
-}
-function readDraft(key: string): Draft {
+function readDraft(key: string, popup: boolean): ResearchDraft {
+  const empty = { threadId: crypto.randomUUID(), text: '', context: null, model: '' };
+  if (popup) return empty;
   try {
-    const raw = localStorage.getItem(key);
-    if (raw) return JSON.parse(raw) as Draft;
+    const saved = JSON.parse(localStorage.getItem(key) ?? 'null');
+    return saved ? { ...empty, ...saved, threadId: saved.threadId ?? saved.activeId ?? empty.threadId } : empty;
   } catch {
-    /* isolated storage may be unavailable */
+    return empty;
   }
-  return { text: '', context: null, requestId: crypto.randomUUID(), activeId: null, model: '' };
 }
 export function ResearchPanel({
   hub,
@@ -46,8 +38,8 @@ export function ResearchPanel({
   onQuestion,
   checkSource,
   popup = false,
+  answerLanguage,
 }: {
-  popup?: boolean;
   hub: HubApi;
   paperKey: string;
   open: boolean;
@@ -58,30 +50,31 @@ export function ResearchPanel({
   onSettings(): void;
   onQuestion(): void;
   checkSource(provenance?: OriginalProvenance): Promise<ContextSourceStatus>;
+  popup?: boolean;
+  answerLanguage?: string;
 }): JSX.Element {
-  const ko = useLanguage() === 'ko';
-  const say = (en: string, kr: string) => (ko ? kr : en);
-  const key = `fractal.research.${popup ? 'popup.' : ''}${paperKey}`;
-  const request = useResearchRequest(hub, paperKey);
-  const autoStarted = useRef<number | null>(null);
-  const [draft, setDraft] = useState<Draft>(() => readDraft(key));
-  const [entries, setEntries] = useState<HistoryEntry[]>([]);
-  const [loaded, setLoaded] = useState(false);
-  const [providers, setProviders] = useState<ProvidersResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [historyError, setHistoryError] = useState<string | null>(null);
-  const [sendingId, setSendingId] = useState<string | null>(null);
-  const sending = popup ? sendingId !== null : sendingId === draft.requestId;
-  const [kind, setKind] = useState('all');
-  const [status, setStatus] = useState('all');
-  const [search, setSearch] = useState('');
-  const [customLanguage, setCustomLanguage] = useState('');
-  const [languageError, setLanguageError] = useState<string | null>(null);
-  const alive = useRef(true),
-    seenIntent = useRef<number | null>(null);
-  const textarea = useRef<HTMLTextAreaElement>(null);
+  const ko = useLanguage() === 'ko',
+    say = (en: string, kr: string) => (ko ? kr : en);
+  const key = `fractal.research.${paperKey}`;
+  const [draft, setDraft] = useState(() => readDraft(key, popup));
+  const [entries, setEntries] = useState<HistoryEntry[]>([]),
+    [providers, setProviders] = useState<ProvidersResult | null>(null);
+  const [error, setError] = useState<string | null>(null),
+    [historyError, setHistoryError] = useState<string | null>(null),
+    [sending, setSending] = useState(false);
+  const [search, setSearch] = useState(''),
+    [kind, setKind] = useState('all'),
+    [status, setStatus] = useState('all');
+  const textarea = useRef<HTMLTextAreaElement>(null),
+    scroll = useRef<HTMLDivElement>(null),
+    atBottom = useRef(true),
+    seen = useRef<number | null>(null),
+    auto = useRef<number | null>(null),
+    busy = useRef(false),
+    alive = useRef(true);
   const latest = useRef(draft);
   latest.current = draft;
+  const request = useResearchRequest(hub, paperKey);
   useEffect(() => {
     alive.current = true;
     return () => {
@@ -89,26 +82,23 @@ export function ResearchPanel({
     };
   }, []);
   useEffect(() => {
+    if (popup) return;
     try {
       localStorage.setItem(key, JSON.stringify(draft));
     } catch {
-      /* draft remains in memory */
+      /* storage unavailable */
     }
-  }, [key, draft]);
+  }, [key, draft, popup]);
   const refresh = useCallback(async () => {
     try {
       const rows = await hub.history(paperKey);
-      if (!alive.current) return;
-      if (rows === null) throw new Error('History service unavailable');
-      setEntries(rows);
-      setLoaded(true);
-      setHistoryError(null);
-      setDraft((d) => {
-        const retained = rows.find((e) => e.requestId === d.requestId);
-        return retained && !d.activeId ? { ...d, activeId: retained.id } : d;
-      });
-    } catch (cause) {
-      if (alive.current) setHistoryError(cause instanceof Error ? cause.message : String(cause));
+      if (!rows) throw new Error('History service unavailable');
+      if (alive.current) {
+        setEntries(rows);
+        setHistoryError(null);
+      }
+    } catch (e) {
+      if (alive.current) setHistoryError(String(e));
     }
   }, [hub, paperKey]);
   useEffect(() => {
@@ -116,221 +106,163 @@ export function ResearchPanel({
     void refresh();
     void hub
       .providers()
-      .then((p) => {
-        if (alive.current) setProviders(p);
-      })
+      .then(setProviders)
       .catch(() => undefined);
     const timer = setInterval(() => void refresh(), 1000);
     return () => clearInterval(timer);
-  }, [hub, open, refresh]);
+  }, [open, hub, refresh]);
   useEffect(() => {
-    if (!intent || seenIntent.current === intent.id) return;
-    seenIntent.current = intent.id;
-    setDraft((d) => ({
-      ...d,
-      context: intent,
-      text: popup && !intent.rect ? say('Explain this passage.', '이 구절을 설명해 주세요.') : '',
-      activeId: null,
-      requestId: crypto.randomUUID(),
-    }));
+    if (!intent || seen.current === intent.id) return;
+    seen.current = intent.id;
+    setDraft((d) => ({ ...d, context: intent }));
     requestAnimationFrame(() => textarea.current?.focus());
   }, [intent]);
   const defaultChoice = providers?.settings.overrides.chat ?? providers?.settings.default;
-  const choiceKey = draft.model || (defaultChoice ? `${defaultChoice.provider}:${defaultChoice.model}` : '');
+  const choice = draft.model || (defaultChoice ? `${defaultChoice.provider}:${defaultChoice.model}` : '');
   const options =
     providers?.providers
       .filter((p) => p.installed)
-      .flatMap((p) =>
-        p.models.map((m) => ({
-          value: `${p.id}:${m.id}`,
-          label: m.label,
-          description: p.loggedIn ? p.id : say('Sign in required', '로그인 필요'),
-          disabled: !p.loggedIn,
-        })),
-      ) ?? [];
-  if (choiceKey && !options.some((o) => o.value === choiceKey))
-    options.unshift({ value: choiceKey, label: choiceKey, description: say('Model unavailable', '모델 사용 불가'), disabled: true });
-  const modelAvailable = options.some((o) => o.value === choiceKey && !o.disabled);
-  const active = entries.find((e) => e.id === draft.activeId) ?? null;
-  const run = async (explanation = false, fresh = false) => {
-    const current = fresh ? { ...latest.current, requestId: crypto.randomUUID(), activeId: null } : latest.current;
-    if (fresh) setDraft(current);
-    if (sending || !modelAvailable || (!explanation && !current.text.trim())) return;
-    const [provider, ...model] = choiceKey.split(':');
-    const selection: ModelSelection = {
-      ...(defaultChoice?.effort ? { effort: defaultChoice.effort } : {}),
-      provider: provider as ModelSelection['provider'],
-      model: model.join(':'),
-    };
-    const context = current.context;
-    setSendingId(current.requestId);
+      .flatMap((p) => p.models.map((m) => ({ value: `${p.id}:${m.id}`, label: m.label, disabled: !p.loggedIn }))) ?? [];
+  const available = options.some((o) => o.value === choice && !o.disabled);
+  const run = async (explanation = false, retry?: HistoryEntry) => {
+    const current = latest.current,
+      context = retry
+        ? retry.context.page
+          ? {
+              id: Date.now(),
+              page: retry.context.page,
+              text: retry.context.selectedText?.replace(/^\[Translated text[^\n]*\]\n/, '') ?? '',
+              from: retry.context.selectedText?.startsWith('[Translated text') ? ('translation' as const) : ('source' as const),
+              rect: retry.context.rect,
+              kind: retry.context.explanationKind,
+              provenance: retry.context.provenance,
+            }
+          : null
+        : current.context;
+    const question = retry?.question ?? current.text;
+    if (busy.current || !available || (!explanation && !question.trim())) return;
+    busy.current = true;
+    setSending(true);
     setError(null);
+    atBottom.current = true;
+    const requestId = crypto.randomUUID(),
+      [provider, ...model] = choice.split(':');
+    const selection = { ...defaultChoice, provider: provider as ModelSelection['provider'], model: model.join(':') };
+    if (!retry) setDraft((d) => reduceDraft(d, { type: 'sent' }));
     try {
-      await request({
-        context,
-        question:
-          popup && active?.text && !explanation && current.text.length < 3800
-            ? `Previous answer:\n${active.text.slice(0, 3900 - current.text.length)}\n\nFollow-up question:\n${current.text}`
-            : current.text,
-        requestId: current.requestId,
-        selection,
-        answerLanguage: current.answerLanguage,
-        explanation,
-        onHistory: (id) => {
-          if (alive.current) setDraft((d) => (d.requestId === current.requestId ? { ...d, activeId: id } : d));
-        },
-        refresh,
-      });
-      if (popup) setDraft((d) => (d.requestId === current.requestId && d.text === current.text ? { ...d, text: '' } : d));
-    } catch (cause) {
-      if (alive.current && latest.current.requestId === current.requestId) setError(cause instanceof Error ? cause.message : String(cause));
-    } finally {
+      await request({ context, question, requestId, threadId: current.threadId, selection, answerLanguage, explanation, onHistory: () => {}, refresh });
+    } catch (e) {
       if (alive.current) {
-        setSendingId((id) => (id === current.requestId ? null : id));
-        await refresh();
+        setError(String(e));
+        if (!retry) setDraft((d) => (d.threadId === current.threadId && !d.text && !d.context ? { ...d, text: question, context } : d));
+      }
+    } finally {
+      busy.current = false;
+      if (alive.current) {
+        setSending(false);
+        void refresh();
       }
     }
   };
   useEffect(() => {
-    if (!popup || !intent || draft.context?.id !== intent.id || !modelAvailable || autoStarted.current === intent.id) return;
-    autoStarted.current = intent.id;
-    void run(Boolean(intent.rect));
-  }, [popup, intent, draft.context, modelAvailable]);
-  const newQuestion = () => {
-    setDraft((d) => ({ ...d, text: '', context: null, activeId: null, requestId: crypto.randomUUID() }));
-    setError(null);
-    requestAnimationFrame(() => textarea.current?.focus());
-  };
-  const renderEntry = (entry: HistoryEntry) => (
-    <article className="history-entry" key={entry.id} data-history-id={entry.id}>
-      <div className="history-entry__meta">
-        <span>
-          {entry.kind === 'explanation' ? say('Explanation', '설명') : entry.kind === 'conversation' ? say('Conversation', '대화') : say('Question', '질문')}
-        </span>
-        <span>{new Date(entry.createdAt).toLocaleString(ko ? 'ko-KR' : 'en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+    if (!intent?.rect || !intent.kind || intent.kind === 'text' || draft.context?.id !== intent.id || !available || sending || auto.current === intent.id)
+      return;
+    auto.current = intent.id;
+    void run(true);
+  }, [intent, draft.context, available, sending]);
+  const turns = entries.filter((e) => threadKey(e) === draft.threadId || e.id === draft.threadId).sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+  useEffect(() => {
+    if (atBottom.current && scroll.current) scroll.current.scrollTop = scroll.current.scrollHeight;
+  }, [entries, draft.threadId]);
+  const attachment = (entry: HistoryEntry) =>
+    entry.context.selectedText ? (
+      <details className="research-turn__quote">
+        <summary>
+          📎 p.{entry.context.page} · {entry.context.selectedText.replace(/^\[Translated text[^\n]*\]\n/, '').slice(0, 80)}
+          {entry.context.selectedText.length > 80 ? '…' : ''}
+        </summary>
+        <blockquote>{entry.context.selectedText.replace(/^\[Translated text[^\n]*\]\n/, '')}</blockquote>
+      </details>
+    ) : null;
+  const renderTurn = (entry: HistoryEntry) => (
+    <article className="history-entry research-turn" key={entry.id} data-history-id={entry.id}>
+      <div className="research-turn__user">
+        {attachment(entry)}
+        <p>{entry.question || `${say('Explain', '설명')} · ${entry.context.explanationKind ?? ''}`}</p>
+        {entry.context.page ? (
+          <button className="research-provenance" onClick={() => onPage(entry.context.page!)}>
+            p.{entry.context.page}
+          </button>
+        ) : null}
       </div>
-      <h3>
-        {entry.kind === 'explanation'
-          ? `${say('Explain', '설명')} · ${entry.context.explanationKind ?? say('Selection', '선택 영역')} · p.${entry.context.page ?? '?'}`
-          : entry.question || say('Archived conversation', '보관된 대화')}
-      </h3>
-      {entry.context.page ? (
-        <button className="research-provenance" onClick={() => onPage(entry.context.page!)}>
-          {say('Original physical page', '원본 실제 페이지')} {entry.context.page}
-          {entry.context.explanationKind ? ` · ${entry.context.explanationKind}` : ''}
-        </button>
-      ) : null}
-      {entry.context.rect ? (
-        <p className="research-coordinates">
-          {say('Original region', '원본 영역')}: {Math.round(entry.context.rect.x * 100)}%, {Math.round(entry.context.rect.y * 100)}% ·{' '}
-          {Math.round(entry.context.rect.width * 100)}% × {Math.round(entry.context.rect.height * 100)}%
-        </p>
-      ) : null}
-      {entry.context.selectedText ? <blockquote>{entry.context.selectedText}</blockquote> : null}
-      {entry.context.page ? (
-        <ReaderSourceStatus provenance={entry.context.provenance} durable={entry.answer?.contextSourceStatus} checkSource={checkSource} />
-      ) : null}
-      {entry.context.answerLanguage ? (
-        <p className="research-coordinates">
-          {say('Answer language', '답변 언어')}: {entry.context.answerLanguage}
-        </p>
-      ) : null}
-      {entry.answer?.citations?.length ? (
-        <div className="research-citations" aria-label={say('Recorded passage citations', '기록된 인용 출처')}>
-          <span>{say('Selected-passage source', '선택 인용 출처')}</span>
-          {entry.answer.citations.map((citation, index) => (
-            <button key={index} onClick={() => onPage(citation.page)} disabled={citation.paperKey !== paperKey}>
-              {say('Original physical page', '원본 실제 페이지')} {citation.page}
-              {citation.region ? ` · ${say('passage envelope', '인용 영역')}` : ''}
+      <div className="research-turn__answer">
+        {entry.context.page ? (
+          <ReaderSourceStatus problemsOnly provenance={entry.context.provenance} durable={entry.answer?.contextSourceStatus} checkSource={checkSource} />
+        ) : null}
+        {entry.conversation ? (
+          entry.conversation.messages.map((m) => (
+            <div key={m.messageId}>
+              <strong>{m.role === 'user' ? say('Question', '질문') : say('Answer', '답변')}</strong>
+              <Markdown text={m.text} />
+            </div>
+          ))
+        ) : (
+          <Markdown text={entry.text} caret={['pending', 'running'].includes(entry.status)} />
+        )}
+        {['pending', 'running', 'failed'].includes(entry.status) ? (
+          <p role="status">{entry.status === 'failed' ? say('Failed', '실패') : say('Writing answer…', '답변 작성 중…')}</p>
+        ) : null}
+        {entry.error ? <p role="alert">{entry.error.message}</p> : null}
+        {entry.answer?.citations?.map((c, i) => (
+          <button key={i} className="research-provenance" disabled={c.paperKey !== paperKey} onClick={() => onPage(c.page)}>
+            p.{c.page}
+          </button>
+        ))}
+        <div className="research-turn__actions">
+          {entry.text ? (
+            <button
+              aria-label={say('Copy answer', '답변 복사')}
+              title={say('Copy answer', '답변 복사')}
+              onClick={() => void navigator.clipboard.writeText(entry.text).catch((e) => setError(String(e)))}
+            >
+              ⧉
             </button>
-          ))}
+          ) : null}
+          {!['pending', 'running'].includes(entry.status) ? (
+            <button
+              aria-label={say('Retry', '재시도')}
+              title={say('Retry', '재시도')}
+              disabled={sending || !available}
+              onClick={() => void run(entry.kind === 'explanation', entry)}
+            >
+              ↻
+            </button>
+          ) : null}
+          {['pending', 'running'].includes(entry.status) ? (
+            <button
+              aria-label={say('Cancel generation', '생성 취소')}
+              title={say('Cancel generation', '생성 취소')}
+              onClick={() =>
+                void hub
+                  .cancelHistory(paperKey, entry.id)
+                  .then(refresh)
+                  .catch((e) => setError(String(e)))
+              }
+            >
+              ■
+            </button>
+          ) : null}
         </div>
-      ) : null}
-      {entry.conversation ? (
-        entry.conversation.messages.map((m) => (
-          <div key={m.messageId}>
-            <strong>{m.role === 'user' ? say('Question', '질문') : say('Answer', '답변')}</strong>
-            <Markdown text={m.text} />
-            {m.error ? (
-              <p role="alert">
-                {m.error.code}: {m.error.message}
-              </p>
-            ) : null}
-          </div>
-        ))
-      ) : (
-        <Markdown text={entry.text} caret={['pending', 'running'].includes(entry.status)} />
-      )}
-      <p className="history-entry__status" role="status">
-        {entry.status === 'completed' && !entry.text && !entry.conversation
-          ? say('Completed without answer text', '답변 텍스트 없이 완료됨')
-          : say(
-              ({ pending: 'Queued', running: 'Writing answer', completed: 'Complete', failed: 'Failed', canceled: 'Canceled' } as const)[entry.status],
-              ({ pending: '대기 중', running: '답변 작성 중', completed: '완료', failed: '실패', canceled: '취소됨' } as const)[entry.status],
-            )}
-        {entry.answer ? ` · ${entry.answer.provider} / ${entry.answer.model}` : ''}
-      </p>
-      {entry.error ? (
-        <p role="alert">
-          {entry.error.code === 'MODEL_UNAVAILABLE'
-            ? say('Model unavailable. Open AI settings to connect an available model.', '모델을 사용할 수 없습니다. AI 설정에서 사용 가능한 모델을 연결하세요.')
-            : entry.error.message}
-        </p>
-      ) : null}
-      {entry.error && entry.id === draft.activeId ? (
-        <button disabled={!modelAvailable || sending} onClick={() => void run(entry.kind === 'explanation', true)}>
-          {say('Retry with a new request', '새 요청으로 재시도')}
-        </button>
-      ) : null}
-      {['pending', 'running'].includes(entry.status) ? (
-        <button
-          onClick={() =>
-            void hub
-              .cancelHistory(paperKey, entry.id)
-              .then(refresh)
-              .catch((e: unknown) => setError(String(e)))
-          }
-        >
-          {say('Cancel generation', '생성 취소')}
-        </button>
-      ) : null}
-      {entry.text ? (
-        <button onClick={() => void navigator.clipboard.writeText(entry.text).catch((e: unknown) => setError(String(e)))}>
-          {say('Copy answer', '답변 복사')}
-        </button>
-      ) : null}
-      <button
-        onClick={() => {
-          setDraft((d) => ({
-            ...d,
-            activeId: entry.id,
-            text: entry.kind === 'explanation' ? '' : entry.question,
-            requestId: entry.requestId ?? crypto.randomUUID(),
-            answerLanguage: entry.context.answerLanguage,
-            context: entry.context.page
-              ? {
-                  id: Date.now(),
-                  page: entry.context.page,
-                  text: entry.context.selectedText?.replace(/^\[Translated text[^\n]*\]\n/, '') ?? '',
-                  from: entry.context.selectedText?.startsWith('[Translated text') ? 'translation' : 'source',
-                  rect: entry.context.rect,
-                  kind: entry.context.explanationKind,
-                  provenance: entry.context.provenance,
-                }
-              : null,
-          }));
-          onQuestion();
-        }}
-      >
-        {say('Open', '열기')}
-      </button>
+      </div>
     </article>
   );
-  const filtered = entries.filter(
-    (e) =>
-      (kind === 'all' || e.kind === kind) &&
-      (status === 'all' || e.status === status) &&
-      `${e.question}\n${e.text}\n${e.context.selectedText ?? ''}`.toLocaleLowerCase().includes(search.toLocaleLowerCase()),
+  const threads = groupThreads(entries).filter((rows) =>
+    rows.some(
+      (e) =>
+        (kind === 'all' || e.kind === kind) &&
+        (status === 'all' || e.status === status) &&
+        `${e.question} ${e.text} ${e.context.selectedText ?? ''}`.toLowerCase().includes(search.toLowerCase()),
+    ),
   );
   return (
     <div
@@ -342,25 +274,38 @@ export function ResearchPanel({
         }
       }}
     >
-      <header hidden={popup}>
-        <h2>{historyMode ? say('Research history', '연구 기록') : say('Questions & explanations', '질문과 설명')}</h2>
-        <button aria-label={say('Close research panel', '연구 패널 닫기')} onClick={onClose}>
-          ×
-        </button>
-      </header>
+      {!popup ? (
+        <header>
+          <h2>{historyMode ? say('Research history', '연구 기록') : say('Questions', '질문')}</h2>
+          <button aria-label={say('Close research panel', '연구 패널 닫기')} onClick={onClose}>
+            ×
+          </button>
+        </header>
+      ) : null}
       {historyMode ? (
         <>
           <div className="research-filters">
+            <input
+              aria-label={say('Search history', '기록 검색')}
+              placeholder={say('Search threads', '대화 검색')}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
             <Selector
               label={say('History kind', '기록 유형')}
               value={kind}
               onChange={setKind}
-              options={[
-                ['all', say('All research', '전체 연구')],
-                ['question', say('Questions', '질문')],
-                ['explanation', say('Explanations', '설명')],
-                ['conversation', say('Conversations', '대화')],
-              ].map(([value, label]) => ({ value, label }))}
+              options={['all', 'question', 'explanation', 'conversation'].map((value) => ({
+                value,
+                label: (
+                  {
+                    all: say('All', '전체'),
+                    question: say('Questions', '질문'),
+                    explanation: say('Explanations', '설명'),
+                    conversation: say('Conversations', '대화'),
+                  } as Record<string, string>
+                )[value],
+              }))}
             />
             <Selector
               label={say('History status', '기록 상태')}
@@ -370,45 +315,63 @@ export function ResearchPanel({
                 value,
                 label: (
                   {
-                    all: say('All statuses', '전체 상태'),
-                    pending: say('Queued', '대기 중'),
+                    all: say('All', '전체'),
+                    pending: say('Queued', '대기'),
                     running: say('Writing', '작성 중'),
                     completed: say('Complete', '완료'),
                     failed: say('Failed', '실패'),
-                    canceled: say('Canceled', '취소됨'),
+                    canceled: say('Canceled', '취소'),
                   } as Record<string, string>
                 )[value],
               }))}
             />
-            <input
-              aria-label={say('Search history', '기록 검색')}
-              placeholder={say('Search questions and answers', '질문과 답변 검색')}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
           </div>
           <div className="research-panel__scroll">
-            {filtered.map(renderEntry)}
-            {loaded && !filtered.length ? (
-              <p>{say('No matching history. Adjust the filters or start a question.', '일치하는 기록이 없습니다. 필터를 바꾸거나 질문을 시작하세요.')}</p>
-            ) : null}
+            {threads.map((rows) => (
+              <button
+                className="research-thread"
+                key={threadKey(rows[0])}
+                onClick={() => {
+                  setDraft((d) => ({ ...d, threadId: threadKey(rows[0]), text: '', context: null }));
+                  atBottom.current = true;
+                  onQuestion();
+                }}
+              >
+                <strong>{rows[0].question || say('Explanation', '설명')}</strong>
+                <span>
+                  {rows.length} {say('turns', '개 질문')} · {new Date(rows[rows.length - 1].createdAt).toLocaleDateString(ko ? 'ko-KR' : 'en-US')}
+                </span>
+              </button>
+            ))}
+            {!threads.length ? <p>{say('No matching history', '일치하는 기록이 없습니다')}</p> : null}
           </div>
         </>
       ) : (
         <>
-          <div className="research-panel__scroll">
-            {active ? (
-              renderEntry(active)
-            ) : (
+          <div
+            className="research-panel__scroll"
+            ref={scroll}
+            onScroll={() => {
+              const node = scroll.current;
+              if (node) atBottom.current = node.scrollHeight - node.scrollTop - node.clientHeight < 60;
+            }}
+          >
+            {turns.map(renderTurn)}
+            {!turns.length ? (
               <p className="research-empty">
-                {say(
-                  'Ask about this paper, or select original or translated text to include a passage. Previous work stays in History.',
-                  '논문에 질문하거나 원본·번역 텍스트를 선택해 인용하세요. 이전 질문과 설명은 기록에 남습니다.',
-                )}
+                {say('Ask about this paper. Select text to attach a passage.', '논문에 질문하세요. 텍스트를 선택해 인용을 첨부할 수 있습니다.')}
               </p>
-            )}
+            ) : null}
           </div>
-          <button hidden={popup} className="research-new" onClick={newQuestion}>
+          <button
+            className="research-new"
+            onClick={() => {
+              setDraft((d) => reduceDraft(d, { type: 'new', threadId: crypto.randomUUID() }));
+              setError(null);
+              atBottom.current = true;
+              requestAnimationFrame(() => textarea.current?.focus());
+            }}
+          >
             {say('+ New question', '+ 새 질문')}
           </button>
           <form
@@ -417,95 +380,40 @@ export function ResearchPanel({
               void run();
             }}
           >
-            <Selector
-              label={say('Question model', '질문 모델')}
-              value={choiceKey}
-              options={options}
-              onChange={(model) => setDraft((d) => ({ ...d, model, requestId: crypto.randomUUID(), activeId: null }))}
-            />
-            <Selector
-              label={say('Answer language', '답변 언어')}
-              value={draft.answerLanguage ?? ''}
-              options={[
-                { value: '', label: say('Hub default', '허브 기본값') },
-                { value: 'auto', label: say('Automatic', '자동') },
-                ...TRANSLATION_LANGUAGES.map((l) => ({ value: l.code, label: l.name })),
-                ...(draft.answerLanguage && draft.answerLanguage !== 'auto' && !TRANSLATION_LANGUAGES.some((l) => l.code === draft.answerLanguage)
-                  ? [{ value: draft.answerLanguage, label: draft.answerLanguage }]
-                  : []),
-              ]}
-              onChange={(answerLanguage) =>
-                setDraft((d) => ({ ...d, answerLanguage: answerLanguage || undefined, requestId: crypto.randomUUID(), activeId: null }))
-              }
-            />
-            <details className="research-language">
-              <summary>{say('Custom language tag', '사용자 지정 언어 코드')}</summary>
-              <label>
-                {say('BCP47 language tag', 'BCP47 언어 코드')}
-                <input value={customLanguage} placeholder="zh-Hant" onChange={(e) => setCustomLanguage(e.target.value)} />
-              </label>
-              <button
-                type="button"
-                onClick={() => {
-                  const parsed = languageSchema.safeParse(customLanguage.trim());
-                  if (!parsed.success) {
-                    setLanguageError(say('Enter a valid BCP47 language tag.', '유효한 BCP47 언어 코드를 입력하세요.'));
-                    return;
-                  }
-                  setLanguageError(null);
-                  setDraft((d) => ({ ...d, answerLanguage: parsed.data, requestId: crypto.randomUUID(), activeId: null }));
-                }}
-              >
-                {say('Use language', '언어 적용')}
-              </button>
-              {languageError ? <p role="alert">{languageError}</p> : null}
-            </details>
             {draft.context ? (
-              <div className="research-context">
-                <p>
-                  {draft.context.from === 'translation' ? say('Translated passage', '번역문 인용') : say('Original passage / region', '원본 인용 / 영역')} · p.
-                  {draft.context.page}
-                  {draft.context.kind ? ` · ${draft.context.kind}` : ''}
-                </p>
-                <blockquote>{draft.context.text || say('Selected region has no extracted text.', '선택한 영역에 추출된 텍스트가 없습니다.')}</blockquote>
-                <ReaderSourceStatus provenance={draft.context.provenance} checkSource={checkSource} />
-                <button type="button" onClick={() => setDraft((d) => ({ ...d, context: null, requestId: crypto.randomUUID(), activeId: null }))}>
-                  {say('Remove context', '인용 제거')}
+              <div className="research-attachment">
+                <span>
+                  📎 p.{draft.context.page} · {draft.context.from === 'translation' ? say('Translation', '번역문') : say('Original', '원문')} “
+                  {draft.context.text.slice(0, 80)}
+                  {draft.context.text.length > 80 ? '…' : ''}”
+                </span>
+                <button
+                  type="button"
+                  aria-label={say('Remove attachment', '인용 제거')}
+                  onClick={() => setDraft((d) => reduceDraft(d, { type: 'removeAttachment' }))}
+                >
+                  ×
                 </button>
-                {draft.context.rect && draft.context.from === 'source' ? (
-                  <button type="button" disabled={!modelAvailable || sending} onClick={() => void run(true)}>
-                    {say('Explain selection', '선택 영역 설명')}
-                  </button>
-                ) : null}
               </div>
             ) : null}
-            <label>
-              {say('Question', '질문')}
-              <textarea
-                aria-label={say('Question', '질문')}
-                ref={textarea}
-                value={draft.text}
-                maxLength={4000}
-                rows={3}
-                onChange={(e) =>
-                  setDraft((d) => ({
-                    ...d,
-                    text: e.target.value,
-                    requestId: popup && sending ? d.requestId : crypto.randomUUID(),
-                    activeId: popup ? d.activeId : null,
-                  }))
-                }
-              />
-            </label>
-            <button type="submit" disabled={sending || !modelAvailable || !draft.text.trim()}>
-              {sending ? say('Sending…', '전송 중…') : say('Ask', '질문하기')}
-            </button>
-            {!modelAvailable ? (
+            <textarea
+              aria-label={say('Question', '질문')}
+              placeholder={say('Ask a question…', '질문을 입력하세요…')}
+              ref={textarea}
+              rows={3}
+              maxLength={4000}
+              value={draft.text}
+              onChange={(e) => setDraft((d) => reduceDraft(d, { type: 'text', text: e.target.value }))}
+            />
+            <div className="research-compose-row">
+              <Selector label={say('Question model', '질문 모델')} value={choice} options={options} onChange={(model) => setDraft((d) => ({ ...d, model }))} />
+              <button type="submit" disabled={sending || !available || !draft.text.trim()}>
+                {sending ? say('Sending…', '전송 중…') : say('Send', '전송')}
+              </button>
+            </div>
+            {!available ? (
               <p>
-                {say(
-                  'Connect an available model to ask or explain. Your draft is retained.',
-                  '질문과 설명을 위해 사용 가능한 모델을 연결하세요. 초안은 유지됩니다.',
-                )}{' '}
+                {say('Connect a model in Settings.', '설정에서 모델을 연결하세요.')}{' '}
                 <button type="button" onClick={onSettings}>
                   {say('AI settings', 'AI 설정')}
                 </button>
@@ -514,24 +422,13 @@ export function ResearchPanel({
           </form>
         </>
       )}
-      {!loaded ? <p role="status">{say('Loading retained research…', '저장된 연구 기록을 불러오는 중…')}</p> : null}
       {historyError ? (
         <div role="alert">
-          <p>{historyError}</p>
+          {historyError}
           <button onClick={() => void refresh()}>{say('Retry history', '기록 다시 불러오기')}</button>
         </div>
       ) : null}
-      {error ? (
-        <div role="alert">
-          <p>{error}</p>
-          <button onClick={() => void refresh()}>{say('Retry history', '기록 다시 불러오기')}</button>
-          {draft.text ? (
-            <button onClick={() => void run()} disabled={sending || !modelAvailable}>
-              {say('Retry same request', '같은 요청 재시도')}
-            </button>
-          ) : null}
-        </div>
-      ) : null}
+      {error ? <p role="alert">{error}</p> : null}
     </div>
   );
 }
