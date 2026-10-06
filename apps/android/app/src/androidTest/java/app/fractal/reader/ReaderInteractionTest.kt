@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performClick
@@ -28,6 +29,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.geometry.Offset
 import app.fractal.ink.InkCanvas
 import app.fractal.ink.InkPageState
 import app.fractal.ink.InkTool
@@ -43,6 +45,7 @@ import org.junit.Test
 import org.junit.Before
 import androidx.compose.ui.platform.ComposeView
 import kotlin.math.abs
+import kotlin.math.roundToInt
 
 /** Software routing tests; injected tool types are not evidence of physical palm rejection. */
 class ReaderInteractionTest {
@@ -106,9 +109,7 @@ class ReaderInteractionTest {
     }
 
     private fun top(): Int {
-        var y = 0
-        compose.runOnIdle { y = IntArray(2).also { surfaces().first().getLocationInWindow(it) }[1] }
-        return y
+        return bounds().y
     }
 
     private fun event(action: Int, x: Float, y: Float, type: Int = MotionEvent.TOOL_TYPE_STYLUS) {
@@ -166,13 +167,9 @@ class ReaderInteractionTest {
 
     private data class PaperBounds(val x: Int, val y: Int, val width: Int, val height: Int)
     private fun bounds(): PaperBounds {
-        var result = PaperBounds(0, 0, 0, 0)
-        compose.runOnIdle {
-            val page = surfaces().first()
-            val location = IntArray(2).also(page::getLocationInWindow)
-            result = PaperBounds(location[0], location[1], page.width, page.height)
-        }
-        return result
+        // Ink views cover only the viewport; measure the full PDF for page-coordinate assertions.
+        val page = compose.onNodeWithTag("pdf-page-1-bitmap").fetchSemanticsNode()
+        return PaperBounds(page.positionInWindow.x.roundToInt(), page.positionInWindow.y.roundToInt(), page.size.width, page.size.height)
     }
 
     /** Measure actual PDF pixels, not only the ink View's layout bounds. */
@@ -305,17 +302,49 @@ class ReaderInteractionTest {
         writing: (Boolean) -> Unit = {},
         transform: (Float, Float, Float) -> Unit = { _, _, _ -> },
         selected: () -> Unit = {},
+        pageSize: Size = Size.Zero,
+        pageOrigin: Offset = Offset.Zero,
     ) {
         compose.setContent {
             FractalTheme {
                 Box(Modifier.fillMaxSize()) {
-                    InkCanvas(state, tool, Modifier.fillMaxSize(), Size.Zero, nativeInkRouting = true,
+                    InkCanvas(state, tool, Modifier.fillMaxSize(), pageSize, nativeInkRouting = true, pageOrigin = pageOrigin,
                         onWritingStateChanged = writing, onFingerGesture = transform,
                         onSelectionProgress = { _, _, finished -> if (finished) selected() })
                 }
             }
         }
         compose.waitForIdle()
+    }
+
+    @Test fun viewportInkNormalizesAndErasesAgainstTheFullPage() {
+        val state = InkPageState()
+        val tool = InkToolState()
+        val fullPage = Size(4320f, 6000f)
+        val origin = Offset(1000f, 2000f)
+        canvas(state, tool, pageSize = fullPage, pageOrigin = origin)
+        val location = IntArray(2)
+        compose.runOnIdle { surfaces().first().getLocationInWindow(location) }
+        event(MotionEvent.ACTION_DOWN, location[0] + 200f, location[1] + 300f)
+        event(MotionEvent.ACTION_UP, location[0] + 300f, location[1] + 400f)
+        compose.runOnIdle {
+            val points = state.strokes.single().points
+            assertEquals(1200f / fullPage.width, points.first().x, .0001f)
+            assertEquals(2300f / fullPage.height, points.first().y, .0001f)
+            assertEquals(1300f / fullPage.width, points.last().x, .0001f)
+            assertEquals(2400f / fullPage.height, points.last().y, .0001f)
+            val surface = surfaces().first() as ViewGroup
+            val dry = (0 until surface.childCount).map { surface.getChildAt(it) }.first { it.javaClass.simpleName == "DryInkView" }
+            val rendered = Bitmap.createBitmap(dry.width, dry.height, Bitmap.Config.ARGB_8888)
+            try {
+                dry.draw(android.graphics.Canvas(rendered))
+                assertTrue("dry ink did not translate the full-page stroke into the viewport", Color.alpha(rendered.getPixel(250, 350)) > 0)
+            } finally { rendered.recycle() }
+            tool.active = InkTool.Eraser
+        }
+        event(MotionEvent.ACTION_DOWN, location[0] + 250f, location[1] + 350f)
+        event(MotionEvent.ACTION_UP, location[0] + 250f, location[1] + 350f)
+        compose.runOnIdle { assertTrue(state.strokes.single().deleted) }
     }
 
     @Test fun canceledInkDoesNotCommitOrAddAnUndoEntry() {
