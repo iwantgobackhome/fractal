@@ -16,6 +16,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.ink.authoring.InProgressStrokeId
 import androidx.ink.authoring.InProgressStrokesFinishedListener
@@ -54,7 +55,7 @@ private fun inkBrush(brushName: String?, color: String, widthPx: Float): Brush {
     return Brush.createWithColorIntArgb(family, argb, max(widthPx, .5f), .1f)
 }
 
-/** Overlay this over a rendered PDF page. pageSize is the rendered page size in local pixels. */
+/** Overlay the visible portion of a PDF page; pageSize/origin use full rendered-page pixels. */
 @Composable
 fun InkCanvas(
     state: InkPageState,
@@ -78,12 +79,15 @@ fun InkCanvas(
     onFingerTransform: ((InkFingerTransform) -> Unit)? = null,
     nativeInkRouting: Boolean = false,
     nativeViewportInWindow: android.graphics.Rect? = null,
+    pageOrigin: Offset = Offset.Zero,
+    visible: Boolean = true,
 ) {
     DisposableEffect(state, onStrokesChanged) {
         state.onChange = onStrokesChanged
         onDispose { state.onChange = null }
     }
-    key(state, paperKey, page, deviceId) {
+    // Preserve the state change listener while offscreen, but release both native views.
+    if (visible) key(state, paperKey, page, deviceId) {
         AndroidView(
             factory = { context -> InkSurface(context, state, tool, onSelectionAsk, onFingerGesture, onFingerLongPress, onFingerDoubleTap, onWritingStateChanged, paperKey, page, deviceId) },
             update = { surface ->
@@ -99,7 +103,7 @@ fun InkCanvas(
                 surface.onWritingStateChanged = onWritingStateChanged
                 surface.fingerScrollsParent = fingerScrollsParent
                 surface.onFingerTransform = onFingerTransform
-                surface.pageSize = pageSize
+                surface.setPageGeometry(pageSize, pageOrigin)
                 surface.nativeInkRouting = nativeInkRouting
                 surface.nativeViewportInWindow = nativeViewportInWindow
                 surface.sync(state.strokes, state.selectedIds)
@@ -131,7 +135,15 @@ private class InkSurface(
     private var tapX = 0f
     private var tapY = 0f
     private val confirmedTap = Runnable { onFingerTap(tapX, tapY) }
-    var pageSize: Size = Size.Zero
+    private var pageSize: Size = Size.Zero
+    private var pageOrigin = Offset.Zero
+    private val pageWidth get() = pageSize.width.takeIf { it > 0 } ?: width.toFloat().coerceAtLeast(1f)
+    private val pageHeight get() = pageSize.height.takeIf { it > 0 } ?: height.toFloat().coerceAtLeast(1f)
+
+    fun setPageGeometry(size: Size, origin: Offset) {
+        pageSize = size; pageOrigin = origin
+        dry.setPageGeometry(size, origin)
+    }
     var fingerScrollsParent = false
     var nativeInkRouting = false
     var nativeViewportInWindow: android.graphics.Rect? = null
@@ -191,8 +203,8 @@ private class InkSurface(
         lastFingerTapMs = 0L
         removeCallbacks(confirmedTap)
         onFingerLongPress(
-            (fingerDownX / width.coerceAtLeast(1)).coerceIn(0f, 1f),
-            (fingerDownY / height.coerceAtLeast(1)).coerceIn(0f, 1f),
+            ((fingerDownX + pageOrigin.x) / pageWidth).coerceIn(0f, 1f),
+            ((fingerDownY + pageOrigin.y) / pageHeight).coerceIn(0f, 1f),
         )
     }
     private val hold = Runnable {
@@ -244,13 +256,13 @@ private class InkSurface(
     }
 
     private fun point(event: MotionEvent, index: Int, historical: Int = -1): InkPoint {
-        val w = if (pageSize.width > 0) pageSize.width else width.toFloat().coerceAtLeast(1f)
-        val h = if (pageSize.height > 0) pageSize.height else height.toFloat().coerceAtLeast(1f)
+        val w = pageWidth
+        val h = pageHeight
         val x = if (historical < 0) event.getX(index) else event.getHistoricalX(index, historical)
         val y = if (historical < 0) event.getY(index) else event.getHistoricalY(index, historical)
         val pressure = if (historical < 0) event.getPressure(index) else event.getHistoricalPressure(index, historical)
         val time = if (historical < 0) event.eventTime else event.getHistoricalEventTime(historical)
-        return InkPoint((x / w).coerceIn(0f, 1f), (y / h).coerceIn(0f, 1f), pressure.coerceIn(0f, 1f), time)
+        return InkPoint(((x + pageOrigin.x) / w).coerceIn(0f, 1f), ((y + pageOrigin.y) / h).coerceIn(0f, 1f), pressure.coerceIn(0f, 1f), time)
     }
     private fun collect(event: MotionEvent, index: Int) {
         for (h in 0 until event.historySize) {
@@ -294,9 +306,9 @@ private class InkSurface(
     var onSelectionCanceled: () -> Unit = {}
     private fun eraseLive() {
         val cursor = path.lastOrNull() ?: return
-        dry.eraserCursor = cursor to eraserRadiusPx(gestureWidth, width.toFloat())
+        dry.eraserCursor = cursor to eraserRadiusPx(gestureWidth, pageWidth)
         state.previewGesture(eraseStrokesOnPage(state.strokes, path.subList((lastEraseIndex - 1).coerceAtLeast(0), path.size), gestureWidth,
-            width.toFloat(), height.toFloat(), gestureEraser, eraseBounds))
+            pageWidth, pageHeight, gestureEraser, eraseBounds))
         lastEraseIndex = path.size
         dry.sync(state.strokes, state.selectedIds)
     }
@@ -306,7 +318,7 @@ private class InkSurface(
             val erasing = tool.active == InkTool.Eraser || event.getToolType(0) == MotionEvent.TOOL_TYPE_ERASER ||
                 event.buttonState and MotionEvent.BUTTON_STYLUS_PRIMARY != 0
             dry.eraserCursor = if (erasing && action != MotionEvent.ACTION_HOVER_EXIT)
-                point(event, 0) to eraserRadiusPx(tool.widthFor(InkTool.Eraser), width.toFloat()) else null
+                point(event, 0) to eraserRadiusPx(tool.widthFor(InkTool.Eraser), pageWidth) else null
             return true
         }
         if (action == MotionEvent.ACTION_DOWN && (penOwnsStream || fingerActive)) cancel(event)
@@ -366,7 +378,7 @@ private class InkSurface(
                     if (transform == null) onFingerGesture(x-fingerX,y-fingerY,factor)
                     else {
                         val dx = rawX-fingerRawX; val dy = rawY-fingerRawY
-                        transform(InkFingerTransform(dx, dy, factor, x-dx, y-dy))
+                        transform(InkFingerTransform(dx, dy, factor, x-dx+pageOrigin.x, y-dy+pageOrigin.y))
                     }
                 }
                 fingerX = x; fingerY = y; fingerSpan = span
@@ -473,7 +485,7 @@ private class InkSurface(
                 dry.shapeColor = gestureColor; dry.shapeWidth = gestureWidth; dry.shapeAlpha = 255
                 dry.shapePreview = explicitShape(path.first(), path.last(), gestureShape).points
             } else if (gestureTool != InkTool.Eraser) {
-                wetId = wet.startStroke(event, pointerId, inkBrush(brushName(gestureTool), gestureColor, gestureWidth * width))
+                wetId = wet.startStroke(event, pointerId, inkBrush(brushName(gestureTool), gestureColor, gestureWidth * pageWidth))
             }
             postDelayed(hold, 500)
             return true
@@ -570,6 +582,14 @@ private class InkSurface(
 }
 
 private class DryInkView(context: Context) : View(context) {
+    private var pageSize = Size.Zero
+    private var pageOrigin = Offset.Zero
+    private val pageWidth get() = pageSize.width.takeIf { it > 0 } ?: width.toFloat().coerceAtLeast(1f)
+    private val pageHeight get() = pageSize.height.takeIf { it > 0 } ?: height.toFloat().coerceAtLeast(1f)
+    fun setPageGeometry(size: Size, origin: Offset) {
+        if (pageSize == size && pageOrigin == origin) return
+        pageSize = size; pageOrigin = origin; rebuild()
+    }
     private val renderer = CanvasStrokeRenderer.create()
     private var highlights: Bitmap? = null
     private var ink: Bitmap? = null
@@ -606,8 +626,8 @@ private class DryInkView(context: Context) : View(context) {
     }
     private fun dirty(stroke: InkStroke) {
         val b = listOf(stroke).bounds() ?: return
-        val extra = stroke.width * width + 8
-        invalidate((b.left*width-extra).toInt(),(b.top*height-extra).toInt(),(b.right*width+extra).toInt(),(b.bottom*height+extra).toInt())
+        val extra = stroke.width * pageWidth + 8
+        invalidate((b.left*pageWidth-pageOrigin.x-extra).toInt(),(b.top*pageHeight-pageOrigin.y-extra).toInt(),(b.right*pageWidth-pageOrigin.x+extra).toInt(),(b.bottom*pageHeight-pageOrigin.y+extra).toInt())
     }
     private fun rebuild() {
         if (width <= 0 || height <= 0) return
@@ -627,6 +647,7 @@ private class DryInkView(context: Context) : View(context) {
     private fun drawCached(bitmap: Bitmap, stroke: InkStroke) {
         val canvas = Canvas(bitmap)
         canvas.scale(bitmap.width.toFloat() / width, bitmap.height.toFloat() / height)
+        canvas.translate(-pageOrigin.x, -pageOrigin.y)
         drawStroke(canvas, stroke)
     }
     override fun onDetachedFromWindow() {
@@ -637,8 +658,8 @@ private class DryInkView(context: Context) : View(context) {
     private fun drawStroke(canvas: Canvas, s: InkStroke) {
         if (s.points.isEmpty() || s.deleted) return
         if (s.shape != null) {
-            val path = Path().apply { moveTo(s.points[0].x * width, s.points[0].y * height); s.points.drop(1).forEach { lineTo(it.x * width, it.y * height) } }
-            val paint = Paint(3).apply { color = Color.parseColor(s.color); alpha = if (s.brush == "highlighter") 0x70 else if (s.brush == "pencil") 0xa8 else 255; strokeWidth = max(.5f, s.width * width); style = Paint.Style.STROKE; strokeJoin = Paint.Join.MITER; strokeCap = Paint.Cap.ROUND }
+            val path = Path().apply { moveTo(s.points[0].x * pageWidth, s.points[0].y * pageHeight); s.points.drop(1).forEach { lineTo(it.x * pageWidth, it.y * pageHeight) } }
+            val paint = Paint(3).apply { color = Color.parseColor(s.color); alpha = if (s.brush == "highlighter") 0x70 else if (s.brush == "pencil") 0xa8 else 255; strokeWidth = max(.5f, s.width * pageWidth); style = Paint.Style.STROKE; strokeJoin = Paint.Join.MITER; strokeCap = Paint.Cap.ROUND }
             canvas.drawPath(path, paint)
             return
         }
@@ -648,27 +669,27 @@ private class DryInkView(context: Context) : View(context) {
         s.points.forEachIndexed { index, p ->
             val time = max(p.tMillis-startTime, lastTime+1)
             lastTime = time
-            batch.add(InputToolType.STYLUS, p.x*width, p.y*height, time,
+            batch.add(InputToolType.STYLUS, p.x*pageWidth, p.y*pageHeight, time,
                 0f, p.pressure, s.tilt?.getOrNull(index) ?: androidx.ink.strokes.StrokeInput.NO_TILT,
                 androidx.ink.strokes.StrokeInput.NO_ORIENTATION)
         }
-        val stroke = Stroke(inkBrush(s.brush, s.color, s.width*width),batch)
+        val stroke = Stroke(inkBrush(s.brush, s.color, s.width*pageWidth),batch)
         renderer.draw(canvas, stroke, Matrix())
         if (s.brush == "pencil") {
             val color = try { Color.parseColor(s.color) } catch (_: Exception) { Color.BLACK }
             val grain = Paint(3).apply { this.color = color; style = Paint.Style.FILL }
             s.points.zipWithNext().forEachIndexed { segment, (a,b) ->
-                val steps = max(1,(kotlin.math.hypot((b.x-a.x)*width,(b.y-a.y)*height)/2f).toInt())
+                val steps = max(1,(kotlin.math.hypot((b.x-a.x)*pageWidth,(b.y-a.y)*pageHeight)/2f).toInt())
                 for (i in 0..steps) {
                     val t = i.toFloat()/steps
                     val seed = segment*7919+i*104729
                     val jitter = ((seed*1103515245+12345).ushr(16) % 1000)/1000f-.5f
                     val pressure = a.pressure+(b.pressure-a.pressure)*t
                     grain.alpha = (25+pressure*85).toInt()
-                    val x = (a.x+(b.x-a.x)*t)*width
-                    val y = (a.y+(b.y-a.y)*t)*height
-                    canvas.drawCircle(x+jitter*s.width*width*.4f,y-jitter*s.width*width*.4f,
-                        max(.25f,s.width*width*.12f),grain)
+                    val x = (a.x+(b.x-a.x)*t)*pageWidth
+                    val y = (a.y+(b.y-a.y)*t)*pageHeight
+                    canvas.drawCircle(x+jitter*s.width*pageWidth*.4f,y-jitter*s.width*pageWidth*.4f,
+                        max(.25f,s.width*pageWidth*.12f),grain)
                 }
             }
         }
@@ -678,23 +699,26 @@ private class DryInkView(context: Context) : View(context) {
         val bounds = Rect(0, 0, width, height)
         highlights?.let { canvas.drawBitmap(it, null, bounds, bitmapPaint) }
         ink?.let { canvas.drawBitmap(it, null, bounds, bitmapPaint) }
+        canvas.save()
+        canvas.translate(-pageOrigin.x, -pageOrigin.y)
         preview?.forEach { drawStroke(canvas, it) }
         if (shapePreview.size > 1) {
-            val shapePath = Path().apply { moveTo(shapePreview[0].x * width, shapePreview[0].y * height); shapePreview.drop(1).forEach { lineTo(it.x * width, it.y * height) } }
-            val paint = Paint(3).apply { color = Color.parseColor(shapeColor); alpha = shapeAlpha; strokeWidth = max(.5f, shapeWidth * width); style = Paint.Style.STROKE; strokeJoin = Paint.Join.MITER; strokeCap = Paint.Cap.ROUND }
+            val shapePath = Path().apply { moveTo(shapePreview[0].x * pageWidth, shapePreview[0].y * pageHeight); shapePreview.drop(1).forEach { lineTo(it.x * pageWidth, it.y * pageHeight) } }
+            val paint = Paint(3).apply { color = Color.parseColor(shapeColor); alpha = shapeAlpha; strokeWidth = max(.5f, shapeWidth * pageWidth); style = Paint.Style.STROKE; strokeJoin = Paint.Join.MITER; strokeCap = Paint.Cap.ROUND }
             canvas.drawPath(shapePath, paint)
         }
         if (selected.isNotEmpty()) (preview ?: current.filter { it.id in selected }).bounds()?.let { b ->
-            canvas.drawRect(b.left*width,b.top*height,b.right*width,b.bottom*height,overlayPaint)
-            canvas.drawCircle(b.left*width,b.top*height,8f,overlayPaint)
-            canvas.drawCircle(b.right*width,b.top*height,8f,overlayPaint)
-            canvas.drawCircle(b.right*width,b.bottom*height,8f,overlayPaint)
-            canvas.drawCircle(b.left*width,b.bottom*height,8f,overlayPaint)
+            canvas.drawRect(b.left*pageWidth,b.top*pageHeight,b.right*pageWidth,b.bottom*pageHeight,overlayPaint)
+            canvas.drawCircle(b.left*pageWidth,b.top*pageHeight,8f,overlayPaint)
+            canvas.drawCircle(b.right*pageWidth,b.top*pageHeight,8f,overlayPaint)
+            canvas.drawCircle(b.right*pageWidth,b.bottom*pageHeight,8f,overlayPaint)
+            canvas.drawCircle(b.left*pageWidth,b.bottom*pageHeight,8f,overlayPaint)
         }
-        eraserCursor?.let { (point, radius) -> canvas.drawCircle(point.x * width, point.y * height, radius, overlayPaint) }
+        eraserCursor?.let { (point, radius) -> canvas.drawCircle(point.x * pageWidth, point.y * pageHeight, radius, overlayPaint) }
         if (transient.size > 1) {
-            val path = Path().apply { moveTo(transient[0].x*width, transient[0].y*height); transient.drop(1).forEach { lineTo(it.x*width,it.y*height) } }
+            val path = Path().apply { moveTo(transient[0].x*pageWidth, transient[0].y*pageHeight); transient.drop(1).forEach { lineTo(it.x*pageWidth,it.y*pageHeight) } }
             canvas.drawPath(path,overlayPaint)
         }
+        canvas.restore()
     }
 }

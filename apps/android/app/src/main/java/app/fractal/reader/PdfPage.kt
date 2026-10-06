@@ -36,6 +36,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
@@ -173,6 +175,9 @@ fun PdfPage(
                 if (bitmap == null || rendered.width >= bitmap!!.width) bitmap = rendered
             } catch (_: OutOfMemoryError) { /* Keep the displayed base under heap pressure. */ }
         }
+        // Retain one coordinate frame through pen-up; viewport changes must not resize a wet stroke.
+        var inkViewport by remember(source, index) { mutableStateOf<Pair<IntRect, Size>?>(null) }
+        var writingViewport by remember(source, index) { mutableStateOf<Pair<IntRect, Size>?>(null) }
         var visibleTile by remember(source, index) { mutableStateOf<PdfTileSpec?>(null) }
         var tile by remember(source, index) { mutableStateOf<Pair<PdfTileSpec, android.graphics.Bitmap>?>(null) }
         LaunchedEffect(source, index, zoom, visibleTile) {
@@ -198,6 +203,14 @@ fun PdfPage(
                     val viewport = nativeViewport?.let { androidx.compose.ui.geometry.Rect(it.left.toFloat(), it.top.toFloat(), it.right.toFloat(), it.bottom.toFloat()) }
                         ?: coordinates.findRootCoordinates().boundsInWindow()
                     val intersection = bounds.intersect(viewport)
+                    inkViewport = if (intersection.width <= 0 || intersection.height <= 0) null else {
+                        val left = (intersection.left - bounds.left).roundToInt().coerceIn(0, coordinates.size.width)
+                        val top = (intersection.top - bounds.top).roundToInt().coerceIn(0, coordinates.size.height)
+                        val right = (intersection.right - bounds.left).roundToInt().coerceIn(left, coordinates.size.width)
+                        val bottom = (intersection.bottom - bounds.top).roundToInt().coerceIn(top, coordinates.size.height)
+                        (IntRect(left, top, right, bottom) to Size(coordinates.size.width.toFloat(), coordinates.size.height.toFloat()))
+                            .takeIf { right > left && bottom > top }
+                    }
                     visibleTile = if (intersection.width <= 0 || intersection.height <= 0) null else PdfRenderBudget.tile(
                         widthPx, with(density) { height.roundToPx() },
                         (intersection.left - bounds.left).roundToInt(), (intersection.top - bounds.top).roundToInt(),
@@ -266,8 +279,15 @@ fun PdfPage(
                         drawPath(path, colors.focus.copy(alpha = .23f))
                     }
                 }
-                InkCanvas(state, tool, Modifier.matchParentSize(),
-                    pageSize = Size(widthPx.toFloat(), with(density) { height.roundToPx().toFloat() }),
+                val inkFrame = writingViewport ?: inkViewport
+                val rect = inkFrame?.first ?: IntRect.Zero
+                InkCanvas(state, tool, Modifier.offset { IntOffset(rect.left, rect.top) }
+                    .wrapContentSize(Alignment.TopStart, unbounded = true)
+                    .size(with(density) { rect.width.toDp() }, with(density) { rect.height.toDp() })
+                    .testTag("pdf-page-${index + 1}-ink"),
+                    pageSize = inkFrame?.second ?: Size.Zero,
+                    visible = inkFrame != null,
+                    pageOrigin = Offset(rect.left.toFloat(), rect.top.toFloat()),
                     paperKey = paperKey,
                     page = index + 1,
                     deviceId = app.credentials.load()?.deviceId ?: "android",
@@ -321,7 +341,10 @@ fun PdfPage(
                             ?: onSelectionUnavailable(textStatus.ifBlank { missedSelection })
                     },
                     onFingerDoubleTap = onDoubleTap,
-                    onWritingStateChanged = onWritingStateChanged,
+                    onWritingStateChanged = { writing ->
+                        writingViewport = if (writing) writingViewport ?: inkViewport else null
+                        onWritingStateChanged(writing)
+                    },
                 )
                 val heightPx = with(density) { height.roundToPx() }
                 val latestSelection = rememberUpdatedState(displayedSelection)
