@@ -6,7 +6,6 @@ import { join, resolve } from 'node:path';
 import { chromium } from 'playwright-core';
 import type { AiProvider, CompleteInput, ProviderDelta } from '../packages/hub/src/ai/provider';
 import { ProviderRegistry } from '../packages/hub/src/ai/registry';
-import { STRUCTURE_VERSION } from '../packages/hub/src/structure/detector';
 import { FtsLibrarySearch } from '../packages/hub/src/ai/library-search';
 import { JsonSettingsStore } from '../packages/hub/src/ai/settings';
 import { createApiServer } from '../packages/hub/src/api/index';
@@ -27,6 +26,9 @@ function pdf(): Buffer {
     'BT /F1 22 Tf 50 735 Td (Fractal Browser Smoke Paper) Tj ET',
     'BT /F1 15 Tf 50 685 Td (A readable line for highlighting and notes.) Tj ET',
     'BT /F1 15 Tf 50 660 Td (The measured result is forty two.) Tj ET',
+    // Keep the figure in the PDF so background recognition owns its structure.
+    'q 0.2 0.4 0.8 rg 60 400 275 115 re f Q',
+    'BT /F1 12 Tf 60 380 Td (Figure 3: Short figure caption) Tj ET',
   ].join('\n');
   const objects = [
     '<< /Type /Catalog /Pages 2 0 R >>',
@@ -144,19 +146,6 @@ async function main(): Promise<void> {
       data: { paper },
     } = (await response.json()) as { data: { paper: { paperKey: string } } };
 
-    store.db.prepare('INSERT OR REPLACE INTO structure_state(paper_key,version,status) VALUES(?,?,?)').run(paper.paperKey, STRUCTURE_VERSION, 'ready');
-    store.db.prepare('INSERT OR REPLACE INTO structure_items(paper_key,id,data) VALUES(?,?,?)').run(
-      paper.paperKey,
-      'figure-smoke',
-      JSON.stringify({
-        id: 'figure-smoke',
-        kind: 'figure',
-        page: 1,
-        bbox: { x: 0.1, y: 0.4, width: 0.45, height: 0.15 },
-        label: 'Figure 3',
-        caption: 'Short figure caption',
-      }),
-    );
     browser = await chromium.launch({ channel: process.env.FRACTAL_E2E_CHANNEL || 'msedge', headless: true });
     page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
     page.on('pageerror', (error) => console.error('Browser error:', error));
