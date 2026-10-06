@@ -1212,12 +1212,14 @@ export function App(): JSX.Element {
         });
     };
     connect();
+    document.addEventListener('visibilitychange', load);
     const timer = window.setInterval(() => {
       if (!connected) load();
     }, 10_000);
     return () => {
       cancelled = true;
       controller.abort();
+      document.removeEventListener('visibilitychange', load);
       refresh.cancel();
       window.clearTimeout(retry);
       window.clearInterval(timer);
