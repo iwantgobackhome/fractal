@@ -920,7 +920,36 @@
 /* ------------------------------------------------------------------ print (translated PDF) */
 
 .print-root {
-  display: none;
+  position: absolute;
+  left: -100000px;
+  top: 0;
+  visibility: hidden;
+}
+
+/* Apply print spacing while measuring too, before print media is activated. */
+.print-root .kr-page,
+.print-root .pdf-page {
+  margin: 0;
+}
+
+.print-root .kr-text,
+.print-root .kr-source {
+  margin-bottom: 0.5em;
+}
+
+.print-translation-slice {
+  overflow: hidden;
+}
+
+.print-translation-content {
+  transform-origin: top left;
+}
+
+.print-continuation-label {
+  height: 24px;
+  font-size: 12px;
+  line-height: 24px;
+  color: #555;
 }
 
 @media print {
@@ -934,14 +963,23 @@
   }
 
   .print-root {
-    display: block;
+    position: static;
+    visibility: visible;
   }
 
   .print-sheet {
     display: flex;
     justify-content: center;
-    gap: 6mm;
+    gap: var(--print-gap);
+    align-items: flex-start;
+    overflow: hidden;
+    break-inside: avoid;
     break-after: page;
+  }
+
+  .print-sheet__original,
+  .print-sheet__translation {
+    flex-shrink: 0;
   }
 
   .print-sheet:last-child {
