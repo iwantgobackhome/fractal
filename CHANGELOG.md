@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.4 — 2026-10-06
+
+Codex and Claude CLIs are detected on macOS and Linux when Fractal starts from Finder, the Dock or a desktop launcher. The in-app installer supports macOS and Linux, and its Windows Codex (npm) and Claude (from PowerShell 7) installs are fixed. Failed installs show the installer output. A CI workflow installs and detects both CLIs on Linux, macOS and Windows. Android versionCode 6. See [release notes](docs/releases/0.2.4.md).
+
 ## 0.2.3 — 2026-10-05
 
 Android highlights and notes whose selection ended inside a word are shown again; rows saved by 0.2.2 are repaired on Android and sync to the desktop. Unsigned macOS builds now announce new releases and open the download page. Android versionCode 5. See [release notes](docs/releases/0.2.3.md).

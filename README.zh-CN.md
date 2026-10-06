@@ -18,10 +18,10 @@
 <p align="center"><a href="#快速开始">快速开始</a> · <a href="#主要功能">主要功能</a> · <a href="docs/">文档</a></p>
 
 <p align="center">
-  <a href="https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.3"><img alt="下载 Windows 安装程序" src="https://img.shields.io/badge/%E4%B8%8B%E8%BD%BD-Windows%20%E5%AE%89%E8%A3%85%E7%A8%8B%E5%BA%8F-2f6b45?style=for-the-badge&logo=windows&logoColor=white"></a>
-  <a href="https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.3"><img alt="下载 Android APK" src="https://img.shields.io/badge/%E4%B8%8B%E8%BD%BD-Android%20APK-2f6b45?style=for-the-badge&logo=android&logoColor=white"></a>
-  <a href="https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.3"><img alt="Linux AppImage、Debian 发行文件与可用状态" src="https://img.shields.io/badge/Releases-Linux%20x64-2f6b45?style=for-the-badge&logo=linux&logoColor=white"></a>
-  <a href="https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.3"><img alt="macOS Apple Silicon、Intel 发行文件与可用状态" src="https://img.shields.io/badge/Releases-macOS%20arm64%20%7C%20x64-2f6b45?style=for-the-badge&logo=apple&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.4"><img alt="下载 Windows 安装程序" src="https://img.shields.io/badge/%E4%B8%8B%E8%BD%BD-Windows%20%E5%AE%89%E8%A3%85%E7%A8%8B%E5%BA%8F-2f6b45?style=for-the-badge&logo=windows&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.4"><img alt="下载 Android APK" src="https://img.shields.io/badge/%E4%B8%8B%E8%BD%BD-Android%20APK-2f6b45?style=for-the-badge&logo=android&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.4"><img alt="Linux AppImage、Debian 发行文件与可用状态" src="https://img.shields.io/badge/Releases-Linux%20x64-2f6b45?style=for-the-badge&logo=linux&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.4"><img alt="macOS Apple Silicon、Intel 发行文件与可用状态" src="https://img.shields.io/badge/Releases-macOS%20arm64%20%7C%20x64-2f6b45?style=for-the-badge&logo=apple&logoColor=white"></a>
   <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="最新版本" src="https://img.shields.io/github/v/release/iwantgobackhome/fractal?style=for-the-badge&color=3b625b"></a>
 </p>
 
@@ -106,18 +106,18 @@ flowchart LR
 
 ### 下载
 
-Fractal 0.2.3 已可从 [发行页面](https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.3) 下载。请在下方选择适合系统的文件。Windows、Linux 和 Android 版现已支持应用内更新；从 0.2.0 升级需手动安装一次，0.2.1 可在应用内更新。macOS 从 0.2.3 起会提示新版本并打开下载页面。详见 [0.2.3 发行说明](docs/releases/0.2.3.md)。现有 [0.2.2](https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.2)、[0.2.1](https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.1)、[0.2.0](https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.0) 和 [0.1.0](https://github.com/iwantgobackhome/fractal/releases/tag/v0.1.0) 发行版继续保留。
+Fractal 0.2.4 已可从 [发行页面](https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.4) 下载。请在下方选择适合系统的文件。Windows、Linux 和 Android 版现已支持应用内更新；从 0.2.0 升级需手动安装一次，0.2.1 可在应用内更新。macOS 从 0.2.3 起会提示新版本并打开下载页面。详见 [0.2.4 发行说明](docs/releases/0.2.4.md)。现有 [0.2.3](https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.3)、[0.2.2](https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.2)、[0.2.1](https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.1)、[0.2.0](https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.0) 和 [0.1.0](https://github.com/iwantgobackhome/fractal/releases/tag/v0.1.0) 发行版继续保留。
 
 | 文件 | 平台 | 分发形式 |
 | --- | --- | --- |
-| [Fractal-0.2.3-win-x64.exe](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.3/Fractal-0.2.3-win-x64.exe) | Windows x64 | NSIS 安装程序，未签名 |
-| [Fractal-0.2.3-linux-x64.AppImage](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.3/Fractal-0.2.3-linux-x64.AppImage) | Linux x64 | 便携 AppImage |
-| [Fractal-0.2.3-linux-x64.deb](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.3/Fractal-0.2.3-linux-x64.deb) | Linux x64 | Debian 软件包 |
-| [Fractal-0.2.3-mac-arm64.dmg](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.3/Fractal-0.2.3-mac-arm64.dmg) | macOS Apple Silicon | 独立 DMG，ad-hoc 签名，未经公证 |
-| [Fractal-0.2.3-mac-x64.dmg](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.3/Fractal-0.2.3-mac-x64.dmg) | macOS Intel | 独立 DMG，ad-hoc 签名，未经公证 |
-| [Fractal-0.2.3-android-debug.apk](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.3/Fractal-0.2.3-android-debug.apk) | Android 10+ | 调试签名，versionCode 5 |
+| [Fractal-0.2.4-win-x64.exe](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.4/Fractal-0.2.4-win-x64.exe) | Windows x64 | NSIS 安装程序，未签名 |
+| [Fractal-0.2.4-linux-x64.AppImage](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.4/Fractal-0.2.4-linux-x64.AppImage) | Linux x64 | 便携 AppImage |
+| [Fractal-0.2.4-linux-x64.deb](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.4/Fractal-0.2.4-linux-x64.deb) | Linux x64 | Debian 软件包 |
+| [Fractal-0.2.4-mac-arm64.dmg](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.4/Fractal-0.2.4-mac-arm64.dmg) | macOS Apple Silicon | 独立 DMG，ad-hoc 签名，未经公证 |
+| [Fractal-0.2.4-mac-x64.dmg](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.4/Fractal-0.2.4-mac-x64.dmg) | macOS Intel | 独立 DMG，ad-hoc 签名，未经公证 |
+| [Fractal-0.2.4-android-debug.apk](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.4/Fractal-0.2.4-android-debug.apk) | Android 10+ | 调试签名，versionCode 6 |
 
-Windows 未签名；Mac 应用使用 ad-hoc 签名，未经公证，并分别提供 Apple Silicon 和 Intel 下载。Android 使用与 0.1.0 相同的调试签名证书。请使用 [SHA256SUMS.txt](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.3/SHA256SUMS.txt) 校验下载文件。验证范围参见 [发行构建说明](docs/RELEASING.md)。
+Windows 未签名；Mac 应用使用 ad-hoc 签名，未经公证，并分别提供 Apple Silicon 和 Intel 下载。Android 使用与 0.1.0 相同的调试签名证书。请使用 [SHA256SUMS.txt](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.4/SHA256SUMS.txt) 校验下载文件。验证范围参见 [发行构建说明](docs/RELEASING.md)。
 
 ### 从源码构建
 
@@ -147,7 +147,7 @@ npm run hub
 ./gradlew :app:assembleDebug
 ```
 
-Windows 上使用 `gradlew.bat :app:assembleDebug`。将 `apps/android/app/build/outputs/apk/debug/app-debug.apk` 安装到设备，然后在桌面应用的设备连接设置中启用局域网或 Tailscale，扫描配对二维码。设备必须能访问中枢地址；Android 模拟器中的宿主机地址是 `10.0.2.3`。
+Windows 上使用 `gradlew.bat :app:assembleDebug`。将 `apps/android/app/build/outputs/apk/debug/app-debug.apk` 安装到设备，然后在桌面应用的设备连接设置中启用局域网或 Tailscale，扫描配对二维码。设备必须能访问中枢地址；Android 模拟器中的宿主机地址是 `10.0.2.4`。
 
 **本地数据：**Windows 使用 `%LOCALAPPDATA%\Fractal`；macOS 及其他 Unix 系统使用 `${XDG_DATA_HOME:-~/.local/share}/fractal`。可用 `FRACTAL_DATA` 指定其他目录。论文、PDF、账号设置及配对记录保存在这里。
 
