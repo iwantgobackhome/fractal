@@ -36,6 +36,14 @@ async function installed(provider: ProviderId): Promise<boolean> {
   }
 }
 
+/** Windows PowerShell 5.1 inherits PowerShell 7's PSModulePath from a pwsh parent and then cannot
+ * load its own Microsoft.PowerShell.Utility module (Get-FileHash), so let it rebuild the default. */
+function installerEnvironment(file: string): NodeJS.ProcessEnv {
+  const env = cliEnvironment(process.env, file);
+  if (!/(^|[\\/])powershell\.exe$/i.test(file)) return env;
+  return Object.fromEntries(Object.entries(env).filter(([key]) => key.toLowerCase() !== 'psmodulepath'));
+}
+
 async function execute(file: string, args: string[], signal: AbortSignal): Promise<void> {
   await new Promise<void>((resolve, reject) => {
     const child = spawn(file, args, {
@@ -46,7 +54,7 @@ async function execute(file: string, args: string[], signal: AbortSignal): Promi
       windowsVerbatimArguments: /(^|[\\/])cmd\.exe$/i.test(file),
       signal,
       timeout: COMMAND_TIMEOUT_MS,
-      env: cliEnvironment(process.env, file),
+      env: installerEnvironment(file),
     });
     // Keep only the tail so a failure names the installer's own last message.
     let output = '';
