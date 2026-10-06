@@ -18,10 +18,10 @@
 <p align="center"><a href="#quick-start">Quick start</a> · <a href="#features">Features</a> · <a href="docs/">Docs</a></p>
 
 <p align="center">
-  <a href="https://github.com/iwantgobackhome/news-papers/releases/tag/v0.2.4"><img alt="Download the Windows installer" src="https://img.shields.io/badge/Download-Windows%20installer-2f6b45?style=for-the-badge&logo=windows&logoColor=white"></a>
-  <a href="https://github.com/iwantgobackhome/news-papers/releases/tag/v0.2.4"><img alt="Download the Android APK" src="https://img.shields.io/badge/Download-Android%20APK-2f6b45?style=for-the-badge&logo=android&logoColor=white"></a>
-  <a href="https://github.com/iwantgobackhome/news-papers/releases/tag/v0.2.4"><img alt="Linux AppImage and Debian release assets and availability" src="https://img.shields.io/badge/Releases-Linux%20x64-2f6b45?style=for-the-badge&logo=linux&logoColor=white"></a>
-  <a href="https://github.com/iwantgobackhome/news-papers/releases/tag/v0.2.4"><img alt="macOS Apple Silicon and Intel release assets and availability" src="https://img.shields.io/badge/Releases-macOS%20arm64%20%7C%20x64-2f6b45?style=for-the-badge&logo=apple&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/news-papers/releases/tag/v0.3.0"><img alt="Download the Windows installer" src="https://img.shields.io/badge/Download-Windows%20installer-2f6b45?style=for-the-badge&logo=windows&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/news-papers/releases/tag/v0.3.0"><img alt="Download the Android APK" src="https://img.shields.io/badge/Download-Android%20APK-2f6b45?style=for-the-badge&logo=android&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/news-papers/releases/tag/v0.3.0"><img alt="Linux AppImage and Debian release assets and availability" src="https://img.shields.io/badge/Releases-Linux%20x64-2f6b45?style=for-the-badge&logo=linux&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/news-papers/releases/tag/v0.3.0"><img alt="macOS Apple Silicon and Intel release assets and availability" src="https://img.shields.io/badge/Releases-macOS%20arm64%20%7C%20x64-2f6b45?style=for-the-badge&logo=apple&logoColor=white"></a>
   <a href="https://github.com/iwantgobackhome/news-papers/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/iwantgobackhome/news-papers?style=for-the-badge&color=3b625b"></a>
 </p>
 
@@ -106,18 +106,18 @@ The desktop app runs the hub and UI together. You can also run the hub and open 
 
 ### Download
 
-News Papers 0.2.4 is available on the [release page](https://github.com/iwantgobackhome/news-papers/releases/tag/v0.2.4). Choose your platform below. Windows, Linux and Android builds now offer in-app updates; installs of 0.2.0 need one manual update first, and 0.2.1 updates from inside the app. From 0.2.3, macOS shows new versions and opens the download page. See the [0.2.4 release notes](docs/releases/0.2.4.md). The [0.2.3](https://github.com/iwantgobackhome/news-papers/releases/tag/v0.2.3), [0.2.2](https://github.com/iwantgobackhome/news-papers/releases/tag/v0.2.2), [0.2.1](https://github.com/iwantgobackhome/news-papers/releases/tag/v0.2.1), [0.2.0](https://github.com/iwantgobackhome/news-papers/releases/tag/v0.2.0) and [0.1.0](https://github.com/iwantgobackhome/news-papers/releases/tag/v0.1.0) releases remain available.
+News Papers 0.3.0 is available on the [release page](https://github.com/iwantgobackhome/news-papers/releases/tag/v0.3.0). Choose your platform below. Windows, Linux and Android builds now offer in-app updates; installs of 0.2.0 need one manual update first, and 0.2.1 updates from inside the app. From 0.2.3, macOS shows new versions and opens the download page. See the [0.3.0 release notes](docs/releases/0.3.0.md). The [0.2.4](https://github.com/iwantgobackhome/news-papers/releases/tag/v0.2.4), [0.2.3](https://github.com/iwantgobackhome/news-papers/releases/tag/v0.2.3), [0.2.2](https://github.com/iwantgobackhome/news-papers/releases/tag/v0.2.2), [0.2.1](https://github.com/iwantgobackhome/news-papers/releases/tag/v0.2.1), [0.2.0](https://github.com/iwantgobackhome/news-papers/releases/tag/v0.2.0) and [0.1.0](https://github.com/iwantgobackhome/news-papers/releases/tag/v0.1.0) releases remain available. Fractal is now News Papers: on Android, 0.3.0 installs as a new app, so pair it again and then remove Fractal; desktop data is copied over automatically.
 
 | File | Platform | Distribution |
 | --- | --- | --- |
-| [News-Papers-0.2.4-win-x64.exe](https://github.com/iwantgobackhome/news-papers/releases/download/v0.2.4/Fractal-0.2.4-win-x64.exe) | Windows x64 | NSIS installer; unsigned |
-| [News-Papers-0.2.4-linux-x64.AppImage](https://github.com/iwantgobackhome/news-papers/releases/download/v0.2.4/Fractal-0.2.4-linux-x64.AppImage) | Linux x64 | Portable AppImage |
-| [News-Papers-0.2.4-linux-x64.deb](https://github.com/iwantgobackhome/news-papers/releases/download/v0.2.4/Fractal-0.2.4-linux-x64.deb) | Linux x64 | Debian package |
-| [News-Papers-0.2.4-mac-arm64.dmg](https://github.com/iwantgobackhome/news-papers/releases/download/v0.2.4/Fractal-0.2.4-mac-arm64.dmg) | macOS Apple Silicon | Separate DMG; ad-hoc signed, unnotarized |
-| [News-Papers-0.2.4-mac-x64.dmg](https://github.com/iwantgobackhome/news-papers/releases/download/v0.2.4/Fractal-0.2.4-mac-x64.dmg) | macOS Intel | Separate DMG; ad-hoc signed, unnotarized |
-| [News-Papers-0.2.4-android-debug.apk](https://github.com/iwantgobackhome/news-papers/releases/download/v0.2.4/Fractal-0.2.4-android-debug.apk) | Android 10+ | Debug-signed companion; versionCode 6 |
+| [News-Papers-0.3.0-win-x64.exe](https://github.com/iwantgobackhome/news-papers/releases/download/v0.3.0/News-Papers-0.3.0-win-x64.exe) | Windows x64 | NSIS installer; unsigned |
+| [News-Papers-0.3.0-linux-x64.AppImage](https://github.com/iwantgobackhome/news-papers/releases/download/v0.3.0/News-Papers-0.3.0-linux-x64.AppImage) | Linux x64 | Portable AppImage |
+| [News-Papers-0.3.0-linux-x64.deb](https://github.com/iwantgobackhome/news-papers/releases/download/v0.3.0/News-Papers-0.3.0-linux-x64.deb) | Linux x64 | Debian package |
+| [News-Papers-0.3.0-mac-arm64.dmg](https://github.com/iwantgobackhome/news-papers/releases/download/v0.3.0/News-Papers-0.3.0-mac-arm64.dmg) | macOS Apple Silicon | Separate DMG; ad-hoc signed, unnotarized |
+| [News-Papers-0.3.0-mac-x64.dmg](https://github.com/iwantgobackhome/news-papers/releases/download/v0.3.0/News-Papers-0.3.0-mac-x64.dmg) | macOS Intel | Separate DMG; ad-hoc signed, unnotarized |
+| [News-Papers-0.3.0-android-debug.apk](https://github.com/iwantgobackhome/news-papers/releases/download/v0.3.0/News-Papers-0.3.0-android-debug.apk) | Android 10+ | Debug-signed companion; versionCode 7 |
 
-Windows is unsigned; the Mac apps are ad-hoc signed and unnotarized, with separate Apple Silicon and Intel downloads. Android uses the same debug signing certificate as 0.1.0. Verify downloads with [SHA256SUMS.txt](https://github.com/iwantgobackhome/news-papers/releases/download/v0.2.4/SHA256SUMS.txt). See [release builds](docs/RELEASING.md) for the verification scope.
+Windows is unsigned; the Mac apps are ad-hoc signed and unnotarized, with separate Apple Silicon and Intel downloads. Android uses the same debug signing certificate as 0.1.0. Verify downloads with [SHA256SUMS.txt](https://github.com/iwantgobackhome/news-papers/releases/download/v0.3.0/SHA256SUMS.txt). See [release builds](docs/RELEASING.md) for the verification scope.
 
 ### Build from source
 
@@ -147,7 +147,7 @@ For Android, open `apps/android` in Android Studio or build from its directory:
 ./gradlew :app:assembleDebug
 ```
 
-On Windows, use `gradlew.bat :app:assembleDebug`. Install `apps/android/app/build/outputs/apk/debug/app-debug.apk`, then enable LAN or Tailscale in the desktop app's device connection settings and scan its pairing QR code. A phone or tablet must be able to reach the hub address; the Android emulator reaches the host as `10.0.2.4`.
+On Windows, use `gradlew.bat :app:assembleDebug`. Install `apps/android/app/build/outputs/apk/debug/app-debug.apk`, then enable LAN or Tailscale in the desktop app's device connection settings and scan its pairing QR code. A phone or tablet must be able to reach the hub address; the Android emulator reaches the host as `10.0.3.0`.
 
 **Local data:** Windows uses `%LOCALAPPDATA%\News Papers`; macOS and other Unix systems use `${XDG_DATA_HOME:-~/.local/share}/news-papers`. `FRACTAL_DATA` overrides the data directory. Saved papers, PDFs, account settings, and pairing records live there.
 

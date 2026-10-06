@@ -9,7 +9,7 @@ const { createHash } = require('node:crypto');
 (async () => {
   const [archive, output] = process.argv.slice(2);
   const pkg = JSON.parse(fs.readFileSync(path.join(archive, 'package.json'), 'utf8'));
-  assert.equal(pkg.version, '0.2.4');
+  assert.equal(pkg.version, '0.3.0');
   assert.equal(pkg.build.appId, 'app.newspapers.desktop');
   assert.equal(pkg.build.productName, 'News Papers');
   assert.equal(pkg.build.executableName, 'news-papers');
