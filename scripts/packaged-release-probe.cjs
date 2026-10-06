@@ -9,7 +9,7 @@ const { createHash } = require('node:crypto');
 (async () => {
   const [archive, output] = process.argv.slice(2);
   const pkg = JSON.parse(fs.readFileSync(path.join(archive, 'package.json'), 'utf8'));
-  assert.equal(pkg.version, '0.4.0');
+  assert.equal(pkg.version, '0.4.1');
   for (const name of ['LICENSE', 'THIRD_PARTY_NOTICES.md', 'desktop-third-party.txt', 'LICENSE.electron.txt', 'LICENSES.chromium.html']) {
     assert.ok(fs.readFileSync(path.join(path.dirname(archive), 'licenses', name), 'utf8').trim(), `packaged license ${name}`);
   }
