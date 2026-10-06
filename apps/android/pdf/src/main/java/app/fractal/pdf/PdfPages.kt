@@ -87,6 +87,41 @@ class PdfPages(file: File) : Closeable {
         }
     }
 
+    /** Crops share the byte-bounded cache. Never recycle a cached bitmap: Compose can still
+     * hold it after eviction or close; Android frees it when the last consumer releases it. */
+    @Synchronized
+    fun cropBitmap(index: Int, rect: PdfRect, widthPx: Int): Bitmap {
+        require(rect.x.isFinite() && rect.y.isFinite() && rect.width.isFinite() && rect.height.isFinite())
+        val x = rect.x.coerceIn(0f, 1f)
+        val y = rect.y.coerceIn(0f, 1f)
+        val width = rect.width.coerceIn(0f, 1f - x)
+        val height = rect.height.coerceIn(0f, 1f - y)
+        require(width > 0f && height > 0f)
+        val targetWidth = widthPx.coerceIn(120, 3200)
+        val key = "crop:$index:$x:$y:$width:$height:$targetWidth"
+        bitmaps.get(key)?.let { return it }
+        renderer.openPage(index).use { page ->
+            val scale = minOf(targetWidth / (width * page.width), 6400f / (height * page.height))
+            val targetHeight = max(1, (height * page.height * scale).toInt())
+            val actualWidth = max(1, (width * page.width * scale).toInt())
+            val bitmap = Bitmap.createBitmap(actualWidth, targetHeight, Bitmap.Config.ARGB_8888)
+            try {
+                bitmap.eraseColor(Color.WHITE)
+                val matrix = android.graphics.Matrix().apply {
+                    setScale(scale, scale)
+                    postTranslate(-x * page.width * scale, -y * page.height * scale)
+                }
+                page.render(bitmap, null, matrix, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+                bitmaps.put(key, bitmap)
+                return bitmap
+            } catch (error: Throwable) {
+                bitmap.recycle() // This failed render has never been handed to a consumer.
+                throw error
+            }
+        }
+    }
+
+    @Synchronized
     override fun close() {
         bitmaps.evictAll()
         renderer.close()

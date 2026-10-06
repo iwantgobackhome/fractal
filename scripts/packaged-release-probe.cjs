@@ -9,7 +9,7 @@ const { createHash } = require('node:crypto');
 (async () => {
   const [archive, output] = process.argv.slice(2);
   const pkg = JSON.parse(fs.readFileSync(path.join(archive, 'package.json'), 'utf8'));
-  assert.equal(pkg.version, '0.3.1');
+  assert.equal(pkg.version, '0.4.0');
   const requireApp = createRequire(path.join(archive, 'package.json'));
   const ptyEntry = requireApp.resolve('@lydell/node-pty');
   assert.ok(ptyEntry.startsWith(archive + path.sep), 'PTY must resolve inside shipped app');

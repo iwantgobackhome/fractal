@@ -920,7 +920,36 @@
 /* ------------------------------------------------------------------ print (translated PDF) */
 
 .print-root {
-  display: none;
+  position: absolute;
+  left: -100000px;
+  top: 0;
+  visibility: hidden;
+}
+
+/* Apply print spacing while measuring too, before print media is activated. */
+.print-root .kr-page,
+.print-root .pdf-page {
+  margin: 0;
+}
+
+.print-root .kr-text,
+.print-root .kr-source {
+  margin-bottom: 0.5em;
+}
+
+.print-translation-slice {
+  overflow: hidden;
+}
+
+.print-translation-content {
+  transform-origin: top left;
+}
+
+.print-continuation-label {
+  height: 24px;
+  font-size: 12px;
+  line-height: 24px;
+  color: #555;
 }
 
 @media print {
@@ -934,14 +963,23 @@
   }
 
   .print-root {
-    display: block;
+    position: static;
+    visibility: visible;
   }
 
   .print-sheet {
     display: flex;
     justify-content: center;
-    gap: 6mm;
+    gap: var(--print-gap);
+    align-items: flex-start;
+    overflow: hidden;
+    break-inside: avoid;
     break-after: page;
+  }
+
+  .print-sheet__original,
+  .print-sheet__translation {
+    flex-shrink: 0;
   }
 
   .print-sheet:last-child {
@@ -1477,17 +1515,15 @@
 }
 .answer-popup__content {
   max-height: calc(100vh - 140px);
-  overflow-y: auto;
+  overflow: hidden;
 }
 .answer-popup .research-panel {
-  height: auto;
+  height: min(560px, calc(100vh - 140px));
 }
 .answer-popup .research-panel__scroll {
-  flex: none;
-  overflow: visible;
+  flex: 1;
+  overflow: auto;
 }
-.answer-popup .research-language,
-.answer-popup .research-new,
 .answer-popup .research-panel > header {
   display: none;
 }
@@ -1500,4 +1536,131 @@
 .selection-live {
   border: 1px solid var(--c-accent);
   z-index: 5;
+}
+
+/* Conversation layout: the composer is independent of retained turns. */
+.research-resize {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 7px;
+  cursor: col-resize;
+  touch-action: none;
+  z-index: 5;
+}
+.research-resize:hover,
+.research-resize:focus-visible {
+  background: var(--c-accent);
+  outline: none;
+  opacity: 0.5;
+}
+.chat-dock.is-open:has(.research-resize) {
+  transition: none;
+}
+.research-turn {
+  border: 0;
+  padding: 16px 0 6px;
+}
+.research-turn__user {
+  margin-left: 28px;
+  padding: 10px 12px;
+  background: var(--c-surface);
+  border: 1px solid var(--c-rule);
+  border-radius: 12px 12px 2px 12px;
+}
+.research-turn__user p {
+  margin: 0;
+  white-space: pre-wrap;
+  font-size: 13px;
+}
+.research-turn__quote {
+  margin-bottom: 8px;
+  color: var(--c-muted);
+}
+.research-turn__quote summary {
+  cursor: pointer;
+  font-size: 11px;
+}
+.research-turn__answer {
+  padding: 10px 0;
+}
+.research-turn__actions {
+  display: flex;
+  gap: 6px;
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+.research-turn:hover .research-turn__actions,
+.research-turn:focus-within .research-turn__actions {
+  opacity: 1;
+}
+.research-turn__actions button {
+  border: 0;
+  background: transparent;
+  font-size: 15px;
+  padding: 4px 7px;
+}
+.research-attachment {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 9px;
+  background: var(--c-surface);
+  border: 1px solid var(--c-rule);
+  border-radius: 8px;
+}
+.research-attachment span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+.research-attachment button {
+  border: 0;
+  background: transparent;
+  font-size: 17px;
+}
+.research-compose-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.research-compose-row .selector {
+  min-width: 0;
+  max-width: 75%;
+}
+.research-compose-row > button {
+  flex: none;
+}
+.research-thread {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  width: 100%;
+  gap: 6px;
+  border: 0;
+  border-bottom: 1px solid var(--c-rule);
+  padding: 16px 0;
+  background: none;
+  color: var(--c-ink);
+}
+.research-thread strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+.research-thread span {
+  color: var(--c-muted);
+  font-size: 11px;
+}
+.settings-custom-language {
+  padding: 10px 0;
+}
+@media (hover: none) {
+  .research-turn__actions {
+    opacity: 1;
+  }
 }

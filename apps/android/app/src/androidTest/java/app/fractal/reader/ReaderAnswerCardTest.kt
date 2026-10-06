@@ -78,6 +78,12 @@ class ReaderAnswerCardTest {
         compose.waitUntil(15000) { runBlocking { app.database.reader().observeRequests(key).first().any {
             it.kind == "question" && it.requestId !in previous && it.bodyJson.contains("Why is mass squared?")
         } } }
+        val followUp = runBlocking { app.database.reader().observeRequests(key).first().first {
+            it.kind == "question" && it.bodyJson.contains("Why is mass squared?")
+        } }
+        assertEquals(body["threadId"], WireJson.format.parseToJsonElement(followUp.bodyJson).jsonObject["threadId"])
+        compose.onNodeWithTag("reader-answer-question").assertTextContains("", substring = false)
+        compose.onNodeWithText("Energy is conserved. [p.1]").assertExists()
         compose.onNodeWithTag("reader-answer-close").performClick()
         compose.onNodeWithTag("reader-answer-card").assertDoesNotExist()
     }

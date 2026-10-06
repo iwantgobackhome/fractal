@@ -59,6 +59,8 @@ export const historyEntrySchema = z.object({
       selectedText: z.string().optional(),
       explanationKind: z.enum(['figure', 'equation', 'table', 'text']).optional(),
       selection: modelSelectionSchema.optional(),
+      /** Turns sharing a threadId form one conversation, oldest first by createdAt. */
+      threadId: z.string().min(1).max(100).optional(),
     })
     .refine(provenanceMatchesPage, 'layoutRange must match the physical page'),
   answer: aiAnswerSchema.nullable(),

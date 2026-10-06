@@ -1,0 +1,87 @@
+
+app.fractal.reader.ReaderQuestionThreadTest:s_glBindAttribLocation: bind attrib 0 name position
+s_glBindAttribLocation: bind attrib 1 name color
+s_glBindAttribLocation: bind attrib 2 name localCoord
+..
+app.fractal.reader.ReaderAnswerCardTest:.
+app.fractal.reader.ReaderInteractionTest:.
+app.fractal.reader.ReaderStageTest:
+Error in genuineCachedRangeCopyQuoteAndHandles(app.fractal.reader.ReaderStageTest):
+java.lang.AssertionError: Failed to inject touch input.
+Reason: Expected exactly '1' node but found '2' nodes that satisfy: (Text + InputText + EditableText contains '질문' (ignoreCase: false))
+Nodes found:
+1) Node #521 at (l=906.0, t=84.0, r=1080.0, b=204.0)px
+Focused = 'false'
+Role = 'Button'
+Text = '[질문]'
+Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+MergeDescendants = 'true'
+Has 9 siblings
+2) Node #626 at (l=348.0, t=2208.0, r=522.0, b=2328.0)px
+Focused = 'false'
+Role = 'Button'
+Text = '[질문]'
+Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+MergeDescendants = 'true'
+Has 5 siblings
+
+	at androidx.compose.ui.test.SemanticsNodeInteraction.fetchOneOrThrow(SemanticsNodeInteraction.kt:178)
+	at androidx.compose.ui.test.SemanticsNodeInteraction.fetchOneOrThrow$default(SemanticsNodeInteraction.kt:150)
+	at androidx.compose.ui.test.SemanticsNodeInteraction.fetchSemanticsNode(SemanticsNodeInteraction.kt:84)
+	at androidx.compose.ui.test.ActionsKt.performTouchInput(Actions.kt:389)
+	at androidx.compose.ui.test.AndroidActions.performClickImpl(Actions.android.kt:23)
+	at androidx.compose.ui.test.ActionsKt.performClick(Actions.kt:60)
+	at app.fractal.reader.ReaderStageTest$genuineCachedRangeCopyQuoteAndHandles$1.invokeSuspend(ReaderStageTest.kt:195)
+	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+	at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:101)
+	at kotlinx.coroutines.EventLoopImplBase.processNextEvent(EventLoop.common.kt:263)
+	at kotlinx.coroutines.BlockingCoroutine.joinBlocking(Builders.kt:95)
+	at kotlinx.coroutines.BuildersKt__BuildersKt.runBlocking(Builders.kt:69)
+	at kotlinx.coroutines.BuildersKt.runBlocking(Unknown Source:1)
+	at kotlinx.coroutines.BuildersKt__BuildersKt.runBlocking$default(Builders.kt:47)
+	at kotlinx.coroutines.BuildersKt.runBlocking$default(Unknown Source:1)
+	at app.fractal.reader.ReaderStageTest.genuineCachedRangeCopyQuoteAndHandles(ReaderStageTest.kt:171)
+
+
+Time: 19.705
+There was 1 failure:
+1) genuineCachedRangeCopyQuoteAndHandles(app.fractal.reader.ReaderStageTest)
+java.lang.AssertionError: Failed to inject touch input.
+Reason: Expected exactly '1' node but found '2' nodes that satisfy: (Text + InputText + EditableText contains '질문' (ignoreCase: false))
+Nodes found:
+1) Node #521 at (l=906.0, t=84.0, r=1080.0, b=204.0)px
+Focused = 'false'
+Role = 'Button'
+Text = '[질문]'
+Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+MergeDescendants = 'true'
+Has 9 siblings
+2) Node #626 at (l=348.0, t=2208.0, r=522.0, b=2328.0)px
+Focused = 'false'
+Role = 'Button'
+Text = '[질문]'
+Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+MergeDescendants = 'true'
+Has 5 siblings
+
+	at androidx.compose.ui.test.SemanticsNodeInteraction.fetchOneOrThrow(SemanticsNodeInteraction.kt:178)
+	at androidx.compose.ui.test.SemanticsNodeInteraction.fetchOneOrThrow$default(SemanticsNodeInteraction.kt:150)
+	at androidx.compose.ui.test.SemanticsNodeInteraction.fetchSemanticsNode(SemanticsNodeInteraction.kt:84)
+	at androidx.compose.ui.test.ActionsKt.performTouchInput(Actions.kt:389)
+	at androidx.compose.ui.test.AndroidActions.performClickImpl(Actions.android.kt:23)
+	at androidx.compose.ui.test.ActionsKt.performClick(Actions.kt:60)
+	at app.fractal.reader.ReaderStageTest$genuineCachedRangeCopyQuoteAndHandles$1.invokeSuspend(ReaderStageTest.kt:195)
+	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+	at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:101)
+	at kotlinx.coroutines.EventLoopImplBase.processNextEvent(EventLoop.common.kt:263)
+	at kotlinx.coroutines.BlockingCoroutine.joinBlocking(Builders.kt:95)
+	at kotlinx.coroutines.BuildersKt__BuildersKt.runBlocking(Builders.kt:69)
+	at kotlinx.coroutines.BuildersKt.runBlocking(Unknown Source:1)
+	at kotlinx.coroutines.BuildersKt__BuildersKt.runBlocking$default(Builders.kt:47)
+	at kotlinx.coroutines.BuildersKt.runBlocking$default(Unknown Source:1)
+	at app.fractal.reader.ReaderStageTest.genuineCachedRangeCopyQuoteAndHandles(ReaderStageTest.kt:171)
+
+FAILURES!!!
+Tests run: 5,  Failures: 1
+
+

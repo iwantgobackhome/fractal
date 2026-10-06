@@ -430,6 +430,7 @@ export const en: Messages = {
     copiedLong: 'Copied',
     copyFailedLong: 'Could not copy',
     pageOriginal: 'Page {page}, original',
+    printContinuation: 'p.{page} (continued)',
     pageLabel: 'Page {page}',
     blockOriginal: '{kind}, original',
     blockOnPage: 'Page {page} {kind}',
