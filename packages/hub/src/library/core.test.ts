@@ -502,11 +502,11 @@ describe('SQLite library', () => {
         handleLibrary(
           'POST',
           ['api', 'papers', 'upload'],
-          request(undefined, { 'content-type': 'application/pdf', 'content-length': String(100 * 1024 * 1024 + 1) }),
+          request(undefined, { 'content-type': 'application/pdf', 'content-length': String(300 * 1024 * 1024 + 1) }),
           ctx,
         ),
       );
-      expect(oversized).toMatchObject({ status: 413, error: { code: 'TOO_LARGE', message: '100MB보다 큰 PDF는 올릴 수 없습니다.' } });
+      expect(oversized).toMatchObject({ status: 413, error: { code: 'TOO_LARGE', message: '300 MiB보다 큰 PDF는 올릴 수 없습니다.' } });
     } finally {
       await new Promise<void>((resolve) => server.close(() => resolve()));
       store.db.close();

@@ -60,7 +60,7 @@ export class StructureService {
     if (this.stopped) return;
     if (this.running.has(key)) return;
     if (!force && this.read(key).status === 'ready') return;
-    if (!this.store.getPdf(key)) return;
+    if (!this.store.getPaper(key)?.pdfSha256) return;
     this.store.db
       .prepare('INSERT INTO structure_state VALUES(?,?,?) ON CONFLICT(paper_key) DO UPDATE SET version=excluded.version,status=excluded.status')
       .run(key, STRUCTURE_VERSION, 'running');

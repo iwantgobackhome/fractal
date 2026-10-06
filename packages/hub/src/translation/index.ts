@@ -262,7 +262,9 @@ export class TranslationPipeline {
       const paper = this.store.getPaper(job.paperKey);
       if (paper === null) return this.jobs.getJob(jobId) ?? job;
       const context = paperContext(paper);
-      const blocks = this.store.listBlocks(job.paperKey);
+      const blocks = this.store
+        .listBlocks(job.paperKey, job.pageRange)
+        .filter((block) => !job.pageRange || (pageNumberOf(block) >= job.pageRange.start && pageNumberOf(block) <= job.pageRange.end));
 
       // Untranslatable blocks (figure/table/equation/unsupported) are recorded once, up
       // front, without ever going out on the wire: they are a permanent, deliberate gap,

@@ -17,6 +17,7 @@ import { invalidInput } from '../../store/errors';
 export type Result =
   | { kind: 'json'; status: number; data: unknown }
   | { kind: 'bytes'; status: number; body: Buffer; contentType: string; headers?: Record<string, string> }
+  | { kind: 'file'; status: number; path: string; from: number; to: number; contentType: string; headers?: Record<string, string> }
   | { kind: 'sse'; status: 200; events: AsyncIterable<AiSseEvent> };
 
 /** Per-request facts every route handler may use: who is asking and the parsed URL. */

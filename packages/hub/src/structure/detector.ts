@@ -1,3 +1,4 @@
+import { yieldPdfPage, decodePdfPage } from '../pdf/limits';
 import { createHash } from 'node:crypto';
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
 import type { Block, CitationMarker, PaperStructure, ReferenceEntry, StructureBox, StructureItem } from '@fractal/shared';
@@ -311,25 +312,47 @@ export class PdfJsStructureDetector implements StructureDetector {
   async detect(bytes: Uint8Array, paperKey: string, existingBlocks?: Block[]): Promise<PaperStructure> {
     const blocks = existingBlocks ?? (await extractPdf(bytes, paperKey)).blocks;
     const references = parseReferences(blocks);
+    // Books already have page-local figure/equation geometry from ingestion. Reuse it
+    // incrementally instead of decoding every image twice and retaining all text runs.
+    const pageBlocks = new Map<number, Block[]>();
+    for (const block of blocks) {
+      const page = block.regions[0]?.page ?? 1;
+      const list = pageBlocks.get(page) ?? [];
+      list.push(block);
+      pageBlocks.set(page, list);
+    }
+    if (pageBlocks.size > 300) {
+      const items: StructureItem[] = [];
+      for (const local of pageBlocks.values()) {
+        await new Promise<void>((resolve) => setTimeout(resolve, 5));
+        items.push(...itemsFromBlocks(local));
+      }
+      return { version: STRUCTURE_VERSION, status: 'ready', items, references, markers: [] };
+    }
     const task = getDocument({ data: new Uint8Array(bytes), useSystemFonts: true });
     const pieces: TextPiece[] = [];
     try {
       const pdf = await task.promise;
       for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
-        const page = await pdf.getPage(pageNumber);
-        await page.getOperatorList();
-        const content = await page.getTextContent();
-        const box = page.view;
-        for (const item of content.items) {
-          if (!('str' in item) || !('transform' in item) || !item.str) continue;
-          try {
-            const style = content.styles[item.fontName] ?? {};
-            const region = textItemRegion(item, box, pageNumber, style);
-            const font = page.commonObjs.has(item.fontName) ? (page.commonObjs.get(item.fontName) as { name?: string }) : null;
-            pieces.push({ text: item.str, box: region, page: pageNumber, baseline: region.y + region.height / 2, font: font?.name ?? item.fontName });
-          } catch {
-            continue;
+        await yieldPdfPage();
+        const page = await decodePdfPage(pdf.getPage(pageNumber));
+        try {
+          await decodePdfPage(page.getOperatorList());
+          const content = await decodePdfPage(page.getTextContent());
+          const box = page.view;
+          for (const item of content.items) {
+            if (!('str' in item) || !('transform' in item) || !item.str) continue;
+            try {
+              const style = content.styles[item.fontName] ?? {};
+              const region = textItemRegion(item, box, pageNumber, style);
+              const font = page.commonObjs.has(item.fontName) ? (page.commonObjs.get(item.fontName) as { name?: string }) : null;
+              pieces.push({ text: item.str, box: region, page: pageNumber, baseline: region.y + region.height / 2, font: font?.name ?? item.fontName });
+            } catch {
+              continue;
+            }
           }
+        } finally {
+          page.cleanup();
         }
       }
     } finally {

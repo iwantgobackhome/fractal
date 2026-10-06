@@ -1,3 +1,4 @@
+import { largePdfResult } from './large-pdf';
 import { bookmark, linkPdf } from '../../scholarly/bookmarks';
 import { openPublication } from '../../publication/open';
 import type { IncomingMessage } from 'node:http';
@@ -53,7 +54,7 @@ export async function handleLibrary(method: string, segments: string[], request:
           .toLowerCase() !== 'application/pdf'
       )
         throw unsupportedMedia('Upload application/pdf');
-      return json(await linkPdf(ctx.store, s[2]!, await body(request, 50 * 1024 * 1024, 'PDF exceeds 50 MiB')), 201);
+      return json(await linkPdf(ctx.store, s[2]!, await body(request, 300 * 1024 * 1024, 'PDF exceeds 300 MiB')), 201);
     }
     if (s.length === 3 && s[2] === 'metadata' && method === 'POST')
       return json(ctx.store.publishMetadata(parseRequest(libraryRecordSchema, await jsonBody(request))), 201);
@@ -141,8 +142,8 @@ export async function handleLibrary(method: string, segments: string[], request:
     const type = String(request.headers['content-type'] ?? '');
     const media = type.split(';')[0]?.trim().toLowerCase();
     if (media !== 'application/pdf' && media !== 'multipart/form-data') throw unsupportedMedia('PDF 파일만 올릴 수 있습니다.');
-    const max = media === 'multipart/form-data' ? 101 * 1024 * 1024 : 100 * 1024 * 1024;
-    const raw = await body(request, max, '100MB보다 큰 PDF는 올릴 수 없습니다.');
+    const max = media === 'multipart/form-data' ? 301 * 1024 * 1024 : 300 * 1024 * 1024;
+    const raw = await body(request, max, '300 MiB보다 큰 PDF는 올릴 수 없습니다.');
     const pdf = pdfBytes(raw, type);
     return json({ paper: await ingestPdf(ctx.store, pdf, undefined, ctx.fetcher) }, 201);
   }
@@ -153,6 +154,8 @@ export async function handleLibrary(method: string, segments: string[], request:
     return json({ paper: stored ?? (await ingestUrl(ctx.store, input, ctx.acquirer, ctx.fetcher)) });
   }
   if (s[1] === 'papers' && s.length === 4 && s[3] === 'pdf' && method === 'GET') {
+    const streamed = await largePdfResult(ctx.store, s[2]!, request);
+    if (streamed) return streamed;
     const bytes = ctx.store.getPdf(s[2]!);
     if (!bytes) return undefined;
     const sha = createHash('sha256').update(bytes).digest('hex');

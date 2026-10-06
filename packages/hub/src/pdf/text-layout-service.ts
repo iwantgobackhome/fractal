@@ -24,7 +24,7 @@ export class PdfTextLayoutService {
     if (this.closing) throw busy('Text geometry service is closing');
     const bytes = this.store.getPdf(key);
     if (!bytes) return unavailable(key, 'no_pdf', 'No local PDF; import or acquire the PDF before requesting offline text geometry');
-    if (bytes.length > TEXT_LAYOUT_LIMITS.bytes) return unavailable(key, 'too_large', 'Local PDF exceeds the 50 MiB geometry limit');
+    if (bytes.length > TEXT_LAYOUT_LIMITS.bytes) return unavailable(key, 'too_large', 'Local PDF exceeds the 300 MiB geometry limit');
     const digest = sha256(bytes),
       identity = `${digest}:${TEXT_LAYOUT_VERSION}:${page}`;
     const cached = this.store.db.prepare('SELECT data FROM pdf_text_pages WHERE pdf_hash=? AND version=? AND page=?').get(digest, TEXT_LAYOUT_VERSION, page) as
