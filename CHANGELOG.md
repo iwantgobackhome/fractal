@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0 — 2026-10-06
+
+Translation: vector figures are kept whole with their labels, bold abstracts and two-line titles stay together, accents and inline math are preserved, exported PDFs fit each original page on one sheet, and the Android translated view shows figures, tables and equations. Questions are conversations with follow-up context, quotes attach to one question, the input is reduced to a model picker, the answer language moved to Settings, and the desktop side panel can be resized. Android versionCode 9. See [release notes](docs/releases/0.4.0.md).
+
 ## 0.3.1 — 2026-10-06
 
 The "News Papers" wordmark stays on one line in the desktop sidebar. Android versionCode 8. See [release notes](docs/releases/0.3.1.md).
