@@ -39,6 +39,8 @@ export function ResearchPanel({
   checkSource,
   popup = false,
   answerLanguage,
+  threadId,
+  onOpenThread,
 }: {
   hub: HubApi;
   paperKey: string;
@@ -52,11 +54,13 @@ export function ResearchPanel({
   checkSource(provenance?: OriginalProvenance): Promise<ContextSourceStatus>;
   popup?: boolean;
   answerLanguage?: string;
+  threadId?: string;
+  onOpenThread?(rows: HistoryEntry[]): void;
 }): JSX.Element {
   const ko = useLanguage() === 'ko',
     say = (en: string, kr: string) => (ko ? kr : en);
   const key = `fractal.research.${paperKey}`;
-  const [draft, setDraft] = useState(() => readDraft(key, popup));
+  const [draft, setDraft] = useState(() => ({ ...readDraft(key, popup), ...(threadId ? { threadId } : {}) }));
   const [entries, setEntries] = useState<HistoryEntry[]>([]),
     [providers, setProviders] = useState<ProvidersResult | null>(null);
   const [error, setError] = useState<string | null>(null),
@@ -332,6 +336,10 @@ export function ResearchPanel({
                 className="research-thread"
                 key={threadKey(rows[0])}
                 onClick={() => {
+                  if (onOpenThread) {
+                    onOpenThread(rows);
+                    return;
+                  }
                   setDraft((d) => ({ ...d, threadId: threadKey(rows[0]), text: '', context: null }));
                   atBottom.current = true;
                   onQuestion();
@@ -363,17 +371,19 @@ export function ResearchPanel({
               </p>
             ) : null}
           </div>
-          <button
-            className="research-new"
-            onClick={() => {
-              setDraft((d) => reduceDraft(d, { type: 'new', threadId: crypto.randomUUID() }));
-              setError(null);
-              atBottom.current = true;
-              requestAnimationFrame(() => textarea.current?.focus());
-            }}
-          >
-            {say('+ New question', '+ 새 질문')}
-          </button>
+          {!popup ? (
+            <button
+              className="research-new"
+              onClick={() => {
+                setDraft((d) => reduceDraft(d, { type: 'new', threadId: crypto.randomUUID() }));
+                setError(null);
+                atBottom.current = true;
+                requestAnimationFrame(() => textarea.current?.focus());
+              }}
+            >
+              {say('+ New question', '+ 새 질문')}
+            </button>
+          ) : null}
           <form
             onSubmit={(e) => {
               e.preventDefault();

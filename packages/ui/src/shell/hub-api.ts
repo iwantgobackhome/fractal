@@ -25,6 +25,7 @@ import type {
   Folder,
   ReadProgress,
   HistoryEntry,
+  AnswerPlacement,
   PdfTextLayout,
   FeedSettings,
   PublicationBookmark,
@@ -381,6 +382,10 @@ export class HubApi {
 
   textLayout(paperKey: string, page: number): Promise<PdfTextLayout | null> {
     return this.call(`/api/papers/${encodeURIComponent(paperKey)}/text-layout?page=${page}`);
+  }
+
+  saveAnswerPlacement(paperKey: string, id: string, placement: AnswerPlacement): Promise<HistoryEntry | null> {
+    return this.call(`/api/papers/${encodeURIComponent(paperKey)}/history/${encodeURIComponent(id)}/placement`, { method: 'PUT', body: { placement } });
   }
 
   async history(paperKey: string): Promise<HistoryEntry[] | null> {
