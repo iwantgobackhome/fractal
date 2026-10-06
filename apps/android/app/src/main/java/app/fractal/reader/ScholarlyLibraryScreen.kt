@@ -97,7 +97,7 @@ internal fun ScholarlyLibraryScreen(app: ReaderApplication, onSettings: () -> Un
         Column(Modifier.fillMaxSize()) {
             Column {
             Row(Modifier.fillMaxWidth().padding(horizontal = if (phone) 16.dp else 24.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-                Image(painterResource(R.drawable.branch_mark), contentDescription = "Fractal", Modifier.size(32.dp),
+                Image(painterResource(R.drawable.branch_mark), contentDescription = "News Papers", Modifier.size(32.dp),
                     colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(colors.ink))
                 Spacer(Modifier.width(10.dp))
                 Text(libraryText("Research library", "연구 서재"), Modifier.weight(1f), fontFamily = ScholarlySerif,

@@ -3,8 +3,8 @@
     <string name="show_reader_controls">읽기 도구 표시</string>
     <string name="clear_quote">선택 지우기</string>
     <string name="region_selection_hint">이 영역에는 선택 가능한 텍스트가 없습니다. 형광펜으로 표시하거나 메모를 추가할 수 있습니다.</string>
-    <string name="app_name">Fractal</string>
-    <string name="connect_subtitle">PC의 Fractal과 연결합니다</string>
+    <string name="app_name">News Papers</string>
+    <string name="connect_subtitle">PC의 News Papers와 연결합니다</string>
     <string name="hub_address">허브 주소</string>
     <string name="connection_code">연결 코드</string>
     <string name="connect">연결</string>
@@ -48,7 +48,7 @@
     <string name="language_intro_title">읽기 언어를 선택하세요</string>
     <string name="language_intro_subtitle">설정에서 언제든 바꿀 수 있습니다.</string>
     <string name="continue_label">계속</string>
-    <string name="app_version">Fractal · 0.1</string>
+    <string name="app_version">News Papers · 0.1</string>
     <string name="more_authors">%1$s 외 %2$d명</string>
     <string name="offline_indicator">↓</string>
     <string name="back_symbol">‹</string>
@@ -80,7 +80,7 @@
     <string name="question_failed">질문 실패</string>
     <string name="pairing_enable_network">연결하려면 PC에서 LAN 또는 Tailscale을 활성화해 주세요.</string>
     <string name="connected_sync_failed">연결되었습니다. 첫 동기화에 실패하여 다시 시도합니다: %1$s</string>
-    <string name="sync_large_item_pending">Hub가 큰 동기화 항목을 거부하여 이 기기에 보관 중입니다. PC의 Fractal을 업데이트하거나 항목 크기를 줄여 주세요. 다른 항목은 계속 동기화됩니다.</string>
+    <string name="sync_large_item_pending">Hub가 큰 동기화 항목을 거부하여 이 기기에 보관 중입니다. PC의 News Papers를 업데이트하거나 항목 크기를 줄여 주세요. 다른 항목은 계속 동기화됩니다.</string>
     <string name="update_check">업데이트 확인</string>
     <string name="update_checking">업데이트 확인 중…</string>
     <string name="update_available">새 버전 %1$s</string>
@@ -92,5 +92,5 @@
     <string name="update_install">업데이트 설치</string>
     <string name="update_error">업데이트하지 못했습니다. 나중에 다시 시도해 주세요.</string>
     <string name="update_current">최신 버전을 사용하고 있습니다.</string>
-    <string name="update_permission">Fractal의 앱 설치를 허용한 다음 다시 설치해 주세요.</string>
+    <string name="update_permission">News Papers의 앱 설치를 허용한 다음 다시 설치해 주세요.</string>
 </resources>

@@ -108,7 +108,7 @@ export async function fetchPublicImage(
       fetcher(url, {
         redirect: 'manual',
         signal: scopedSignal,
-        headers: { 'User-Agent': 'Fractal/0.1 (personal research reader)' },
+        headers: { 'User-Agent': 'News-Papers/0.1 (personal research reader)' },
       }),
       scopedSignal,
     );
@@ -162,7 +162,7 @@ export async function fetchPublicArticle(
       fetcher(url, {
         redirect: 'manual',
         signal: scopedSignal,
-        headers: { 'User-Agent': 'Fractal/0.1 (personal research reader)' },
+        headers: { 'User-Agent': 'News-Papers/0.1 (personal research reader)' },
       }),
       scopedSignal,
     );

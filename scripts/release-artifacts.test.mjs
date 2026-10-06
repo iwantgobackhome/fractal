@@ -29,21 +29,22 @@ test('release manifests preserve update metadata and reject unknown or missing a
     execFileSync('git', ['add', 'package.json'], { cwd: directory });
     execFileSync('git', ['-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid', 'commit', '-qm', 'fixture'], { cwd: directory });
     const platforms = {
-      'win32-x64': [`Fractal-${version}-win-x64.exe`, 'latest.yml', `Fractal-${version}-win-x64.exe.blockmap`],
+      'win32-x64': [`News-Papers-${version}-win-x64.exe`, 'latest.yml', `News-Papers-${version}-win-x64.exe.blockmap`],
       'linux-x64': [
-        `Fractal-${version}-linux-x64.AppImage`,
-        `Fractal-${version}-linux-x64.deb`,
+        `News-Papers-${version}-linux-x64.AppImage`,
+        `News-Papers-${version}-linux-x64.deb`,
         'latest-linux.yml',
-        `Fractal-${version}-linux-x64.AppImage.blockmap`,
-        `Fractal-${version}-linux-x64.deb.blockmap`,
+        `News-Papers-${version}-linux-x64.AppImage.blockmap`,
+        `News-Papers-${version}-linux-x64.deb.blockmap`,
       ],
-      'darwin-arm64': [`Fractal-${version}-mac-arm64.dmg`],
-      'darwin-x64': [`Fractal-${version}-mac-x64.dmg`],
+      'darwin-arm64': [`News-Papers-${version}-mac-arm64.dmg`],
+      'darwin-x64': [`News-Papers-${version}-mac-x64.dmg`],
     };
     for (const [label, files] of Object.entries(platforms)) {
       for (const name of files) await put(`dist/installer/${name}`);
       const [platform, arch] = label.split('-');
-      const bundle = platform === 'win32' ? 'win-unpacked' : platform === 'linux' ? 'linux-unpacked' : `${arch === 'arm64' ? 'mac-arm64' : 'mac'}/Fractal.app`;
+      const bundle =
+        platform === 'win32' ? 'win-unpacked' : platform === 'linux' ? 'linux-unpacked' : `${arch === 'arm64' ? 'mac-arm64' : 'mac'}/News Papers.app`;
       await put(`dist/installer/${bundle}/resources/fixture`);
       await put(
         `dist/release/${label}/smoke-${label}.json`,
@@ -58,8 +59,8 @@ test('release manifests preserve update metadata and reject unknown or missing a
       'dist/release/android/android-verification.json',
       JSON.stringify({
         version,
-        versionCode: 6,
-        applicationId: 'app.fractal.reader',
+        versionCode: 7,
+        applicationId: 'app.newspapers.reader',
         debugSigned: true,
         signatureVerified: true,
         certificateSha256: 'ab'.repeat(32),
@@ -75,7 +76,36 @@ test('release manifests preserve update metadata and reject unknown or missing a
     let result = run('verify-release-artifacts.mjs', aggregate);
     assert.equal(result.status, 0, result.stderr);
     assert.match(await readFile(join(aggregate, 'SHA256SUMS.txt'), 'utf8'), /latest-linux\.yml/);
+    const legacyApk = `Fractal-${version}-android-debug.apk`;
+    assert.deepEqual(await readFile(join(aggregate, legacyApk)), await readFile(join(aggregate, `News-Papers-${version}-android-debug.apk`)));
+    const androidChecksums = join(aggregate, 'SHA256SUMS-android.txt');
+    const androidOriginal = await readFile(androidChecksums, 'utf8');
+    assert.ok(androidOriginal.includes(legacyApk));
+    assert.ok((await readFile(join(aggregate, 'SHA256SUMS.txt'), 'utf8')).includes(legacyApk));
     await rm(join(aggregate, 'SHA256SUMS.txt'));
+    await writeFile(
+      androidChecksums,
+      androidOriginal
+        .split('\n')
+        .filter((line) => !line.endsWith(`  ${legacyApk}`))
+        .join('\n'),
+    );
+    result = run('verify-release-artifacts.mjs', aggregate);
+    assert.notEqual(result.status, 0);
+    assert.ok(result.stderr.includes(`missing ${legacyApk} in android`), result.stderr);
+    await writeFile(join(aggregate, legacyApk), 'different APK');
+    await writeFile(
+      androidChecksums,
+      androidOriginal
+        .split('\n')
+        .map((line) => (line.endsWith(`  ${legacyApk}`) ? `${hash('different APK')}  ${legacyApk}` : line))
+        .join('\n'),
+    );
+    result = run('verify-release-artifacts.mjs', aggregate);
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /legacy Android alias must be identical/);
+    await copyFile(join(aggregate, `News-Papers-${version}-android-debug.apk`), join(aggregate, legacyApk));
+    await writeFile(androidChecksums, androidOriginal);
     await writeFile(join(aggregate, 'unknown.txt'), 'unknown');
     result = run('verify-release-artifacts.mjs', aggregate);
     assert.notEqual(result.status, 0);
@@ -87,7 +117,7 @@ test('release manifests preserve update metadata and reject unknown or missing a
     assert.notEqual(result.status, 0);
     assert.match(result.stderr, /unexpected file unknown\.txt in linux-x64/);
     await rm(join(aggregate, 'unknown.txt'));
-    for (const name of ['latest-linux.yml', `Fractal-${version}-linux-x64.AppImage.blockmap`]) {
+    for (const name of ['latest-linux.yml', `News-Papers-${version}-linux-x64.AppImage.blockmap`]) {
       await writeFile(
         checksumFile,
         original
@@ -130,6 +160,8 @@ test('desktop updates are gated to supported installed formats and authorize eve
     const app = Object.assign(new EventEmitter(), {
       isPackaged: scenario.packaged,
       setName() {},
+      setPath() {},
+      getPath: () => '/fake-app-data',
       setAppUserModelId() {},
       requestSingleInstanceLock: () => true,
       whenReady: () => Promise.resolve(),
@@ -161,19 +193,31 @@ test('desktop updates are gated to supported installed formats and authorize eve
       app,
       Tray,
       Menu: { buildFromTemplate: (items) => items },
-      nativeImage: { createFromPath() {} },
+      nativeImage: {
+        createFromPath() {
+          return {
+            setTemplateImage(value) {
+              assert.equal(value, true);
+              assert.equal(scenario.platform, 'darwin');
+            },
+          };
+        },
+      },
       BrowserWindow: { fromWebContents: () => ({ isDestroyed: () => false }) },
       ipcMain: { handle: (channel, handler) => handlers.set(channel, handler) },
       shell: { openExternal: async (url) => opened.push(url) },
     };
     const opened = [];
     let latest = { tag_name: 'v0.2.3', draft: false, prerelease: false };
+    let fetchError;
     runInNewContext(source, {
       __dirname: join(root, 'apps/desktop'),
       URL,
       AbortSignal,
+      Error,
       fetch: async (url) => {
-        assert.equal(url, 'https://api.github.com/repos/iwantgobackhome/fractal/releases/latest');
+        assert.equal(url, 'https://api.github.com/repos/iwantgobackhome/news-papers/releases/latest');
+        if (fetchError) throw fetchError;
         return { ok: true, json: async () => latest };
       },
       process: {
@@ -199,6 +243,7 @@ test('desktop updates are gated to supported installed formats and authorize eve
       },
       clearInterval() {},
       require(name) {
+        if (name === './data-migration.cjs') return { migrateDesktopData() {} };
         if (name === 'electron') return electron;
         if (name === 'node:fs')
           return {
@@ -230,14 +275,16 @@ test('desktop updates are gated to supported installed formats and authorize eve
       assert.equal(intervals[0].ms, 6 * 60 * 60 * 1000);
       const trusted = { sender: { getURL: () => 'http://localhost:4567/' } };
       await assert.rejects(handlers.get('fractal:updates:check')({ sender: { getURL: () => 'https://untrusted.example/' } }), /Updates are unavailable/);
-      await handlers.get('fractal:updates:check')(trusted);
+      assert.equal((await handlers.get('fractal:updates:check')(trusted)).status, 'current');
       assert.equal(await handlers.get('fractal:updates:state')(trusted), undefined, 'same version is not offered');
       latest = { tag_name: 'v0.2.10', draft: false, prerelease: false };
-      await handlers.get('fractal:updates:check')(trusted);
+      assert.equal((await handlers.get('fractal:updates:check')(trusted)).version, '0.2.10');
       assert.deepEqual({ ...(await handlers.get('fractal:updates:state')(trusted)) }, { type: 'update-available', version: '0.2.10', manual: true });
       await handlers.get('fractal:updates:download')(trusted);
-      assert.deepEqual(opened, ['https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.10']);
+      assert.deepEqual(opened, ['https://github.com/iwantgobackhome/news-papers/releases/tag/v0.2.10']);
       await handlers.get('fractal:updates:install')(trusted);
+      fetchError = new Error('Network unavailable');
+      assert.deepEqual({ ...(await handlers.get('fractal:updates:check')(trusted)) }, { status: 'error', error: 'Network unavailable' });
       continue;
     }
     if (!scenario.enabled) {
@@ -281,7 +328,7 @@ test('preload freezes the update API, replays state and removes subscriptions', 
     let bridge;
     const ipc = Object.assign(new EventEmitter(), { invoke: async () => ({ type: 'update-downloaded' }) });
     runInNewContext(source, {
-      process: { argv: enabled ? ['--fractal-updates'] : [] },
+      process: { argv: ['--fractal-version=7.8.9', ...(enabled ? ['--fractal-updates'] : [])] },
       require: () => ({
         contextBridge: {
           exposeInMainWorld: (_name, api) => {
@@ -292,6 +339,7 @@ test('preload freezes the update API, replays state and removes subscriptions', 
       }),
     });
     assert.ok(Object.isFrozen(bridge));
+    assert.equal(bridge.version, '7.8.9');
     assert.equal(!!bridge.updates, enabled);
     if (!enabled) continue;
     assert.ok(Object.isFrozen(bridge.updates));

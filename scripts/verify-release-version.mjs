@@ -21,7 +21,8 @@ for (const name of ['shared', 'hub', 'ui']) {
 }
 const android = readFileSync('apps/android/app/build.gradle.kts', 'utf8');
 assert.equal(android.match(/versionName\s*=\s*"([^"]+)"/)[1], root.version);
-assert.equal(Number(android.match(/versionCode\s*=\s*(\d+)/)[1]), 6);
+assert.match(android, /applicationId\s*=\s*"app\.newspapers\.reader"/);
+assert.equal(Number(android.match(/versionCode\s*=\s*(\d+)/)[1]), 7);
 if (process.env.GITHUB_REF_TYPE === 'tag') {
   assert.equal(process.env.GITHUB_REF_NAME, `v${root.version}`, 'tag must exactly match every package');
 }
@@ -32,4 +33,4 @@ if (process.env.GITHUB_OUTPUT) {
   const { appendFileSync } = await import('node:fs');
   appendFileSync(process.env.GITHUB_OUTPUT, `version=${root.version}\n`);
 }
-console.log(`Release versions verified: ${root.version}; Android code 6`);
+console.log(`Release versions verified: ${root.version}; Android code 7`);

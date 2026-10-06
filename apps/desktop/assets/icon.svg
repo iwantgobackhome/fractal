@@ -1,7 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none" role="img" aria-label="Fractal branching mark">
-  <rect width="40" height="40" rx="4" fill="#F9F7F2"/><g stroke="#282724" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M20 31V22M20 22l-8-7m8 7 8-7" stroke-width="2.4"/>
-    <path d="m12 15-4-5m4 5 4-5m12 5-4-5m4 5 4-5" stroke-width="1.9"/>
-    <path d="m8 10-2-3m2 3 2-3m6 3-2-3m2 3 2-3m6 3-2-3m2 3 2-3m6 3-2-3m2 3 2-3" stroke-width="1.4"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="100 100 824 824"><rect x="100" y="100" width="824" height="824" rx="185" fill="#F9F7F2"/>
+<rect x="244" y="250" width="300" height="420" rx="30" fill="#282724"/>
+<rect x="480" y="354" width="300" height="420" rx="30" fill="#2F6B45"/>
+<path transform="translate(278 352) scale(0.96)" fill="#F9F7F2" fill-rule="evenodd" d="M0 0H86L150 128V18H124V0H200V18H182V220H140L56 52V202H82V220H0V202H24V18H0Z"/>
+<path transform="translate(532 454) scale(1.0)" fill="#F9F7F2" fill-rule="evenodd" d="M0 0H118C172 0 200 30 200 66C200 104 172 134 118 134H82V202H112V220H0V202H24V18H0ZM82 20V114H106C134 114 144 94 144 66C144 40 134 20 106 20Z"/>
 </svg>

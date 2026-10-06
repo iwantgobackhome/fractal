@@ -29,7 +29,7 @@ export function Masthead({ view, onNavigate, input, account, onOpenPalette, pale
         <>
           <button type="button" className="masthead__brand" onClick={() => onNavigate('home')} aria-label={t('nav.brandHome')}>
             <FractalMark />
-            <span className="masthead__word">Fractal</span>
+            <span className="masthead__word">News Papers</span>
           </button>
           <nav className="masthead__nav" aria-label={t('nav.main')}>
             {NAV.map((item) => (

@@ -41,8 +41,8 @@ export function defaultDataDirectory(): string {
   const base =
     process.env.FRACTAL_DATA ??
     (process.platform === 'win32'
-      ? join(process.env.LOCALAPPDATA ?? join(homedir(), 'AppData', 'Local'), 'Fractal')
-      : join(process.env.XDG_DATA_HOME ?? join(homedir(), '.local', 'share'), 'fractal'));
+      ? join(process.env.LOCALAPPDATA ?? join(homedir(), 'AppData', 'Local'), 'News Papers')
+      : join(process.env.XDG_DATA_HOME ?? join(homedir(), '.local', 'share'), 'news-papers'));
   return resolve(base);
 }
 

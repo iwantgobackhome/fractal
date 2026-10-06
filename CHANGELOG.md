@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.0 — 2026-10-06
+
+Fractal is renamed News Papers (repository `iwantgobackhome/news-papers`). Desktop data is copied to the new location on first start. Android is a new app (`app.newspapers.reader`), with a transitional Fractal-named APK for 0.2.x updaters. New N·P icon generated from one source, a macOS grid app icon and a monochrome menu-bar template. Settings show the version and a Check for updates button. Android versionCode 7. See [release notes](docs/releases/0.3.0.md).
+
 ## 0.2.4 — 2026-10-06
 
 Codex and Claude CLIs are detected on macOS and Linux when Fractal starts from Finder, the Dock or a desktop launcher. The in-app installer supports macOS and Linux, and its Windows Codex (npm) and Claude (from PowerShell 7) installs are fixed. Failed installs show the installer output. A CI workflow installs and detects both CLIs on Linux, macOS and Windows. Android versionCode 6. See [release notes](docs/releases/0.2.4.md).

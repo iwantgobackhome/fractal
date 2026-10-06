@@ -4,8 +4,18 @@ const { pathToFileURL } = require('node:url');
 const { writeFile } = require('node:fs/promises');
 const { readFileSync } = require('node:fs');
 
-app.setName('Fractal');
-app.setAppUserModelId('app.fractal.desktop');
+const { migrateDesktopData } = require('./data-migration.cjs');
+
+app.setName('News Papers');
+app.setAppUserModelId('app.newspapers.desktop');
+// Migrate before Electron creates its profile for the single-instance lock.
+try {
+  migrateDesktopData({ appData: app.getPath('appData') });
+} catch {
+  process.stderr.write('News Papers could not copy legacy data; startup stopped.\n');
+  app.exit(1);
+}
+if (!process.env.FRACTAL_DESKTOP_PROFILE) app.setPath('userData', join(app.getPath('appData'), 'News Papers'));
 if (process.env.FRACTAL_DESKTOP_PROFILE) app.setPath('userData', process.env.FRACTAL_DESKTOP_PROFILE);
 
 if (!app.requestSingleInstanceLock()) {
@@ -29,15 +39,17 @@ if (!app.requestSingleInstanceLock()) {
     if (window && !window.isDestroyed()) window.webContents.send('fractal:update', event);
   }
   async function checkUpdates() {
-    if (!updater || downloadPromise || updateDownloaded) return;
+    if (!updater) return;
+    if (downloadPromise || updateDownloaded) return availableUpdate ? { status: 'available', version: availableUpdate.version } : undefined;
     try {
       await updater.checkForUpdates();
-    } catch {
-      /* electron-updater emits error */
+      return availableUpdate ? { status: 'available', version: availableUpdate.version } : { status: 'current' };
+    } catch (error) {
+      return { status: 'error', error: error instanceof Error ? error.message : String(error) };
     }
   }
   // macOS builds are unsigned, so Squirrel.Mac cannot apply updates; announce new releases and open the download page.
-  const RELEASES = 'https://api.github.com/repos/iwantgobackhome/fractal/releases/latest';
+  const RELEASES = 'https://api.github.com/repos/iwantgobackhome/news-papers/releases/latest';
   function newerVersion(latest, current) {
     const parse = (value) => /^v?(\d+)\.(\d+)\.(\d+)$/.exec(String(value))?.slice(1).map(Number);
     const a = parse(latest),
@@ -54,14 +66,18 @@ if (!app.requestSingleInstanceLock()) {
           const response = await fetch(RELEASES, { headers: { accept: 'application/vnd.github+json' }, signal: AbortSignal.timeout(15000) });
           if (!response.ok) throw new Error(`GitHub ${response.status}`);
           const release = await response.json();
-          if (release.draft || release.prerelease || !newerVersion(release.tag_name, app.getVersion())) return;
+          if (release.draft || release.prerelease || !newerVersion(release.tag_name, app.getVersion())) {
+            updateAvailable = false;
+            availableUpdate = undefined;
+            return;
+          }
           const version = String(release.tag_name).replace(/^v/, '');
-          releasePage = `https://github.com/iwantgobackhome/fractal/releases/tag/v${version}`;
+          releasePage = `https://github.com/iwantgobackhome/news-papers/releases/tag/v${version}`;
           updateAvailable = true;
           availableUpdate = { version, manual: true };
           sendUpdate('update-available', availableUpdate);
-        } catch {
-          /* offline or rate-limited: try again at the next check */
+        } catch (error) {
+          throw error;
         }
       },
       async downloadUpdate() {
@@ -81,7 +97,14 @@ if (!app.requestSingleInstanceLock()) {
       }
     }
     const updates = process.platform === 'darwin' ? undefined : require('electron-updater');
-    updater = process.platform === 'darwin' ? macUpdater() : process.platform === 'linux' ? (process.env.APPIMAGE ? new updates.AppImageUpdater() : new updates.DebUpdater()) : updates.autoUpdater;
+    updater =
+      process.platform === 'darwin'
+        ? macUpdater()
+        : process.platform === 'linux'
+          ? process.env.APPIMAGE
+            ? new updates.AppImageUpdater()
+            : new updates.DebUpdater()
+          : updates.autoUpdater;
     if (process.platform !== 'darwin') wireUpdater();
     registerUpdateIpc();
     startupCheck = setTimeout(() => void checkUpdates(), 10000);
@@ -94,6 +117,10 @@ if (!app.requestSingleInstanceLock()) {
       updateAvailable = true;
       availableUpdate = { version: info.version, notes: typeof info.releaseNotes === 'string' ? info.releaseNotes : undefined };
       sendUpdate('update-available', availableUpdate);
+    });
+    updater.on('update-not-available', () => {
+      updateAvailable = false;
+      availableUpdate = undefined;
     });
     updater.on('download-progress', ({ percent }) => sendUpdate('download-progress', { percent }));
     updater.on('update-downloaded', () => {
@@ -130,7 +157,8 @@ if (!app.requestSingleInstanceLock()) {
   }
   const headless = process.argv.includes('--headless');
   const icon = nativeImage.createFromPath(join(__dirname, 'assets', 'icon-256.png'));
-  const trayIcon = nativeImage.createFromPath(join(__dirname, 'assets', 'icon-32.png'));
+  const trayIcon = nativeImage.createFromPath(join(__dirname, 'assets', process.platform === 'darwin' ? 'trayTemplate.png' : 'tray-color.png'));
+  if (process.platform === 'darwin') trayIcon.setTemplateImage(true);
   function openWindow() {
     if (headless) return;
     if (window) {
@@ -149,7 +177,7 @@ if (!app.requestSingleInstanceLock()) {
         nodeIntegration: false,
         sandbox: true,
         preload: join(__dirname, 'preload.cjs'),
-        additionalArguments: updater ? ['--fractal-updates'] : [],
+        additionalArguments: [`--fractal-version=${app.getVersion()}`, ...(updater ? ['--fractal-updates'] : [])],
       },
     });
     window.on('minimize', () => window.hide());
@@ -218,7 +246,7 @@ if (!app.requestSingleInstanceLock()) {
                 .replace(/[<>:"/\\|?*]/g, '_')
                 .trim()
             : '';
-        const suggestedName = (requested || 'Fractal-translation').replace(/\.pdf$/i, '') + '.pdf';
+        const suggestedName = (requested || 'News-Papers-translation').replace(/\.pdf$/i, '') + '.pdf';
         const pdf = await event.sender.printToPDF({ printBackground: true, preferCSSPageSize: true });
         const choice = await dialog.showSaveDialog(caller, { defaultPath: suggestedName, filters: [{ name: 'PDF', extensions: ['pdf'] }] });
         if (choice.canceled || !choice.filePath) return { saved: false };
@@ -227,7 +255,7 @@ if (!app.requestSingleInstanceLock()) {
       });
       initializeUpdates();
       tray = new Tray(trayIcon);
-      tray.setToolTip('Fractal');
+      tray.setToolTip('News Papers');
       tray.setContextMenu(
         Menu.buildFromTemplate([
           { label: 'Open', click: openWindow },

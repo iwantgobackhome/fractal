@@ -223,7 +223,7 @@ export async function fetchArxivSource(id: string, fetcher: typeof fetch = fetch
   try {
     const response = await fetcher(`https://arxiv.org/e-print/${id}`, {
       signal: AbortSignal.timeout(12_000),
-      headers: { 'user-agent': 'Fractal/0.1 (paper structure extraction)' },
+      headers: { 'user-agent': 'News-Papers/0.1 (paper structure extraction)' },
     });
     const bytes = await limitedBytes(response);
     return bytes ? parseLatexSources(latexFiles(bytes)) : [];

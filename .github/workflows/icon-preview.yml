@@ -1,0 +1,61 @@
+name: Desktop icon preview
+
+# Launches the unpacked Windows app and captures the screen so the taskbar,
+# title bar and notification-area icons can be reviewed after icon changes.
+on:
+  push:
+    branches: ['fix/**', 'release/**']
+    paths:
+      - 'apps/desktop/assets/**'
+      - 'scripts/generate-icons.mjs'
+      - '.github/workflows/icon-preview.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    runs-on: windows-2025
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.1'
+          cache: npm
+      - run: npm ci
+      - run: npm run desktop:build
+      - run: npx --no-install electron-builder --config scripts/release-config.cjs --win dir --x64 --publish never
+      - name: Show every notification-area icon
+        shell: pwsh
+        run: |
+          Set-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer' EnableAutoTray 0 -ErrorAction SilentlyContinue
+          Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
+          Start-Sleep 5
+      - name: Launch and capture
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem dist/installer/win-unpacked -Filter *.exe | Where-Object Name -notmatch 'Uninstall' | Select-Object -First 1
+          $env:FRACTAL_DESKTOP_PROFILE = "$env:RUNNER_TEMP\profile"
+          $env:FRACTAL_DATA = "$env:RUNNER_TEMP\data"
+          Start-Process $exe.FullName
+          Start-Sleep 30
+          Add-Type -AssemblyName System.Windows.Forms, System.Drawing
+          $bounds = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
+          $bitmap = New-Object System.Drawing.Bitmap $bounds.Width, $bounds.Height
+          $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
+          $graphics.CopyFromScreen($bounds.Location, [System.Drawing.Point]::Empty, $bounds.Size)
+          New-Item -ItemType Directory -Force icon-preview | Out-Null
+          $bitmap.Save("icon-preview\windows-screen.png")
+          # Windows 11 keeps new tray icons in the overflow flyout; open it and capture again.
+          Add-Type -Namespace Win32 -Name Mouse -MemberDefinition '[DllImport("user32.dll")] public static extern bool SetCursorPos(int x, int y); [DllImport("user32.dll")] public static extern void mouse_event(int f, int x, int y, int d, int e);'
+          $chevronX = $bounds.Width - 180; $chevronY = $bounds.Height - 24
+          [Win32.Mouse]::SetCursorPos($chevronX, $chevronY); [Win32.Mouse]::mouse_event(2, 0, 0, 0, 0); [Win32.Mouse]::mouse_event(4, 0, 0, 0, 0)
+          Start-Sleep 3
+          $graphics.CopyFromScreen($bounds.Location, [System.Drawing.Point]::Empty, $bounds.Size)
+          $bitmap.Save("icon-preview\windows-tray-overflow.png")
+          Copy-Item $exe.FullName icon-preview\
+      - uses: actions/upload-artifact@v4
+        with:
+          name: icon-preview-windows
+          path: icon-preview/*.png

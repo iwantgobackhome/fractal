@@ -508,7 +508,7 @@ export function LibraryScreen({ papers, query, onQueryChange, onOpen, onRequestD
           </ol>
         )}
         <footer className="index-footer">
-          Fractal <span>·</span> {visible.length} / {shelfRecords.length} {copy.papers}
+          News Papers <span>·</span> {visible.length} / {shelfRecords.length} {copy.papers}
         </footer>
       </section>
       {folderEdit ? (

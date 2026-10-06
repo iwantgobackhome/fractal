@@ -10,7 +10,7 @@ export function Sidebar({ view, onNavigate, children }: { view: ShellView; onNav
       <button className="workspace-brand" type="button" onClick={() => onNavigate('library')} aria-label={t('nav.brandHome')}>
         <FractalMark size={36} />
         <span>
-          <strong>Fractal</strong>
+          <strong>News Papers</strong>
           <small>READ DEEPER. DISCOVER FURTHER.</small>
         </span>
       </button>

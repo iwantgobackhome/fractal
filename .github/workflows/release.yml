@@ -1,4 +1,4 @@
-name: Fractal release validation
+name: News Papers release validation
 
 on:
   push:
@@ -190,4 +190,4 @@ jobs:
             echo 'Release already exists; refusing to replace assets or mutate it.' >&2
             exit 1
           fi
-          gh release create "$RELEASE_TAG" dist/release-all/* --verify-tag --draft --title "Fractal $RELEASE_VERSION" --notes-file "docs/releases/$RELEASE_VERSION.md"
+          gh release create "$RELEASE_TAG" dist/release-all/* --verify-tag --draft --title "News Papers $RELEASE_VERSION" --notes-file "docs/releases/$RELEASE_VERSION.md"

@@ -8,8 +8,8 @@ const data = join(root, 'data');
 const profile = join(root, 'profile');
 const launchCwd = join(root, 'untrusted-launch-cwd');
 mkdirSync(launchCwd);
-if (process.env.FRACTAL_COPY_DATA === '1') cpSync(join(homedir(), 'AppData', 'Local', 'Fractal'), data, { recursive: true });
-const executablePath = resolve('dist/installer/win-unpacked/Fractal.exe');
+if (process.env.FRACTAL_COPY_DATA === '1') cpSync(join(homedir(), 'AppData', 'Local', 'News Papers'), data, { recursive: true });
+const executablePath = resolve('dist/installer/win-unpacked/news-papers.exe');
 let electron;
 try {
   electron = await _electron.launch({

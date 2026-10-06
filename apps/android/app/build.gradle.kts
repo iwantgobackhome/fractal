@@ -9,11 +9,11 @@ android {
     namespace = "app.fractal.reader"
     compileSdk = 35
     defaultConfig {
-        applicationId = "app.fractal.reader"
+        applicationId = "app.newspapers.reader"
         minSdk = 29
         targetSdk = 35
-        versionCode = 6
-        versionName = "0.2.4"
+        versionCode = 7
+        versionName = "0.3.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     val ciDebugKeystorePath = providers.environmentVariable("FRACTAL_ANDROID_KEYSTORE_PATH").orNull

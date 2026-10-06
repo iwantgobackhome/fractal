@@ -97,7 +97,7 @@ export interface AccountLimits {
   provider: HubProviderStatus['id'];
   accountId: string;
   label: string;
-  /** The reader's own terminal login, or one Fractal keeps. */
+  /** The reader's own terminal login, or one News Papers keeps. */
   kind?: 'system' | 'managed';
   /** Whether this is the account the provider runs on; older hubs have one account each. */
   active?: boolean;
@@ -108,7 +108,7 @@ export interface AccountLimits {
   message?: string;
 }
 
-/** A Codex or Claude sign-in: the reader's own terminal login, or one Fractal keeps for them. */
+/** A Codex or Claude sign-in: the reader's own terminal login, or one News Papers keeps for them. */
 export interface AiAccount {
   id: string;
   provider: HubProviderStatus['id'];

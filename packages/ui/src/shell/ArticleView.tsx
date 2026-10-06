@@ -38,7 +38,7 @@ function Block({ hub, block, text }: { hub: HubApi; block: ArticleBlock; text: s
 }
 
 /**
- * A news story read inside Fractal: the publisher's text without the page around it, with
+ * A news story read inside News Papers: the publisher's text without the page around it, with
  * a quick machine translation (not an AI model) and the original site one click away.
  */
 export function ArticleView({ hub, item, onClose }: { hub: HubApi; item: FeedEntry; onClose(): void }): JSX.Element {

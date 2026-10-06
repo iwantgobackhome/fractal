@@ -16,11 +16,11 @@ try {
   if (platform === 'darwin') {
     const directory = join(installer, arch === 'arm64' ? 'mac-arm64' : 'mac');
     bundle = join(directory, (await readdir(directory)).find((name) => name.endsWith('.app')));
-    executable = join(bundle, 'Contents/MacOS/Fractal');
+    executable = join(bundle, 'Contents/MacOS/News Papers');
     resources = join(bundle, 'Contents/Resources');
   } else {
     bundle = join(installer, platform === 'win32' ? 'win-unpacked' : 'linux-unpacked');
-    executable = join(bundle, platform === 'win32' ? 'Fractal.exe' : 'fractal');
+    executable = join(bundle, platform === 'win32' ? 'news-papers.exe' : 'news-papers');
     resources = join(bundle, 'resources');
   }
   const report = join(output, `smoke-${platform}-${arch}.json`);

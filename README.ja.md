@@ -1,6 +1,6 @@
 <p align="center"><a href="README.md">English</a> · <a href="README.ko.md">한국어</a> · <strong>日本語</strong> · <a href="README.zh-CN.md">简体中文</a></p>
 
-<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/readme/logo-dark.svg"><img src="docs/assets/readme/logo.svg" width="280" alt="Fractal のロゴ"></picture></p>
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/readme/logo-dark.svg"><img src="docs/assets/readme/logo.svg" width="280" alt="News Papers のロゴ"></picture></p>
 
 <h1 align="center">論文を深く読み、次の発見へ。</h1>
 
@@ -18,14 +18,14 @@
 <p align="center"><a href="#クイックスタート">クイックスタート</a> · <a href="#主な機能">主な機能</a> · <a href="docs/">ドキュメント</a></p>
 
 <p align="center">
-  <a href="https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.4"><img alt="Windows インストーラーをダウンロード" src="https://img.shields.io/badge/%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89-Windows%20%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%A9%E3%83%BC-2f6b45?style=for-the-badge&logo=windows&logoColor=white"></a>
-  <a href="https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.4"><img alt="Android APK をダウンロード" src="https://img.shields.io/badge/%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89-Android%20APK-2f6b45?style=for-the-badge&logo=android&logoColor=white"></a>
-  <a href="https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.4"><img alt="Linux AppImage・Debian のリリースファイルと公開状況" src="https://img.shields.io/badge/Releases-Linux%20x64-2f6b45?style=for-the-badge&logo=linux&logoColor=white"></a>
-  <a href="https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.4"><img alt="macOS Apple Silicon・Intel のリリースファイルと公開状況" src="https://img.shields.io/badge/Releases-macOS%20arm64%20%7C%20x64-2f6b45?style=for-the-badge&logo=apple&logoColor=white"></a>
-  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="最新リリース" src="https://img.shields.io/github/v/release/iwantgobackhome/fractal?style=for-the-badge&color=3b625b"></a>
+  <a href="https://github.com/iwantgobackhome/news-papers/releases/tag/v0.3.0"><img alt="Windows インストーラーをダウンロード" src="https://img.shields.io/badge/%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89-Windows%20%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%A9%E3%83%BC-2f6b45?style=for-the-badge&logo=windows&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/news-papers/releases/tag/v0.3.0"><img alt="Android APK をダウンロード" src="https://img.shields.io/badge/%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89-Android%20APK-2f6b45?style=for-the-badge&logo=android&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/news-papers/releases/tag/v0.3.0"><img alt="Linux AppImage・Debian のリリースファイルと公開状況" src="https://img.shields.io/badge/Releases-Linux%20x64-2f6b45?style=for-the-badge&logo=linux&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/news-papers/releases/tag/v0.3.0"><img alt="macOS Apple Silicon・Intel のリリースファイルと公開状況" src="https://img.shields.io/badge/Releases-macOS%20arm64%20%7C%20x64-2f6b45?style=for-the-badge&logo=apple&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/news-papers/releases/latest"><img alt="最新リリース" src="https://img.shields.io/github/v/release/iwantgobackhome/news-papers?style=for-the-badge&color=3b625b"></a>
 </p>
 
-![Fractal の発見画面に表示された WorldAuditBench の情報と最初の適切な科学図](docs/assets/readme/v020-desktop-discovery.png)
+![News Papers の発見画面に表示された WorldAuditBench の情報と最初の適切な科学図](docs/assets/readme/v020-desktop-discovery.png)
 
 学術発見画面で論文とその科学図を一緒に確認できます。
 
@@ -69,13 +69,13 @@ arXiv ID、DOI、公開論文の URL、手元の PDF を開けます。保存し
 | ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
 | 各分野で既存または個人のトピックをフォローできます。 | 対応する公開記事を読みやすいテキスト表示で開き、見出しや本文をすばやく翻訳できます。配信元の制限により本文を取得できない場合があります。 |
 
-![Fractal 内の MIT News 記事の日付、著者、最初の本文画像](docs/assets/readme/v020-desktop-news.png)
+![News Papers 内の MIT News 記事の日付、著者、最初の本文画像](docs/assets/readme/v020-desktop-news.png)
 
 記事と本文画像をアプリ内で読み、配信元の原文もすぐに開けます。
 
 ### いつもの AI アカウントを使う
 
-Fractal は公式の Codex・Claude CLI を通じて接続します。アプリからサインインを始めるか、ターミナルで使用中のログインを利用できます。管理対象の別アカウントを追加し、プロバイダーごとに有効なアカウントを切り替えることも可能です。対応する環境ではアプリから CLI のインストールとサインインを開始でき、非対応の環境では手動コマンドを案内します。既定モデルと機能別モデルも選べます。5 時間・週間の使用量はプロバイダーから取得できる場合に表示し、取得できなければその旨を示します。
+News Papers は公式の Codex・Claude CLI を通じて接続します。アプリからサインインを始めるか、ターミナルで使用中のログインを利用できます。管理対象の別アカウントを追加し、プロバイダーごとに有効なアカウントを切り替えることも可能です。対応する環境ではアプリから CLI のインストールとサインインを開始でき、非対応の環境では手動コマンドを案内します。既定モデルと機能別モデルも選べます。5 時間・週間の使用量はプロバイダーから取得できる場合に表示し、取得できなければその旨を示します。
 
 ### Android でも続きを読む
 
@@ -106,22 +106,22 @@ flowchart LR
 
 ### ダウンロード
 
-Fractal 0.2.4 は [リリースページ](https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.4) からダウンロードできます。下記からお使いの OS に合うファイルを選んでください。Windows・Linux・Android 版はアプリ内で更新できるようになりました。0.2.0 からは一度だけ手動でインストールしてください。0.2.1 からはアプリ内で更新できます。macOS は 0.2.3 から新しいバージョンを通知し、ダウンロードページを開きます。詳しくは [0.2.4 リリースノート](docs/releases/0.2.4.md) を参照してください。既存の [0.2.3](https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.3)・[0.2.2](https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.2)・[0.2.1](https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.1)・[0.2.0](https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.0)・[0.1.0](https://github.com/iwantgobackhome/fractal/releases/tag/v0.1.0) リリースも維持されます。
+News Papers 0.3.0 は [リリースページ](https://github.com/iwantgobackhome/news-papers/releases/tag/v0.3.0) からダウンロードできます。下記からお使いの OS に合うファイルを選んでください。Windows・Linux・Android 版はアプリ内で更新できるようになりました。0.2.0 からは一度だけ手動でインストールしてください。0.2.1 からはアプリ内で更新できます。macOS は 0.2.3 から新しいバージョンを通知し、ダウンロードページを開きます。詳しくは [0.3.0 リリースノート](docs/releases/0.3.0.md) を参照してください。既存の [0.2.4](https://github.com/iwantgobackhome/news-papers/releases/tag/v0.2.4)・[0.2.3](https://github.com/iwantgobackhome/news-papers/releases/tag/v0.2.3)・[0.2.2](https://github.com/iwantgobackhome/news-papers/releases/tag/v0.2.2)・[0.2.1](https://github.com/iwantgobackhome/news-papers/releases/tag/v0.2.1)・[0.2.0](https://github.com/iwantgobackhome/news-papers/releases/tag/v0.2.0)・[0.1.0](https://github.com/iwantgobackhome/news-papers/releases/tag/v0.1.0) リリースも維持されます。 Fractal は News Papers に名前が変わりました。Android では 0.3.0 が新しいアプリとしてインストールされるため、再度ペアリングしてから Fractal を削除してください。デスクトップのデータは自動で引き継がれます。
 
 | ファイル | プラットフォーム | 配布形式 |
 | --- | --- | --- |
-| [Fractal-0.2.4-win-x64.exe](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.4/Fractal-0.2.4-win-x64.exe) | Windows x64 | NSIS インストーラー・未署名 |
-| [Fractal-0.2.4-linux-x64.AppImage](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.4/Fractal-0.2.4-linux-x64.AppImage) | Linux x64 | ポータブル AppImage |
-| [Fractal-0.2.4-linux-x64.deb](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.4/Fractal-0.2.4-linux-x64.deb) | Linux x64 | Debian パッケージ |
-| [Fractal-0.2.4-mac-arm64.dmg](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.4/Fractal-0.2.4-mac-arm64.dmg) | macOS Apple Silicon | 個別 DMG・ad-hoc 署名・公証なし |
-| [Fractal-0.2.4-mac-x64.dmg](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.4/Fractal-0.2.4-mac-x64.dmg) | macOS Intel | 個別 DMG・ad-hoc 署名・公証なし |
-| [Fractal-0.2.4-android-debug.apk](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.4/Fractal-0.2.4-android-debug.apk) | Android 10+ | デバッグ署名・versionCode 6 |
+| [News-Papers-0.3.0-win-x64.exe](https://github.com/iwantgobackhome/news-papers/releases/download/v0.3.0/News-Papers-0.3.0-win-x64.exe) | Windows x64 | NSIS インストーラー・未署名 |
+| [News-Papers-0.3.0-linux-x64.AppImage](https://github.com/iwantgobackhome/news-papers/releases/download/v0.3.0/News-Papers-0.3.0-linux-x64.AppImage) | Linux x64 | ポータブル AppImage |
+| [News-Papers-0.3.0-linux-x64.deb](https://github.com/iwantgobackhome/news-papers/releases/download/v0.3.0/News-Papers-0.3.0-linux-x64.deb) | Linux x64 | Debian パッケージ |
+| [News-Papers-0.3.0-mac-arm64.dmg](https://github.com/iwantgobackhome/news-papers/releases/download/v0.3.0/News-Papers-0.3.0-mac-arm64.dmg) | macOS Apple Silicon | 個別 DMG・ad-hoc 署名・公証なし |
+| [News-Papers-0.3.0-mac-x64.dmg](https://github.com/iwantgobackhome/news-papers/releases/download/v0.3.0/News-Papers-0.3.0-mac-x64.dmg) | macOS Intel | 個別 DMG・ad-hoc 署名・公証なし |
+| [News-Papers-0.3.0-android-debug.apk](https://github.com/iwantgobackhome/news-papers/releases/download/v0.3.0/News-Papers-0.3.0-android-debug.apk) | Android 10+ | デバッグ署名・versionCode 7 |
 
-Windows は未署名です。Mac アプリは ad-hoc 署名で公証されておらず、Apple Silicon と Intel 用のファイルを個別に提供します。Android は 0.1.0 と同じデバッグ署名証明書を使用します。[SHA256SUMS.txt](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.4/SHA256SUMS.txt) でダウンロードを確認してください。検証の範囲は [配布手順](docs/RELEASING.md) を参照してください。
+Windows は未署名です。Mac アプリは ad-hoc 署名で公証されておらず、Apple Silicon と Intel 用のファイルを個別に提供します。Android は 0.1.0 と同じデバッグ署名証明書を使用します。[SHA256SUMS.txt](https://github.com/iwantgobackhome/news-papers/releases/download/v0.3.0/SHA256SUMS.txt) でダウンロードを確認してください。検証の範囲は [配布手順](docs/RELEASING.md) を参照してください。
 
 ### ソースからビルド
 
-**必要なもの:** Node.js 22.12 以降と npm。AI 機能には Codex または Claude CLI のインストールとサインインが必要です。対応環境では Fractal の設定画面から進められます。Android のビルドには JDK 17 と Android SDK も必要です。
+**必要なもの:** Node.js 22.12 以降と npm。AI 機能には Codex または Claude CLI のインストールとサインインが必要です。対応環境では News Papers の設定画面から進められます。Android のビルドには JDK 17 と Android SDK も必要です。
 
 リポジトリのルートで実行します。
 
@@ -147,13 +147,13 @@ Android は Android Studio で `apps/android` を開くか、そのディレク�
 ./gradlew :app:assembleDebug
 ```
 
-Windows では `gradlew.bat :app:assembleDebug` を使います。`apps/android/app/build/outputs/apk/debug/app-debug.apk` を端末にインストールし、デスクトップの端末接続設定で LAN または Tailscale を有効にして QR コードを読み取ります。端末からハブのアドレスに到達できる必要があります。Android エミュレーターから見たホストは `10.0.2.4` です。
+Windows では `gradlew.bat :app:assembleDebug` を使います。`apps/android/app/build/outputs/apk/debug/app-debug.apk` を端末にインストールし、デスクトップの端末接続設定で LAN または Tailscale を有効にして QR コードを読み取ります。端末からハブのアドレスに到達できる必要があります。Android エミュレーターから見たホストは `10.0.3.0` です。
 
-**保存先:** Windows は `%LOCALAPPDATA%\Fractal`、macOS などの Unix 系 OS は `${XDG_DATA_HOME:-~/.local/share}/fractal` を使います。`FRACTAL_DATA` で変更できます。論文、PDF、アカウント設定、ペアリング情報をここに保存します。
+**保存先:** Windows は `%LOCALAPPDATA%\News Papers`、macOS などの Unix 系 OS は `${XDG_DATA_HOME:-~/.local/share}/news-papers` を使います。`FRACTAL_DATA` で変更できます。論文、PDF、アカウント設定、ペアリング情報をここに保存します。
 
 ## プライバシーと安全性
 
-- 翻訳、質問、説明などの AI 操作を依頼すると、必要な論文テキストが**選択した** Codex または Claude CLI を通じてプロバイダーに送られます。Fractal は CLI にツールを使わない実行を求め、安全な分離を確認できない Codex 設定を拒否します。CLI の認証ファイルは直接読みません。サインインと要求は CLI が処理します。
+- 翻訳、質問、説明などの AI 操作を依頼すると、必要な論文テキストが**選択した** Codex または Claude CLI を通じてプロバイダーに送られます。News Papers は CLI にツールを使わない実行を求め、安全な分離を確認できない Codex 設定を拒否します。CLI の認証ファイルは直接読みません。サインインと要求は CLI が処理します。
 - 論文やニュースの発見には外部のフィードと学術サービスから公開情報を取得します。記事を開くと配信元のページを取得します。ニュースの簡易翻訳は指定テキストを**非公式の Google Translate ウェブエンドポイント**へ送ります。このエンドポイントは停止する可能性があります。AI へのフォールバックを明示した場合は選択中のプロバイダーを利用できます。
 - リモート端末にはペアリング用トークンを使います。通常の LAN 通信は **HTTP** です。信頼できるネットワークか Tailscale を利用してください。Tailscale は通信を暗号化しますが、ハブ自体に TLS はありません。必要なら `tailscale serve` で HTTPS を用意し、ペアリング後にその URL を設定できます。
 
@@ -190,7 +190,7 @@ packages/
 <details>
 <summary>Codex の「安全な実行環境」エラーが出る</summary>
 
-ツールを使わない分離環境を確認できない場合、Fractal は生成を停止します。Codex の `config.toml` にある独自の指示や有効な MCP サーバーの設定を確認し、再試行してください。現在の保護策は [AI API の説明](docs/API.md) にあります。
+ツールを使わない分離環境を確認できない場合、News Papers は生成を停止します。Codex の `config.toml` にある独自の指示や有効な MCP サーバーの設定を確認し、再試行してください。現在の保護策は [AI API の説明](docs/API.md) にあります。
 
 </details>
 
@@ -204,14 +204,14 @@ packages/
 <details>
 <summary>Claude の使用上限を取得できない</summary>
 
-Fractal は CLI が示す上限だけを読み取ります。対話型の使用量画面やターミナル機能が使えないときは数値を推測せず、「取得不可」と表示します。AI 要求自体は動作する場合があります。
+News Papers は CLI が示す上限だけを読み取ります。対話型の使用量画面やターミナル機能が使えないときは数値を推測せず、「取得不可」と表示します。AI 要求自体は動作する場合があります。
 
 </details>
 
 <details>
 <summary>Semantic Scholar が混雑している</summary>
 
-外部サービスにより要求が制限された可能性があります。Fractal は OpenAlex を代わりに試し、両方から結果を取得できなければ再試行可能なエラーを返します。時間をおいて試してください。キャッシュ済みの結果はオフラインでも利用できます。
+外部サービスにより要求が制限された可能性があります。News Papers は OpenAlex を代わりに試し、両方から結果を取得できなければ再試行可能なエラーを返します。時間をおいて試してください。キャッシュ済みの結果はオフラインでも利用できます。
 
 </details>
 
@@ -219,4 +219,4 @@ Fractal は CLI が示す上限だけを読み取ります。対話型の使用�
 
 Issue や範囲の明確なプルリクエストを歓迎します。[アーキテクチャ](docs/ARCHITECTURE.md)と [API](docs/API.md) を読み、コードを提出する前に `npm test` と `npm run typecheck` を実行してください。
 
-Fractal は [Apache-2.0](LICENSE) で公開しています。[PaperRead](https://github.com/nkjunbc/PaperRead) を出発点としており、元の MIT ライセンス表示などは[サードパーティーの表示](THIRD_PARTY_NOTICES.md)にまとめています。
+News Papers は [Apache-2.0](LICENSE) で公開しています。[PaperRead](https://github.com/nkjunbc/PaperRead) を出発点としており、元の MIT ライセンス表示などは[サードパーティーの表示](THIRD_PARTY_NOTICES.md)にまとめています。

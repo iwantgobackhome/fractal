@@ -1,6 +1,6 @@
 <p align="center"><a href="README.md">English</a> · <a href="README.ko.md">한국어</a> · <a href="README.ja.md">日本語</a> · <strong>简体中文</strong></p>
 
-<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/readme/logo-dark.svg"><img src="docs/assets/readme/logo.svg" width="280" alt="Fractal 标志"></picture></p>
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/readme/logo-dark.svg"><img src="docs/assets/readme/logo.svg" width="280" alt="News Papers 标志"></picture></p>
 
 <h1 align="center">读透眼前的论文，发现下一篇值得读的。</h1>
 
@@ -18,18 +18,18 @@
 <p align="center"><a href="#快速开始">快速开始</a> · <a href="#主要功能">主要功能</a> · <a href="docs/">文档</a></p>
 
 <p align="center">
-  <a href="https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.4"><img alt="下载 Windows 安装程序" src="https://img.shields.io/badge/%E4%B8%8B%E8%BD%BD-Windows%20%E5%AE%89%E8%A3%85%E7%A8%8B%E5%BA%8F-2f6b45?style=for-the-badge&logo=windows&logoColor=white"></a>
-  <a href="https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.4"><img alt="下载 Android APK" src="https://img.shields.io/badge/%E4%B8%8B%E8%BD%BD-Android%20APK-2f6b45?style=for-the-badge&logo=android&logoColor=white"></a>
-  <a href="https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.4"><img alt="Linux AppImage、Debian 发行文件与可用状态" src="https://img.shields.io/badge/Releases-Linux%20x64-2f6b45?style=for-the-badge&logo=linux&logoColor=white"></a>
-  <a href="https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.4"><img alt="macOS Apple Silicon、Intel 发行文件与可用状态" src="https://img.shields.io/badge/Releases-macOS%20arm64%20%7C%20x64-2f6b45?style=for-the-badge&logo=apple&logoColor=white"></a>
-  <a href="https://github.com/iwantgobackhome/fractal/releases/latest"><img alt="最新版本" src="https://img.shields.io/github/v/release/iwantgobackhome/fractal?style=for-the-badge&color=3b625b"></a>
+  <a href="https://github.com/iwantgobackhome/news-papers/releases/tag/v0.3.0"><img alt="下载 Windows 安装程序" src="https://img.shields.io/badge/%E4%B8%8B%E8%BD%BD-Windows%20%E5%AE%89%E8%A3%85%E7%A8%8B%E5%BA%8F-2f6b45?style=for-the-badge&logo=windows&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/news-papers/releases/tag/v0.3.0"><img alt="下载 Android APK" src="https://img.shields.io/badge/%E4%B8%8B%E8%BD%BD-Android%20APK-2f6b45?style=for-the-badge&logo=android&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/news-papers/releases/tag/v0.3.0"><img alt="Linux AppImage、Debian 发行文件与可用状态" src="https://img.shields.io/badge/Releases-Linux%20x64-2f6b45?style=for-the-badge&logo=linux&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/news-papers/releases/tag/v0.3.0"><img alt="macOS Apple Silicon、Intel 发行文件与可用状态" src="https://img.shields.io/badge/Releases-macOS%20arm64%20%7C%20x64-2f6b45?style=for-the-badge&logo=apple&logoColor=white"></a>
+  <a href="https://github.com/iwantgobackhome/news-papers/releases/latest"><img alt="最新版本" src="https://img.shields.io/github/v/release/iwantgobackhome/news-papers?style=for-the-badge&color=3b625b"></a>
 </p>
 
-![Fractal 发现页面中的 WorldAuditBench 文献信息与首张合适的科学图](docs/assets/readme/v020-desktop-discovery.png)
+![News Papers 发现页面中的 WorldAuditBench 文献信息与首张合适的科学图](docs/assets/readme/v020-desktop-discovery.png)
 
 在学术发现页面一起查看论文及其科学图。
 
-**从正在读的论文，走向下一篇有价值的研究。** 将原始 PDF 与忠实译文并排阅读；向论文提问，再根据回答中的页码回到原文。关注领域内的新论文和新闻，把重要资料收进文献库。Fractal 使用你已登录的 Codex 或 Claude CLI 订阅，无须另填 API 密钥。
+**从正在读的论文，走向下一篇有价值的研究。** 将原始 PDF 与忠实译文并排阅读；向论文提问，再根据回答中的页码回到原文。关注领域内的新论文和新闻，把重要资料收进文献库。News Papers 使用你已登录的 Codex 或 Claude CLI 订阅，无须另填 API 密钥。
 
 Windows 和 Linux 安装版支持从已发布的 GitHub 版本进行应用内更新。Android 在启动时和设置中检查更新，并验证 APK 校验和。macOS 通过下载新的 DMG 更新。
 
@@ -59,7 +59,7 @@ Windows 和 Linux 安装版支持从已发布的 GitHub 版本进行应用内更
 
 ### 真正用得起来的文献库
 
-通过 arXiv ID、DOI、公开论文网址或本地 PDF 打开文献。搜索已存论文，用合集和标签整理资料；高亮、笔记、手写批注及问答也随论文保存。首次启动时，Fractal 会导入旧版 PaperRead 中经过验证的数据，且不会改动原始文件。
+通过 arXiv ID、DOI、公开论文网址或本地 PDF 打开文献。搜索已存论文，用合集和标签整理资料；高亮、笔记、手写批注及问答也随论文保存。首次启动时，News Papers 会导入旧版 PaperRead 中经过验证的数据，且不会改动原始文件。
 
 ### 跟进自己的研究领域
 
@@ -69,13 +69,13 @@ Windows 和 Linux 安装版支持从已发布的 GitHub 版本进行应用内更
 | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
 | 在各领域内关注预设或自建主题。 | 在应用内以简洁的纯文本视图阅读受支持的公开文章，并快速翻译标题或段落。出版方的限制可能导致正文无法提取。 |
 
-![Fractal 内的 MIT News 文章日期、作者及首张正文图片](docs/assets/readme/v020-desktop-news.png)
+![News Papers 内的 MIT News 文章日期、作者及首张正文图片](docs/assets/readme/v020-desktop-news.png)
 
 在应用内阅读文章与正文图片，也可直接打开出版方原文。
 
 ### 使用已有的 AI 账号
 
-Fractal 通过官方 Codex 和 Claude CLI 连接服务。可以在应用中发起登录，也可以沿用终端中现有的登录；还可以添加独立管理的账号，按服务商切换当前账号。支持的环境可从应用内启动 CLI 安装和登录，否则会显示手动安装命令。你可以设置默认模型和各功能专用模型。5 小时与每周用量仅在服务商提供数据时显示；获取不到时，界面会如实说明。
+News Papers 通过官方 Codex 和 Claude CLI 连接服务。可以在应用中发起登录，也可以沿用终端中现有的登录；还可以添加独立管理的账号，按服务商切换当前账号。支持的环境可从应用内启动 CLI 安装和登录，否则会显示手动安装命令。你可以设置默认模型和各功能专用模型。5 小时与每周用量仅在服务商提供数据时显示；获取不到时，界面会如实说明。
 
 ### 在 Android 上接着读
 
@@ -106,22 +106,22 @@ flowchart LR
 
 ### 下载
 
-Fractal 0.2.4 已可从 [发行页面](https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.4) 下载。请在下方选择适合系统的文件。Windows、Linux 和 Android 版现已支持应用内更新；从 0.2.0 升级需手动安装一次，0.2.1 可在应用内更新。macOS 从 0.2.3 起会提示新版本并打开下载页面。详见 [0.2.4 发行说明](docs/releases/0.2.4.md)。现有 [0.2.3](https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.3)、[0.2.2](https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.2)、[0.2.1](https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.1)、[0.2.0](https://github.com/iwantgobackhome/fractal/releases/tag/v0.2.0) 和 [0.1.0](https://github.com/iwantgobackhome/fractal/releases/tag/v0.1.0) 发行版继续保留。
+News Papers 0.3.0 已可从 [发行页面](https://github.com/iwantgobackhome/news-papers/releases/tag/v0.3.0) 下载。请在下方选择适合系统的文件。Windows、Linux 和 Android 版现已支持应用内更新；从 0.2.0 升级需手动安装一次，0.2.1 可在应用内更新。macOS 从 0.2.3 起会提示新版本并打开下载页面。详见 [0.3.0 发行说明](docs/releases/0.3.0.md)。现有 [0.2.4](https://github.com/iwantgobackhome/news-papers/releases/tag/v0.2.4)、[0.2.3](https://github.com/iwantgobackhome/news-papers/releases/tag/v0.2.3)、[0.2.2](https://github.com/iwantgobackhome/news-papers/releases/tag/v0.2.2)、[0.2.1](https://github.com/iwantgobackhome/news-papers/releases/tag/v0.2.1)、[0.2.0](https://github.com/iwantgobackhome/news-papers/releases/tag/v0.2.0) 和 [0.1.0](https://github.com/iwantgobackhome/news-papers/releases/tag/v0.1.0) 发行版继续保留。 Fractal 现已更名为 News Papers：Android 上 0.3.0 会作为新应用安装，请重新配对后删除 Fractal；桌面数据会自动迁移。
 
 | 文件 | 平台 | 分发形式 |
 | --- | --- | --- |
-| [Fractal-0.2.4-win-x64.exe](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.4/Fractal-0.2.4-win-x64.exe) | Windows x64 | NSIS 安装程序，未签名 |
-| [Fractal-0.2.4-linux-x64.AppImage](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.4/Fractal-0.2.4-linux-x64.AppImage) | Linux x64 | 便携 AppImage |
-| [Fractal-0.2.4-linux-x64.deb](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.4/Fractal-0.2.4-linux-x64.deb) | Linux x64 | Debian 软件包 |
-| [Fractal-0.2.4-mac-arm64.dmg](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.4/Fractal-0.2.4-mac-arm64.dmg) | macOS Apple Silicon | 独立 DMG，ad-hoc 签名，未经公证 |
-| [Fractal-0.2.4-mac-x64.dmg](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.4/Fractal-0.2.4-mac-x64.dmg) | macOS Intel | 独立 DMG，ad-hoc 签名，未经公证 |
-| [Fractal-0.2.4-android-debug.apk](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.4/Fractal-0.2.4-android-debug.apk) | Android 10+ | 调试签名，versionCode 6 |
+| [News-Papers-0.3.0-win-x64.exe](https://github.com/iwantgobackhome/news-papers/releases/download/v0.3.0/News-Papers-0.3.0-win-x64.exe) | Windows x64 | NSIS 安装程序，未签名 |
+| [News-Papers-0.3.0-linux-x64.AppImage](https://github.com/iwantgobackhome/news-papers/releases/download/v0.3.0/News-Papers-0.3.0-linux-x64.AppImage) | Linux x64 | 便携 AppImage |
+| [News-Papers-0.3.0-linux-x64.deb](https://github.com/iwantgobackhome/news-papers/releases/download/v0.3.0/News-Papers-0.3.0-linux-x64.deb) | Linux x64 | Debian 软件包 |
+| [News-Papers-0.3.0-mac-arm64.dmg](https://github.com/iwantgobackhome/news-papers/releases/download/v0.3.0/News-Papers-0.3.0-mac-arm64.dmg) | macOS Apple Silicon | 独立 DMG，ad-hoc 签名，未经公证 |
+| [News-Papers-0.3.0-mac-x64.dmg](https://github.com/iwantgobackhome/news-papers/releases/download/v0.3.0/News-Papers-0.3.0-mac-x64.dmg) | macOS Intel | 独立 DMG，ad-hoc 签名，未经公证 |
+| [News-Papers-0.3.0-android-debug.apk](https://github.com/iwantgobackhome/news-papers/releases/download/v0.3.0/News-Papers-0.3.0-android-debug.apk) | Android 10+ | 调试签名，versionCode 7 |
 
-Windows 未签名；Mac 应用使用 ad-hoc 签名，未经公证，并分别提供 Apple Silicon 和 Intel 下载。Android 使用与 0.1.0 相同的调试签名证书。请使用 [SHA256SUMS.txt](https://github.com/iwantgobackhome/fractal/releases/download/v0.2.4/SHA256SUMS.txt) 校验下载文件。验证范围参见 [发行构建说明](docs/RELEASING.md)。
+Windows 未签名；Mac 应用使用 ad-hoc 签名，未经公证，并分别提供 Apple Silicon 和 Intel 下载。Android 使用与 0.1.0 相同的调试签名证书。请使用 [SHA256SUMS.txt](https://github.com/iwantgobackhome/news-papers/releases/download/v0.3.0/SHA256SUMS.txt) 校验下载文件。验证范围参见 [发行构建说明](docs/RELEASING.md)。
 
 ### 从源码构建
 
-**环境要求：**Node.js 22.12 或更高版本及 npm。AI 功能需要安装并登录 Codex 或 Claude CLI；在支持的环境中，可通过 Fractal 的设置流程完成。构建 Android 应用还需要 JDK 17 和 Android SDK。
+**环境要求：**Node.js 22.12 或更高版本及 npm。AI 功能需要安装并登录 Codex 或 Claude CLI；在支持的环境中，可通过 News Papers 的设置流程完成。构建 Android 应用还需要 JDK 17 和 Android SDK。
 
 在仓库根目录运行：
 
@@ -147,13 +147,13 @@ npm run hub
 ./gradlew :app:assembleDebug
 ```
 
-Windows 上使用 `gradlew.bat :app:assembleDebug`。将 `apps/android/app/build/outputs/apk/debug/app-debug.apk` 安装到设备，然后在桌面应用的设备连接设置中启用局域网或 Tailscale，扫描配对二维码。设备必须能访问中枢地址；Android 模拟器中的宿主机地址是 `10.0.2.4`。
+Windows 上使用 `gradlew.bat :app:assembleDebug`。将 `apps/android/app/build/outputs/apk/debug/app-debug.apk` 安装到设备，然后在桌面应用的设备连接设置中启用局域网或 Tailscale，扫描配对二维码。设备必须能访问中枢地址；Android 模拟器中的宿主机地址是 `10.0.3.0`。
 
-**本地数据：**Windows 使用 `%LOCALAPPDATA%\Fractal`；macOS 及其他 Unix 系统使用 `${XDG_DATA_HOME:-~/.local/share}/fractal`。可用 `FRACTAL_DATA` 指定其他目录。论文、PDF、账号设置及配对记录保存在这里。
+**本地数据：**Windows 使用 `%LOCALAPPDATA%\News Papers`；macOS 及其他 Unix 系统使用 `${XDG_DATA_HOME:-~/.local/share}/news-papers`。可用 `FRACTAL_DATA` 指定其他目录。论文、PDF、账号设置及配对记录保存在这里。
 
 ## 隐私与安全
 
-- 请求翻译、问答、解释等 AI 操作时，所需的论文文本会通过**选定的** Codex 或 Claude CLI 发送给相应服务商。Fractal 要求 CLI 在无工具的环境下运行；如无法验证 Codex 的安全隔离，就会拒绝运行。Fractal 不直接读取 CLI 凭据文件，登录和请求由 CLI 处理。
+- 请求翻译、问答、解释等 AI 操作时，所需的论文文本会通过**选定的** Codex 或 Claude CLI 发送给相应服务商。News Papers 要求 CLI 在无工具的环境下运行；如无法验证 Codex 的安全隔离，就会拒绝运行。News Papers 不直接读取 CLI 凭据文件，登录和请求由 CLI 处理。
 - 发现功能会从外部论文、新闻及学术服务获取公开信息。打开文章时会请求出版方页面。新闻快速翻译会把请求的文本发送到**非官方 Google Translate 网页端点**，该端点可能随时失效。只有明确启用 AI 后备方式时，才会改用选定的 AI 服务。
 - 远程设备使用配对令牌。普通局域网连接采用 **HTTP**，请使用可信网络或 Tailscale。Tailscale 会加密传输，但中枢本身不提供 TLS。也可用 `tailscale serve` 提供 HTTPS，并在配对后配置该地址。
 
@@ -190,7 +190,7 @@ packages/
 <details>
 <summary>Codex 提示“安全运行环境”错误</summary>
 
-如果无法验证隔离且无工具的 Codex 会话，Fractal 会停止生成。请检查 Codex `config.toml` 中的自定义指令及已启用的 MCP 服务配置，然后重试。当前保护机制见 [AI API 说明](docs/API.md)。
+如果无法验证隔离且无工具的 Codex 会话，News Papers 会停止生成。请检查 Codex `config.toml` 中的自定义指令及已启用的 MCP 服务配置，然后重试。当前保护机制见 [AI API 说明](docs/API.md)。
 
 </details>
 
@@ -204,14 +204,14 @@ packages/
 <details>
 <summary>无法获取 Claude 用量上限</summary>
 
-Fractal 只显示 CLI 提供的上限。如果交互式用量界面或终端支持不可用，就会标记为“不可用”，不会猜测数字。AI 请求仍可能正常工作。
+News Papers 只显示 CLI 提供的上限。如果交互式用量界面或终端支持不可用，就会标记为“不可用”，不会猜测数字。AI 请求仍可能正常工作。
 
 </details>
 
 <details>
 <summary>Semantic Scholar 正忙</summary>
 
-外部服务可能限制了请求。Fractal 会尝试 OpenAlex；如果两者都无法提供结果，就返回可重试的错误。请稍后再试。已有缓存的结果仍可离线查看。
+外部服务可能限制了请求。News Papers 会尝试 OpenAlex；如果两者都无法提供结果，就返回可重试的错误。请稍后再试。已有缓存的结果仍可离线查看。
 
 </details>
 
@@ -219,4 +219,4 @@ Fractal 只显示 CLI 提供的上限。如果交互式用量界面或终端支�
 
 欢迎提交问题反馈和目标明确的拉取请求。修改代码前可先阅读[架构文档](docs/ARCHITECTURE.md)与 [API 文档](docs/API.md)，提交前请运行 `npm test` 和 `npm run typecheck`。
 
-Fractal 采用 [Apache-2.0](LICENSE) 许可证。项目源自 [PaperRead](https://github.com/nkjunbc/PaperRead)；其 MIT 声明及其他署名见[第三方声明](THIRD_PARTY_NOTICES.md)。
+News Papers 采用 [Apache-2.0](LICENSE) 许可证。项目源自 [PaperRead](https://github.com/nkjunbc/PaperRead)；其 MIT 声明及其他署名见[第三方声明](THIRD_PARTY_NOTICES.md)。
