@@ -428,6 +428,7 @@ export const ko = {
     copiedLong: '복사했습니다',
     copyFailedLong: '복사하지 못했습니다',
     pageOriginal: '{page}쪽 원문',
+    printContinuation: 'p.{page} (계속)',
     pageLabel: '{page}쪽',
     blockOriginal: '{kind} 원문',
     blockOnPage: '{page}쪽 {kind}',
