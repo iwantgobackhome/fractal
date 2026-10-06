@@ -1,6 +1,8 @@
 package app.fractal.reader
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -8,8 +10,13 @@ import androidx.compose.ui.*
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.*
 import app.fractal.data.*
 import app.fractal.design.LocalFractalColors
@@ -69,8 +76,8 @@ internal fun BoxScope.ReaderPageAnswers(app: ReaderApplication, paperKey: String
         }
         LaunchedEffect(saved) { saved?.let { state = it.state; if (!active) position = Offset(it.x * width, it.y * height) } }
         // Keep the overlay mounted: inserting a page sibling during DOWN cancels child gestures.
-        Canvas(Modifier.matchParentSize().testTag(if (active && state == "open") "reader-answer-source-$thread" else "reader-answer-source-inactive-$thread")) {
-            if (active && state == "open") {
+        Canvas(Modifier.matchParentSize().testTag(if (active && state != "dismissed") "reader-answer-source-$thread" else "reader-answer-source-inactive-$thread")) {
+            if (active && state != "dismissed") {
                 val selection = target.selected.second
                 val range = pin?.provenance?.get("layoutRange") as? JsonObject
                 val start = range?.get("start")?.jsonPrimitive?.intOrNull
@@ -98,10 +105,22 @@ internal fun BoxScope.ReaderPageAnswers(app: ReaderApplication, paperKey: String
         when (state) {
             "open" -> key("answer-card") { ReaderAnswerCard(app, paperKey, pages, target, position, { position = it }, width.toFloat(), height.toFloat(), onJump,
                 onClose = { persist("dismissed") }, onMinimize = { persist("collapsed") }, onMoveEnd = { moveJob?.cancel(); moveJob = app.submissionScope.launch { delay(250); persist() } }, onActive = { active = it }) }
-            "collapsed" -> Surface(onClick = { persist("open") }, modifier = Modifier.offset {
+            // The marker is both the expand button and the handle that moves the collapsed card.
+            "collapsed" -> Surface(modifier = Modifier.offset {
                 IntOffset(position.x.roundToInt().coerceIn(0, (width - with(density) { 32.dp.roundToPx() }).coerceAtLeast(0)),
                     position.y.roundToInt().coerceIn(0, (height - with(density) { 32.dp.roundToPx() }).coerceAtLeast(0)))
-            }.size(32.dp).nativeInkBlocker().testTag("reader-answer-pin-${pin?.requestId ?: thread}"),
+            }.size(32.dp).nativeInkBlocker()
+                .pointerInput(thread) { detectTapGestures(onTap = { persist("open") }) }
+                .pointerInput(thread, width, height) {
+                    val marker = 32.dp.toPx()
+                    detectDragGestures(onDragStart = { active = true }, onDragEnd = { active = false; persist() }, onDragCancel = { active = false; persist() }) { change, amount ->
+                        change.consume()
+                        position = Offset((position.x + amount.x).coerceIn(0f, (width - marker).coerceAtLeast(0f)),
+                            (position.y + amount.y).coerceIn(0f, (height - marker).coerceAtLeast(0f)))
+                    }
+                }
+                .semantics { role = Role.Button; onClick(label = if (target.explain || pin?.kind == "explanation") "Open explanation" else "Open answer") { persist("open"); true } }
+                .testTag("reader-answer-pin-${pin?.requestId ?: thread}"),
                 shape = androidx.compose.foundation.shape.CircleShape, color = colors.focus) {
                 Box(contentAlignment = Alignment.Center) { Text(if (target.explain || pin?.kind == "explanation") "i" else "?", color = colors.paper) }
             }

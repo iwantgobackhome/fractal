@@ -307,16 +307,22 @@ function PageCard({
     if (host.current) observer.observe(host.current);
     return () => observer.disconnect();
   }, [page]);
+  // A collapsed card is almost all marker button, so the marker itself must be a drag handle;
+  // a press that does not move still expands it through the button's click.
+  const dragged = useRef(false);
   const drag = (event: React.PointerEvent) => {
-    if (event.button !== 0 || (event.target as HTMLElement).closest('button')) return;
-    event.preventDefault();
+    const onButton = (event.target as HTMLElement).closest('button');
+    if (event.button !== 0 || (onButton && !(collapsed && onButton.hasAttribute('aria-expanded')))) return;
+    if (!onButton) event.preventDefault();
     event.stopPropagation();
-    heading.current?.focus({ preventScroll: true });
+    dragged.current = false;
+    if (!onButton) heading.current?.focus({ preventScroll: true });
     const box = page.getBoundingClientRect(),
       start = { x: event.clientX, y: event.clientY };
     let next = { x: position.x, y: position.y };
-    setMoving(next);
     const move = (e: PointerEvent) => {
+      if (!dragged.current && Math.hypot(e.clientX - start.x, e.clientY - start.y) < 4) return;
+      dragged.current = true;
       next = clamp({ x: position.x + (e.clientX - start.x) / box.width, y: position.y + (e.clientY - start.y) / box.height });
       setMoving(next);
     };
@@ -324,8 +330,12 @@ function PageCard({
       window.removeEventListener('pointermove', move);
       window.removeEventListener('pointerup', end);
       window.removeEventListener('pointercancel', end);
-      update(next);
+      if (dragged.current) update(next);
       setMoving(null);
+      // The click that ends a drag fires right after pointerup; later clicks are real clicks.
+      window.setTimeout(() => {
+        dragged.current = false;
+      });
     };
     window.addEventListener('pointermove', move);
     window.addEventListener('pointerup', end);
@@ -388,7 +398,13 @@ function PageCard({
           <button
             aria-expanded={!collapsed}
             aria-label={collapsed ? say('Expand answer', '답변 펼치기') : say('Collapse answer', '답변 접기')}
-            onClick={() => update({ state: collapsed ? 'open' : 'collapsed' })}
+            onClick={() => {
+              if (dragged.current) {
+                dragged.current = false;
+                return;
+              }
+              update({ state: collapsed ? 'open' : 'collapsed' });
+            }}
           >
             {collapsed ? (card.source.kind && card.source.kind !== 'text' ? 'i' : '?') : '−'}
           </button>

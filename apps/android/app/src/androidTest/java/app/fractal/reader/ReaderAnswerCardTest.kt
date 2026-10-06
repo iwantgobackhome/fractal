@@ -132,7 +132,16 @@ class ReaderAnswerCardTest {
         assertTrue("Card scrolls with the PDF page", after.top < before.top - 20f)
         screenshot("01-page-scroll")
         compose.onNodeWithTag("reader-answer-collapse").performClick()
-        compose.onNodeWithTag("reader-answer-pin-retained-root-$key").assertExists().performClick()
+        val pin = compose.onNodeWithTag("reader-answer-pin-retained-root-$key").assertExists()
+        val pinBefore = pin.fetchSemanticsNode().boundsInRoot
+        // The collapsed marker is its own drag handle: dragging moves it and keeps it collapsed.
+        pin.performTouchInput { down(center); moveBy(androidx.compose.ui.geometry.Offset(60f, 90f)); moveBy(androidx.compose.ui.geometry.Offset(60f, 90f)); up() }
+        compose.waitForIdle()
+        val pinAfter = compose.onNodeWithTag("reader-answer-pin-retained-root-$key").fetchSemanticsNode().boundsInRoot
+        assertTrue("Collapsed marker moves when dragged", pinAfter.top > pinBefore.top + 60f && pinAfter.left > pinBefore.left + 40f)
+        compose.onNodeWithTag("reader-answer-card").assertDoesNotExist()
+        compose.waitUntil(5000) { runBlocking { app.database.metadata().history("retained-root-$key")?.answerPlacement()?.let { it.state == "collapsed" && it.y > .35f } == true } }
+        compose.onNodeWithTag("reader-answer-pin-retained-root-$key").performClick()
         compose.onNodeWithTag("reader-answer-card").assertExists()
         compose.onNodeWithTag("reader-answer-question").performTouchInput { click() }
         compose.waitUntil(5000) { compose.onAllNodesWithTag("reader-answer-source-retained-root-$key").fetchSemanticsNodes().isNotEmpty() }
