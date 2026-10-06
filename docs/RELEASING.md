@@ -66,7 +66,7 @@ Desktop startup copies the old Hub data and Electron profile before opening eith
 The only editable icon artwork is `apps/desktop/assets/brand/app-icon.svg`
 (the 1024 canvas, with an 824 × 824 rounded body at 100,100 and transparent
 macOS grid margins) and `apps/desktop/assets/brand/tray.svg` (black glyph on
-transparent). Keep the app body as a filled SVG rect; the Android adaptive
+transparent). Windows and Linux icons fill their canvas: sizes from 48 px use the app icon cropped to its body, and 16–32 px use the hand-drawn `brand/app-icon-small.svg`. The Windows/Linux tray uses `brand/tray-color.svg` (no background). Only macOS `fractal.icns` keeps the icon-grid margin. Keep the app body as a filled SVG rect; the Android adaptive
 background is derived from its fill. Center the artwork optically within it.
 
 Run `node scripts/generate-icons.mjs` after changing either source, and commit

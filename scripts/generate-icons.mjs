@@ -12,6 +12,7 @@ const appSvg = await readFile(join(assets, 'brand/app-icon.svg'), 'utf8');
 const traySvg = await readFile(join(assets, 'brand/tray.svg'), 'utf8');
 // Windows and Linux draw icons edge to edge; only macOS reserves the icon-grid margin.
 const smallSvg = await readFile(join(assets, 'brand/app-icon-small.svg'), 'utf8');
+const trayColorSvg = await readFile(join(assets, 'brand/tray-color.svg'), 'utf8');
 const bodyRect = /<rect\b[^>]*\bx="(\d+)"[^>]*\by="(\d+)"[^>]*\bwidth="(\d+)"[^>]*\bheight="(\d+)"/.exec(appSvg);
 if (!bodyRect) throw new Error('app-icon.svg must start with its body rect');
 const fullBleedSvg = appSvg.replace(/viewBox="[^"]*"/, `viewBox="${bodyRect.slice(1).join(' ')}"`);
@@ -118,8 +119,8 @@ try {
   }
   await output(join(assets, 'trayTemplate.png'), await render(traySvg, 16));
   await output(join(assets, 'trayTemplate@2x.png'), await render(traySvg, 32));
-  await output(join(assets, 'tray-color.png'), await render(smallSvg, 16));
-  await output(join(assets, 'tray-color@2x.png'), await render(smallSvg, 32));
+  await output(join(assets, 'tray-color.png'), await render(trayColorSvg, 16));
+  await output(join(assets, 'tray-color@2x.png'), await render(trayColorSvg, 32));
   await output(join(root, 'packages/ui/public/favicon.png'), await render(smallSvg, 32));
   // Adaptive layers are rasterized from the source SVG, so replacing the mark
   // never requires translating its paths into Android vector syntax.
