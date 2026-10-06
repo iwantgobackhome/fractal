@@ -108,6 +108,11 @@ export const en: Messages = {
     closeLabel: 'Close',
   },
   settings: {
+    about: 'About / version',
+    version: 'Version {version}',
+    checkUpdates: 'Check for updates',
+    checkingUpdates: 'Checking for updates…',
+    upToDate: 'Up to date',
     index: 'Settings sections',
     language: 'Language',
     appearance: 'Appearance',

@@ -2,9 +2,9 @@ import { useEffect, useReducer } from 'react';
 import { t, useLanguage } from '../i18n';
 import { updateState, type UpdateEvent, type UpdateState } from './state';
 
-interface DesktopUpdates {
+export interface DesktopUpdates {
   onEvent(callback: (event: UpdateEvent) => void): () => void;
-  check(): Promise<void>;
+  check(): Promise<{ status: 'current' } | { status: 'available'; version: string } | { status: 'error'; error: string } | undefined>;
   download(): Promise<void>;
   install(): Promise<void>;
 }

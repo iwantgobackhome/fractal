@@ -56,3 +56,27 @@ Before promoting that draft, download and verify the files and manifests, inspec
 - [electron-builder v26 macOS and notarization environment](https://www.electron.build/v26/docs/mac/)
 - [electron-builder v26 Linux targets](https://www.electron.build/v26/docs/linux/)
 - [actionlint 1.7.12](https://github.com/rhysd/actionlint/releases/tag/v1.7.12)
+
+## Icon generation
+
+The only editable icon artwork is `apps/desktop/assets/brand/app-icon.svg`
+(the 1024 canvas, with an 824 × 824 rounded body at 100,100 and transparent
+macOS grid margins) and `apps/desktop/assets/brand/tray.svg` (black glyph on
+transparent). Keep the app body as a filled SVG rect; the Android adaptive
+background is derived from its fill. Center the artwork optically within it.
+
+Run `node scripts/generate-icons.mjs` after changing either source, and commit
+all generated assets. It uses the existing Playwright Chromium renderer, finding
+Chrome automatically on macOS or using `FRACTAL_REVIEW_BROWSER` to select an
+installed browser; otherwise it uses Playwright's Chromium installation. No new
+runtime dependencies are required. macOS `iconutil` produces `fractal.icns`;
+other platforms use PNG ICNS chunks. The script also writes desktop PNGs from
+16 through 1024 px, multi-resolution `fractal.ico`, 16/32 px macOS template tray
+images, the colored Windows/Linux tray image, the UI favicon, and Android legacy
+launcher mipmaps and adaptive foreground/background/monochrome density layers.
+Electron-builder already points at these generated desktop files. Run twice
+and verify that the second run produces no changes. Prefer macOS for committed
+ICNS output because iconutil's encoding differs from the portable fallback.
+
+The older `apps/desktop/tools/generate-icons.mjs` and
+`generate-distribution-icons.mjs` entry points delegate to this pipeline.
