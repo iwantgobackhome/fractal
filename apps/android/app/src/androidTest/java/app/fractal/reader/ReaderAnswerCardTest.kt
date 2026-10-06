@@ -16,7 +16,7 @@ import org.junit.Test
 class ReaderAnswerCardTest {
     @get:Rule val compose = createAndroidComposeRule<ReaderFixtureActivity>()
     private val key = "answer-card-fixture-${java.util.UUID.randomUUID()}"
-    private fun reader(tall: Boolean = false) {
+    private fun reader(tall: Boolean = false, kind: String = "equation") {
         val app = compose.activity.application as ReaderApplication
         app.credentials.clear()
         app.settings.edit().remove("cachedReaderProviders").commit()
@@ -31,17 +31,41 @@ class ReaderAnswerCardTest {
             app.history.saveDraft(key, buildJsonObject { put("model", ""); put("language", "auto") })
             app.database.reader().upsert(ReaderPositionEntity(key, "{\"mode\":\"original\",\"page\":1,\"fraction\":0}"))
             app.structure.retain(key, hash, WireJson.format.parseToJsonElement("""{"version":"v1","status":"ready","items":[
-                {"id":"equation-1","kind":"equation","page":1,"bbox":{"x":0.1,"y":0.15,"width":0.5,"height":0.15},
+                {"id":"equation-1","kind":"$kind","page":1,"bbox":{"x":0.1,"y":0.15,"width":0.5,"height":0.15},
                 "label":"Eq. 1","caption":"Energy relation","latex":"E=mc^2"}]}"""))
         }
         compose.setContent { FractalTheme { ReaderScreen(app, LibraryEntity(key, "Answer fixture", "[]", null, null,
             "2026-10-01T00:00:00Z", "2026-10-01T00:00:00Z", "ready", hash, 1, false, "{}"), {}) } }
+        compose.waitUntil(15000) { compose.onAllNodesWithTag("structure-item-equation-1").fetchSemanticsNodes().isNotEmpty() }
+        compose.waitForIdle()
+        Thread.sleep(500)
+        compose.waitForIdle()
+        compose.onNodeWithTag("structure-item-equation-1").assertIsDisplayed()
+    }
+    private fun tapStructure() {
+        compose.onNodeWithTag("structure-item-equation-1").performTouchInput { advanceEventTime(400); click() }
+        // Native finger taps are confirmed after the double-tap window (320 ms).
         compose.waitUntil(15000) { compose.onAllNodesWithTag("explain-structure-equation-1").fetchSemanticsNodes().isNotEmpty() }
+    }
+    @Test fun figureActionsAppearOnTapAndDismissOutside() {
+        reader(kind = "figure")
+        compose.onNodeWithTag("explain-structure-equation-1").assertDoesNotExist()
+        tapStructure()
+        compose.onNodeWithTag("explain-structure-equation-1").assertIsDisplayed()
+        compose.onNodeWithTag("ask-structure-equation-1").assertIsDisplayed()
+        compose.onNodeWithTag("structure-item-equation-1").performTouchInput { advanceEventTime(400); click(androidx.compose.ui.geometry.Offset(width * 1.6f, height * 2.4f)) }
+        compose.waitUntil(15000) { compose.onAllNodesWithTag("explain-structure-equation-1").fetchSemanticsNodes().isEmpty() }
+        compose.onNodeWithTag("explain-structure-equation-1").assertDoesNotExist()
+        tapStructure()
+        compose.onNodeWithTag("explain-structure-equation-1").performClick()
+        compose.onNodeWithTag("reader-answer-card").assertIsDisplayed()
     }
     @Test fun explainChipOpensMovableCollapsibleCardAndDurableEquationRequest() {
         reader()
         val app = compose.activity.application as ReaderApplication
         val previous = runBlocking { app.database.reader().observeRequests(key).first().map { it.requestId }.toSet() }
+        compose.onNodeWithTag("explain-structure-equation-1").assertDoesNotExist()
+        tapStructure()
         compose.onNodeWithTag("explain-structure-equation-1").performClick()
         compose.onNodeWithTag("reader-answer-card").assertIsDisplayed()
         Thread.sleep(600)
@@ -101,6 +125,9 @@ class ReaderAnswerCardTest {
         val instrumentation = androidx.test.platform.app.InstrumentationRegistry.getInstrumentation()
         val folder = java.io.File(instrumentation.targetContext.getExternalFilesDir(null), "answer-cards").apply { mkdirs() }
         val bitmap = instrumentation.uiAutomation.takeScreenshot()
+            ?: instrumentation.uiAutomation.executeShellCommand("screencap -p").let { descriptor ->
+                android.os.ParcelFileDescriptor.AutoCloseInputStream(descriptor).use { android.graphics.BitmapFactory.decodeStream(it) }
+            } ?: error("Emulator screenshot unavailable")
         java.io.File(folder, "$name.png").outputStream().use { bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it) }
         bitmap.recycle()
     }
@@ -151,6 +178,8 @@ class ReaderAnswerCardTest {
                 .hideSoftInputFromWindow(activity.window.decorView.windowToken, 0)
             activity.window.decorView.clearFocus()
         }
+        compose.onNodeWithTag("explain-structure-equation-1").assertDoesNotExist()
+        tapStructure()
         compose.onNodeWithTag("explain-structure-equation-1").performClick()
         compose.waitUntil(15000) { compose.onAllNodesWithTag("reader-answer-card").fetchSemanticsNodes().size == 2 }
         compose.onNodeWithText("Retained first answer").assertExists()

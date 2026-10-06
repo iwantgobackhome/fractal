@@ -87,6 +87,8 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
     var viewport by remember { mutableStateOf<Rect?>(null) }
     var noteSelection by remember { mutableStateOf<Pair<Int, PdfTextSelection>?>(null) }
     var toolsMenu by remember { mutableStateOf(false) }
+    var selectedStructureId by remember(paper.paperKey) { mutableStateOf<String?>(null) }
+    LaunchedEffect(sourceList.isScrollInProgress, zoom) { selectedStructureId = null }
     var structure by remember(paper.paperKey) { mutableStateOf<PaperStructure?>(null) }
     val answerTargets = remember(paper.paperKey) { mutableStateMapOf<String, ReaderAnswerTarget>() }
     val answerRequests by app.database.reader().observeRequests(paper.paperKey).collectAsState(emptyList())
@@ -289,20 +291,32 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                                         annotations.filter { it.page == index + 1 && it.kind == "highlight" },
                                         nativeViewport = viewport, selection = selection?.takeIf { it.first == index + 1 }?.second, regionMode = regionMode,
                                         onSelectionUnavailable = { selectionMessage = it },
-                                        onBackgroundTap = { selection = null; selectionMessage = "" },
+                                        onBackgroundTap = { selection = null; selectionMessage = ""; selectedStructureId = null },
+                                        onHighlightTap = { selectedStructureId = null },
+                                        onStructureTap = { x, y ->
+                                            val item = structure?.items.orEmpty().filter { it.page == index + 1 }.lastOrNull {
+                                                x >= it.bbox.x && x <= it.bbox.x + it.bbox.width &&
+                                                    y >= it.bbox.y && y <= it.bbox.y + it.bbox.height
+                                            }
+                                            selectedStructureId = item?.id
+                                            if (item != null) { selection = null; selectionMessage = "" }
+                                            item != null
+                                        },
                                         onFingerGesture = { dy, factor, focusY ->
+                                            selectedStructureId = null
                                             zoom = (zoom * factor).coerceIn(.5f, 4f)
                                             scope.launch { if (factor != 1f) { withFrameNanos { }; yield() }; sourceList.scrollBy(focusY * (factor - 1f) - dy) }
-                                        }, onWritingStateChanged = { writing = it; if (it && !regionMode) barVisible = false },
-                                        onSelection = { selection = index + 1 to it; selectionMessage = "" },
-                                        onDoubleTap = { zoom = if (zoom == 1f) 1.5f else 1f },
+                                        }, onWritingStateChanged = { writing = it; if (it) selectedStructureId = null; if (it && !regionMode) barVisible = false },
+                                        onSelection = { selectedStructureId = null; selection = index + 1 to it; selectionMessage = "" },
+                                        onDoubleTap = { selectedStructureId = null; zoom = if (zoom == 1f) 1.5f else 1f },
                                         onInkChanged = { before, after -> scope.launch {
                                             saveInkChange(before, after)
                                         } }, contentOverlay = { width, height, textPage ->
-                                            ReaderStructureOverlay(structure?.items.orEmpty().filter { it.page == index + 1 }, width, height) { item, _ ->
+                                            ReaderStructureOverlay(structure?.items.orEmpty().filter { it.page == index + 1 }, selectedStructureId, width, height) { item, _, explain ->
+                                                selectedStructureId = null
                                                 val thread = java.util.UUID.randomUUID().toString()
                                                 answerTargets[thread] = ReaderAnswerTarget(structureSelection(item, source.pdfSha256), item,
-                                                    textPage?.text ?: sourcePageContext[index + 1].orEmpty(), explain = true, threadId = thread)
+                                                    textPage?.text ?: sourcePageContext[index + 1].orEmpty(), explain = explain, threadId = thread)
                                                 panel = false
                                             }
                                             ReaderPageAnswers(app, paper.paperKey, source, index + 1, width, height, textPage?.rotation ?: 0,

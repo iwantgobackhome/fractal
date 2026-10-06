@@ -88,6 +88,8 @@ fun PdfPage(
     regionMode: Boolean = false,
     onSelectionUnavailable: (String) -> Unit = {},
     onBackgroundTap: () -> Unit = {},
+    onStructureTap: (Float, Float) -> Boolean = { _, _ -> false },
+    onHighlightTap: () -> Unit = {},
     contentOverlay: @Composable BoxScope.(Int, Int, OriginalTextPage?) -> Unit = { _, _, _ -> },
 ) {
     val parsedHighlights = remember(highlights) {
@@ -254,7 +256,8 @@ fun PdfPage(
                         }
                         tapPosition = x to y
                         // A tap outside a highlight dismisses the current text selection.
-                        if (tappedHighlight == null) onBackgroundTap()
+                        if (tappedHighlight != null) onHighlightTap()
+                        else if (!onStructureTap(x, y)) onBackgroundTap()
                     },
                     onFingerLongPress = { x, y ->
                         if (!source.identityUnchanged()) onSelectionUnavailable(changedSelection)

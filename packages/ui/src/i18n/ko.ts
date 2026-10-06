@@ -156,6 +156,10 @@ export const ko = {
     statusNone: 'AI 연결 필요',
   },
   devices: {
+    setupStep1: '같은 Wi-Fi에 연결하거나 PC와 휴대폰 모두에 Tailscale을 설치하고 같은 계정으로 로그인하세요. 외부에서 연결하려면 두 기기 모두 Tailscale이 필요합니다.',
+    setupStep2: 'PC: 설정 → 기기 연결 → LAN 또는 Tailscale을 켜세요.',
+    setupStep3: '휴대폰의 News Papers 앱으로 QR 코드를 스캔하세요.',
+
     enableNetwork: '휴대폰을 연결하려면 접근 가능한 LAN 또는 Tailscale 주소를 활성화해 주세요.',
     lan: '같은 Wi-Fi에서 연결',
     tailscale: 'Tailscale로 어디서나 연결',

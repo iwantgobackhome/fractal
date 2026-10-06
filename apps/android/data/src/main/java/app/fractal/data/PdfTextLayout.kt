@@ -179,7 +179,7 @@ class OriginalTextGeometry(val page: OriginalTextPage) {
                 bounds != null && run {
                     val overlap = minOf(bounds.bottom, own.bottom) - maxOf(bounds.top, own.top)
                     val gap = maxOf(0.0, bounds.left - own.right, own.left - bounds.right)
-                    overlap >= .5 * minOf(height, bounds.bottom - bounds.top) && gap <= 1.5 * height * aspect
+                    overlap >= .5 * minOf(height, bounds.bottom - bounds.top) && gap <= height * aspect
                 }
             }
             if (line == null) lines += own to mutableListOf(index)
@@ -192,6 +192,8 @@ class OriginalTextGeometry(val page: OriginalTextPage) {
         lines.flatMap { (_, runs) -> runs.sortedBy { index -> byRun.getValue(index).minOf { hit -> hit.quad.minOf { it.x } } }
             .flatMap { byRun.getValue(it) } }
     }
+    private fun line(hit: Hit) = lineOfRun[runIndexOf(hit.unit.start)]
+    private val lineBounds = visual.groupBy(::line).mapValues { (_, hits) -> hits.flatMap { it.quad } }
     private val position = visual.withIndex().associate { (index, hit) -> hit.unit.start to index }
     private val endPosition = visual.withIndex().associate { (index, hit) -> hit.unit.end to index }
     /** Offsets name the boundary before a unit start, or after a unit end, in visual order. */
@@ -227,19 +229,21 @@ class OriginalTextGeometry(val page: OriginalTextPage) {
         if (from >= until) return null
         val selected = visual.subList(from, until)
         val firstHit = selected.first(); val lastHit = selected.last()
-        // Runs identify line spans. Overlapping endpoint runs establish the selected column.
-        fun runBounds(hit: Hit) = page.runs.getOrNull(runIndexOf(hit.unit.start))
-            ?.quad?.map { rotateTextPoint(TextPoint(it[0], it[1]), page.rotation) }
-        val a = runBounds(firstHit); val b = runBounds(lastHit)
+        // Decide column membership using entire visual lines, never individual glyphs.
+        // PDF runs can be short words or inline math: endpoint-run widths are not
+        // paragraph bounds, and clipping glyphs to them truncates justified lines.
+        val a = lineBounds[line(firstHit)]; val b = lineBounds[line(lastHit)]
         val left = minOf(a?.minOf { it.x } ?: 0.0, b?.minOf { it.x } ?: 0.0)
         val right = maxOf(a?.maxOf { it.x } ?: 1.0, b?.maxOf { it.x } ?: 1.0)
-        val sameColumn = a != null && b != null && maxOf(a.minOf { it.x }, b.minOf { it.x }) < minOf(a.maxOf { it.x }, b.maxOf { it.x }) &&
-            listOf(firstHit, lastHit).mapNotNull { page.runs.getOrNull(runIndexOf(it.unit.start)) }
-                .none { page.text.substring(it.start, it.end).isBlank() }
-        val top = minOf(firstHit.quad.minOf { it.y }, lastHit.quad.minOf { it.y })
-        val bottom = maxOf(firstHit.quad.maxOf { it.y }, lastHit.quad.maxOf { it.y })
-        val covered = selected.filter { !sameColumn || (it.quad.maxOf { p -> p.x } >= left && it.quad.minOf { p -> p.x } <= right &&
-            it.quad.maxOf { p -> p.y } >= top && it.quad.minOf { p -> p.y } <= bottom) }
+        val sameColumn = a != null && b != null &&
+            maxOf(a.minOf { it.x }, b.minOf { it.x }) < minOf(a.maxOf { it.x }, b.maxOf { it.x })
+        val top = minOf(a?.minOf { it.y } ?: 0.0, b?.minOf { it.y } ?: 0.0)
+        val bottom = maxOf(a?.maxOf { it.y } ?: 1.0, b?.maxOf { it.y } ?: 1.0)
+        val coveredLines = lineBounds.filterValues { points ->
+            points.maxOf { it.x } > left && points.minOf { it.x } < right &&
+                points.maxOf { it.y } >= top && points.minOf { it.y } <= bottom
+        }.keys
+        val covered = selected.filter { !sameColumn || line(it) in coveredLines }
         if (covered.isEmpty()) return null
         val text = StringBuilder(page.text.substring(covered.first().unit.start, covered.first().unit.end))
         covered.zipWithNext().forEach { (previous, next) ->
