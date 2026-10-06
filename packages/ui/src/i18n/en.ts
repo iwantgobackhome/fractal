@@ -158,6 +158,10 @@ export const en: Messages = {
     statusNone: 'Connect AI',
   },
   devices: {
+    setupStep1: 'Use the same Wi-Fi, or install Tailscale on both your PC and phone and sign in with the same account. Remote use needs Tailscale on both devices.',
+    setupStep2: 'On your PC: Settings → Devices → enable LAN or Tailscale.',
+    setupStep3: 'Scan the QR code with the News Papers app on your phone.',
+
     enableNetwork: 'Enable LAN or Tailscale with a reachable address before pairing your phone.',
     lan: 'Connect on the same Wi-Fi',
     tailscale: 'Connect anywhere with Tailscale',

@@ -1,5 +1,7 @@
 package app.fractal.reader
 
+import android.content.Intent
+import android.net.Uri
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.camera.core.CameraSelector
@@ -7,6 +9,8 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -72,6 +76,22 @@ fun ConnectScreen(
         onConnected()
     }
 
+    fun pairingError(failure: Throwable): String = when {
+        failure is NoPairingUrlsException -> app.getString(R.string.pairing_enable_network)
+        generateSequence(failure) { it.cause }.any { it is java.io.IOException && it !is app.fractal.sync.HubHttpException } ->
+            app.getString(R.string.pairing_network_hint)
+        else -> failure.message ?: app.getString(R.string.connection_failed)
+    }
+
+    fun openTailscale() {
+        val launch = app.packageManager.getLaunchIntentForPackage("com.tailscale.ipn")
+        val store = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.tailscale.ipn"))
+        runCatching { app.startActivity((launch ?: store).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }.onFailure {
+            app.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.tailscale.ipn"))
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        }
+    }
+
     fun pairQr(raw: String) {
         if (busy) return
         busy = true
@@ -82,18 +102,20 @@ fun ConnectScreen(
             }.onSuccess {
                 connected()
             }.onFailure {
-                error = if (it is NoPairingUrlsException) app.getString(R.string.pairing_enable_network)
-                    else it.message ?: app.getString(R.string.connection_failed)
+                error = pairingError(it)
                 busy = false
             }
         }
     }
 
-    Column(Modifier.fillMaxSize().padding(24.dp), verticalArrangement = Arrangement.Center) {
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp), verticalArrangement = Arrangement.Center) {
         Text(stringResource(R.string.app_name), fontFamily = FontFamily.Serif, fontSize = 38.sp, color = colors.ink)
         Spacer(Modifier.height(12.dp))
         Text(stringResource(R.string.connect_subtitle), color = colors.inkSoft)
-        Spacer(Modifier.height(28.dp))
+        Spacer(Modifier.height(20.dp))
+        Text(stringResource(R.string.pairing_steps), color = colors.inkSoft)
+        TextButton(onClick = ::openTailscale) { Text(stringResource(R.string.pairing_open_tailscale)) }
+        Spacer(Modifier.height(12.dp))
         if (scanning && cameraGranted) {
             QrCamera(onFound = ::pairQr, modifier = Modifier.fillMaxWidth().height(300.dp))
         }
@@ -109,7 +131,7 @@ fun ConnectScreen(
                     runCatching {
                         app.client.claim(url, code, deviceName = android.os.Build.MODEL)
                     }.onSuccess { connected() }.onFailure {
-                        error = it.message ?: app.getString(R.string.connection_failed)
+                        error = pairingError(it)
                         busy = false
                     }
                 }

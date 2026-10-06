@@ -123,6 +123,11 @@ export function Welcome({ hub, preferences, onPreferencesChange, onDone }: Props
               {t('welcome.titleTablet')}
             </h1>
             <p className="welcome__deck">{t('welcome.deckTablet')}</p>
+            <ol className="settings__quiet">
+              <li>{t('devices.setupStep1')}</li>
+              <li>{t('devices.setupStep2')}</li>
+              <li>{t('devices.setupStep3')}</li>
+            </ol>
             <DevicesSection hub={hub} />
           </>
         )}

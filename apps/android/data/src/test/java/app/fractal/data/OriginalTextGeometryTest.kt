@@ -143,4 +143,87 @@ class OriginalTextGeometryTest {
         assertFalse(range.text.contains("prev"))
         assertTrue(range.text.startsWith("The encoder N = 6"))
     }
+    @Test fun paragraphWithShortEndpointRunsKeepsEntireMiddleLines() {
+        // A justified paragraph split into PDF runs, with a short final line.
+        val text = "First word remainder\nfull width middle line\nlast"
+        val runs = listOf(run(0, "First word", .1, .1, .18), run(10, " remainder", .29, .1, .51),
+            run(21, "full width middle line", .1, .15, .7), run(44, "last", .1, .2, .12))
+        val geometry = OriginalTextGeometry(page(text, runs))
+        val selected = geometry.select(.101, .115, .219, .215)!!
+        assertEquals(selected.text, text)
+        assertEquals(selected.displayQuads.size, 46)
+        assertEquals(selected.displayQuads.filter { it.first().y in .15.. .19 }.maxOf { q -> q.maxOf { it.x } }, .8, .00001)
+        assertEquals(geometry.range(0, 48)!!.text, text)
+    }
+
+    @Test fun varyingLineWidthsSelectWholeParagraphInEitherColumn() {
+        val lines = listOf("left first", "right first", "left middle wide", "right middle wide", "left last", "right last")
+        val text = lines.joinToString("\n")
+        var offset = 0
+        val runs = lines.mapIndexed { i, line ->
+            run(offset, line, if (i % 2 == 0) .1 else .56, .1 + (i / 2) * .05,
+                if (i / 2 == 1) .34 else .2).also { offset += line.length + 1 }
+        }
+        val geometry = OriginalTextGeometry(page(text, runs))
+        for (column in 0..1) {
+            val x = if (column == 0) .1 else .56
+            val selected = geometry.select(x + .001, .115, x + .199, .215)!!
+            assertEquals(selected.text, listOf(lines[column], lines[column + 2], lines[column + 4]).joinToString("\n"))
+            assertEquals(selected.displayQuads.size, lines[column].length + lines[column + 2].length + lines[column + 4].length)
+            val first = geometry.endpointAt(x + .001, .115)!!
+            val last = geometry.endpointAt(x + .199, .215)!!
+            assertEquals(geometry.range(first, last)!!.text, selected.text)
+            assertEquals(geometry.select(x + .199, .215, x + .001, .115)!!.text, selected.text)
+        }
+        assertEquals(geometry.select(.101, .115, .759, .215)!!.text, text)
+    }
+
+    @Test fun compressionPaperFragmentedParagraphSelectsEveryRun() {
+        // Original paper page 2, paragraph beginning "machine vision benchmarks".
+        // The first PDF run is just "machine"; using its width clips later lines.
+        val page = javaClass.getResourceAsStream("/compression-paragraph-layout.json")!!.bufferedReader().use {
+            WireJson.format.decodeFromString<OriginalTextPage>(it.readText())
+        }
+        val geometry = OriginalTextGeometry(page)
+        val first = center(page.runs.first().units.first().quad!!, 0)
+        val lastQuad = page.runs.last().quad!!
+        val last = TextPoint(lastQuad.maxOf { it[0] } - .000001, lastQuad.map { it[1] }.average())
+        val selected = geometry.select(first.x, first.y, last.x, last.y)!!
+        assertTrue(selected.text.startsWith("machine"))
+        assertTrue(selected.text.contains("ILSVRC2012"))
+        assertTrue(selected.text.endsWith("most bit-rates."))
+        val glyphs = page.runs.filter { it.granularity == "glyph-advance" }.flatMap { it.units }
+        assertTrue(selected.originalQuads.containsAll(glyphs.map { u -> u.quad!!.map { TextPoint(it[0], it[1]) } }))
+        for (run in page.runs) {
+            val quad = run.quad!!
+            val middleY = quad.map { it[1] }.average()
+            val line = selected.displayQuads.filter { q -> middleY >= q.minOf { it.y } && middleY <= q.maxOf { it.y } }
+            assertTrue(line.maxOf { q -> q.maxOf { it.x } } >= quad.maxOf { it[0] } - .000001)
+        }
+        assertEquals(geometry.range(0, page.text.length)!!.text, selected.text)
+    }
+
+    @Test fun paragraphPartialEndpointsKeepMiddleLineAndSnapInRightColumn() {
+        val geometry = OriginalTextGeometry(page("first line\nmiddle full line\nlast line", listOf(
+            run(0, "first line", .56, .1, .3), run(11, "middle full line", .56, .15, .35),
+            run(28, "last line", .56, .2, .3))))
+        assertEquals(geometry.select(.711, .115, .675, .215)!!.text, " line\nmiddle full line\nlast")
+        assertEquals(geometry.endpointAt(.92, .165), 27)
+    }
+
+    @Test fun narrowPaperGutterDoesNotMergeLeftAndRightLines() {
+        // Page 2 of the compression paper: x=.08..49 and .51..92,
+        // text height=.01125. A 1.5-em gap merges the two columns.
+        val text = "left first\nleft last\nright first\nright last"
+        fun paperRun(start: Int, value: String, x: Double, y: Double): OriginalTextRun {
+            val quad = listOf(listOf(x, y + .01125), listOf(x, y), listOf(x + .41, y), listOf(x + .41, y + .01125))
+            return run(start, value, x, y, .41).copy(quad = quad, units = listOf(OriginalTextUnit(start, start + value.length, quad)))
+        }
+        val geometry = OriginalTextGeometry(page(text, listOf(paperRun(0, "left first", .08, .1),
+            paperRun(11, "left last", .08, .12), paperRun(21, "right first", .51, .1), paperRun(33, "right last", .51, .12))))
+        assertEquals(geometry.select(.081, .105, .489, .125)!!.text, "left first\nleft last")
+        assertEquals(geometry.select(.511, .105, .919, .125)!!.text, "right first\nright last")
+        assertEquals(geometry.select(.081, .105, .919, .125)!!.text, text)
+    }
+
 }
