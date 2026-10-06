@@ -25,7 +25,8 @@ internal fun TranslatedSourceBlock(block: TranslatedBlock, pages: PdfPages?) {
     Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp)) {
         block.regions.forEach { region ->
             BoxWithConstraints(Modifier.fillMaxWidth().background(Color.White)) {
-                val widthPx = with(LocalDensity.current) { maxWidth.roundToPx() }
+                val cropWidth = minOf(maxWidth, maxWidth * region.width.coerceIn(.01f, 1f) * 1.6f)
+                val widthPx = with(LocalDensity.current) { cropWidth.roundToPx().coerceAtLeast(1) }
                 var bitmap by remember(pages, region, widthPx) { mutableStateOf<Bitmap?>(null) }
                 var failed by remember(pages, region, widthPx) { mutableStateOf(false) }
                 LaunchedEffect(pages, region, widthPx) {
@@ -36,12 +37,13 @@ internal fun TranslatedSourceBlock(block: TranslatedBlock, pages: PdfPages?) {
                         }
                     } catch (cancelled: CancellationException) {
                         throw cancelled
-                    } catch (_: Exception) { failed = true }
+                    } catch (_: OutOfMemoryError) { failed = true }
+                    catch (_: Exception) { failed = true }
                 }
                 val image = bitmap
                 if (image != null) {
                     Image(image.asImageBitmap(), libraryText("Original ${block.kind} · page ${region.page}", "원문 ${block.kind} · ${region.page}쪽"),
-                        Modifier.fillMaxWidth().aspectRatio(image.width.toFloat() / image.height))
+                        Modifier.width(cropWidth).aspectRatio(image.width.toFloat() / image.height))
                 } else {
                     // Reserve the actual crop proportions while rasterising off the UI thread.
                     var pageAspect by remember(pages, region) { mutableStateOf<Float?>(null) }
@@ -50,7 +52,7 @@ internal fun TranslatedSourceBlock(block: TranslatedBlock, pages: PdfPages?) {
                             pageAspect = withContext(Dispatchers.IO) { runCatching { pages.aspectRatio(region.page - 1) }.getOrNull() }
                         }
                     }
-                    Box(Modifier.fillMaxWidth().then(pageAspect?.let { Modifier.aspectRatio(it * region.width / region.height) } ?: Modifier.height(80.dp))) {
+                    Box(Modifier.width(cropWidth).then(pageAspect?.let { Modifier.aspectRatio(it * region.width / region.height) } ?: Modifier.height(80.dp))) {
                         if (failed) Text(libraryText("Original image unavailable", "원문 이미지를 불러올 수 없습니다"), Modifier.padding(12.dp),
                             style = MaterialTheme.typography.bodySmall, color = Color.DarkGray)
                     }

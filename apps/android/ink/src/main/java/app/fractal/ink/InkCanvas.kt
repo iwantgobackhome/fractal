@@ -616,7 +616,7 @@ private class DryInkView(context: Context) : View(context) {
         val visible = current.filterNot { it.deleted || it.points.isEmpty() || (preview != null && it.id in selected) }
         if (visible.isNotEmpty()) {
             // Only derived display caches are bounded. Input and saved normalized vectors retain precision.
-            val scale = minOf(1.0, kotlin.math.sqrt(4_194_304.0 / (width.toDouble() * height)), 4096.0 / max(width, height))
+            val scale = minOf(1.0, kotlin.math.sqrt(((context.getSystemService(android.content.Context.ACTIVITY_SERVICE) as android.app.ActivityManager).memoryClass.toDouble() * 1024 * 1024 / 384).coerceAtMost(1_048_576.0) / (width.toDouble() * height)), 4096.0 / max(width, height))
             val cacheWidth = (width * scale).toInt().coerceAtLeast(1); val cacheHeight = (height * scale).toInt().coerceAtLeast(1)
             if (visible.any { it.brush == "highlighter" }) highlights = Bitmap.createBitmap(cacheWidth, cacheHeight, Bitmap.Config.ARGB_8888)
             if (visible.any { it.brush != "highlighter" }) ink = Bitmap.createBitmap(cacheWidth, cacheHeight, Bitmap.Config.ARGB_8888)
