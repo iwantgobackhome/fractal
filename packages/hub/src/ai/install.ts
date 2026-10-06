@@ -11,7 +11,7 @@ import { resolveClaudePtyCommand } from './claude-usage';
 const exec = promisify(execFile);
 const COMMAND_TIMEOUT_MS = 5 * 60_000;
 
-async function executableOnPath(name: string): Promise<string | null> {
+export async function executableOnPath(name: string): Promise<string | null> {
   const paths = cliSearchDirectories();
   for (const directory of paths) {
     if (!directory) continue;
