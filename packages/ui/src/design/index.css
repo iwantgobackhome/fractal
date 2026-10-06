@@ -57,8 +57,9 @@
 }
 .workspace-brand strong {
   display: block;
-  font: 650 32px/1.15 var(--font-serif);
-  letter-spacing: -1px;
+  font: 650 26px/1.15 var(--font-serif);
+  letter-spacing: -0.6px;
+  white-space: nowrap;
 }
 .workspace-brand small {
   display: block;

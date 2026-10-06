@@ -25,7 +25,7 @@
   <a href="https://github.com/iwantgobackhome/news-papers/releases/latest"><img alt="最新リリース" src="https://img.shields.io/github/v/release/iwantgobackhome/news-papers?style=for-the-badge&color=3b625b"></a>
 </p>
 
-![News Papers の発見画面に表示された WorldAuditBench の情報と最初の適切な科学図](docs/assets/readme/v020-desktop-discovery.png)
+![News Papers の発見画面に表示された Imagine to Act の情報・要旨と最初の科学図](docs/assets/readme/v030-desktop-discovery.png)
 
 学術発見画面で論文とその科学図を一緒に確認できます。
 
@@ -43,7 +43,7 @@ Windows と Linux のインストール済みアプリは、公開された GitH
 
 発見画面では、論文 HTML の最初の適切なキャプション付き図、またはニュース本文の最初の適切な画像を試します。取得できない場合は後続の適切な画像や情報源のサムネイルを試します。ロゴやプレースホルダーを除外し、検証済みの画像データをローカルに保存します。利用できる画像がなければ、テキストと読む操作を保ちます。画像の有無は情報源によって異なり、画像がなくても論文や PDF がないとは限りません。配布形式と機能の範囲は [0.2.0 リリースノート](docs/releases/0.2.0.md) を参照してください。
 
-![デスクトップリーダーで開いた出版物 PDF](docs/assets/readme/v020-reader-original.png)
+![arXiv から開いてデスクトップリーダーに表示した Attention Is All You Need](docs/assets/readme/v030-reader-original.png)
 
 ### 原文を見失わないリーダー
 
@@ -69,7 +69,7 @@ arXiv ID、DOI、公開論文の URL、手元の PDF を開けます。保存し
 | ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
 | 各分野で既存または個人のトピックをフォローできます。 | 対応する公開記事を読みやすいテキスト表示で開き、見出しや本文をすばやく翻訳できます。配信元の制限により本文を取得できない場合があります。 |
 
-![News Papers 内の MIT News 記事の日付、著者、最初の本文画像](docs/assets/readme/v020-desktop-news.png)
+![News Papers の分野ニュース：記事画像と翻訳された見出し](docs/assets/readme/v030-desktop-news.png)
 
 記事と本文画像をアプリ内で読み、配信元の原文もすぐに開けます。
 

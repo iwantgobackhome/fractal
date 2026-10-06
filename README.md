@@ -25,7 +25,7 @@
   <a href="https://github.com/iwantgobackhome/news-papers/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/iwantgobackhome/news-papers?style=for-the-badge&color=3b625b"></a>
 </p>
 
-![WorldAuditBench metadata and its first suitable scientific figure in News Papers discovery](docs/assets/readme/v020-desktop-discovery.png)
+![Imagine to Act metadata, abstract and its first scientific figure in News Papers discovery](docs/assets/readme/v030-desktop-discovery.png)
 
 A paper and its scientific figure in the scholarly discovery desk.
 
@@ -43,7 +43,7 @@ Select the exact characters you need in the original PDF or translation. Open an
 
 Discovery tries the first suitable captioned figure from a paper's HTML, or the first suitable content image from a news article. If a candidate fails, it tries later suitable images and source thumbnails. It excludes logos and placeholders and caches verified image bytes locally. When no usable image is available, the row keeps its text and reading actions. Image coverage depends on the source; a missing image does not imply a missing paper or PDF. See the [0.2.0 release notes](docs/releases/0.2.0.md) for distribution and capability boundaries.
 
-![In-app publication PDF in the desktop reader](docs/assets/readme/v020-reader-original.png)
+![Attention Is All You Need opened from arXiv in the desktop reader](docs/assets/readme/v030-reader-original.png)
 
 ### Read with the source in sight
 
@@ -69,7 +69,7 @@ The home feed brings together arXiv papers, Hugging Face Daily Papers, field new
 | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Follow curated or personal topics within your fields. | Open supported public articles in a plain-text reading view and quickly translate titles or passages. Publisher restrictions can prevent extraction. |
 
-![MIT News article with its date, author and first content image inside News Papers](docs/assets/readme/v020-desktop-news.png)
+![Field news with article images and translated headlines in News Papers](docs/assets/readme/v030-desktop-news.png)
 
 Read the article and its content image in News Papers, with the original source one click away.
 
