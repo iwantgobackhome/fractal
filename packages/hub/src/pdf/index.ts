@@ -3,7 +3,7 @@ import { getDocument, OPS } from 'pdfjs-dist/legacy/build/pdf.mjs';
 import type { Block, Coverage, Region } from '@fractal/shared';
 import { SourceError } from '../arxiv/index';
 
-export const EXTRACTION_VERSION = 'pdfjs6-lines-v4';
+export const EXTRACTION_VERSION = 'pdfjs6-lines-v5';
 export const sha256 = (data: string | Uint8Array) => createHash('sha256').update(data).digest('hex');
 export interface ExtractionOptions {
   maxPages?: number;
@@ -154,7 +154,12 @@ const mergeSizes = (a: Record<string, number>, b: Record<string, number>) => {
   for (const [size, chars] of Object.entries(b)) out[size] = (out[size] ?? 0) + chars;
   return out;
 };
-const normalizeText = (s: string) => s.replace(/\s+/g, ' ').trim();
+const normalizeText = (s: string) =>
+  s
+    .replace(/([´`ˆ˜¨¯˙ˇ])\s*(\p{L})/gu, (_, accent: string, base: string) => base + ACCENTS[accent])
+    .replace(/\s+/g, ' ')
+    .trim()
+    .normalize('NFC');
 function union(regions: Region[]): Region {
   const first = regions[0],
     x = Math.min(...regions.map((r) => r.x)),
@@ -327,6 +332,54 @@ function attachFragments(lines: Line[]): Line[] {
   // shows nothing useful even as a crop.
   return kept.filter((l) => !(l.text.replace(/\s/g, '').length <= 1 && !/[\p{L}\p{N}]/u.test(l.text)));
 }
+/** Spacing accents overlap their base glyph. A baseline caret used as an operator
+ * is preserved; only raised, geometrically overlapping carets become accents. */
+const ACCENTS: Record<string, string> = {
+  '´': '\u0301',
+  '`': '\u0300',
+  ˆ: '\u0302',
+  '^': '\u0302',
+  '˜': '\u0303',
+  '¨': '\u0308',
+  '¯': '\u0304',
+  '˙': '\u0307',
+  ˇ: '\u030c',
+};
+function attachAccents(items: Line[]): void {
+  for (let i = items.length - 1; i >= 0; i--) {
+    const accent = items[i],
+      mark = ACCENTS[accent.text.trim()];
+    if (!mark) continue;
+    const cx = accent.region.x + accent.region.width / 2;
+    let best: Line | undefined,
+      index = -1,
+      distance = Infinity;
+    for (const base of items) {
+      if (base === accent || !/\p{L}/u.test(base.text)) continue;
+      if (accent.text === '^' && accent.baseline >= base.baseline - base.region.height * 0.15) continue;
+      if (Math.abs(accent.baseline - base.baseline) > base.region.height * 0.8) continue;
+      const chars = [...base.text];
+      for (let j = 0; j < chars.length; j++) {
+        if (!/\p{L}/u.test(chars[j])) continue;
+        const x = base.region.x + (base.region.width * (j + 0.5)) / chars.length;
+        const d = Math.abs(cx - x);
+        if (d < Math.max(base.em * 0.55, accent.region.width) && d < distance) {
+          best = base;
+          index = j;
+          distance = d;
+        }
+      }
+    }
+    if (best) {
+      const chars = [...best.text];
+      chars[index] += mark;
+      best.text = chars.join('').normalize('NFC');
+      best.pieces = [{ x: best.region.x, text: best.text }];
+      best.region = union([best.region, accent.region]);
+      items.splice(i, 1);
+    }
+  }
+}
 const wordCount = (text: string) => text.split(/\s+/).filter((w) => /\p{L}{2,}/u.test(w)).length;
 const letterRatio = (text: string) => {
   const solid = text.replace(/\s/g, '');
@@ -361,6 +414,7 @@ function continuesProse(line: Line, previous: Line | undefined, proseWidth = 0):
   // A full line packed with inline math ("p_g ≈ 1/k. For 4-choice with G = 16, Eq. (6)") is
   // still a line of its paragraph, even when a radical makes it a little taller: a display
   // equation never fills the measure with words.
+  if (proseWidth > 0 && line.region.width >= proseWidth * 0.85 && words >= 2 && /[a-z]{3,}/.test(text) && !/[=≈≤≥∑∫]/u.test(text)) return true;
   if (proseWidth > 0 && line.region.width >= proseWidth * 0.85 && ratio >= 0.4 && words >= 3) return true;
   if (line.region.height > previous.region.height * 1.6) return false;
   // A paragraph's last words: "architectures [38, 24, 15].", "(3.5 days).", "[38, 2, 9].".
@@ -377,6 +431,7 @@ function isDisplayMath(line: Line, proseWidth: number, center: number): boolean 
 }
 function isHeading(line: Line, median: number, references: boolean): boolean {
   if (line.size > median * 1.25) return true;
+  if (/^(?:Abstract|Index Terms)\s*[—–-]/i.test(line.text)) return false;
   const short = line.text.length < 70 && !/,/.test(line.text) && !/[.;]$/.test(line.text);
   // A numbered heading is never set smaller than the body: a footnote also opens with a bare
   // number ("1 We further quantify ..."), but in footnote-sized type.
@@ -394,6 +449,7 @@ function isHeading(line: Line, median: number, references: boolean): boolean {
     line.chars > 0 &&
     line.boldChars / line.chars >= 0.8 &&
     wordCount(line.text) <= 8 &&
+    line.region.width < 0.35 &&
     line.text.length < 70 &&
     !/[.,;]$/.test(line.text) &&
     !/\.\s+[A-Z(]/.test(line.text)
@@ -574,7 +630,8 @@ const lowercaseRatio = (text: string) => {
   return solid.length ? (solid.match(/\p{Ll}/gu)?.length ?? 0) / solid.length : 0;
 };
 /** A line of running text — long, lowercase, filling half of a box — is never a table cell. */
-const isRunningProse = (line: Line, box: Region) => wordCount(line.text) >= 8 && lowercaseRatio(line.text) >= 0.75 && line.region.width >= box.width * 0.5;
+const isRunningProse = (line: Line, box: Region) =>
+  wordCount(line.text) >= 8 && lowercaseRatio(line.text) >= 0.75 && line.region.width >= Math.min(box.width * 0.5, 0.25);
 /**
  * A table is rows of short cells stacked in aligned columns, framed by its rules. Rows are
  * found per column of a two-column page, so the two columns' lines never form one row.
@@ -632,7 +689,7 @@ function findTables(lines: Line[], kindOf: (l: Line) => LineKind, gutter: Gutter
       if (gap < 0.015 || gap > 0.5) continue;
       const box = union([top, bottom]);
       const inside = lines.filter((l) => centerInside(l, box, 0));
-      if (inside.length < 2 || inside.some((l) => isRunningProse(l, box))) continue;
+      if (inside.length < 2 || inside.some((l) => isRunningProse(l, box) || kindOf(l) === 'caption')) continue;
       if (!inside.some((l) => kindOf(l) === 'fragment' || /^\d+:/.test(l.text))) continue;
       seeds.push({ lines: inside, region: box });
     }
@@ -650,6 +707,7 @@ function findTables(lines: Line[], kindOf: (l: Line) => LineKind, gutter: Gutter
   for (const seed of seeds) {
     const members = new Set(seed.lines);
     let box = seed.region;
+    if (lines.some((l) => centerInside(l, box, 0) && (isRunningProse(l, box) || kindOf(l) === 'caption'))) continue;
     let table = true;
     for (let grown = true; grown && table;) {
       grown = false;
@@ -809,6 +867,7 @@ export async function extractPdf(bytes: Uint8Array, paperKey: string, options: E
         textPages++;
         // A narrow 4% margin avoids swallowing first/last body lines on normal papers.
         const inMargins = (l: Line) => l.region.y >= 0.04 && l.region.y + l.region.height <= 0.96;
+        attachAccents(raw);
         const gutter = gutterOf(linesFromItems(raw).filter(inMargins));
         const lines = attachFragments(mergeAdjacentLines(linesFromItems(raw, gutter).filter(inMargins), gutter));
         // The body size is the character-weighted median of the page's sentence-like lines: a
@@ -838,15 +897,30 @@ export async function extractPdf(bytes: Uint8Array, paperKey: string, options: E
         // Preserve non-text marks conservatively; vector drawings may be tables or equations.
         const graphicRegions: Region[] = [];
         const ruleRegions: Region[] = [];
+        const strokeRegions: Region[] = [];
         let matrix = [1, 0, 0, 1, 0, 0];
         const stack: number[][] = [];
         const point = (x: number, y: number) => [matrix[0] * x + matrix[2] * y + matrix[4], matrix[1] * x + matrix[3] * y + matrix[5]];
         for (let i = 0; i < operators.fnArray.length; i++) {
           const op = operators.fnArray[i],
             args = operators.argsArray[i];
-          if (op === OPS.save) {
+          if (op === OPS.paintFormXObjectBegin) {
             stack.push([...matrix]);
-          } else if (op === OPS.restore) {
+            if (args[0]) {
+              const [a, b, c, d, e, f] = args[0],
+                m = matrix;
+              matrix = [
+                m[0] * a + m[2] * b,
+                m[1] * a + m[3] * b,
+                m[0] * c + m[2] * d,
+                m[1] * c + m[3] * d,
+                m[0] * e + m[2] * f + m[4],
+                m[1] * e + m[3] * f + m[5],
+              ];
+            }
+          } else if (op === OPS.save) {
+            stack.push([...matrix]);
+          } else if (op === OPS.restore || op === OPS.paintFormXObjectEnd) {
             matrix = stack.pop() ?? [1, 0, 0, 1, 0, 0];
           } else if (op === OPS.transform) {
             const [a, b, c, d, e, f] = args,
@@ -861,19 +935,40 @@ export async function extractPdf(bytes: Uint8Array, paperKey: string, options: E
             ];
           } else {
             let bounds: number[] | undefined;
-            if (op === OPS.constructPath && args[2]?.length === 4) bounds = Array.from(args[2]);
+            if (op === OPS.constructPath && args[0] !== OPS.endPath && args[2]?.length === 4) bounds = Array.from(args[2]);
             if ([OPS.paintImageXObject, OPS.paintInlineImageXObject, OPS.paintImageMaskXObject].includes(op)) bounds = [0, 0, 1, 1];
             if (bounds) {
               const [x, y, r, b] = bounds,
                 rule = thinRule(page.view, pageNum, [point(x, y), point(x, b), point(r, y), point(r, b)]);
               if (rule) ruleRegions.push(rule);
             }
+            if (
+              bounds &&
+              op === OPS.constructPath &&
+              [OPS.stroke, OPS.closeStroke, OPS.fillStroke, OPS.eoFillStroke, OPS.closeFillStroke, OPS.closeEOFillStroke].includes(args[0])
+            ) {
+              const [x, y, r, b] = bounds;
+              const points = [point(x, y), point(x, b), point(r, y), point(r, b)];
+              // Strokes have visible ink even when their path bounds have zero area.
+              const xs = points.map((p) => p[0]),
+                ys = points.map((p) => p[1]);
+              try {
+                strokeRegions.push(
+                  rectangle(page.view, pageNum, [
+                    [Math.min(...xs) - 0.25, Math.min(...ys) - 0.25],
+                    [Math.max(...xs) + 0.25, Math.max(...ys) + 0.25],
+                  ]),
+                );
+              } catch {
+                /* clipped entirely off page */
+              }
+            }
             if (bounds)
               try {
                 const [x, y, r, b] = bounds,
                   region = rectangle(page.view, pageNum, [point(x, y), point(x, b), point(r, y), point(r, b)]);
                 // A page-sized rectangle is a background fill, not a figure.
-                if (region.width > 0.03 && region.height > 0.02 && region.width * region.height < 0.6) graphicRegions.push(region);
+                if (region.width > 0.001 && region.height > 0.001 && region.width * region.height < 0.3) graphicRegions.push(region);
               } catch {
                 /* hairline rules are not paragraph regions */
               }
@@ -885,22 +980,112 @@ export async function extractPdf(bytes: Uint8Array, paperKey: string, options: E
         // a figure at all — those paragraphs stay text and the frame is dropped.
         // Table cells are found on the whole page first and kept out of the column inference:
         // a full-width grid's cells would otherwise read as paired left/right column lines.
+
         const pageProseWidth = Math.max(0, ...lines.filter((l) => kindOf(l) === 'paragraph').map((l) => l.region.width));
-        const tableCandidates = findTables(lines, kindOf, gutter, ruleRegions, pageProseWidth);
+
+        const figureCaptions = lines.filter((l) => /^(?:figure|fig\.?)\s*\d+[a-z]?\s*[.:]/i.test(l.text));
+        // Only caption-associated hairlines seed figures; body underlines and fraction bars
+        // continue through the equation/table heuristics instead.
+        for (const region of strokeRegions) {
+          const cx = region.x + region.width / 2;
+          if (
+            region.width * region.height < 0.3 &&
+            figureCaptions.some(
+              (c) =>
+                c.region.y >= region.y + region.height - 0.005 &&
+                c.region.y - (region.y + region.height) < 0.3 &&
+                cx >= c.region.x - 0.02 &&
+                cx <= c.region.x + c.region.width + 0.02,
+            )
+          )
+            graphicRegions.push(region);
+        }
+        const tableCandidates = findTables(lines, kindOf, gutter, ruleRegions, pageProseWidth).filter(
+          (t) =>
+            !figureCaptions.some(
+              (c) =>
+                c.region.y >= t.region.y &&
+                c.region.y - (t.region.y + t.region.height) < 0.05 &&
+                c.region.x < t.region.x + t.region.width &&
+                c.region.x + c.region.width > t.region.x,
+            ),
+        );
+        // Explicit table labels bound ruled grids before their cells can bridge nearby plots.
+        const tableLabels = lines.filter((l) => CAPTION_LABEL_ONLY.test(l.text));
+        for (const label of tableLabels) {
+          const cx = label.region.x + label.region.width / 2;
+          const rules = ruleRegions.filter(
+            (r) =>
+              r.y > label.region.y &&
+              r.y - label.region.y < 0.16 &&
+              cx >= r.x &&
+              cx <= r.x + r.width &&
+              !tableLabels.some(
+                (other) =>
+                  other !== label &&
+                  other.region.y > label.region.y &&
+                  other.region.y < r.y &&
+                  other.region.x + other.region.width / 2 >= r.x &&
+                  other.region.x + other.region.width / 2 <= r.x + r.width,
+              ),
+          );
+          if (rules.length < 2) continue;
+          const region = union(rules);
+          const members = lines.filter((l) => kindOf(l) !== 'caption' && centerInside(l, region, 0));
+          if (members.length && !members.some((l) => isRunningProse(l, region)))
+            tableCandidates.push({ region: union([region, ...members.map((l) => l.region)]), lines: members });
+        }
         const tableLines = new Set(tableCandidates.flatMap((t) => t.lines));
         const free = lines.filter((l) => !tableLines.has(l));
         const figureClusters: Region[] = [];
         const absorbed = new Set<Line>();
-        for (const cluster of clusterFigures(graphicRegions, FIGURE_CLUSTER_GAP)) {
-          const inside = free.filter((l) => centerInside(l, cluster, 0));
-          if (inside.filter((l) => wordCount(l.text) >= 5).length >= 3) continue;
+        // Captions separate adjacent drawings even when arrows/frames nearly touch.
+        const graphicsByCaption = new Map<Line | undefined, Region[]>();
+        for (const region of graphicRegions) {
+          if (
+            tableCandidates.some(
+              (t) =>
+                region.x >= t.region.x - 0.002 &&
+                region.x + region.width <= t.region.x + t.region.width + 0.002 &&
+                region.y >= t.region.y - 0.002 &&
+                region.y + region.height <= t.region.y + t.region.height + 0.002,
+            )
+          )
+            continue;
+          const cx = region.x + region.width / 2;
+          const caption = figureCaptions
+            .filter(
+              (c) =>
+                c.region.y >= region.y + region.height - 0.005 &&
+                c.region.y - (region.y + region.height) < 0.3 &&
+                cx >= c.region.x - 0.02 &&
+                cx <= c.region.x + c.region.width + 0.02,
+            )
+            .sort((a, b) => a.region.y - b.region.y)[0];
+          const group = graphicsByCaption.get(caption) ?? [];
+          group.push(region);
+          graphicsByCaption.set(caption, group);
+        }
+        for (const cluster of [...graphicsByCaption.values()].flatMap((group) => clusterFigures(group, FIGURE_CLUSTER_GAP))) {
+          const inside = free.filter((l) => kindOf(l) !== 'caption' && centerInside(l, cluster, 0));
+          if (
+            inside.filter((l) => isRunningProse(l, cluster) || (wordCount(l.text) >= 8 && lowercaseRatio(l.text) >= 0.6 && l.region.width >= 0.2)).length >= 2
+          )
+            continue;
           const mine = new Set<Line>(inside);
           for (const l of free)
-            if (!absorbed.has(l) && kindOf(l) === 'fragment' && !/[.!?]$/.test(l.text) && centerInside(l, cluster, l.region.height * 1.5)) mine.add(l);
+            if (
+              !absorbed.has(l) &&
+              kindOf(l) !== 'caption' &&
+              wordCount(l.text) <= 6 &&
+              !/[.!?]$/.test(l.text) &&
+              centerInside(l, cluster, l.region.height * 1.5)
+            )
+              mine.add(l);
           // A sub-figure's title sits just above its drawing ("Scaled Dot-Product Attention"): a
           // short, unpunctuated line centred over the cluster is part of the picture, not prose.
           for (const l of free) {
-            if (absorbed.has(l) || mine.has(l) || kindOf(l) === 'heading' || kindOf(l) === 'caption') continue;
+            if (absorbed.has(l) || mine.has(l) || kindOf(l) === 'caption') continue;
             const cx = l.region.x + l.region.width / 2,
               bottom = l.region.y + l.region.height;
             if (
@@ -911,6 +1096,16 @@ export async function extractPdf(bytes: Uint8Array, paperKey: string, options: E
               wordCount(l.text) <= 6 &&
               l.region.width < Math.max(cluster.width * 1.6, 0.2) &&
               !/[.!?:,;]$/.test(l.text)
+            )
+              mine.add(l);
+          }
+          for (const l of free) {
+            if (
+              /^\([a-z]\)\s/.test(l.text) &&
+              l.region.y >= cluster.y &&
+              l.region.y - (cluster.y + cluster.height) < l.region.height * 1.5 &&
+              l.region.x >= cluster.x &&
+              l.region.x + l.region.width <= cluster.x + cluster.width + 0.02
             )
               mine.add(l);
           }
@@ -930,7 +1125,7 @@ export async function extractPdf(bytes: Uint8Array, paperKey: string, options: E
           for (let merged = true; merged;) {
             merged = false;
             for (let fi = 0; fi < figureClusters.length; fi++) {
-              if (tableGraphicIndexes.has(fi) || !boxesClose(tables[ti], figureClusters[fi], FIGURE_CLUSTER_GAP)) continue;
+              if (tableGraphicIndexes.has(fi) || !boxesClose(tables[ti], figureClusters[fi], 0)) continue;
               tables[ti] = union([tables[ti], figureClusters[fi]]);
               tableGraphicIndexes.add(fi);
               merged = true;
@@ -1162,7 +1357,7 @@ export async function extractPdf(bytes: Uint8Array, paperKey: string, options: E
               last !== undefined &&
               !sameVisualLine &&
               line.leadBold &&
-              line.boldChars < line.chars &&
+              line.boldChars / line.chars < 0.8 &&
               /[.!?]$/.test(last.text) &&
               last.region.width < proseWidth * 0.97;
             // A short tail ("PE_pos.", "[38, 24, 15].") has too few glyphs to tell its size by.
@@ -1187,7 +1382,8 @@ export async function extractPdf(bytes: Uint8Array, paperKey: string, options: E
               !sameVisualLine &&
               line.region.y - (last.region.y + last.region.height) < last.region.height * 1.2 &&
               Math.abs(line.region.x - blockLeft) < 0.08 &&
-              /^[a-z]/.test(line.text) &&
+              (/^[a-z]/.test(line.text) ||
+                (lineKind === 'heading' && Math.abs(line.size - last.size) < line.size * 0.1 && line.fontWeight === last.fontWeight)) &&
               (proseWidth === 0 || line.region.width < proseWidth * 0.7 || lineKind === 'heading') &&
               // "A Open-answer mathematical reasoning:" wraps onto a bold "the small-spurious-advantage case".
               (!/[.:;]$/.test(current.text) || (lineKind === 'heading' && /:$/.test(current.text)));
