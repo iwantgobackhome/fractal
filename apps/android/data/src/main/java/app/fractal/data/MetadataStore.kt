@@ -27,6 +27,12 @@ object MetadataMerge {
                     val added = desired.filterNot { it in before }
                     put(key, JsonArray((values(current).filterNot { it in removed } + added).distinct().map(::JsonPrimitive)))
                 }
+                "placement" -> {
+                    val remote = current[key] as? JsonObject
+                    val local = value as? JsonObject
+                    put(key, if (remote?.text("updatedAt") != null && local?.text("updatedAt") != null &&
+                        atLeastAsRecent(remote.text("updatedAt")!!, local.text("updatedAt")!!)) remote else value)
+                }
                 "lastReadAt" -> {
                     val remote = current.text(key)
                     val local = (value as? JsonPrimitive)?.contentOrNull
@@ -134,6 +140,16 @@ class MetadataStore(private val database: FractalDatabase, private val deviceId:
                 database.library().upsert(libraryEntity(projected, paper, paper.dirty))
             }
         }
+    }
+
+    suspend fun placeAnswer(id: String, placement: AnswerPlacement) = database.withTransaction {
+        val row = database.metadata().history(id) ?: return@withTransaction
+        val base = WireJson.format.parseToJsonElement(row.json).jsonObject
+        val patch = buildJsonObject { put("id", id); put("placement", placement.json()) }
+        val projected = MetadataMerge.apply(base, base, patch)
+        if (projected["placement"] == base["placement"]) return@withTransaction
+        enqueue("history", id, base, patch)
+        database.metadata().upsert(historyEntity(projected))
     }
 
     suspend fun settledHistory(entry: JsonObject) = database.withTransaction {

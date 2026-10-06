@@ -23,6 +23,7 @@ internal fun selectionContext(value: Pair<Int, PdfTextSelection>?): JsonObject =
         put("provenanceLabel", selection.provenance); put("hash", selection.pdfSha256); put("version", selection.extractionVersion)
         put("start", selection.start); put("end", selection.end); put("rotation", selection.rotation)
         fun rectangles(rects: List<PdfRect>) = JsonArray(rects.map { rect -> buildJsonObject { put("x", rect.x); put("y", rect.y); put("width", rect.width); put("height", rect.height) } })
+        put("quads", JsonArray(selection.quads.map { quad -> JsonArray(quad.map { (x, y) -> buildJsonObject { put("x", x); put("y", y) } }) }))
         put("rects", rectangles(selection.rects)); put("originalRects", rectangles(selection.originalRects))
     }
 }
@@ -33,7 +34,9 @@ internal fun contextSelection(context: JsonObject): Pair<Int, PdfTextSelection>?
         PdfRect(n("x"), n("y"), n("width"), n("height"))
     }
     return page to PdfTextSelection(context.string("text"), rectangles("rects"), context["start"]?.jsonPrimitive?.intOrNull, context["end"]?.jsonPrimitive?.intOrNull,
-        origin = context.string("origin").ifBlank { "original" }, blockId = context["blockId"]?.jsonPrimitive?.contentOrNull,
+        quads = (context["quads"] as? JsonArray).orEmpty().map { quad -> quad.jsonArray.map { point ->
+            point.jsonObject["x"]!!.jsonPrimitive.float to point.jsonObject["y"]!!.jsonPrimitive.float
+        } }, origin = context.string("origin").ifBlank { "original" }, blockId = context["blockId"]?.jsonPrimitive?.contentOrNull,
         provenance = context.string("provenanceLabel"), originalRects = rectangles("originalRects"), pdfSha256 = context["hash"]?.jsonPrimitive?.contentOrNull,
         extractionVersion = context["version"]?.jsonPrimitive?.contentOrNull, rotation = context["rotation"]?.jsonPrimitive?.intOrNull)
 }
@@ -137,7 +140,14 @@ internal fun DurableReaderPanel(app: ReaderApplication, paperKey: String, annota
             if (tab == "history") {
                 LazyColumn(Modifier.weight(1f).testTag("reader-thread-history")) {
                     items(threads, key = { it.id }) { thread ->
-                        TextButton(onClick = { onThreadChange(thread.id); onTabChange("questions") }, modifier = Modifier.fillMaxWidth().testTag("reader-thread-${thread.id}")) {
+                        TextButton(onClick = { onThreadChange(thread.id)
+                            val pin = readerAnswerPins(requests, history).firstOrNull { it.key == thread.id }
+                            if (pin != null) {
+                                val old = answerThreadRoot(history, thread.id)?.answerPlacement() ?: localAnswerPlacement(requests, thread.id)
+                                saveAnswerPlacement(app, paperKey, thread.id, old?.copy(state = "open", updatedAt = java.time.Instant.now().toString())
+                                    ?: AnswerPlacement(pin.page, pin.rect.x.coerceIn(0f, 1f), (pin.rect.y + pin.rect.height).coerceIn(0f, 1f), "open", java.time.Instant.now().toString()))
+                                onJump(pin.page); onClose()
+                            } else onTabChange("questions") }, modifier = Modifier.fillMaxWidth().testTag("reader-thread-${thread.id}")) {
                             Column(Modifier.fillMaxWidth().padding(8.dp)) {
                                 Text(thread.title, maxLines = 2, overflow = TextOverflow.Ellipsis)
                                 Text(libraryText("${thread.turns.size} turns", "${thread.turns.size}개 대화"), style = MaterialTheme.typography.bodySmall)

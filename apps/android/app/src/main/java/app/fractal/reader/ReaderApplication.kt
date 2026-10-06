@@ -29,7 +29,7 @@ class ReaderApplication : Application() {
         app.fractal.sync.discoveryScope(credentials.load())
     } }
     val originalText by lazy { OriginalTextRepository(database, client) }
-    private val submissionScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    internal val submissionScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     val history by lazy { HistoryRepository(database, client, submissionScope) }
     val metadata by lazy { MetadataStore(database) {
         credentials.load()?.deviceId ?: (settings.getString("localDeviceId", null)

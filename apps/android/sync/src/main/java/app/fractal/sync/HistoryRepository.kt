@@ -94,6 +94,7 @@ class HistoryRepository(private val database: FractalDatabase, private val clien
                 if (local != null) database.reader().upsert(local.copy(status = "attached", historyId = record.text("id"), error = null))
             }
         }
+        reconcileAnswerPlacementIntents(database, key)
     }
     private suspend fun cache(remote: JsonObject) = database.withTransaction {
         val id = remote.text("id") ?: return@withTransaction

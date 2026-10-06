@@ -104,6 +104,8 @@ interface MetadataDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun upsert(value: FolderEntity)
     @Query("SELECT * FROM history WHERE paperKey = :key AND deleted = 0 ORDER BY updatedAt DESC")
     fun observeHistory(key: String): Flow<List<HistoryEntity>>
+    @Query("SELECT * FROM history WHERE paperKey = :key AND deleted = 0 ORDER BY updatedAt DESC")
+    suspend fun historyEntries(key: String): List<HistoryEntity>
     @Query("SELECT * FROM history WHERE id = :id") suspend fun history(id: String): HistoryEntity?
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun upsert(value: HistoryEntity)
     @Query("SELECT * FROM snapshots WHERE paperKey = :key") suspend fun snapshot(key: String): SnapshotEntity?
