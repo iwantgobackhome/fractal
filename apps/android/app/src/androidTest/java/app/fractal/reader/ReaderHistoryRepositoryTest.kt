@@ -82,4 +82,31 @@ class ReaderHistoryRepositoryTest {
             assertEquals(1, cancels); assertEquals("canceled", db.metadata().history("retained-answer")!!.status)
         } finally { scope.cancel(); db.close() }
     }
+    @Test fun placementIntentAttachesWithoutMountedCardAndPushesFullEntry() = runBlocking {
+        val db = Room.inMemoryDatabaseBuilder(context, FractalDatabase::class.java).build()
+        val placement = AnswerPlacement(2, .2f, .4f, "collapsed", "2026-10-06T00:00:00Z")
+        var pushed: JsonObject? = null
+        val remote = record("request")
+        val client = object : HubDataClient {
+            override suspend fun data(path: String, method: String, body: JsonElement?): JsonElement {
+                if (path.startsWith("/api/sync/pull")) return buildJsonObject {
+                    put("cursor", "1"); put("history", JsonArray(listOf(remote)))
+                }
+                pushed = body!!.jsonObject["history"]!!.jsonArray.single().jsonObject
+                return buildJsonObject { put("metadataResults", JsonArray(emptyList())) }
+            }
+        }
+        try {
+            db.reader().upsert(AiRequestEntity("answer-placement:retained-answer", "p", "draft", placement.json().toString(),
+                "{\"deviceId\":\"android-fixture\"}", "draft", null, null, false, placement.updatedAt, placement.updatedAt))
+            SyncEngine(db, client).syncOnce()
+            assertEquals(placement, db.metadata().history("retained-answer")!!.answerPlacement())
+            assertEquals(1, pushed!!["baseRev"]!!.jsonPrimitive.int)
+            val entry = pushed!!["entry"]!!.jsonObject
+            remote.filterKeys { it != "deviceId" }.forEach { (name, value) -> assertEquals(name, value, entry[name]) }
+            assertEquals(placement.json(), entry["placement"])
+            assertEquals("android-fixture", entry["deviceId"]!!.jsonPrimitive.content)
+        } finally { db.close() }
+    }
+
 }

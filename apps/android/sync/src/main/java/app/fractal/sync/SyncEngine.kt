@@ -147,6 +147,8 @@ class SyncEngine(private val database: FractalDatabase, private val client: HubD
             for (value in entries("folders")) value.jsonObject.let { project("folder", it.text("id")!!, it) }
             for (value in papers) value.jsonObject.let { project("paper", it.text("paperKey")!!, it) }
             for (value in entries("history")) value.jsonObject.let { project("history", it.text("id")!!, it) }
+            for (key in entries("history").mapNotNull { it.jsonObject.text("paperKey") }.distinct())
+                reconcileAnswerPlacementIntents(database, key)
             for (value in annotations) {
                 val remote = WireJson.annotationEntity(value.jsonObject, false)
                 if (MergeRules.remoteWins(database.annotations().get(remote.id), remote)) database.annotations().upsert(remote)
@@ -197,10 +199,7 @@ class SyncEngine(private val database: FractalDatabase, private val client: HubD
                     put("patch", JsonObject(patch.filterKeys { it != "deleted" }))
                     if (patch["deleted"] != null) put("deleted", patch.getValue("deleted"))
                 }
-                "history" -> put("entry", buildJsonObject {
-                    for ((key, value) in patch) put(key, value)
-                    put("deviceId", mutation.deviceId)
-                })
+                "history" -> put("entry", historyMutationEntry(mutation))
             }
         }
         val payload = buildJsonObject {
@@ -238,7 +237,8 @@ class SyncEngine(private val database: FractalDatabase, private val client: HubD
                         database.metadata().acknowledge(sent.requestId)
                         project(sent.kind, sent.entityId, current)
                     } else if (row.text("conflict") == "true") {
-                        if (sent.kind == "history" && current.text("status") in listOf("pending", "running")) continue
+                        if (sent.kind == "history" && current.text("status") in listOf("pending", "running") &&
+                            !(WireJson.format.parseToJsonElement(sent.patchJson).jsonObject.keys - "id").all { it == "placement" }) continue
                         if (current.text("deleted") == "true") {
                             if (sent.kind == "folder") settleDeletedFolder(sent, current)
                             continue
