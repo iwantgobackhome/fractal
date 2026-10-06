@@ -13,10 +13,10 @@ internal fun structureSelection(item: StructureItem, hash: String) = item.page t
     listOf(PdfRect(item.bbox.x.toFloat(), item.bbox.y.toFloat(), item.bbox.width.toFloat(), item.bbox.height.toFloat())),
     provenance = "detected-structure", pdfSha256 = hash)
 
-internal fun readerExplainBody(language: String, model: Pair<String, String>?, selected: Pair<Int, PdfTextSelection>,
-    item: StructureItem? = null, pageText: String = ""): JsonObject {
+internal fun readerExplainBody(language: String?, model: Pair<String, String>?, selected: Pair<Int, PdfTextSelection>,
+    item: StructureItem? = null, pageText: String = "", threadId: String? = null): JsonObject {
     require(selected.second.origin == "original") { "Explain uses original source context" }
-    val base = readerQuestionBody("", language, model, selected)
+    val base = readerQuestionBody("", language, model, selected, threadId)
     require(base["rect"] != null) { "Original region is unavailable" }
     val context = if (item == null) selected.second.text else
         listOf(item.label, item.caption, item.latex.orEmpty(), pageText).filter { it.isNotBlank() }.joinToString("\n")

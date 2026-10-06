@@ -29,7 +29,7 @@ import kotlin.math.roundToInt
 
 internal data class ReaderAnswerTarget(val selected: Pair<Int, PdfTextSelection>? = null,
     val item: StructureItem? = null, val pageText: String = "", val explain: Boolean = false,
-    val requestId: String? = null, val anchor: Offset? = null, val historyId: String? = null)
+    val requestId: String? = null, val anchor: Offset? = null, val historyId: String? = null, val threadId: String? = null)
 
 /** A question or explanation tied to a place on a page. Minimized answers stay there as markers. */
 internal data class ReaderAnswerPin(val key: String, val page: Int, val rect: PdfRect, val provenance: JsonObject?,
@@ -91,19 +91,19 @@ internal fun BoxScope.ReaderAnswerPins(pins: List<ReaderAnswerPin>, width: Int, 
 @Composable
 internal fun BoxScope.ReaderAnswerCard(app: ReaderApplication, paperKey: String, pages: PdfPages?,
     target: ReaderAnswerTarget, position: Offset?, onPosition: (Offset) -> Unit, widthPx: Float, heightPx: Float,
-    onJump: (Int) -> Unit, onClose: () -> Unit, onMinimize: () -> Unit = onClose) {
+    onJump: (Int) -> Unit, onClose: () -> Unit, onMinimize: () -> Unit = onClose, onThreadChange: (String) -> Unit = {}) {
     val density = LocalDensity.current
     val colors = LocalFractalColors.current
     val scope = rememberCoroutineScope()
     val history by app.database.metadata().observeHistory(paperKey).collectAsState(emptyList())
     val requests by app.database.reader().observeRequests(paperKey).collectAsState(emptyList())
-    var selectedContext by remember(target) { mutableStateOf(target.selected) }
+    var selectedContext by remember(target) { mutableStateOf(target.selected.takeIf { target.requestId == null && target.historyId == null }) }
     var requestId by remember(target) { mutableStateOf(target.requestId) }
     var question by remember(target) { mutableStateOf("") }
     var error by remember(target) { mutableStateOf("") }
     var initialized by remember(target) { mutableStateOf(false) }
     var busy by remember(target) { mutableStateOf(false) }
-    var language by remember { mutableStateOf("auto") }
+    var threadId by remember(target) { mutableStateOf(target.threadId ?: java.util.UUID.randomUUID().toString()) }
     var model by remember { mutableStateOf("") }
     var providers by remember { mutableStateOf<JsonObject?>(app.settings.getString("cachedReaderProviders", null)?.let {
         runCatching { WireJson.format.parseToJsonElement(it).jsonObject }.getOrNull() }) }
@@ -113,9 +113,7 @@ internal fun BoxScope.ReaderAnswerCard(app: ReaderApplication, paperKey: String,
         runCatching { WireJson.format.parseToJsonElement(it.json).jsonObject["requestId"]?.jsonPrimitive?.contentOrNull == requestId && requestId != null }.getOrDefault(false) }
     val json = record?.let { runCatching { WireJson.format.parseToJsonElement(it.json).jsonObject }.getOrNull() }
     fun value(name: String) = json?.get(name)?.jsonPrimitive?.contentOrNull.orEmpty()
-    val response = value("text")
     val submitted = request?.let { runCatching { WireJson.format.parseToJsonElement(it.bodyJson).jsonObject }.getOrNull() }
-    val asked = value("question").ifBlank { submitted?.get("question")?.jsonPrimitive?.contentOrNull.orEmpty() }
     val heading = target.item?.label?.ifBlank { target.item.kind } ?: libraryText("Answer", "답변")
     val cardWidth = with(density) { minOf(380.dp.toPx(), widthPx - 16.dp.toPx()).coerceAtLeast(1f) }
     var cardHeight by remember { mutableStateOf(with(density) { 300.dp.toPx() }) }
@@ -130,12 +128,12 @@ internal fun BoxScope.ReaderAnswerCard(app: ReaderApplication, paperKey: String,
             try {
                 val selected = selectedContext
                 val selectedModel = resolveReaderModel(model, models)
-                val body = if (explain) withReaderCrop(readerExplainBody(language, selectedModel,
-                    selected ?: error("Choose original context first"), target.item, target.pageText), pages, selected)
-                else readerQuestionBody(question, language, selectedModel, selected)
+                val body = if (explain) withReaderCrop(readerExplainBody(null, selectedModel,
+                    selected ?: error("Choose original context first"), target.item, target.pageText, threadId), pages, selected)
+                else readerQuestionBody(question, null, selectedModel, selected, threadId)
                 requestId = app.history.create(paperKey, if (explain) "explanation" else "question", body, selectionContext(selected))
-                question = ""
-                app.history.saveDraft(paperKey, buildJsonObject { put("question", ""); put("language", language); put("model", model); put("context", selectionContext(selected)) })
+                question = ""; selectedContext = null; onThreadChange(threadId)
+                app.history.saveDraft(paperKey, buildJsonObject { put("question", ""); put("model", model); put("context", JsonObject(emptyMap())); put("threadId", threadId) })
             } catch (cancel: CancellationException) { throw cancel }
             catch (failure: Exception) { error = failure.message.orEmpty() }
             finally { busy = false }
@@ -143,13 +141,21 @@ internal fun BoxScope.ReaderAnswerCard(app: ReaderApplication, paperKey: String,
     }
     LaunchedEffect(target) {
         val draft = app.history.draft(paperKey)
-        language = draft["language"]?.jsonPrimitive?.contentOrNull ?: "auto"
+        val existingRequest = target.requestId?.let { app.database.reader().request(it) }
+        val existingHistory = target.historyId?.let { app.database.metadata().history(it) }
+        val existingThread = existingRequest?.let { readerJson(it.bodyJson).threadText("threadId").takeIf(String::isNotBlank) }
+            ?: existingHistory?.let { readerThreadId(it.id, readerJson(it.json)) }
+        existingThread?.let { threadId = it; onThreadChange(it) }
         model = draft["model"]?.jsonPrimitive?.contentOrNull.orEmpty()
-        if (selectedContext == null) selectedContext = (draft["context"] as? JsonObject)?.let(::contextSelection)
+        if (selectedContext == null && target.requestId == null && target.historyId == null) selectedContext = (draft["context"] as? JsonObject)?.let(::contextSelection)
         if (target.requestId == null && !target.explain) question = draft["question"]?.jsonPrimitive?.contentOrNull.orEmpty()
         app.history.saveDraft(paperKey, buildJsonObject { put("context", selectionContext(selectedContext)) })
         initialized = true
         if (target.explain && target.requestId == null) submit(true)
+    }
+    LaunchedEffect(record?.id, submitted) {
+        val resolved = submitted?.threadText("threadId")?.takeIf { it.isNotBlank() } ?: record?.let { readerThreadId(it.id, readerJson(it.json)) }
+        if (resolved != null) { threadId = resolved; onThreadChange(resolved) }
     }
     LaunchedEffect(paperKey) {
         if (app.credentials.load() == null) return@LaunchedEffect
@@ -177,37 +183,37 @@ internal fun BoxScope.ReaderAnswerCard(app: ReaderApplication, paperKey: String,
                 TextButton(onClick = onClose, modifier = Modifier.testTag("reader-answer-close")) { Text("×") }
             }
             Column(Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 12.dp)) {
-                if (asked.isNotBlank()) Text(asked, style = MaterialTheme.typography.titleSmall)
-                if (selectedContext?.second?.text?.isNotBlank() == true) Text(selectedContext!!.second.text,
-                    maxLines = 3, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis, style = MaterialTheme.typography.bodySmall)
-                if (response.isNotBlank()) SelectionContainer { Text(response, Modifier.padding(vertical = 8.dp), style = MaterialTheme.typography.bodyMedium) }
-                if (requestId != null && response.isBlank()) Text(readerStateLabel(value("status").ifBlank { request?.status ?: "queued" }), Modifier.padding(vertical = 8.dp))
-                val answer = json?.get("answer") as? JsonObject
-                val citations = (answer?.get("citations") as? JsonArray).orEmpty().mapNotNull { citation ->
-                    val c = citation as? JsonObject
-                    if (c?.get("paperKey")?.jsonPrimitive?.contentOrNull in listOf(null, paperKey)) c?.get("page")?.jsonPrimitive?.intOrNull else null
-                } + Regex("\\[p\\.(\\d+)]").findAll(response).mapNotNull { it.groupValues[1].toIntOrNull() }.toList()
-                Row(Modifier.horizontalScroll(rememberScrollState())) { citations.distinct().filter { it in 1..(pages?.pageCount ?: 0) }.forEach { page ->
-                    TextButton(onClick = { onJump(page) }) { Text("[p.$page]") }
-                } }
+                val turns = readerThreads(history, requests).firstOrNull { it.id == threadId }?.turns.orEmpty()
+                turns.forEach { turn ->
+                    Text(turn.question, style = MaterialTheme.typography.titleSmall)
+                    if (turn.quote.isNotBlank()) Text("📎 p.${turn.page ?: "?"} · “${turn.quote}”", maxLines = 3, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis, style = MaterialTheme.typography.bodySmall)
+                    SelectionContainer { Text(turn.text.ifBlank { readerStateLabel(turn.status) }, Modifier.padding(vertical = 8.dp), style = MaterialTheme.typography.bodyMedium) }
+                    val citations = readerTurnCitations(turn, paperKey)
+                    if (turn.status in listOf("pending", "running") && turn.text.isNotBlank()) Text(readerStateLabel(turn.status), style = MaterialTheme.typography.bodySmall)
+                    Row(Modifier.horizontalScroll(rememberScrollState())) { citations.distinct().filter { it in 1..(pages?.pageCount ?: 0) }.forEach { page -> TextButton(onClick = { onJump(page) }) { Text("[p.$page]") } } }
+                }
+                selectedContext?.let { (page, selected) ->
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text("📎 p.$page · “${selected.text.ifBlank { "Selected region" }}”", Modifier.weight(1f), maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis, style = MaterialTheme.typography.bodySmall)
+                        TextButton(onClick = { selectedContext = null; app.history.saveDraft(paperKey, buildJsonObject { put("context", JsonObject(emptyMap())) }) }) { Text("×") }
+                    }
+                }
                 val failure = error.ifBlank { request?.error.orEmpty() }
                 if (failure.isNotBlank()) Text(failure, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
                 if (request?.status == "failed") TextButton(onClick = { app.history.send(request.requestId) }) { Text(libraryText("Retry", "재시도")) }
-                OutlinedTextField(question, { question = it; app.history.saveDraft(paperKey, buildJsonObject { put("question", it) }) },
-                    Modifier.fillMaxWidth().testTag("reader-answer-question"), enabled = initialized, label = { Text(libraryText(if (requestId == null) "Ask a question" else "Follow-up question", if (requestId == null) "질문하기" else "후속 질문")) }, maxLines = 4)
-                Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), verticalAlignment = Alignment.CenterVertically) {
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    OutlinedTextField(question, { question = it; app.history.saveDraft(paperKey, buildJsonObject { put("question", it) }) },
+                        Modifier.weight(1f).testTag("reader-answer-question"), enabled = initialized, label = { Text(libraryText(if (requestId == null) "Ask a question" else "Follow-up question", if (requestId == null) "질문하기" else "후속 질문")) }, maxLines = 4)
+                    Box {
+                        var expanded by remember { mutableStateOf(false) }
+                        TextButton(onClick = { expanded = true }) { Text(models.firstOrNull { it.value == model }?.label ?: libraryText("Model", "모델"), maxLines = 1, modifier = Modifier.widthIn(max = 64.dp), overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis) }
+                        DropdownMenu(expanded, { expanded = false }) {
+                            DropdownMenuItem(text = { Text(libraryText("Hub default", "허브 기본값")) }, onClick = { model = ""; expanded = false; app.history.saveDraft(paperKey, buildJsonObject { put("model", model) }) })
+                            models.forEach { choice -> DropdownMenuItem(text = { Text(choice.label) }, enabled = choice.available, onClick = { model = choice.value; expanded = false; app.history.saveDraft(paperKey, buildJsonObject { put("model", model) }) }) }
+                        }
+                    }
                     TextButton(onClick = { submit(false) }, enabled = initialized && question.isNotBlank() && question.length <= 4000 && !busy) { Text(libraryText("Ask", "질문")) }
-                    if (selectedContext?.second?.origin == "original") TextButton(onClick = { submit(true) }, enabled = initialized && !busy && !selectedContext?.second?.rects.isNullOrEmpty()) { Text(libraryText("Explain", "설명")) }
                 }
-                val languages = readerLanguageOptions()
-                val retainedLanguage = if (languages.none { it.first == language }) listOf(language to java.util.Locale.forLanguageTag(language).getDisplayName(java.util.Locale.getDefault())) else emptyList()
-                ResearchSelector(libraryText("Answer language", "답변 언어"), language, languages + retainedLanguage,
-                    { language = it; app.history.saveDraft(paperKey, buildJsonObject { put("language", it) }) })
-                val unavailable = libraryText("unavailable", "사용 불가")
-                val retainedModel = if (model.isNotBlank() && models.none { it.value == model }) listOf(model to "$model · $unavailable") else emptyList()
-                ResearchSelector(libraryText("Model", "모델"), model,
-                    listOf("" to libraryText("Hub default", "허브 기본값")) + models.map { it.value to if (it.available) it.label else "${it.label} · $unavailable" } + retainedModel,
-                    { model = it; app.history.saveDraft(paperKey, buildJsonObject { put("model", it) }) })
                 Spacer(Modifier.height(8.dp))
             }
         }

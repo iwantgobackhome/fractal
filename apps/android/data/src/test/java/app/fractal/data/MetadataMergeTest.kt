@@ -5,6 +5,12 @@ import org.testng.Assert.*
 import org.testng.annotations.Test
 
 class MetadataMergeTest {
+    @Test fun historyProjectionPreservesThreadContext() {
+        val remote = json("""{"id":"turn-2","paperKey":"paper","status":"completed","context":{"threadId":"thread-1","selectedText":"quote","page":3}}""")
+        val retained = json(historyEntity(remote).json)
+        assertEquals(retained["context"]?.jsonObject?.get("threadId")?.jsonPrimitive?.content, "thread-1")
+        assertEquals(retained["context"], remote["context"])
+    }
     private fun json(value: String) = WireJson.format.parseToJsonElement(value).jsonObject
     @Test fun independentMembershipsSurviveThreeWayMerge() {
         val base = json("""{"tags":["old","keep"],"collections":["orphan","folder1"],"title":"original"}""")

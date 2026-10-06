@@ -166,7 +166,7 @@ class DiscoveryNativeTest {
         native.waitFor("legal selected range") { native.node("iii", true) != null }; native.click("Copy")
         var clip = ""; native.onMain { clip = (it.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager).primaryClip?.getItemAt(0)?.text?.toString().orEmpty() }
         assertEquals("iii", clip)
-        native.click("Quote / explain"); native.waitFor("quote context") { native.node("iii", true) != null }
+        native.click("Ask"); native.waitFor("quote context") { native.node("📎 p.1", true) != null }
         assertEquals(memo.toString(), app.database.annotations().get("D-stage4-retained-memo")!!.json)
         assertEquals(before, native.findSurface()); native.capture("reader-recovered-quote")
         Log.i("DiscoveryNativeQA", "PASS mounted actual HTTP retry hash=${row.pdfSha256} page=1 range=[4,7) copy=iii viewport=$before unchanged; memo bytes retained")

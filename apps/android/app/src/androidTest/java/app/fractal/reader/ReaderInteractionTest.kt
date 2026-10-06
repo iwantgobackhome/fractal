@@ -480,7 +480,7 @@ class ReaderInteractionTest {
         event(MotionEvent.ACTION_MOVE,page.x+page.width*.28f,page.y+page.height*.14f,MotionEvent.TOOL_TYPE_FINGER)
         compose.onNodeWithContentDescription("Selection end handle").assertExists()
         event(MotionEvent.ACTION_UP,page.x+page.width*.28f,page.y+page.height*.14f,MotionEvent.TOOL_TYPE_FINGER)
-        compose.onNodeWithText(label("Quote / explain", "인용 / 설명")).assertExists()
+        compose.onNodeWithText(label("Explain", "설명")).assertExists()
         assertEquals(page,bounds())
         assertEquals(before,runBlocking { app.database.annotations().observePaper("gesture-fixture").first().count { it.kind == "ink" } })
     }

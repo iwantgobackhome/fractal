@@ -187,16 +187,14 @@ class ReaderStageTest {
         event(MotionEvent.ACTION_UP, endX, endY, MotionEvent.TOOL_TYPE_FINGER)
         compose.onNodeWithContentDescription("Selection start handle").assertExists()
         compose.onNodeWithContentDescription("Selection end handle").assertExists()
-        compose.onNodeWithText("Copy", substring = false).performClick()
+        compose.onNodeWithText(if (compose.activity.resources.configuration.locales[0].language == "ko") "복사" else "Copy", substring = false).performClick()
         val clip = app.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
         assertEquals("iii", clip.primaryClip!!.getItemAt(0).text.toString())
         SystemClock.sleep(8000) // Let Android's system clipboard overlay dismiss before final product capture.
         capture("reader-cached-selection")
-        compose.onNodeWithText("Quote / explain").performClick()
-        compose.onNodeWithText("iii", substring = false).assertExists()
-        compose.onNodeWithTag("reader-answer-close").performClick()
-        compose.onNodeWithText("Ask", substring = false).performClick()
-        compose.onNodeWithText("iii", substring = false).assertExists()
+        compose.onAllNodesWithText(if (compose.activity.resources.configuration.locales[0].language == "ko") "질문" else "Ask", substring = false).onLast().performClick()
+        compose.onNodeWithTag("reader-quote-attachment").assertExists()
+        compose.onNodeWithTag("reader-thread-input").assertExists()
         // Verify actual rendered crop/rotation frames independently from the selection UI.
         PdfPages(app.cache.file(hash)).use { pdf ->
             for (page in listOf(1, 2, 3)) {
