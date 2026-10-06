@@ -155,6 +155,18 @@ if (!app.requestSingleInstanceLock()) {
       });
     }
   }
+  ipcMain.handle('fractal:licenses:read', async (event) => {
+    const caller = BrowserWindow.fromWebContents(event.sender);
+    if (!caller || caller.isDestroyed() || event.senderFrame !== event.sender.mainFrame || new URL(event.sender.getURL()).origin !== new URL(hub.url).origin)
+      throw new Error('Licenses are unavailable');
+    const directory = app.isPackaged ? join(process.resourcesPath, 'licenses') : join(__dirname, '../../dist/licenses');
+    return ['LICENSE', 'THIRD_PARTY_NOTICES.md', 'desktop-third-party.txt', ...(app.isPackaged ? ['LICENSE.electron.txt', 'LICENSES.chromium.html'] : [])].map(
+      (name) => ({
+        name,
+        text: readFileSync(!app.isPackaged && name !== 'desktop-third-party.txt' ? join(__dirname, '../..', name) : join(directory, name), 'utf8'),
+      }),
+    );
+  });
   const headless = process.argv.includes('--headless');
   const icon = nativeImage.createFromPath(join(__dirname, 'assets', 'icon-256.png'));
   const trayIcon = nativeImage.createFromPath(join(__dirname, 'assets', process.platform === 'darwin' ? 'trayTemplate.png' : 'tray-color.png'));

@@ -121,7 +121,19 @@ export function putHistory(store: SqlitePaperStore, input: HistoryEntry): Histor
     if (old && (old.paperKey !== checked.paperKey || old.kind !== checked.kind || old.requestId !== checked.requestId))
       throw invalidInput('History identity cannot change');
     if (old?.deleted) return old;
-    const next = { ...checked, createdAt: old?.createdAt ?? checked.createdAt, rev: (old?.rev ?? 0) + 1, updatedAt: timestamp(old?.updatedAt) };
+    // Placement has its own clock: imports and generation updates must not undo a newer card move.
+    // Equal timestamps favor the incoming placement; omission preserves the stored placement.
+    const placement =
+      old?.placement && (!checked.placement || Date.parse(old.placement.updatedAt) > Date.parse(checked.placement.updatedAt))
+        ? old.placement
+        : checked.placement;
+    const next = {
+      ...checked,
+      ...(placement ? { placement } : {}),
+      createdAt: old?.createdAt ?? checked.createdAt,
+      rev: (old?.rev ?? 0) + 1,
+      updatedAt: timestamp(old?.updatedAt),
+    };
     if (next.conversation && (next.status === 'canceled' || next.status === 'failed')) {
       next.conversation.messages = next.conversation.messages.map((message) =>
         message.role === 'assistant' && message.status === 'answering'

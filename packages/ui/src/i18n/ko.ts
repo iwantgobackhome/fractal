@@ -106,6 +106,7 @@ export const ko = {
     closeLabel: '닫기',
   },
   settings: {
+    openSourceLicenses: '오픈소스 라이선스',
     about: '정보 / 버전',
     version: '버전 {version}',
     checkUpdates: '업데이트 확인',

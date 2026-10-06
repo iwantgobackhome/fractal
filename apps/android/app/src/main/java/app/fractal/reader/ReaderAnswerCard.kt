@@ -9,17 +9,17 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.boundsInWindow
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.*
-import app.fractal.data.AiRequestEntity
-import app.fractal.data.HistoryEntity
-import app.fractal.data.WireJson
+import app.fractal.data.*
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
+import androidx.compose.ui.focus.onFocusChanged
 import app.fractal.design.*
 import app.fractal.pdf.*
 import app.fractal.sync.StructureItem
@@ -35,63 +35,34 @@ internal data class ReaderAnswerTarget(val selected: Pair<Int, PdfTextSelection>
 internal data class ReaderAnswerPin(val key: String, val page: Int, val rect: PdfRect, val provenance: JsonObject?,
     val selected: Pair<Int, PdfTextSelection>, val requestId: String?, val historyId: String?, val kind: String)
 
-internal fun readerAnswerPins(requests: List<AiRequestEntity>, history: List<HistoryEntity>): List<ReaderAnswerPin> {
-    fun parse(text: String) = runCatching { WireJson.format.parseToJsonElement(text).jsonObject }.getOrNull()
-    val live = history.map { it.id }.toSet()
-    val local = requests.filter { it.kind in listOf("question", "explanation") && (it.historyId == null || it.historyId in live) }.mapNotNull { row ->
-        val selected = parse(row.contextJson)?.let(::contextSelection) ?: return@mapNotNull null
+internal fun readerAnswerPins(requests: List<AiRequestEntity>, history: List<HistoryEntity>): List<ReaderAnswerPin> =
+    readerThreads(history, requests).mapNotNull { thread ->
+        val root = thread.turns.firstOrNull { it.id == thread.id } ?: thread.turns.first()
+        val context = root.json["context"] as? JsonObject
+        val retained = root.request?.let { contextSelection(readerJson(it.contextJson)) }
+        val selected = retained ?: context?.let { ctx ->
+            val page = ctx["page"]?.jsonPrimitive?.intOrNull ?: return@let null
+            val rectangles = (ctx["rects"] as? JsonArray)?.mapNotNull { it as? JsonObject }
+                ?: listOfNotNull(ctx["rect"] as? JsonObject)
+            page to PdfTextSelection(ctx.threadText("selectedText"), rectangles.map { r ->
+                fun n(key: String) = r[key]?.jsonPrimitive?.floatOrNull ?: 0f
+                PdfRect(n("x"), n("y"), n("width"), n("height"))
+            })
+        } ?: return@mapNotNull null
         val rect = selected.second.rects.firstOrNull() ?: return@mapNotNull null
-        ReaderAnswerPin(row.requestId, selected.first, rect, null, selected, row.requestId, row.historyId, row.kind)
+        ReaderAnswerPin(thread.id, selected.first, rect, context?.get("provenance") as? JsonObject,
+            selected, root.request?.requestId ?: root.json.threadText("requestId").takeIf(String::isNotBlank), root.historyId,
+            root.json.threadText("kind").ifBlank { root.request?.kind.orEmpty() })
     }
-    val claimed = local.mapNotNull { it.historyId }.toSet()
-    val remote = history.filter { it.id !in claimed }.mapNotNull { row ->
-        val json = parse(row.json) ?: return@mapNotNull null
-        val context = json["context"] as? JsonObject ?: return@mapNotNull null
-        val page = context["page"]?.jsonPrimitive?.intOrNull ?: return@mapNotNull null
-        val bounds = context["rect"] as? JsonObject ?: return@mapNotNull null
-        fun value(name: String) = bounds[name]?.jsonPrimitive?.floatOrNull ?: 0f
-        val rect = PdfRect(value("x"), value("y"), value("width"), value("height"))
-        val provenance = context["provenance"] as? JsonObject
-        val text = context["selectedText"]?.jsonPrimitive?.contentOrNull.orEmpty()
-        ReaderAnswerPin(row.id, page, rect, provenance, page to PdfTextSelection(text, listOf(rect)),
-            json["requestId"]?.jsonPrimitive?.contentOrNull, row.id, json["kind"]?.jsonPrimitive?.contentOrNull.orEmpty())
-    }
-    return local + remote
-}
 
-@Composable
-internal fun BoxScope.ReaderAnswerPins(pins: List<ReaderAnswerPin>, width: Int, height: Int, rotation: Int,
-    onOpen: (ReaderAnswerPin, Offset) -> Unit) {
-    val density = LocalDensity.current
-    val colors = LocalFractalColors.current
-    val size = with(density) { 32.dp.roundToPx() }
-    val placed = mutableMapOf<Pair<Int, Int>, Int>()
-    pins.forEach { pin -> key(pin.key) {
-        val rect = renderedRect(pin.rect, pin.provenance, rotation)
-        // Markers sit in the left margin beside the asked-about line, like margin notes, so they
-        // never cover the text. Answers about the same line fan out to the right.
-        val y = ((rect.y + rect.height / 2) * height - size / 2f).roundToInt().coerceIn(0, (height - size).coerceAtLeast(0))
-        val slot = placed.merge(0 to y / size, 1, Int::plus)!! - 1
-        val x = (with(density) { 4.dp.roundToPx() } + slot * size).coerceAtMost((width - size).coerceAtLeast(0))
-        var anchor by remember { mutableStateOf(Offset.Zero) }
-        Surface(onClick = { onOpen(pin, anchor) },
-            modifier = Modifier.offset { IntOffset(x, y) }.size(32.dp).nativeInkBlocker()
-                .onGloballyPositioned { anchor = it.boundsInWindow().bottomLeft }
-                .testTag("reader-answer-pin-${pin.requestId ?: pin.key}")
-                .semantics { contentDescription = if (pin.kind == "explanation") "Open explanation" else "Open answer" },
-            shape = androidx.compose.foundation.shape.CircleShape, color = colors.focus, shadowElevation = 3.dp) {
-            Box(contentAlignment = Alignment.Center) {
-                Text(if (pin.kind == "explanation") "i" else "?", color = colors.paper, style = MaterialTheme.typography.labelLarge)
-            }
-        }
-    } }
-}
+internal fun answerCardPosition(position: Offset, width: Float, height: Float, cardWidth: Float, cardHeight: Float) =
+    Offset(position.x.coerceIn(0f, (width - cardWidth).coerceAtLeast(0f)), position.y.coerceIn(0f, (height - cardHeight).coerceAtLeast(0f)))
 
-/** Position belongs to the reader session, while generation belongs to durable history. */
+/** Page content owns positioning; generation and follow-ups belong to durable history. */
 @Composable
 internal fun BoxScope.ReaderAnswerCard(app: ReaderApplication, paperKey: String, pages: PdfPages?,
     target: ReaderAnswerTarget, position: Offset?, onPosition: (Offset) -> Unit, widthPx: Float, heightPx: Float,
-    onJump: (Int) -> Unit, onClose: () -> Unit, onMinimize: () -> Unit = onClose, onThreadChange: (String) -> Unit = {}) {
+    onJump: (Int) -> Unit, onClose: () -> Unit, onMinimize: () -> Unit = onClose, onThreadChange: (String) -> Unit = {}, onMoveEnd: () -> Unit = {}, onActive: (Boolean) -> Unit = {}) {
     val density = LocalDensity.current
     val colors = LocalFractalColors.current
     val scope = rememberCoroutineScope()
@@ -111,15 +82,12 @@ internal fun BoxScope.ReaderAnswerCard(app: ReaderApplication, paperKey: String,
     val request = requests.firstOrNull { it.requestId == requestId }
     val record = history.firstOrNull { it.id == request?.historyId || it.id == target.historyId ||
         runCatching { WireJson.format.parseToJsonElement(it.json).jsonObject["requestId"]?.jsonPrimitive?.contentOrNull == requestId && requestId != null }.getOrDefault(false) }
-    val json = record?.let { runCatching { WireJson.format.parseToJsonElement(it.json).jsonObject }.getOrNull() }
-    fun value(name: String) = json?.get(name)?.jsonPrimitive?.contentOrNull.orEmpty()
     val submitted = request?.let { runCatching { WireJson.format.parseToJsonElement(it.bodyJson).jsonObject }.getOrNull() }
     val heading = target.item?.label?.ifBlank { target.item.kind } ?: libraryText("Answer", "답변")
-    val cardWidth = with(density) { minOf(380.dp.toPx(), widthPx - 16.dp.toPx()).coerceAtLeast(1f) }
+    val cardWidth = with(density) { minOf(320.dp.toPx(), widthPx - 16.dp.toPx()).coerceAtLeast(1f) }
     var cardHeight by remember { mutableStateOf(with(density) { 300.dp.toPx() }) }
     val effectiveWidth = cardWidth
-    fun clamp(offset: Offset) = Offset(offset.x.coerceIn(0f, (widthPx - effectiveWidth).coerceAtLeast(0f)),
-        offset.y.coerceIn(0f, (heightPx - cardHeight).coerceAtLeast(0f)))
+    fun clamp(offset: Offset) = answerCardPosition(offset, widthPx, heightPx, effectiveWidth, cardHeight)
     val currentPosition = clamp(position ?: target.anchor ?: Offset(with(density) { 8.dp.toPx() }, heightPx * .25f))
     val latestPosition = rememberUpdatedState(currentPosition)
     LaunchedEffect(widthPx, heightPx, cardHeight) { onPosition(currentPosition) }
@@ -163,9 +131,21 @@ internal fun BoxScope.ReaderAnswerCard(app: ReaderApplication, paperKey: String,
         runCatching { app.client.data("/api/ai/providers").jsonObject }.onSuccess { providers = it; app.settings.edit().putString("cachedReaderProviders", it.toString()).apply() }
         while (isActive) { runCatching { app.history.refresh(paperKey) }; delay(1500) }
     }
+    var pressed by remember { mutableStateOf(false) }
+    var focused by remember { mutableStateOf(false) }
+    var moving by remember { mutableStateOf(false) }
+    LaunchedEffect(pressed, focused, moving) { onActive(pressed || focused || moving) }
+    DisposableEffect(Unit) { onDispose { onActive(false) } }
+    var deleting by remember { mutableStateOf(false) }
+    if (deleting) AlertDialog(onDismissRequest = { deleting = false }, title = { Text(libraryText("Delete answer card?", "답변 카드 삭제?")) },
+        text = { Text(libraryText("The conversation remains in History.", "대화는 기록에 남습니다.")) },
+        confirmButton = { TextButton(onClick = { deleting = false; onClose() }, modifier = Modifier.testTag("reader-answer-delete-confirm")) { Text(libraryText("Delete", "삭제")) } },
+        dismissButton = { TextButton(onClick = { deleting = false }) { Text(libraryText("Cancel", "취소")) } })
     Surface(Modifier.offset { IntOffset(currentPosition.x.roundToInt(), currentPosition.y.roundToInt()) }
         .width(with(density) { effectiveWidth.toDp() }).heightIn(max = with(density) { minOf(520.dp.toPx(), heightPx * .65f).coerceAtLeast(48.dp.toPx()).toDp() })
-        .onSizeChanged { cardHeight = it.height.toFloat() }.nativeInkBlocker().testTag("reader-answer-card"),
+        .onSizeChanged { cardHeight = it.height.toFloat() }
+        .onFocusChanged { focused = it.hasFocus }.focusGroup()
+        .pointerInput(Unit) { awaitEachGesture { awaitFirstDown(requireUnconsumed = false); pressed = true; waitForUpOrCancellation(); pressed = false } }.nativeInkBlocker().testTag("reader-answer-card").semantics { contentDescription = "Answer thread ${target.threadId}" },
         shape = MaterialTheme.shapes.medium, color = colors.paper, shadowElevation = 8.dp, tonalElevation = 3.dp) {
         Column {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -173,14 +153,15 @@ internal fun BoxScope.ReaderAnswerCard(app: ReaderApplication, paperKey: String,
                     .testTag("reader-answer-drag").semantics { contentDescription = "Move answer" }
                     .pointerInput(widthPx, heightPx, cardHeight, effectiveWidth) {
                         var dragging = currentPosition
-                        detectDragGestures(onDragStart = { dragging = latestPosition.value }) { change, amount ->
+                        detectDragGestures(onDragStart = { dragging = latestPosition.value; moving = true },
+                            onDragEnd = { onMoveEnd(); moving = false }, onDragCancel = { onMoveEnd(); moving = false }) { change, amount ->
                             change.consume(); dragging = clamp(dragging + amount); onPosition(dragging)
                         }
                     }, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis, style = MaterialTheme.typography.titleSmall)
-                // Minimizing leaves a marker on the page where the question was asked.
+                // Collapsing retains a marker at the card’s current page position.
                 TextButton(onClick = onMinimize, modifier = Modifier.testTag("reader-answer-collapse")
                     .semantics { contentDescription = "Minimize answer to page" }) { Text("−") }
-                TextButton(onClick = onClose, modifier = Modifier.testTag("reader-answer-close")) { Text("×") }
+                TextButton(onClick = { deleting = true }, modifier = Modifier.testTag("reader-answer-close")) { Text("×") }
             }
             Column(Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 12.dp)) {
                 val turns = readerThreads(history, requests).firstOrNull { it.id == threadId }?.turns.orEmpty()
@@ -203,7 +184,7 @@ internal fun BoxScope.ReaderAnswerCard(app: ReaderApplication, paperKey: String,
                 if (request?.status == "failed") TextButton(onClick = { app.history.send(request.requestId) }) { Text(libraryText("Retry", "재시도")) }
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     OutlinedTextField(question, { question = it; app.history.saveDraft(paperKey, buildJsonObject { put("question", it) }) },
-                        Modifier.weight(1f).testTag("reader-answer-question"), enabled = initialized, label = { Text(libraryText(if (requestId == null) "Ask a question" else "Follow-up question", if (requestId == null) "질문하기" else "후속 질문")) }, maxLines = 4)
+                        Modifier.weight(1f).onFocusChanged { focused = it.isFocused }.testTag("reader-answer-question"), enabled = initialized, label = { Text(libraryText(if (requestId == null) "Ask a question" else "Follow-up question", if (requestId == null) "질문하기" else "후속 질문")) }, maxLines = 4)
                     Box {
                         var expanded by remember { mutableStateOf(false) }
                         TextButton(onClick = { expanded = true }) { Text(models.firstOrNull { it.value == model }?.label ?: libraryText("Model", "모델"), maxLines = 1, modifier = Modifier.widthIn(max = 64.dp), overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis) }

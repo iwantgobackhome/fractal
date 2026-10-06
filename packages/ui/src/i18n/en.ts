@@ -108,6 +108,7 @@ export const en: Messages = {
     closeLabel: 'Close',
   },
   settings: {
+    openSourceLicenses: 'Open-source licenses',
     about: 'About / version',
     version: 'Version {version}',
     checkUpdates: 'Check for updates',

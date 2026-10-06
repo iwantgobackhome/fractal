@@ -1,6 +1,6 @@
 {
   "name": "fractal",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "private": true,
   "type": "module",
   "workspaces": [
@@ -16,7 +16,7 @@
     "typecheck": "npm run typecheck -w @fractal/shared && npm run typecheck -w @fractal/hub && npm run typecheck -w @fractal/ui",
     "hub": "tsx packages/hub/src/main.ts",
     "dev": "node scripts/dev.mjs",
-    "desktop:build": "npm run build && node scripts/build-desktop.mjs",
+    "desktop:build": "npm run build && node scripts/build-desktop.mjs && node scripts/generate-licenses.mjs",
     "desktop": "npm run desktop:build && electron .",
     "desktop:dist": "npm run desktop:dist:win",
     "e2e": "tsx scripts/e2e.ts",
@@ -132,7 +132,21 @@
       "icon": "apps/desktop/assets/icon-512.png",
       "category": "Education",
       "maintainer": "News Papers contributors"
-    }
+    },
+    "extraResources": [
+      {
+        "from": "LICENSE",
+        "to": "licenses/LICENSE"
+      },
+      {
+        "from": "THIRD_PARTY_NOTICES.md",
+        "to": "licenses/THIRD_PARTY_NOTICES.md"
+      },
+      {
+        "from": "dist/licenses/desktop-third-party.txt",
+        "to": "licenses/desktop-third-party.txt"
+      }
+    ]
   },
   "dependencies": {
     "@lydell/node-pty": "^1.2.0-beta.15",

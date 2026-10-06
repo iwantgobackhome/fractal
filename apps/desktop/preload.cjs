@@ -32,6 +32,7 @@ contextBridge.exposeInMainWorld(
           }),
         }
       : {}),
+    readLicenses: () => ipcRenderer.invoke('fractal:licenses:read'),
     savePdf(options) {
       return ipcRenderer.invoke('fractal:save-pdf', { suggestedName: String(options?.suggestedName ?? '') });
     },

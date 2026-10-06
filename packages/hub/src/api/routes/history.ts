@@ -1,9 +1,13 @@
 import type { IncomingMessage } from 'node:http';
+import { answerPlacementSchema } from '@fractal/shared';
+import { z } from 'zod';
 import type { SqlitePaperStore } from '../../store/sqlite';
 import type { ChatService } from '../../chat/index';
 import { cancelHistory } from '../../ai/history';
 import { notFound } from '../../store/errors';
-import { json, type Result } from './types';
+import { json, jsonBody, parseRequest, type Result } from './types';
+
+const placementBodySchema = z.object({ placement: answerPlacementSchema });
 
 export async function handleHistory(
   method: string,
@@ -34,6 +38,10 @@ export async function handleHistory(
     entry.paperKey !== null &&
     ctx.store.getConversation(entry.paperKey)?.conversationId === entry.conversation?.conversationId;
   if (segments.length === base + 1 && method === 'GET') return json({ history: entry });
+  if (paper && segments.length === base + 2 && segments[base + 1] === 'placement' && method === 'PUT') {
+    const { placement } = parseRequest(placementBodySchema, await jsonBody(request));
+    return json({ history: ctx.store.putHistory({ ...entry, placement }) });
+  }
   if (segments.length === base + 2 && segments[base + 1] === 'cancel' && method === 'POST') {
     if (activeConversation && ctx.chat) {
       ctx.chat.cancel(entry.paperKey!);

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.1 — 2026-10-06
+
+Answer cards are pinned to the page, stay until deleted, are restored with their position when a paper is reopened (synced between desktop and Android), collapse to a marker, and highlight their source passage, figure or equation while hovered or dragged. The desktop and Android apps include the Apache-2.0 license, the PaperRead MIT notice and generated third-party license lists, plus the Electron and Chromium notices on desktop, under Settings → Open-source licenses. Android versionCode 10. See [release notes](docs/releases/0.4.1.md).
+
 ## 0.4.0 — 2026-10-06
 
 Translation: vector figures are kept whole with their labels, bold abstracts and two-line titles stay together, accents and inline math are preserved, exported PDFs fit each original page on one sheet, and the Android translated view shows figures, tables and equations. Questions are conversations with follow-up context, quotes attach to one question, the input is reduced to a model picker, the answer language moved to Settings, and the desktop side panel can be resized. Android versionCode 9. See [release notes](docs/releases/0.4.0.md).

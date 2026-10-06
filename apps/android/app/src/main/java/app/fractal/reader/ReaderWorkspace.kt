@@ -14,9 +14,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInWindow
-import androidx.compose.ui.geometry.Rect as ComposeRect
-import androidx.compose.ui.layout.boundsInWindow
 import app.fractal.sync.PaperStructure
 import androidx.compose.ui.platform.*
 import androidx.compose.ui.text.style.TextOverflow
@@ -87,19 +84,14 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
     var noteSelection by remember { mutableStateOf<Pair<Int, PdfTextSelection>?>(null) }
     var toolsMenu by remember { mutableStateOf(false) }
     var structure by remember(paper.paperKey) { mutableStateOf<PaperStructure?>(null) }
-    var answerTarget by remember(paper.paperKey) { mutableStateOf<ReaderAnswerTarget?>(null) }
-    var answerPosition by remember(paper.paperKey) { mutableStateOf<Offset?>(null) }
-    var rootPosition by remember { mutableStateOf(Offset.Zero) }
-    val pageOrigins = remember(paper.paperKey) { mutableStateMapOf<Int, ComposeRect>() }
+    val answerTargets = remember(paper.paperKey) { mutableStateMapOf<String, ReaderAnswerTarget>() }
     val answerRequests by app.database.reader().observeRequests(paper.paperKey).collectAsState(emptyList())
     val answerHistory by app.database.metadata().observeHistory(paper.paperKey).collectAsState(emptyList())
     val answerPins = remember(answerRequests, answerHistory) { readerAnswerPins(answerRequests, answerHistory) }
     fun openAnswer(selected: Pair<Int, PdfTextSelection>?, explain: Boolean = false, requestId: String? = null) {
-        val rect = selected?.second?.rects?.firstOrNull()
-        val origin = selected?.first?.let { pageOrigins[it] }
-        val anchor = if (origin != null && rect != null) origin.topLeft - rootPosition + Offset(rect.x * origin.width, (rect.y + rect.height) * origin.height) else null
-        answerTarget = ReaderAnswerTarget(selected, explain = explain, requestId = requestId, anchor = anchor, threadId = questionThreadId)
-        answerPosition = null; panel = false
+        val thread = requestId?.let { id -> answerPins.firstOrNull { it.requestId == id }?.key } ?: java.util.UUID.randomUUID().toString()
+        answerTargets[thread] = ReaderAnswerTarget(selected ?: (sourceAnchor.page to PdfTextSelection("", listOf(PdfRect(.02f, .2f, .01f, .01f)))), explain = explain, requestId = requestId, threadId = thread)
+        panel = false
     }
     var fullTitle by remember { mutableStateOf(false) }
     LaunchedEffect(paper.paperKey) {
@@ -193,7 +185,7 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
         val ordinal = indices.indexOfFirst { it.blockId == anchor.block }.coerceAtLeast(0)
         scope.launch { sourceList.restore(anchor.page - 1, (ordinal + anchor.fraction) / indices.size.coerceAtLeast(1)) }
     }
-    BoxWithConstraints(Modifier.fillMaxSize().background(colors.paper).onGloballyPositioned { rootPosition = it.positionInWindow() }) {
+    BoxWithConstraints(Modifier.fillMaxSize().background(colors.paper)) {
         val availableHeight = maxHeight
         val compact = maxWidth < 600.dp
         val split = maxWidth >= 840.dp && mode == "split" && blocks.isNotEmpty()
@@ -254,12 +246,12 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                                 mode = id; driver = if (id == "translation") "translation" else "original"; selection = null
                             }, Modifier.weight(1f), showLabel = false)
                         Text("$activePage / ${pages?.pageCount ?: 0}", Modifier.padding(horizontal = 12.dp), style = MaterialTheme.typography.bodySmall)
-                        Box { TextButton(onClick = { toolsMenu = true }) { Text(libraryText("Tools ▾", "도구 ▾")) }
+                        Box { TextButton(onClick = { toolsMenu = true }, modifier = Modifier.testTag("reader-tools")) { Text(libraryText("Tools ▾", "도구 ▾")) }
                             DropdownMenu(toolsMenu, { toolsMenu = false }) {
                                 DropdownMenuItem(text = { Text(libraryText("Deliberately select a region", "직접 영역 선택")) }, enabled = sourceVisible, onClick = { regionMode = !regionMode; toolsMenu = false })
                                 DropdownMenuItem(text = { Text(libraryText("Fit original page width", "원문 너비 맞춤")) }, enabled = sourceVisible, onClick = { zoom = 1f; toolsMenu = false })
                                 DropdownMenuItem(text = { Text(libraryText("Add source note", "원문 노트 추가")) }, enabled = sourceVisible, onClick = { noteSelection = activePage to PdfTextSelection("", listOf(PdfRect(.08f, .15f, .02f, .02f)), provenance = "deliberate-region", pdfSha256 = pages?.pdfSha256); toolsMenu = false })
-                                DropdownMenuItem(text = { Text(libraryText("Retained history", "저장된 기록")) }, onClick = { panelTab = "history"; panel = true; toolsMenu = false })
+                                DropdownMenuItem(modifier = Modifier.testTag("reader-history-open"), text = { Text(libraryText("Retained history", "저장된 기록")) }, onClick = { panelTab = "history"; panel = true; toolsMenu = false })
                             }
                         }
                     }
@@ -278,7 +270,7 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                         if (sourceVisible) {
                             val source = pages
                             if (source == null) Text(status, Modifier.weight(1f).padding(24.dp)) else LazyColumn(state = sourceList,
-                                modifier = Modifier.weight(1f).fillMaxHeight().background(colors.sunken).readingDriver { driver = "original" }.readerViewport { viewport = it }) {
+                                modifier = Modifier.weight(1f).fillMaxHeight().testTag("reader-source-pages").background(colors.sunken).readingDriver { driver = "original" }.readerViewport { viewport = it }) {
                                 items(source.pageCount, key = { it }) { index ->
                                     val state = states.getOrPut(index + 1) { InkPageState() }
                                     PdfPage(app, source, paper.paperKey, index, zoom, state, tool,
@@ -298,17 +290,14 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                                             for (stroke in before.filter { it.id !in new }) app.sync.saveLocal(WireJson.format.parseToJsonElement(InkJson.format.encodeToString(InkStroke.serializer(), stroke.copy(deleted = true, updatedAt = Instant.now().toString()))).jsonObject)
                                             SyncScheduler.now(app, app.settings.getBoolean("wifiOnly", false))
                                         } }, contentOverlay = { width, height, textPage ->
-                                            Box(Modifier.matchParentSize().onGloballyPositioned { pageOrigins[index + 1] = it.boundsInWindow() })
-                                            ReaderStructureOverlay(structure?.items.orEmpty().filter { it.page == index + 1 }, width, height) { item, anchor ->
-                                                answerTarget = ReaderAnswerTarget(structureSelection(item, source.pdfSha256), item,
-                                                    textPage?.text ?: sourcePageContext[index + 1].orEmpty(), explain = true, anchor = anchor - rootPosition, threadId = questionThreadId)
-                                                answerPosition = null; panel = false
+                                            ReaderStructureOverlay(structure?.items.orEmpty().filter { it.page == index + 1 }, width, height) { item, _ ->
+                                                val thread = java.util.UUID.randomUUID().toString()
+                                                answerTargets[thread] = ReaderAnswerTarget(structureSelection(item, source.pdfSha256), item,
+                                                    textPage?.text ?: sourcePageContext[index + 1].orEmpty(), explain = true, threadId = thread)
+                                                panel = false
                                             }
-                                            ReaderAnswerPins(answerPins.filter { pin -> pin.page == index + 1 && answerTarget.let { open -> open == null ||
-                                                    (open.historyId == null || pin.historyId != open.historyId) && (open.requestId == null || pin.requestId != open.requestId) } }, width, height, textPage?.rotation ?: 0) { pin, anchor ->
-                                                answerTarget = ReaderAnswerTarget(pin.selected, requestId = pin.requestId, historyId = pin.historyId, anchor = anchor - rootPosition)
-                                                answerPosition = null; panel = false
-                                            }
+                                            ReaderPageAnswers(app, paper.paperKey, source, index + 1, width, height, textPage?.rotation ?: 0,
+                                                answerTargets, answerPins, answerHistory, answerRequests, textPage, ::jump)
                                             StickyNotes(app, annotations.filter { it.kind == "memo" && it.page == index + 1 }, width, height, textPage, source.pdfSha256)
                                         })
                                 }
@@ -349,7 +338,7 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                                 Row(Modifier.horizontalScroll(rememberScrollState())) {
                                     TextButton(enabled = selected.second.text.isNotBlank(), onClick = { clipboard.setText(androidx.compose.ui.text.AnnotatedString(selected.second.text)) }) { Text(libraryText("Copy", "복사")) }
                                     TextButton(onClick = { openAnswer(selected, explain = selected.second.origin == "original"); selection = null }) { Text(libraryText(if (selected.second.origin == "original") "Explain" else "Attach quote", if (selected.second.origin == "original") "설명" else "인용 첨부")) }
-                                    TextButton(onClick = { quote = selected; panel = true; panelTab = "questions"; answerTarget = null; selection = null }) { Text(libraryText("Ask", "질문")) }
+                                    TextButton(onClick = { openAnswer(selected); selection = null }) { Text(libraryText("Ask", "질문")) }
                                     TextButton(onClick = { scope.launch { saveHighlight(app, paper.paperKey, selected.first, selected.second, "yellow") }; selection = null }) { Text(libraryText("Highlight", "강조")) }
                                     TextButton(onClick = { noteSelection = selected; selection = null }) { Text(libraryText("Note", "노트")) }
                                     TextButton(onClick = { selection = null }) { Text(libraryText("Clear", "해제")) }
@@ -362,10 +351,7 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                 }
             }
         }
-        answerTarget?.let { target ->
-            ReaderAnswerCard(app, paper.paperKey, pages, target, answerPosition, { answerPosition = it },
-                with(density) { maxWidth.toPx() }, with(density) { maxHeight.toPx() }, ::jump, { answerTarget = null }, onThreadChange = { questionThreadId = it })
-        }
+
         if (panel && compact) ModalBottomSheet(onDismissRequest = { panel = false }, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
             SidePanel(app, paper.paperKey, annotations, pages, panelTab, { panelTab = it }, ::jump,
                 Modifier.fillMaxWidth().height(availableHeight * .85f), quote, { quote = null }, onClose = { panel = false }, threadId = questionThreadId, onThreadChange = { questionThreadId = it })

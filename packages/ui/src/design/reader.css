@@ -1664,3 +1664,42 @@
     opacity: 1;
   }
 }
+
+/* Cards belong to original PDF pages, including in split view. Translation-only hides the original pane. */
+.answer-popup {
+  position: absolute;
+  z-index: 35;
+  max-width: 100%;
+  border: 1px solid var(--c-rule-strong);
+  border-radius: 10px;
+  background: var(--c-surface);
+  box-shadow: 0 8px 28px #0003;
+}
+.answer-popup--collapsed {
+  width: 40px;
+  height: 40px;
+}
+.answer-popup--collapsed .answer-popup__header {
+  padding: 4px;
+  justify-content: center;
+  height: 100%;
+}
+.answer-popup--collapsed .answer-popup__content {
+  display: none;
+}
+.answer-source-highlight {
+  position: absolute;
+  z-index: 34;
+  pointer-events: none;
+  background: #8866ff38;
+  outline: 2px solid #8866ff99;
+  border-radius: 3px;
+}
+
+.answer-popup--collapsed {
+  z-index: 36;
+}
+.answer-popup:hover,
+.answer-popup:focus-within {
+  z-index: 37;
+}
