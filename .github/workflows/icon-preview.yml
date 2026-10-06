@@ -47,8 +47,15 @@ jobs:
           $graphics.CopyFromScreen($bounds.Location, [System.Drawing.Point]::Empty, $bounds.Size)
           New-Item -ItemType Directory -Force icon-preview | Out-Null
           $bitmap.Save("icon-preview\windows-screen.png")
+          # Windows 11 keeps new tray icons in the overflow flyout; open it and capture again.
+          Add-Type -Namespace Win32 -Name Mouse -MemberDefinition '[DllImport("user32.dll")] public static extern bool SetCursorPos(int x, int y); [DllImport("user32.dll")] public static extern void mouse_event(int f, int x, int y, int d, int e);'
+          $chevronX = $bounds.Width - 180; $chevronY = $bounds.Height - 24
+          [Win32.Mouse]::SetCursorPos($chevronX, $chevronY); [Win32.Mouse]::mouse_event(2, 0, 0, 0, 0); [Win32.Mouse]::mouse_event(4, 0, 0, 0, 0)
+          Start-Sleep 3
+          $graphics.CopyFromScreen($bounds.Location, [System.Drawing.Point]::Empty, $bounds.Size)
+          $bitmap.Save("icon-preview\windows-tray-overflow.png")
           Copy-Item $exe.FullName icon-preview\
       - uses: actions/upload-artifact@v4
         with:
           name: icon-preview-windows
-          path: icon-preview/windows-screen.png
+          path: icon-preview/*.png
