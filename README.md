@@ -220,3 +220,5 @@ The service may rate-limit requests. News Papers tries OpenAlex as a fallback an
 Issues and focused pull requests are welcome. Start with the [architecture](docs/ARCHITECTURE.md) and [API](docs/API.md), and run `npm test` and `npm run typecheck` before submitting code changes.
 
 News Papers is licensed under [Apache-2.0](LICENSE). It grew from [PaperRead](https://github.com/nkjunbc/PaperRead); its MIT notice and other attributions are in [third-party notices](THIRD_PARTY_NOTICES.md).
+
+The desktop and Android apps include these notices and generated dependency license lists in Settings → Open-source licenses.

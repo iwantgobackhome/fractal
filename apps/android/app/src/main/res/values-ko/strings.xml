@@ -93,4 +93,5 @@
     <string name="update_error">업데이트하지 못했습니다. 나중에 다시 시도해 주세요.</string>
     <string name="update_current">최신 버전을 사용하고 있습니다.</string>
     <string name="update_permission">News Papers의 앱 설치를 허용한 다음 다시 설치해 주세요.</string>
+    <string name="open_source_licenses">오픈소스 라이선스</string>
 </resources>
