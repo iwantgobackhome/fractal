@@ -100,7 +100,7 @@ internal fun DurableReaderPanel(app: ReaderApplication, paperKey: String, annota
                 require(modelAvailable) { unavailableModel }
                 require((retained?.second?.text?.length ?: 0) <= 20000) { shorterQuote }
                 val selectedModel = resolveReaderModel(model, models)
-                val body = if (!explanation) readerQuestionBody(asked, null, selectedModel, retained, threadId) else {
+                val body = if (!explanation) readerQuestionWithCrop(asked, null, selectedModel, retained, threadId, pages) else {
                     val selected = retained ?: error("Choose original text or a region first")
                     withReaderCrop(readerExplainBody(null, selectedModel, selected, threadId = threadId), pages, selected)
                 }
@@ -150,6 +150,7 @@ internal fun DurableReaderPanel(app: ReaderApplication, paperKey: String, annota
                             } else onTabChange("questions") }, modifier = Modifier.fillMaxWidth().testTag("reader-thread-${thread.id}")) {
                             Column(Modifier.fillMaxWidth().padding(8.dp)) {
                                 Text(thread.title, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                                thread.turns.first().imageAttachment()?.let { ReaderImageAttachment(pages, it) }
                                 Text(libraryText("${thread.turns.size} turns", "${thread.turns.size}개 대화"), style = MaterialTheme.typography.bodySmall)
                             }
                         }
@@ -169,7 +170,8 @@ internal fun DurableReaderPanel(app: ReaderApplication, paperKey: String, annota
                             Surface(color = colors.rule.copy(alpha = .2f), shape = MaterialTheme.shapes.small) {
                                 Column(Modifier.fillMaxWidth().padding(10.dp)) {
                                     Text(turn.question, style = MaterialTheme.typography.titleSmall)
-                                    if (turn.quote.isNotBlank()) Text("📎 p.${turn.page ?: "?"} · “${turn.quote}”", Modifier.padding(top = 6.dp), style = MaterialTheme.typography.bodySmall)
+                                    if (turn.imageAttachment() != null) ReaderImageAttachment(pages, turn.imageAttachment()!!)
+                                    else if (turn.quote.isNotBlank()) ReaderTextAttachment(turn.page, turn.quote, Modifier.padding(top = 6.dp))
                                 }
                             }
                             SelectionContainer { Text(turn.text.ifBlank { readerStateLabel(turn.status) }, Modifier.padding(vertical = 12.dp)) }
@@ -192,7 +194,9 @@ internal fun DurableReaderPanel(app: ReaderApplication, paperKey: String, annota
                 Column(Modifier.padding(12.dp)) {
                     contextSelection(context)?.let { (page, selected) ->
                         Row(Modifier.fillMaxWidth().testTag("reader-quote-attachment"), verticalAlignment = Alignment.CenterVertically) {
-                            Text("📎 p.$page · “${selected.text.ifBlank { libraryText("Selected region", "선택 영역") }}”", Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodySmall)
+                            if (selected.isImageSelection() && selected.rects.isNotEmpty()) ReaderImageAttachment(pages,
+                                readerQuestionBody("", null, null, page to selected)["attachment"]!!.jsonObject, Modifier.weight(1f))
+                            else ReaderTextAttachment(page, selected.text, Modifier.weight(1f))
                             TextButton(onClick = { context = JsonObject(emptyMap()); clearQuote(); saveDraft() }, modifier = Modifier.testTag("reader-remove-attachment")) { Text("×") }
                         }
                     }

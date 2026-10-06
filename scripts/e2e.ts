@@ -6,6 +6,7 @@ import { join, resolve } from 'node:path';
 import { chromium } from 'playwright-core';
 import type { AiProvider, CompleteInput, ProviderDelta } from '../packages/hub/src/ai/provider';
 import { ProviderRegistry } from '../packages/hub/src/ai/registry';
+import { STRUCTURE_VERSION } from '../packages/hub/src/structure/detector';
 import { FtsLibrarySearch } from '../packages/hub/src/ai/library-search';
 import { JsonSettingsStore } from '../packages/hub/src/ai/settings';
 import { createApiServer } from '../packages/hub/src/api/index';
@@ -143,6 +144,19 @@ async function main(): Promise<void> {
       data: { paper },
     } = (await response.json()) as { data: { paper: { paperKey: string } } };
 
+    store.db.prepare('INSERT OR REPLACE INTO structure_state(paper_key,version,status) VALUES(?,?,?)').run(paper.paperKey, STRUCTURE_VERSION, 'ready');
+    store.db.prepare('INSERT OR REPLACE INTO structure_items(paper_key,id,data) VALUES(?,?,?)').run(
+      paper.paperKey,
+      'figure-smoke',
+      JSON.stringify({
+        id: 'figure-smoke',
+        kind: 'figure',
+        page: 1,
+        bbox: { x: 0.1, y: 0.4, width: 0.45, height: 0.15 },
+        label: 'Figure 3',
+        caption: 'Short figure caption',
+      }),
+    );
     browser = await chromium.launch({ channel: process.env.FRACTAL_E2E_CHANNEL || 'msedge', headless: true });
     page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
     page.on('pageerror', (error) => console.error('Browser error:', error));
@@ -406,6 +420,22 @@ async function main(): Promise<void> {
     assert.equal(store.listHistory(paper.paperKey).length, countBeforeRestore);
     console.log('PASS reader reopen restores saved open and collapsed cards without asking again');
 
+    await page.locator('.answer-popup:not(.answer-popup--collapsed)').getByRole('button', { name: '답변 접기', exact: true }).click();
+    await page.locator('.pdf-page').first().hover();
+    await page.locator('.structure-item--figure .structure-item__explain').first().click();
+    const figureCard = page
+      .locator('.answer-popup')
+      .filter({ has: page.locator('[data-testid="image-attachment-chip"]') })
+      .last();
+    await figureCard.locator('.research-turn [data-testid="image-attachment-chip"]').waitFor();
+    assert.match(await figureCard.locator('.research-turn__user p').first().innerText(), /Figure 3 설명/);
+    assert.equal(await figureCard.locator('.research-turn__quote').count(), 0);
+    await figureCard.locator('.research-turn .md').filter({ hasText: 'forty two' }).waitFor();
+    const figureHistory = store.listHistory(paper.paperKey).find((entry) => entry.context.attachment?.label === 'Figure 3');
+    assert.ok(figureHistory && figureHistory.question.length < 100);
+    assert.equal(figureHistory.context.selectedText, undefined);
+    assert.equal(figureHistory.answer?.imageInput, 'sent');
+    console.log('PASS figure explain sends an image and shows an attachment chip with a short question');
     await page.goto(`${url}/#/settings`);
     await page.locator('#settings-ai').waitFor();
     await page.getByText('e2e-stub').first().waitFor();

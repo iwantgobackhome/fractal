@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useRef, useState, type JSX } from 'react';
-import type { ContextSourceStatus, HistoryEntry, ModelSelection, OriginalProvenance, StructureBox } from '@fractal/shared';
+import type { ImageAttachment, ContextSourceStatus, HistoryEntry, ModelSelection, OriginalProvenance, StructureBox } from '@fractal/shared';
 import { Markdown } from '../components/Markdown';
 import { Selector } from '../components/Selector';
 import { useLanguage } from '../i18n';
 import { HubApi, type ProvidersResult } from '../shell/hub-api';
 import { useResearchRequest } from './useResearchRequest';
+import { ImageAttachmentChip } from './ImageAttachment';
 import { ReaderSourceStatus } from './ReaderSourceStatus';
 import { groupThreads, reduceDraft, threadKey, type ResearchDraft } from './research-state';
 export interface ResearchIntent {
@@ -15,6 +16,8 @@ export interface ResearchIntent {
   rect?: StructureBox;
   kind?: 'figure' | 'equation' | 'table' | 'text';
   provenance?: OriginalProvenance;
+  attachment?: ImageAttachment;
+  surroundingText?: string;
 }
 function readDraft(key: string, popup: boolean): ResearchDraft {
   const empty = { threadId: crypto.randomUUID(), text: '', context: null, model: '' };
@@ -140,6 +143,7 @@ export function ResearchPanel({
               rect: retry.context.rect,
               kind: retry.context.explanationKind,
               provenance: retry.context.provenance,
+              attachment: retry.context.attachment,
             }
           : null
         : current.context;
@@ -179,7 +183,9 @@ export function ResearchPanel({
     if (atBottom.current && scroll.current) scroll.current.scrollTop = scroll.current.scrollHeight;
   }, [entries, draft.threadId]);
   const attachment = (entry: HistoryEntry) =>
-    entry.context.selectedText ? (
+    entry.context.attachment ? (
+      <ImageAttachmentChip paperKey={paperKey} attachment={entry.context.attachment} />
+    ) : entry.context.selectedText ? (
       <details className="research-turn__quote">
         <summary>
           📎 p.{entry.context.page} · {entry.context.selectedText.replace(/^\[Translated text[^\n]*\]\n/, '').slice(0, 80)}
@@ -346,6 +352,7 @@ export function ResearchPanel({
                 }}
               >
                 <strong>{rows[0].question || say('Explanation', '설명')}</strong>
+                {rows[0].context.attachment ? <ImageAttachmentChip paperKey={paperKey} attachment={rows[0].context.attachment} /> : null}
                 <span>
                   {rows.length} {say('turns', '개 질문')} · {new Date(rows[rows.length - 1].createdAt).toLocaleDateString(ko ? 'ko-KR' : 'en-US')}
                 </span>
@@ -392,11 +399,18 @@ export function ResearchPanel({
           >
             {draft.context ? (
               <div className="research-attachment">
-                <span>
-                  📎 p.{draft.context.page} · {draft.context.from === 'translation' ? say('Translation', '번역문') : say('Original', '원문')} “
-                  {draft.context.text.slice(0, 80)}
-                  {draft.context.text.length > 80 ? '…' : ''}”
-                </span>
+                {draft.context.attachment ? (
+                  <ImageAttachmentChip paperKey={paperKey} attachment={draft.context.attachment} />
+                ) : (
+                  <details className="research-turn__quote">
+                    <summary>
+                      📎 p.{draft.context.page} · {draft.context.from === 'translation' ? say('Translation', '번역문') : say('Original', '원문')} “
+                      {draft.context.text.slice(0, 80)}
+                      {draft.context.text.length > 80 ? '…' : ''}”
+                    </summary>
+                    <blockquote>{draft.context.text}</blockquote>
+                  </details>
+                )}
                 <button
                   type="button"
                   aria-label={say('Remove attachment', '인용 제거')}

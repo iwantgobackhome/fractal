@@ -243,6 +243,9 @@ export async function* readSse(body: ReadableStream<Uint8Array>): AsyncGenerator
 }
 
 export interface ExplainRequest {
+  croppedPngBase64?: string;
+  attachment?: import('@fractal/shared').ImageAttachment;
+  question?: string;
   kind: 'equation' | 'figure' | 'table' | 'text';
   page: number;
   bbox: StructureBox;
@@ -410,6 +413,8 @@ export class HubApi {
       answerLanguage?: string;
       provenance?: OriginalProvenance;
       selectedText?: string;
+      croppedPngBase64?: string;
+      attachment?: import('@fractal/shared').ImageAttachment;
       page?: number;
       rect?: StructureBox;
       selection?: ModelSelection;

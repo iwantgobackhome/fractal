@@ -30,7 +30,7 @@ class ReaderApplication : Application() {
     } }
     val originalText by lazy { OriginalTextRepository(database, client) }
     internal val submissionScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
-    val history by lazy { HistoryRepository(database, client, submissionScope) }
+    val history by lazy { HistoryRepository(database, client, submissionScope) { _, body -> readerRetainedCrop(cache, body) } }
     val metadata by lazy { MetadataStore(database) {
         credentials.load()?.deviceId ?: (settings.getString("localDeviceId", null)
             ?: UUID.randomUUID().toString().also { settings.edit().putString("localDeviceId", it).commit() })

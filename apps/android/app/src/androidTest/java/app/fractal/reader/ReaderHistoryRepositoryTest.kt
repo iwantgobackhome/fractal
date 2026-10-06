@@ -58,6 +58,41 @@ class ReaderHistoryRepositoryTest {
         } finally { scope.cancel(); db.close() }
     }
 
+    @Test fun cropBytesStayOutOfRoomAndRetryRebuildsImageAfterRestart() = runBlocking {
+        val db = Room.inMemoryDatabaseBuilder(context, FractalDatabase::class.java).build()
+        val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+        val sent = java.util.concurrent.CopyOnWriteArrayList<JsonObject>()
+        var offline = true
+        val client = object : HubHistoryClient {
+            override suspend fun attachHistory(path: String, body: JsonObject): String {
+                sent += body
+                if (offline) throw IOException("Offline")
+                return "retained-answer"
+            }
+            override suspend fun data(path: String, method: String, body: JsonElement?): JsonElement =
+                buildJsonObject { put("history", JsonArray(emptyList())) }
+        }
+        try {
+            val body = buildJsonObject {
+                put("question", "Figure 3 설명"); put("croppedPngBase64", "first-crop")
+                put("attachment", buildJsonObject { put("label", "Figure 3"); put("page", 2) })
+            }
+            val id = HistoryRepository(db, client, scope).create("p", "question", body, JsonObject(emptyMap()))
+            withTimeout(5000) { while (db.reader().request(id)?.status != "failed") delay(20) }
+            assertFalse(db.reader().request(id)!!.bodyJson.contains("croppedPngBase64"))
+            assertEquals("first-crop", sent.single()["croppedPngBase64"]!!.jsonPrimitive.content)
+            offline = false
+            HistoryRepository(db, client, scope) { _, retained ->
+                assertEquals("Figure 3", retained["attachment"]!!.jsonObject["label"]!!.jsonPrimitive.content)
+                "rebuilt-crop"
+            }.send(id)
+            withTimeout(5000) { while (db.reader().request(id)?.status != "attached") delay(20) }
+            assertEquals("rebuilt-crop", sent.last()["croppedPngBase64"]!!.jsonPrimitive.content)
+            assertEquals(sent.first()["requestId"], sent.last()["requestId"])
+            assertFalse(db.reader().request(id)!!.bodyJson.contains("croppedPngBase64"))
+        } finally { scope.cancel(); db.close() }
+    }
+
     @Test fun closeDoesNotCancelExplicitCancelQueuesOfflineAndIsIdempotent() = runBlocking {
         val db = Room.inMemoryDatabaseBuilder(context, FractalDatabase::class.java).build()
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)

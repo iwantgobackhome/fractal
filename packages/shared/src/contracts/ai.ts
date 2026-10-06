@@ -164,6 +164,7 @@ export interface PaperQuestionInput {
    * for an existing conversation (service restart, model change, lost connection). */
   history: { question: string; answer: string }[];
   question: string;
+  images?: string[];
   signal?: AbortSignal;
   /** The answer text so far, each time more of it streams in. */
   onText?(text: string): void;
@@ -301,12 +302,22 @@ export const aiUsageResponseSchema = z.object({
 export const bboxSchema = z
   .object({ x: z.number().min(0).max(1), y: z.number().min(0).max(1), width: z.number().positive().max(1), height: z.number().positive().max(1) })
   .refine((v) => v.x + v.width <= 1 && v.y + v.height <= 1, 'box must fit the page');
+/** Geometry only: image bytes are request-local and never persisted in history. */
+export const imageAttachmentSchema = z.object({
+  page: z.number().int().positive(),
+  bbox: bboxSchema,
+  kind: z.enum(['figure', 'equation', 'table', 'region']),
+  label: z.string().max(200),
+});
+export type ImageAttachment = z.infer<typeof imageAttachmentSchema>;
 export const askPaperSchema = z
   .object({
     provenance: originalProvenanceSchema.optional(),
     answerLanguage: z.union([z.literal('auto'), languageSchema]).optional(),
     question: z.string().trim().min(1).max(4000),
     selectedText: z.string().max(20000).optional(),
+    croppedPngBase64: z.string().max(4_000_000).optional(),
+    attachment: imageAttachmentSchema.optional(),
     page: z.number().int().positive().optional(),
     rect: bboxSchema.optional(),
     selection: modelSelectionSchema.optional(),
@@ -315,6 +326,7 @@ export const askPaperSchema = z
     threadId: z.string().min(1).max(100).optional(),
   })
   .refine((v) => !v.rect || v.page !== undefined, 'rect requires page')
+  .refine((v) => !v.attachment || v.attachment.page === v.page, 'attachment must match physical page')
   .refine(provenanceMatchesPage, 'layoutRange must match the physical page');
 export const explainSchema = z
   .object({
@@ -324,11 +336,14 @@ export const explainSchema = z
     page: z.number().int().positive(),
     bbox: bboxSchema,
     croppedPngBase64: z.string().max(4_000_000).optional(),
+    attachment: imageAttachmentSchema.optional(),
+    question: z.string().trim().min(1).max(4000).optional(),
     surroundingText: z.string().max(30000).optional(),
     selection: modelSelectionSchema.optional(),
     requestId: z.string().min(1).max(100).optional(),
     threadId: z.string().min(1).max(100).optional(),
   })
+  .refine((v) => !v.attachment || v.attachment.page === v.page, 'attachment must match physical page')
   .refine(provenanceMatchesPage, 'layoutRange must match the physical page');
 export const libraryAskSchema = z.object({
   question: z.string().trim().min(1).max(4000),
@@ -344,6 +359,8 @@ export interface GlossaryTerm {
 export interface AiAnswer {
   citations?: { paperKey: string; page: number; region?: Region }[];
   contextSourceStatus?: ContextSourceStatus;
+  imageInput?: 'sent' | 'text_only';
+  imageFallbackReason?: string;
   text: string;
   provider: ProviderId;
   model: string;
@@ -364,6 +381,8 @@ export const aiAnswerSchema = z.object({
     )
     .optional(),
   contextSourceStatus: contextSourceStatusSchema.optional(),
+  imageInput: z.enum(['sent', 'text_only']).optional(),
+  imageFallbackReason: z.string().optional(),
   text: z.string(),
   provider: providerIdSchema,
   model: z.string(),

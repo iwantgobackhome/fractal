@@ -37,6 +37,18 @@ export function parseClaudeEvent(value: unknown): ProviderDelta[] {
   return [];
 }
 
+export function buildClaudeImageMessage(text: string, images: string[]): string {
+  return (
+    JSON.stringify({
+      type: 'user',
+      message: {
+        role: 'user',
+        content: [...images.map((data) => ({ type: 'image', source: { type: 'base64', media_type: 'image/png', data } })), { type: 'text', text }],
+      },
+    }) + '\n'
+  );
+}
+
 export class ClaudeProvider implements AiProvider {
   readonly id = 'claude' as const;
   onRateLimit: ((event: unknown) => void) | null = null;
@@ -107,7 +119,6 @@ export class ClaudeProvider implements AiProvider {
     return null;
   }
   async *complete(input: CompleteInput): AsyncIterable<ProviderDelta> {
-    if (input.images?.length) throw Object.assign(new Error('Claude CLI image input is not supported in this integration'), { code: 'INVALID_INPUT' });
     const signal = input.signal && this.shutdown ? AbortSignal.any([input.signal, this.shutdown]) : (input.signal ?? this.shutdown);
     signal?.throwIfAborted();
     const args = [
@@ -126,6 +137,7 @@ export class ClaudeProvider implements AiProvider {
       '--strict-mcp-config',
     ];
     if (input.effort) args.push('--effort', input.effort);
+    if (input.images?.length) args.push('--input-format', 'stream-json');
     const child = this.spawnProcess(args, this.environment());
     const abort = () => child.kill();
     if (signal?.aborted) {
@@ -139,11 +151,12 @@ export class ClaudeProvider implements AiProvider {
       stderr = (stderr + String(chunk)).slice(-2000);
     });
     const prompt = `${input.system}\n\n${input.messages.map((m) => `${m.role}: ${m.content}`).join('\n\n')}`;
-    child.stdin.end(prompt);
+    child.stdin.end(input.images?.length ? buildClaudeImageMessage(prompt, input.images) : prompt);
     let streamed = false,
       fallback = '',
       reported = false,
-      failed = false;
+      failed = false,
+      failureMessage = '';
     try {
       for await (const line of createInterface({ input: child.stdout })) {
         let event: unknown;
@@ -162,7 +175,10 @@ export class ClaudeProvider implements AiProvider {
             .filter((v): v is string => typeof v === 'string')
             .join('');
         }
-        if (obj?.type === 'result' && obj.is_error === true) failed = true;
+        if (obj?.type === 'result' && obj.is_error === true) {
+          failed = true;
+          failureMessage = typeof obj.result === 'string' ? obj.result : Array.isArray(obj.errors) ? obj.errors.join('; ') : '';
+        }
         for (const delta of parseClaudeEvent(event)) {
           if (delta.type === 'text') streamed = true;
           if (delta.type === 'usage') reported = true;
@@ -170,7 +186,8 @@ export class ClaudeProvider implements AiProvider {
         }
       }
       const exit = child.exitCode ?? (await new Promise<number | null>((resolve) => child.once('close', resolve)));
-      if (exit !== 0 || failed) throw Object.assign(new Error('Claude generation failed; check CLI sign-in and model availability'), { code: 'NETWORK' });
+      if (exit !== 0 || failed)
+        throw Object.assign(new Error(failureMessage || stderr || 'Claude generation failed; check CLI sign-in and model availability'), { code: 'NETWORK' });
       if (!streamed && fallback) yield { type: 'text', text: fallback };
       if (!reported) yield { type: 'usage', inputTokens: null, outputTokens: null };
     } finally {

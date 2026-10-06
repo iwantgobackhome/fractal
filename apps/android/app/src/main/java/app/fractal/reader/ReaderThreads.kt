@@ -51,3 +51,6 @@ internal fun readerTurnCitations(turn: ReaderTurn, paperKey: String): List<Int> 
     }
     return (structured + Regex("\\[p\\.(\\d+)]").findAll(turn.text).mapNotNull { it.groupValues[1].toIntOrNull() }.toList()).distinct()
 }
+
+internal fun ReaderTurn.imageAttachment(): JsonObject? =
+    ((json["context"] as? JsonObject)?.get("attachment") ?: json["attachment"] ?: request?.let { readerJson(it.bodyJson)["attachment"] }) as? JsonObject

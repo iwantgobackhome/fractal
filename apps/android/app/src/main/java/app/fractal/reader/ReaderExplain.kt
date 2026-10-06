@@ -19,34 +19,36 @@ internal fun readerExplainBody(language: String?, model: Pair<String, String>?, 
     val base = readerQuestionBody("", language, model, selected, threadId)
     require(base["rect"] != null) { "Original region is unavailable" }
     val context = if (item == null) selected.second.text else
-        listOf(item.label, item.caption, item.latex.orEmpty(), pageText).filter { it.isNotBlank() }.joinToString("\n")
+        listOf(item.label, item.caption, item.latex.orEmpty(), pageText.take(1500)).filter { it.isNotBlank() }.joinToString("\n")
     return buildJsonObject {
         base.filterKeys { it !in listOf("question", "selectedText", "rect") }.forEach { (k, v) -> put(k, v) }
         put("kind", item?.kind ?: if (selected.second.text.isBlank()) "figure" else "text")
-        put("surroundingText", context.take(30000))
-        base["rect"]?.let { put("bbox", it) }
+        put("surroundingText", context.take(2500))
+        base["rect"]?.let { rect ->
+            put("bbox", rect)
+            if (item != null || selected.second.isImageSelection()) put("attachment", readerImageDescriptor(selected.first, rect.jsonObject, item?.kind ?: "region", item?.label ?: "Selected region"))
+        }
+        put("question", "${item?.label ?: if (selected.second.isImageSelection()) "Selected region" else "Selection"} 설명")
     }
 }
 
 internal suspend fun withReaderCrop(body: JsonObject, pages: PdfPages?, selected: Pair<Int, PdfTextSelection>): JsonObject {
-    val rect = body["bbox"] as? JsonObject ?: return body
+    if (body["attachment"] == null) return body
+    val rect = (body["bbox"] ?: body["rect"]) as? JsonObject ?: return body
     val source = pages ?: return body
     if (!source.identityUnchanged() || source.pdfSha256 != selected.second.pdfSha256) return body
     val encoded = withContext(Dispatchers.IO) {
-        val bitmap = source.bitmap(selected.first - 1, 1000)
         fun n(key: String) = rect[key]?.jsonPrimitive?.floatOrNull ?: 0f
-        val x = (n("x").coerceIn(0f, 1f) * bitmap.width).toInt().coerceAtMost(bitmap.width - 1)
-        val y = (n("y").coerceIn(0f, 1f) * bitmap.height).toInt().coerceAtMost(bitmap.height - 1)
-        val width = (n("width") * bitmap.width).toInt().coerceIn(1, bitmap.width - x)
-        val height = (n("height") * bitmap.height).toInt().coerceIn(1, bitmap.height - y)
-        val crop = Bitmap.createBitmap(bitmap, x, y, width, height)
+        val crop = source.cropBitmap(selected.first - 1, PdfRect(n("x"), n("y"), n("width"), n("height")), 1400)
+        val scale = minOf(1f, 1600f / maxOf(crop.width, crop.height))
+        val reduced = if (scale < 1f) Bitmap.createScaledBitmap(crop, maxOf(1, (crop.width * scale).toInt()), maxOf(1, (crop.height * scale).toInt()), true) else crop
         try {
             val bytes = java.io.ByteArrayOutputStream()
-            crop.compress(Bitmap.CompressFormat.PNG, 100, bytes)
+            reduced.compress(Bitmap.CompressFormat.PNG, 100, bytes)
             Base64.encodeToString(bytes.toByteArray(), Base64.NO_WRAP).takeIf { it.length <= 4_000_000 }
-        } finally { if (crop !== bitmap) crop.recycle() }
+        } finally { if (reduced !== crop) reduced.recycle() }
     }
-    return if (encoded == null) body else JsonObject(body + ("croppedPngBase64" to JsonPrimitive(encoded)))
+    return if (encoded == null) body else readerBodyWithImage(body, encoded)
 }
 
 internal fun structurePageContext(snapshot: JsonObject): Map<Int, String> {
@@ -57,5 +59,38 @@ internal fun structurePageContext(snapshot: JsonObject): Map<Int, String> {
         (block["regions"] as? JsonArray).orEmpty().mapNotNull { (it as? JsonObject)?.get("page")?.jsonPrimitive?.intOrNull }
             .filter { it > 0 }.distinct().forEach { page -> pages.getOrPut(page) { mutableListOf() }.add(text) }
     }
-    return pages.mapValues { it.value.joinToString("\n").take(6000) }
+    return pages.mapValues { it.value.joinToString("\n").take(1500) }
+}
+
+internal fun PdfTextSelection.isImageSelection() = origin == "original" &&
+    (provenance in listOf("detected-structure", "deliberate-region") || text.isBlank())
+
+internal fun readerImageDescriptor(page: Int, rect: JsonObject, kind: String, label: String) = buildJsonObject {
+    put("page", page); put("bbox", rect); put("kind", kind); put("label", label.take(200))
+}
+
+internal suspend fun readerQuestionWithCrop(question: String, language: String?, model: Pair<String, String>?,
+    selected: Pair<Int, PdfTextSelection>?, threadId: String?, pages: PdfPages?): JsonObject {
+    val body = readerQuestionBody(question, language, model, selected, threadId)
+    return if (selected?.second?.isImageSelection() == true) withReaderCrop(body, pages, selected) else body
+}
+
+internal fun readerBodyWithImage(body: JsonObject, pngBase64: String): JsonObject {
+    require(pngBase64.length <= 4_000_000) { "Image attachment is too large" }
+    return JsonObject(body + ("croppedPngBase64" to JsonPrimitive(pngBase64)))
+}
+
+/** Rebuild queued crops after process restart; request/history databases retain geometry only. */
+internal suspend fun readerRetainedCrop(cache: app.fractal.data.PdfCache, body: JsonObject): String? = withContext(Dispatchers.IO) {
+    val hash = (body["provenance"] as? JsonObject)?.threadText("pdfSha256")?.takeIf { it.matches(Regex("[a-f0-9]{64}")) }
+        ?: return@withContext null
+    val page = body["page"]?.jsonPrimitive?.intOrNull ?: return@withContext null
+    val file = cache.file(hash)
+    if (!file.isFile) return@withContext null
+    try {
+        PdfPages(file).use { source ->
+            if (source.pdfSha256 != hash || page !in 1..source.pageCount) return@use null
+            withReaderCrop(body, source, page to PdfTextSelection("", emptyList(), pdfSha256 = hash))["croppedPngBase64"]?.jsonPrimitive?.contentOrNull
+        }
+    } catch (cancel: kotlinx.coroutines.CancellationException) { throw cancel } catch (_: Exception) { null }
 }

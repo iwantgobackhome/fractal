@@ -3,6 +3,7 @@ package app.fractal.reader
 import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
 import androidx.compose.ui.test.*
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import app.fractal.data.*
 import app.fractal.design.FractalTheme
@@ -64,7 +65,10 @@ class ReaderAnswerCardTest {
         val body = WireJson.format.parseToJsonElement(row.bodyJson).jsonObject
         assertEquals("equation", body["kind"]?.jsonPrimitive?.content)
         assertTrue(body["surroundingText"]?.jsonPrimitive?.content.orEmpty().contains("E=mc^2"))
-        assertTrue(body["croppedPngBase64"]?.jsonPrimitive?.content.orEmpty().isNotBlank())
+        assertFalse("Crop bytes must not be persisted", body.containsKey("croppedPngBase64"))
+        assertEquals("Eq. 1 설명", body["question"]?.jsonPrimitive?.content)
+        assertEquals("equation", body["attachment"]?.jsonObject?.get("kind")?.jsonPrimitive?.content)
+        compose.onNodeWithTag("reader-image-attachment").assertExists()
         compose.onNodeWithTag("reader-answer-drag").performTouchInput {
             down(center); moveTo(center + androidx.compose.ui.geometry.Offset(25f, -30f), delayMillis = 200)
         }
@@ -100,7 +104,7 @@ class ReaderAnswerCardTest {
     private fun screenshot(name: String) {
         val instrumentation = androidx.test.platform.app.InstrumentationRegistry.getInstrumentation()
         val folder = java.io.File(instrumentation.targetContext.getExternalFilesDir(null), "answer-cards").apply { mkdirs() }
-        val bitmap = instrumentation.uiAutomation.takeScreenshot()
+        val bitmap = instrumentation.uiAutomation.takeScreenshot() ?: compose.onRoot().captureToImage().asAndroidBitmap()
         java.io.File(folder, "$name.png").outputStream().use { bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it) }
         bitmap.recycle()
     }
