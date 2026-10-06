@@ -311,6 +311,8 @@ export const askPaperSchema = z
     rect: bboxSchema.optional(),
     selection: modelSelectionSchema.optional(),
     requestId: z.string().min(1).max(100).optional(),
+    /** Groups follow-up turns; the hub answers with the thread's earlier turns as context. */
+    threadId: z.string().min(1).max(100).optional(),
   })
   .refine((v) => !v.rect || v.page !== undefined, 'rect requires page')
   .refine(provenanceMatchesPage, 'layoutRange must match the physical page');
@@ -325,6 +327,7 @@ export const explainSchema = z
     surroundingText: z.string().max(30000).optional(),
     selection: modelSelectionSchema.optional(),
     requestId: z.string().min(1).max(100).optional(),
+    threadId: z.string().min(1).max(100).optional(),
   })
   .refine(provenanceMatchesPage, 'layoutRange must match the physical page');
 export const libraryAskSchema = z.object({
