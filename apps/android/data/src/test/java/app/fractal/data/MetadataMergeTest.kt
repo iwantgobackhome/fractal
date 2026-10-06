@@ -35,4 +35,24 @@ class MetadataMergeTest {
         val snapshot = json("""{"blocks":[{"blockId":"b","order":2,"pageOrdinal":1,"regions":[{"page":7}],"sourceText":"Source"},{"blockId":"unlocated","order":1,"pageOrdinal":2,"regions":[],"sourceText":"Unknown"}],"translations":[{"blockId":"b","status":"completed","text":"Translation"}]}""")
         assertEquals(translatedBlocks(snapshot), listOf(TranslatedBlock("b", 7, "", "Translation")))
     }
+    @Test fun translationKeepsSourceCropsInReadingOrderAndCaptionText() {
+        val snapshot = json("""{"blocks":[
+            {"blockId":"caption","order":3,"kind":"caption","sourceText":"Original caption","regions":[{"page":2}]},
+            {"blockId":"figure","order":2,"kind":"figure","regions":[{"page":2,"x":0.1,"y":0.2,"width":0.8,"height":0.3},{"page":3,"x":0.2,"y":0.1,"width":0.5,"height":0.4}]},
+            {"blockId":"heading","order":1,"kind":"heading","sourceText":"Heading","regions":[{"page":2}]},
+            {"blockId":"table","order":4,"kind":"table","regions":[{"page":3,"x":0,"y":0,"width":1,"height":0.5}]},
+            {"blockId":"equation","order":5,"kind":"equation","sourceText":"do not translate","regions":[{"page":3,"x":0.1,"y":0.5,"width":0.7,"height":0.1}]},
+            {"blockId":"unsupported","order":6,"kind":"unsupported","regions":[{"page":3,"x":0.1,"y":0.6,"width":0.7,"height":0.2}]},
+            {"blockId":"invalid","order":7,"kind":"figure","regions":[{"page":3,"x":1,"y":0,"width":1,"height":1}]}
+        ],"translations":[{"blockId":"caption","status":"completed","text":"Translated caption"}]}""")
+        val blocks = translatedBlocks(snapshot)
+        assertEquals(blocks.map { it.blockId }, listOf("heading", "figure", "caption", "table", "equation", "unsupported"))
+        assertEquals(blocks[1].regions, listOf(TranslatedRegion(2, .1f, .2f, .8f, .3f), TranslatedRegion(3, .2f, .1f, .5f, .4f)))
+        assertEquals(blocks[2].text, "Translated caption")
+        assertFalse(blocks[0].translated)
+        assertTrue(blocks.filter { it.isSourceCrop }.all { it.text.isEmpty() && !it.translated })
+        assertEquals(translatedBlocks(JsonObject(snapshot + ("translations" to JsonArray(emptyList())))).map { it.blockId },
+            listOf("figure", "table", "equation", "unsupported"))
+    }
+
 }

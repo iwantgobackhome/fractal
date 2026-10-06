@@ -8,6 +8,7 @@ import android.util.Log
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.test.*
+import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.platform.app.InstrumentationRegistry
 import app.fractal.data.*
@@ -99,6 +100,39 @@ class ReaderStageTest {
         compose.onNodeWithContentDescription("Reading pane").performClick()
         compose.onAllNodesWithText(label).onLast().performClick()
     }
+    private fun quoteTranslatedBlock(label: String) {
+        compose.onAllNodes(SemanticsMatcher("Quote action") { node ->
+            node.config.getOrNull(androidx.compose.ui.semantics.SemanticsActions.CustomActions)?.any { it.label == label } == true
+        })[0].performScrollTo().fetchSemanticsNode().config[androidx.compose.ui.semantics.SemanticsActions.CustomActions]
+            .first { it.label == label }.let { action -> compose.runOnIdle { assertTrue(action.action()) } }
+    }
+    @Test fun translatedSourceCropsAppearWithCaptionInReadingOrder(): Unit = runBlocking {
+        val snapshot = WireJson.format.parseToJsonElement(app.database.metadata().snapshot(key)!!.json).jsonObject
+        val media = listOf("figure", "table", "equation").mapIndexed { index, kind -> buildJsonObject {
+            put("blockId", "media-$kind"); put("order", if (index == 0) -10 else -9 + index); put("kind", kind)
+            put("regions", JsonArray(listOf(buildJsonObject { put("page", 1); put("x", .05); put("y", .05); put("width", .9); put("height", .1) })))
+        } }
+        val caption = buildJsonObject { put("blockId", "media-caption"); put("order", -9); put("kind", "caption"); put("sourceText", "Source caption")
+            put("regions", JsonArray(listOf(buildJsonObject { put("page", 1) }))) }
+        app.database.metadata().upsert(SnapshotEntity(key, JsonObject(snapshot + mapOf("blocks" to JsonArray(media + caption + snapshot["blocks"]!!.jsonArray),
+            "translations" to JsonArray(snapshot["translations"]!!.jsonArray + buildJsonObject { put("blockId", "media-caption"); put("status", "completed"); put("text", "Translated figure caption") }))).toString(), "2026-10-01T00:00:00Z"))
+        open()
+        val ko = compose.activity.resources.configuration.locales[0].language == "ko"
+        compose.onNodeWithContentDescription(if (ko) "읽기 화면" else "Reading pane").performClick()
+        compose.onAllNodesWithText(if (ko) "번역" else "Translation").onLast().performClick()
+        fun description(kind: String) = if (ko) "원문 $kind · 1쪽" else "Original $kind · page 1"
+        compose.waitUntil(15_000) { compose.onAllNodesWithContentDescription(description("figure")).fetchSemanticsNodes().isNotEmpty() }
+        val figure = compose.onNodeWithContentDescription(description("figure")).fetchSemanticsNode().boundsInRoot
+        compose.waitUntil(15_000) { compose.onAllNodesWithContentDescription(description("equation")).fetchSemanticsNodes().isNotEmpty() }
+        val captionBounds = compose.onNodeWithText("Translated figure caption").fetchSemanticsNode().boundsInRoot
+        val table = compose.onNodeWithContentDescription(description("table")).fetchSemanticsNode().boundsInRoot
+        val equation = compose.onNodeWithContentDescription(description("equation")).fetchSemanticsNode().boundsInRoot
+        assertTrue(figure.height > 0)
+        assertTrue(figure.bottom <= captionBounds.top && captionBounds.bottom <= table.top && table.bottom <= equation.top)
+        capture("reader-translated-source-crops")
+        quoteTranslatedBlock(if (ko) "번역 블록 인용" else "Quote this translated block")
+        compose.onNodeWithText(if (ko) "번역문 인용 · 쪽 1" else "Translated quote · page 1").assertExists()
+    }
     @Test fun capturesActualHubDownloadedPaperAndRetainedHistoryOffline(): Unit = runBlocking {
         org.junit.Assume.assumeTrue("Requires previously downloaded actual D bridge fixture", app.database.library().get("D-reader-catalog") != null)
         val cached = app.database.library().get("D-reader-catalog")!!
@@ -124,7 +158,7 @@ class ReaderStageTest {
         if (compose.activity.resources.configuration.screenWidthDp >= 840) { mode("Split"); compose.onNodeWithText("Translated research paragraph 1.", substring = true).assertExists(); capture("reader-split") }
         mode("Translation")
         compose.onNodeWithText("Translated research paragraph 1.", substring = true).assertExists(); capture("reader-translation")
-        compose.onAllNodesWithText("Quote this translated block")[0].performScrollTo().performClick()
+        quoteTranslatedBlock("Quote this translated block")
         compose.onNodeWithText("Translated quote · page 1").assertExists(); capture("reader-quoted-translation")
         compose.onNodeWithText("Close", substring = false).performClick()
         mode("Original"); compose.onNodeWithContentDescription("Move source note").assertExists()
@@ -265,7 +299,7 @@ class ReaderStageTest {
         compose.waitUntil(15000) { surfaces().isNotEmpty() }; compose.waitForIdle()
         capture("reader-ko-original")
         compose.onNodeWithContentDescription("읽기 화면").performClick(); compose.onAllNodesWithText("번역").onLast().performClick()
-        compose.onAllNodesWithText("번역 블록 인용")[0].performScrollTo().performClick()
+        quoteTranslatedBlock("번역 블록 인용")
         compose.onNodeWithText("허브 기본값").assertExists(); compose.onNodeWithText("답변 언어").assertExists()
         capture("reader-ko-quote-selectors")
         compose.onNodeWithText("닫기", substring = false).performClick()
