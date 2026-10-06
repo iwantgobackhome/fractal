@@ -1,3 +1,4 @@
+import { cliEnvironment } from './cli-paths';
 import { spawn, execFile, type ChildProcess } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 import { mkdirSync, rmSync } from 'node:fs';
@@ -55,7 +56,7 @@ export function mapClaudeWindows(value: unknown): AiAccountLimits['windows'] {
   return windows;
 }
 function claudeCommand(env: NodeJS.ProcessEnv): { file: string; args: string[] } {
-  return process.platform === 'win32' ? resolveClaudePtyCommand(env) : { file: 'claude', args: [] };
+  return resolveClaudePtyCommand(env);
 }
 export interface AccountCli {
   probe(provider: ProviderId, args: string[], env: NodeJS.ProcessEnv, signal?: AbortSignal): Promise<string>;
@@ -63,14 +64,14 @@ export interface AccountCli {
 }
 const defaultCli: AccountCli = {
   async probe(provider, args, env, signal) {
-    const command = provider === 'codex' ? { file: await resolveCodexExecutable(), args: [] } : claudeCommand(env);
-    const result = await run(command.file, [...command.args, ...args], { env, timeout: 12000, windowsHide: true, signal });
+    const command = provider === 'codex' ? { file: await resolveCodexExecutable(env), args: [] } : claudeCommand(env);
+    const result = await run(command.file, [...command.args, ...args], { env: cliEnvironment(env, command.file), timeout: 12000, windowsHide: true, signal });
     return `${result.stdout}\n${result.stderr}`;
   },
   async login(provider, args, env, signal) {
-    const command = provider === 'codex' ? { file: await resolveCodexExecutable(), args: [] } : claudeCommand(env);
+    const command = provider === 'codex' ? { file: await resolveCodexExecutable(env), args: [] } : claudeCommand(env);
     return spawn(command.file, [...command.args, ...args], {
-      env,
+      env: cliEnvironment(env, command.file),
       windowsHide: true,
       shell: false,
       stdio: ['ignore', 'pipe', 'pipe'],

@@ -1,5 +1,6 @@
-import { existsSync, lstatSync, mkdirSync, readdirSync } from 'node:fs';
-import { delimiter, join, resolve, sep } from 'node:path';
+import { cliSearchDirectories } from './cli-paths';
+import { accessSync, constants, lstatSync, mkdirSync, readdirSync } from 'node:fs';
+import { join, resolve, sep } from 'node:path';
 import type { IPty } from '@lydell/node-pty';
 import type { AiAccountLimits } from '@fractal/shared';
 
@@ -52,15 +53,16 @@ function usageDirectory(dataDirectory: string, accountId: string): string {
 }
 
 /** Give ConPTY an absolute CLI path rather than relying on the inherited PATH. */
-export function resolveClaudePtyCommand(env: NodeJS.ProcessEnv): { file: string; args: string[] } {
-  const paths = Object.entries(env)
-    .filter(([key, value]) => key.toLowerCase() === 'path' && typeof value === 'string')
-    .flatMap(([, value]) => value!.split(delimiter).map((part) => part.replace(/^"|"$/g, '')));
-  if (env.USERPROFILE) paths.push(join(env.USERPROFILE, '.local', 'bin'));
-  for (const name of ['claude.exe', 'claude.cmd']) {
+export function resolveClaudePtyCommand(env: NodeJS.ProcessEnv, platform: NodeJS.Platform = process.platform): { file: string; args: string[] } {
+  const paths = cliSearchDirectories(env, platform);
+  for (const name of platform === 'win32' ? ['claude.exe', 'claude.cmd'] : ['claude']) {
     for (const directory of paths) {
       const file = join(directory, name);
-      if (!existsSync(file)) continue;
+      try {
+        accessSync(file, platform === 'win32' ? constants.F_OK : constants.X_OK);
+      } catch {
+        continue;
+      }
       return name.endsWith('.cmd')
         ? { file: env.ComSpec ?? env.COMSPEC ?? join(env.SystemRoot ?? 'C:\\Windows', 'System32', 'cmd.exe'), args: ['/d', '/s', '/c', `"${file}"`] }
         : { file, args: [] };

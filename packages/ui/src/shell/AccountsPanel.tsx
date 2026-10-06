@@ -176,7 +176,7 @@ export function AccountsPanel({
               {status?.version ? <span className="settings__quiet"> {status.version.replace(/^codex-cli\s+/, '').replace(/\s*\(.*\)$/, '')}</span> : null}
             </h3>
             {status !== undefined && !status.installed ? (
-              <InstallControl hub={hub} provider={provider} onInstalled={onChange} />
+              <InstallControl hub={hub} provider={provider} command={status.installCommand} onInstalled={onChange} />
             ) : (
               <ul className="account-list">
                 {own.map((account) => (

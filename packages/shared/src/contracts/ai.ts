@@ -234,6 +234,7 @@ export type AiFeature = z.infer<typeof featureSchema>;
 export type ModelSelection = z.infer<typeof modelSelectionSchema>;
 export type AiSettings = z.infer<typeof aiSettingsSchema>;
 export interface ProviderStatus {
+  installCommand?: string;
   id: ProviderId;
   installed: boolean;
   loggedIn: boolean;

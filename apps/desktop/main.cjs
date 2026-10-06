@@ -206,7 +206,8 @@ if (!app.requestSingleInstanceLock()) {
   app
     .whenReady()
     .then(async () => {
-      const { startHub } = await import(pathToFileURL(join(app.getAppPath(), 'apps/desktop/dist/hub.mjs')).href);
+      const { startHub, augmentCliPath } = await import(pathToFileURL(join(app.getAppPath(), 'apps/desktop/dist/hub.mjs')).href);
+      await augmentCliPath();
       hub = await startHub({ port: 0, indexHtml: join(app.getAppPath(), 'packages/ui/dist/index.html') });
       ipcMain.handle('fractal:save-pdf', async (event, options) => {
         const caller = BrowserWindow.fromWebContents(event.sender);

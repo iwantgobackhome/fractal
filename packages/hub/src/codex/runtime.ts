@@ -1,9 +1,11 @@
 import { execFile, spawn } from 'node:child_process';
+import { constants } from 'node:fs';
 import { access, readFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
-import { delimiter, dirname, join, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { homedir } from 'node:os';
 import { promisify } from 'node:util';
+import { cliEnvironment, cliSearchDirectories } from '../ai/cli-paths';
 import { failure, isRpcClosed, JsonLineRpc } from './rpc';
 
 /** CLI overrides only. Not a claim that read-only blocks shell/file-read/MCP tools.
@@ -103,11 +105,11 @@ export async function disabledMcpArgs(executable: string, env: NodeJS.ProcessEnv
   return args;
 }
 /** Preserve OS startup paths and the user's CLI home selection. Credentials stay with Codex. */
-export function childEnvironment(env: NodeJS.ProcessEnv = process.env): NodeJS.ProcessEnv {
+export function childEnvironment(env: NodeJS.ProcessEnv = process.env, executable?: string): NodeJS.ProcessEnv {
   const permitted = new Set(['path', 'systemroot', 'windir', 'comspec', 'pathext', 'temp', 'tmp', 'home', 'userprofile', 'appdata', 'localappdata']);
   const output = Object.fromEntries(Object.entries(env).filter(([key, value]) => permitted.has(key.toLowerCase()) && value !== undefined));
   if (env.CODEX_HOME?.trim()) output.CODEX_HOME = env.CODEX_HOME;
-  return output;
+  return cliEnvironment(output, executable);
 }
 /** Inspect only config.toml, never credential files. User-supplied instructions cannot
  * become part of Fractal's text-only generation task. */
@@ -124,23 +126,18 @@ export async function assertNoCustomInstructions(env: NodeJS.ProcessEnv): Promis
     throw failure('UNSAFE_RUNTIME', 'Codex custom instructions are not allowed for Fractal threads.');
 }
 /** Resolve native official npm binary on Windows: never run a .cmd through a shell. */
-export async function resolveCodexExecutable(): Promise<string> {
-  const paths = (process.env.PATH ?? process.env.Path ?? '').split(delimiter);
-  if (process.platform === 'win32') {
-    const local = process.env.LOCALAPPDATA ?? join(process.env.USERPROFILE ?? homedir(), 'AppData', 'Local');
-    const roaming = process.env.APPDATA ?? join(process.env.USERPROFILE ?? homedir(), 'AppData', 'Roaming');
-    paths.push(join(local, 'Programs', 'OpenAI', 'Codex', 'bin'), join(roaming, 'npm'));
-  }
+export async function resolveCodexExecutable(env: NodeJS.ProcessEnv = process.env, platform: NodeJS.Platform = process.platform): Promise<string> {
+  const paths = cliSearchDirectories(env, platform);
   for (const directory of paths) {
     if (!directory) continue;
-    const direct = join(directory, process.platform === 'win32' ? 'codex.exe' : 'codex');
+    const direct = join(directory, platform === 'win32' ? 'codex.exe' : 'codex');
     try {
-      await access(direct);
+      await access(direct, platform === 'win32' ? constants.F_OK : constants.X_OK);
       return direct;
     } catch {
       /* continue */
     }
-    if (process.platform !== 'win32') continue;
+    if (platform !== 'win32') continue;
     const root = join(directory, 'node_modules', '@openai', 'codex', 'package.json');
     try {
       await access(root);
@@ -159,8 +156,8 @@ export async function resolveCodexExecutable(): Promise<string> {
 }
 export async function startOfficialRpc(sourceEnv: NodeJS.ProcessEnv = process.env, signal?: AbortSignal): Promise<JsonLineRpc> {
   signal?.throwIfAborted();
-  const executable = await resolveCodexExecutable();
-  const env = childEnvironment(sourceEnv);
+  const executable = await resolveCodexExecutable(sourceEnv);
+  const env = childEnvironment(sourceEnv, executable);
   await assertNoCustomInstructions(env);
   const mcpArgs = await disabledMcpArgs(executable, env, run, signal);
   signal?.throwIfAborted();

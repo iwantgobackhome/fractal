@@ -51,7 +51,7 @@ export function AiConnection({ providers, onRecheck, checking }: { providers: Pr
                   <span className="provider__todo">
                     <span className="settings__warn">{p.installed ? t('ai.notSignedIn') : t('ai.notInstalled')}</span>
                     <span className="settings__quiet">{p.installed ? t('ai.signInHint') : t('ai.installHint')}</span>
-                    <code className="command">{p.installed ? (p.loginCommand ?? LOGIN_COMMAND[p.id]) : INSTALL_COMMAND[p.id]}</code>
+                    <code className="command">{p.installed ? (p.loginCommand ?? LOGIN_COMMAND[p.id]) : (p.installCommand ?? INSTALL_COMMAND[p.id])}</code>
                   </span>
                 )}
               </dd>

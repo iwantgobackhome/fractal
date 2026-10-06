@@ -36,8 +36,8 @@ describe('Claude /usage screen', () => {
     try {
       const executable = join(directory, 'claude.exe');
       writeFileSync(executable, '');
-      expect(resolveClaudePtyCommand({ Path: directory })).toEqual({ file: executable, args: [] });
-      expect(() => resolveClaudePtyCommand({ Path: join(directory, 'missing') })).toThrow('not found on PATH');
+      expect(resolveClaudePtyCommand({ Path: directory }, 'win32')).toEqual({ file: executable, args: [] });
+      expect(() => resolveClaudePtyCommand({ Path: join(directory, 'missing') }, 'win32')).toThrow('not found on PATH');
     } finally {
       rmSync(directory, { recursive: true, force: true });
     }

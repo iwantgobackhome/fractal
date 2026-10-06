@@ -58,7 +58,7 @@ test('release manifests preserve update metadata and reject unknown or missing a
       'dist/release/android/android-verification.json',
       JSON.stringify({
         version,
-        versionCode: 5,
+        versionCode: 6,
         applicationId: 'app.fractal.reader',
         debugSigned: true,
         signatureVerified: true,
@@ -111,8 +111,8 @@ test('desktop updates are gated to supported installed formats and authorize eve
   const require = createRequire(import.meta.url);
   const original = await readFile(join(root, 'apps/desktop/main.cjs'), 'utf8');
   const source = original.replace(
-    /const \{ startHub \} = await import\([^\n]+\);/,
-    'const startHub = async () => ({ url: "http://localhost:4567", close() {} });',
+    /const \{ startHub, augmentCliPath \} = await import\([^\n]+\);/,
+    'const augmentCliPath = async () => {}; const startHub = async () => ({ url: "http://localhost:4567", close() {} });',
   );
   assert.notEqual(source, original, 'replace only the Hub import for this isolated main-process test');
   for (const scenario of [

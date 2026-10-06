@@ -1,3 +1,4 @@
+import { cliEnvironment, providerInstallCommand } from './cli-paths';
 import { spawn, execFile, type ChildProcessWithoutNullStreams } from 'node:child_process';
 import { createInterface } from 'node:readline';
 import { promisify } from 'node:util';
@@ -41,12 +42,22 @@ export class ClaudeProvider implements AiProvider {
   onRateLimit: ((event: unknown) => void) | null = null;
   constructor(
     private readonly spawnProcess: SpawnClaude = (args, env) => {
-      const command = process.platform === 'win32' ? resolveClaudePtyCommand(env ?? process.env) : { file: 'claude', args: [] };
-      return spawn(command.file, [...command.args, ...args], { stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true, shell: false, env });
+      const command = resolveClaudePtyCommand(env ?? process.env);
+      return spawn(command.file, [...command.args, ...args], {
+        stdio: ['pipe', 'pipe', 'pipe'],
+        windowsHide: true,
+        shell: false,
+        env: cliEnvironment(env ?? process.env, command.file),
+      });
     },
     private readonly probe: ProbeClaude = (args, env, signal) => {
-      const command = process.platform === 'win32' ? resolveClaudePtyCommand(env ?? process.env) : { file: 'claude', args: [] };
-      return run(command.file, [...command.args, ...args], { windowsHide: true, timeout: 10_000, env, signal });
+      const command = resolveClaudePtyCommand(env ?? process.env);
+      return run(command.file, [...command.args, ...args], {
+        windowsHide: true,
+        timeout: 10_000,
+        env: cliEnvironment(env ?? process.env, command.file),
+        signal,
+      });
     },
     private readonly environment: () => NodeJS.ProcessEnv = () => process.env,
     private readonly shutdown?: AbortSignal,
@@ -56,12 +67,21 @@ export class ClaudeProvider implements AiProvider {
     try {
       version = (await this.probe(['--version'], this.environment(), this.shutdown)).stdout.trim();
     } catch {
-      return { id: this.id, installed: false, loggedIn: false, version: null, detail: 'Claude CLI is not installed', loginCommand: 'claude auth login' };
+      return {
+        id: this.id,
+        installCommand: providerInstallCommand(this.id),
+        installed: false,
+        loggedIn: false,
+        version: null,
+        detail: 'Claude CLI is not installed',
+        loginCommand: 'claude auth login',
+      };
     }
     try {
       const auth = record(JSON.parse((await this.probe(['auth', 'status'], this.environment(), this.shutdown)).stdout));
       return {
         id: this.id,
+        installCommand: providerInstallCommand(this.id),
         installed: true,
         loggedIn: auth?.loggedIn === true,
         version,
@@ -69,7 +89,15 @@ export class ClaudeProvider implements AiProvider {
         loginCommand: 'claude auth login',
       };
     } catch {
-      return { id: this.id, installed: true, loggedIn: false, version, detail: 'Could not confirm Claude login', loginCommand: 'claude auth login' };
+      return {
+        id: this.id,
+        installCommand: providerInstallCommand(this.id),
+        installed: true,
+        loggedIn: false,
+        version,
+        detail: 'Could not confirm Claude login',
+        loginCommand: 'claude auth login',
+      };
     }
   }
   async listModels(): Promise<ProviderModel[]> {
