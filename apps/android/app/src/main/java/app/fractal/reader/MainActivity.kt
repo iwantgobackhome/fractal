@@ -210,6 +210,11 @@ fun Header(title: String, action: String, onAction: () -> Unit, onBack: (() -> U
 @Composable
 private fun SettingsScreen(app: ReaderApplication, theme: String, setTheme: (String) -> Unit, onBack: () -> Unit, onPair: () -> Unit) {
     val colors = LocalFractalColors.current
+    var showLicenses by remember { mutableStateOf(false) }
+    if (showLicenses) {
+        OpenSourceLicensesScreen(onBack = { showLicenses = false })
+        return
+    }
     val penTool = rememberInkToolState()
     var wifiOnly by remember { mutableStateOf(app.settings.getBoolean("wifiOnly", false)) }
     var autoDownload by remember { mutableStateOf(app.settings.getBoolean("autoDownload", false)) }
@@ -269,6 +274,7 @@ private fun SettingsScreen(app: ReaderApplication, theme: String, setTheme: (Str
             }, Modifier.padding(16.dp))
             HorizontalDivider(color = colors.rule)
             Text(stringResource(R.string.app_version), Modifier.padding(16.dp), color = colors.inkSoft)
+            TextButton(onClick = { showLicenses = true }) { Text(stringResource(R.string.open_source_licenses)) }
             val updates = LocalUpdates.current
             if (updates != null) {
                 val updateStatus by updates.status.collectAsState()

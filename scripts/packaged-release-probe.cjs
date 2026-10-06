@@ -10,6 +10,9 @@ const { createHash } = require('node:crypto');
   const [archive, output] = process.argv.slice(2);
   const pkg = JSON.parse(fs.readFileSync(path.join(archive, 'package.json'), 'utf8'));
   assert.equal(pkg.version, '0.4.0');
+  for (const name of ['LICENSE', 'THIRD_PARTY_NOTICES.md', 'desktop-third-party.txt', 'LICENSE.electron.txt', 'LICENSES.chromium.html']) {
+    assert.ok(fs.readFileSync(path.join(path.dirname(archive), 'licenses', name), 'utf8').trim(), `packaged license ${name}`);
+  }
   const requireApp = createRequire(path.join(archive, 'package.json'));
   const ptyEntry = requireApp.resolve('@lydell/node-pty');
   assert.ok(ptyEntry.startsWith(archive + path.sep), 'PTY must resolve inside shipped app');

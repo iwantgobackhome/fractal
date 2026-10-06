@@ -220,3 +220,5 @@ News Papers は CLI が示す上限だけを読み取ります。対話型の使
 Issue や範囲の明確なプルリクエストを歓迎します。[アーキテクチャ](docs/ARCHITECTURE.md)と [API](docs/API.md) を読み、コードを提出する前に `npm test` と `npm run typecheck` を実行してください。
 
 News Papers は [Apache-2.0](LICENSE) で公開しています。[PaperRead](https://github.com/nkjunbc/PaperRead) を出発点としており、元の MIT ライセンス表示などは[サードパーティーの表示](THIRD_PARTY_NOTICES.md)にまとめています。
+
+デスクトップと Android アプリにはこれらの表示と生成された依存ライセンス一覧が含まれ、設定 → オープンソースライセンスで確認できます。

@@ -220,3 +220,5 @@ News Papers 只显示 CLI 提供的上限。如果交互式用量界面或终端
 欢迎提交问题反馈和目标明确的拉取请求。修改代码前可先阅读[架构文档](docs/ARCHITECTURE.md)与 [API 文档](docs/API.md)，提交前请运行 `npm test` 和 `npm run typecheck`。
 
 News Papers 采用 [Apache-2.0](LICENSE) 许可证。项目源自 [PaperRead](https://github.com/nkjunbc/PaperRead)；其 MIT 声明及其他署名见[第三方声明](THIRD_PARTY_NOTICES.md)。
+
+桌面和 Android 应用内包含这些声明及生成的依赖许可证列表，可在设置 → 开源许可证中查看。

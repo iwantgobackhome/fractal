@@ -4,6 +4,7 @@ const signing = Boolean(process.env.CSC_LINK && process.env.CSC_KEY_PASSWORD);
 const notarizing = signing && Boolean(process.env.APPLE_ID && process.env.APPLE_APP_SPECIFIC_PASSWORD && process.env.APPLE_TEAM_ID);
 module.exports = {
   ...build,
+  ...require('./preserve-electron-licenses.cjs'),
   publish: { provider: 'github', owner: 'iwantgobackhome', repo: 'news-papers' },
   // AppImage embeds its differential map; retain an external map in the release
   // contract too, without modifying the already hashed installer.
