@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -62,6 +63,7 @@ import app.fractal.pdf.PdfPages
 import app.fractal.pdf.PdfRect
 import app.fractal.pdf.PdfTextSelection
 import kotlin.math.roundToInt
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.jsonArray
@@ -143,9 +145,23 @@ fun PdfPage(
         val boundedPan = horizontalPan.coerceIn(minOf(0f, viewportWidthPx - widthPx), 0f)
         // Page dimensions are available before bitmap rendering; do not lay out a guessed ratio.
         val aspect = remember(source, index) { source.aspectRatio(index) }
-        var bitmap by remember(source, index, widthPx) { mutableStateOf<android.graphics.Bitmap?>(null) }
+        var bitmap by remember(source, index) { mutableStateOf<android.graphics.Bitmap?>(null) }
+        LaunchedEffect(source, index) {
+            try {
+                bitmap = withContext(Dispatchers.IO) {
+                    val context = kotlinx.coroutines.currentCoroutineContext()
+                    source.bitmap(index, viewportWidthPx.roundToInt()) { context.ensureActive() }
+                }
+            } catch (_: OutOfMemoryError) { /* Leave any displayed raster intact under heap pressure. */ }
+        }
         LaunchedEffect(source, index, widthPx) {
-            bitmap = withContext(Dispatchers.IO) { source.bitmap(index, widthPx) }
+            kotlinx.coroutines.delay(200)
+            try {
+                bitmap = withContext(Dispatchers.IO) {
+                    val context = kotlinx.coroutines.currentCoroutineContext()
+                    source.bitmap(index, widthPx) { context.ensureActive() }
+                }
+            } catch (_: OutOfMemoryError) { /* Keep the previous raster if even the fallback cannot allocate. */ }
         }
         val height = width / aspect
         Box(Modifier.fillMaxWidth().height(height).clipToBounds()) {
@@ -154,7 +170,7 @@ fun PdfPage(
                 .wrapContentSize(Alignment.TopStart, unbounded = true)
                 .width(width).height(height).border(.5.dp, colors.rule).background(colors.surface)) {
                 bitmap?.let { rendered ->
-                    Image(rendered.asImageBitmap(), null, Modifier.matchParentSize(),
+                    Image(rendered.asImageBitmap(), null, Modifier.matchParentSize().testTag("pdf-page-${index + 1}-bitmap"),
                         colorFilter = if (colors.paper.red < .3f) {
                             ColorFilter.colorMatrix(ColorMatrix(floatArrayOf(
                                 -.8f, 0f, 0f, 0f, 255f,

@@ -33,7 +33,8 @@ data class PdfTextSelection(
 )
 
 /** Bitmap cache is bounded by bytes; a width change renders a fresh page. */
-class PdfPages(file: File) : Closeable {
+class PdfPages(file: File, memoryClassMb: Int = (Runtime.getRuntime().maxMemory() / (1024 * 1024)).toInt()) : Closeable {
+    private val pagePixels = PdfRenderBudget.pagePixels(memoryClassMb)
     private val sourceFile = file
     private val openedLength = file.length()
     private val openedModified = file.lastModified()
@@ -45,7 +46,7 @@ class PdfPages(file: File) : Closeable {
     }
     private val descriptor = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
     private val renderer = PdfRenderer(descriptor)
-    private val bitmaps = object : LruCache<String, Bitmap>(80 * 1024 * 1024) {
+    private val bitmaps = object : LruCache<String, Bitmap>(PdfRenderBudget.cacheBytes(memoryClassMb)) {
         override fun sizeOf(key: String, value: Bitmap): Int = value.byteCount
     }
     val pageCount: Int get() = renderer.pageCount
@@ -64,17 +65,30 @@ class PdfPages(file: File) : Closeable {
     }
 
     @Synchronized
-    fun bitmap(index: Int, widthPx: Int): Bitmap {
-        val safeWidth = widthPx.coerceIn(120, 3200)
-        val key = "$index:$safeWidth"
-        bitmaps.get(key)?.let { return it }
+    fun bitmap(index: Int, widthPx: Int, checkActive: () -> Unit = {}): Bitmap {
+        checkActive()
         renderer.openPage(index).use { page ->
-            val height = max(1, (safeWidth * page.height.toFloat() / page.width).toInt())
-            val bitmap = Bitmap.createBitmap(safeWidth, height, Bitmap.Config.ARGB_8888)
-            bitmap.eraseColor(Color.WHITE)
-            page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
-            bitmaps.put(key, bitmap)
-            return bitmap
+            var safeWidth = PdfRenderBudget.width(widthPx, page.width.toFloat() / page.height, pagePixels)
+            while (true) {
+                checkActive()
+                val key = "$index:$safeWidth"
+                bitmaps.get(key)?.let { return it }
+                var rendered: Bitmap? = null
+                try {
+                    val height = max(1, (safeWidth * page.height.toFloat() / page.width).toInt())
+                    val bitmap = Bitmap.createBitmap(safeWidth, height, Bitmap.Config.ARGB_8888)
+                    rendered = bitmap
+                    bitmap.eraseColor(Color.WHITE)
+                    page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+                    bitmaps.put(key, bitmap)
+                    return bitmap
+                } catch (error: OutOfMemoryError) {
+                    rendered?.recycle()
+                    bitmaps.evictAll()
+                    if (safeWidth <= 32) throw error
+                    safeWidth = (safeWidth / 2).coerceAtLeast(32)
+                } catch (error: Throwable) { rendered?.recycle(); throw error }
+            }
         }
     }
 
@@ -97,26 +111,32 @@ class PdfPages(file: File) : Closeable {
         val width = rect.width.coerceIn(0f, 1f - x)
         val height = rect.height.coerceIn(0f, 1f - y)
         require(width > 0f && height > 0f)
-        val targetWidth = widthPx.coerceIn(120, 3200)
-        val key = "crop:$index:$x:$y:$width:$height:$targetWidth"
-        bitmaps.get(key)?.let { return it }
         renderer.openPage(index).use { page ->
-            val scale = minOf(targetWidth / (width * page.width), 6400f / (height * page.height))
-            val targetHeight = max(1, (height * page.height * scale).toInt())
-            val actualWidth = max(1, (width * page.width * scale).toInt())
-            val bitmap = Bitmap.createBitmap(actualWidth, targetHeight, Bitmap.Config.ARGB_8888)
-            try {
-                bitmap.eraseColor(Color.WHITE)
-                val matrix = android.graphics.Matrix().apply {
-                    setScale(scale, scale)
-                    postTranslate(-x * page.width * scale, -y * page.height * scale)
-                }
-                page.render(bitmap, null, matrix, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
-                bitmaps.put(key, bitmap)
-                return bitmap
-            } catch (error: Throwable) {
-                bitmap.recycle() // This failed render has never been handed to a consumer.
-                throw error
+            val aspect = width * page.width / (height * page.height)
+            var targetWidth = PdfRenderBudget.width(widthPx, aspect, pagePixels)
+            while (true) {
+                val key = "crop:$index:$x:$y:$width:$height:$targetWidth"
+                bitmaps.get(key)?.let { return it }
+                var rendered: Bitmap? = null
+                try {
+                    val scale = targetWidth / (width * page.width)
+                    val targetHeight = max(1, (height * page.height * scale).toInt())
+                    val bitmap = Bitmap.createBitmap(targetWidth, targetHeight, Bitmap.Config.ARGB_8888)
+                    rendered = bitmap
+                    bitmap.eraseColor(Color.WHITE)
+                    val matrix = android.graphics.Matrix().apply {
+                        setScale(scale, scale)
+                        postTranslate(-x * page.width * scale, -y * page.height * scale)
+                    }
+                    page.render(bitmap, null, matrix, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+                    bitmaps.put(key, bitmap)
+                    return bitmap
+                } catch (error: OutOfMemoryError) {
+                    rendered?.recycle()
+                    bitmaps.evictAll()
+                    if (targetWidth <= 32) throw error
+                    targetWidth = (targetWidth / 2).coerceAtLeast(32)
+                } catch (error: Throwable) { rendered?.recycle(); throw error }
             }
         }
     }

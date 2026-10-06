@@ -112,7 +112,7 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                 val metadata = app.sync.refreshPaperMetadata(paper.paperKey) ?: error("PDF unavailable")
                 app.downloader.download(paper.paperKey, metadata.first)
             }
-            pages = withContext(Dispatchers.IO) { PdfPages(file) }
+            pages = withContext(Dispatchers.IO) { PdfPages(file, (app.getSystemService(android.content.Context.ACTIVITY_SERVICE) as android.app.ActivityManager).memoryClass) }
             status = ""
         } catch (error: CancellationException) { throw error }
         catch (error: Exception) { status = app.getString(R.string.offline_unavailable) }
