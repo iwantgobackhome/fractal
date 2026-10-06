@@ -185,10 +185,21 @@ export class JobManager {
       range.end - range.start >= 30
     )
       throw invalidInput('번역할 페이지 범위는 문서 안의 최대 30쪽이어야 합니다. / Choose up to 30 pages in this document.');
+    return this.startSection(paperKey, modelId, promptVersion, range);
+  }
+
+  /** Widen a section job to the whole document, keeping every translation already made. */
+  startWhole(paperKey: string, modelId: string, promptVersion: string): Job {
+    const paper = this.store.getPaper(paperKey);
+    if (!paper || !['ready', 'partial'].includes(paper.status)) throw invalidInput('Paper is not ready for translation');
+    return this.startSection(paperKey, modelId, promptVersion);
+  }
+
+  private startSection(paperKey: string, modelId: string, promptVersion: string, range?: Job['pageRange']): Job {
     const active = this.currentActive();
     const existing = this.store.getJobForPaper(paperKey);
     if (active) {
-      if (active.paperKey === paperKey && active.pageRange?.start === range.start && active.pageRange.end === range.end) return active;
+      if (active.paperKey === paperKey && active.pageRange?.start === range?.start && active.pageRange?.end === range?.end) return active;
       throw busy('Pause the current translation before choosing another section');
     }
     const job: Job = {
@@ -204,7 +215,7 @@ export class JobManager {
       usage: existing?.usage ?? EMPTY_USAGE,
       updatedAt: nowIso(),
       currentPage: null,
-      pageRange: range,
+      ...(range ? { pageRange: range } : {}),
     };
     job.completedBlocks = this.countCompleted(job);
     return this.persist(job);
