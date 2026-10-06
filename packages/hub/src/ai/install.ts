@@ -41,13 +41,26 @@ async function execute(file: string, args: string[], signal: AbortSignal): Promi
     const child = spawn(file, args, {
       windowsHide: true,
       shell: false,
-      stdio: 'ignore',
+      stdio: ['ignore', 'pipe', 'pipe'],
+      // cmd.exe /s /c parses its own quotes; Node's escaping would break the quoted npm path.
+      windowsVerbatimArguments: /(^|[\\/])cmd\.exe$/i.test(file),
       signal,
       timeout: COMMAND_TIMEOUT_MS,
       env: cliEnvironment(process.env, file),
     });
+    // Keep only the tail so a failure names the installer's own last message.
+    let output = '';
+    const keep = (chunk: Buffer) => {
+      output = (output + chunk.toString()).slice(-2000);
+    };
+    child.stdout.on('data', keep);
+    child.stderr.on('data', keep);
     child.once('error', reject);
-    child.once('close', (code) => (code === 0 ? resolve() : reject(new Error(`Installer exited with code ${code ?? 'unknown'}`))));
+    child.once('close', (code) => {
+      if (code === 0) return resolve();
+      const last = output.split(/\r?\n/).map((line) => line.trim()).filter(Boolean).slice(-2).join(' / ');
+      reject(new Error(`Installer exited with code ${code ?? 'unknown'}${last ? `: ${last}` : ''}`));
+    });
   });
 }
 
@@ -122,7 +135,7 @@ export class ProviderInstallManager {
         step = 'Installing Claude Code';
         this.set(provider, { state: 'running', step });
         const powershell =
-          (await find('powershell.exe')) ?? join(process.env.SystemRoot ?? 'C:\Windows', 'System32', 'WindowsPowerShell', 'v1.0', 'powershell.exe');
+          (await find('powershell.exe')) ?? join(process.env.SystemRoot ?? 'C:\\Windows', 'System32', 'WindowsPowerShell', 'v1.0', 'powershell.exe');
         await launch(
           powershell,
           ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-Command', 'irm https://claude.ai/install.ps1 | iex'],
@@ -144,7 +157,7 @@ export class ProviderInstallManager {
           if (!node || !npm) throw new Error('Codex needs Windows App Installer or Node.js with npm');
           step = 'Installing Codex CLI';
           this.set(provider, { state: 'running', step });
-          const cmd = join(process.env.SystemRoot ?? 'C:\Windows', 'System32', 'cmd.exe');
+          const cmd = join(process.env.SystemRoot ?? 'C:\\Windows', 'System32', 'cmd.exe');
           await launch(cmd, ['/d', '/s', '/c', `"${npm}" install -g @openai/codex`], signal);
         }
       }
@@ -153,7 +166,7 @@ export class ProviderInstallManager {
       if (!(await verify(provider))) throw new Error(`${provider === 'codex' ? 'Codex' : 'Claude'} executable was not found after installation`);
       this.set(provider, { state: 'done', step: 'Ready' });
     } catch (error) {
-      this.set(provider, { state: 'failed', step, message: error instanceof Error ? error.message.slice(0, 180) : 'Installation failed' });
+      this.set(provider, { state: 'failed', step, message: error instanceof Error ? error.message.slice(0, 300) : 'Installation failed' });
     }
   }
 }
