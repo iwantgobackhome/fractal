@@ -296,7 +296,7 @@ function PageView({
     });
   };
   const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (event.button !== 0 || (event.target as HTMLElement).closest('button,textarea,.sticky-note')) return;
+    if (event.button !== 0 || (event.target as HTMLElement).closest('button,textarea,.sticky-note,.answer-popup')) return;
     dragStart.current = { x: event.clientX, y: event.clientY };
     if (regionMode) {
       event.currentTarget.setPointerCapture(event.pointerId);
@@ -309,7 +309,7 @@ function PageView({
     dragStart.current = null;
     setLiveRegion(null);
     if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
-    if (!start || (event.target as HTMLElement).closest('button,textarea,.sticky-note')) return;
+    if (!start || (event.target as HTMLElement).closest('button,textarea,.sticky-note,.answer-popup')) return;
     const dragged = Math.hypot(event.clientX - start.x, event.clientY - start.y) > 3;
     if (regionMode && dragged) {
       const box = event.currentTarget.getBoundingClientRect();
@@ -547,7 +547,7 @@ export function PdfPages(props: PdfPaneProps): JSX.Element {
         e.button !== 0 ||
         !(e.target instanceof Element) ||
         !root.contains(e.target) ||
-        e.target.closest('button,textarea,.sticky-note')
+        e.target.closest('button,textarea,.sticky-note,.answer-popup')
       )
         return;
       copiedSelection.current = null;

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdtemp, rm } from 'node:fs/promises';
+import { mkdtemp, rm, mkdir } from 'node:fs/promises';
 import { readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -226,7 +226,7 @@ async function main(): Promise<void> {
     await page.locator('.sticky-note').waitFor({ state: 'detached' });
     await selectText('The measured result');
     await page.locator('.selection-menu button').filter({ hasText: '질문' }).click();
-    const popup = page.locator('.answer-popup');
+    const popup = page.locator('.answer-popup').first();
     await popup.waitFor();
     // Ask attaches the passage to the next question instead of sending it.
     await popup.locator('.research-attachment').filter({ hasText: 'The measured res' }).waitFor();
@@ -243,6 +243,7 @@ async function main(): Promise<void> {
     await popup.locator('.research-turn .md').filter({ hasText: 'forty two' }).waitFor();
     console.log('PASS text drag Ask attaches a quote; sending streams an answer and clears the input');
 
+    await popup.locator('.answer-popup__header').scrollIntoViewIfNeeded();
     const before = await popup.boundingBox();
     const heading = await popup.locator('.answer-popup__header strong').boundingBox();
     assert.ok(before && heading);
@@ -253,6 +254,10 @@ async function main(): Promise<void> {
     const after = await popup.boundingBox();
     assert.ok(after && Math.hypot(after.x - before.x, after.y - before.y) > 20);
     console.log('PASS popup header drag changes position');
+    const scrollBefore = await page
+      .locator('.pane-body')
+      .first()
+      .evaluate((el) => el.scrollTop);
     await page
       .locator('.pane-body')
       .first()
@@ -260,8 +265,17 @@ async function main(): Promise<void> {
         element.scrollTop += 60;
       });
     const scrolled = await popup.boundingBox();
-    assert.ok(scrolled && Math.abs(scrolled.x - after.x) < 1 && Math.abs(scrolled.y - after.y) < 1);
-    console.log('PASS dragged popup stays fixed while the page scrolls');
+    const scrollAfter = await page
+      .locator('.pane-body')
+      .first()
+      .evaluate((el) => el.scrollTop);
+    assert.ok(scrolled && scrollAfter > scrollBefore && Math.abs(scrolled.x - after.x) < 1 && Math.abs(scrolled.y - after.y + scrollAfter - scrollBefore) < 2);
+    console.log('PASS dragged card scrolls with its original page');
+    await popup.hover();
+    await page.locator('.answer-source-highlight').first().waitFor();
+    const qaDir = resolve(root, 'packages/ui/qa/answer-cards');
+    await mkdir(qaDir, { recursive: true });
+    await page.screenshot({ path: join(qaDir, 'source-highlight.png') });
     await popup.getByRole('button', { name: '답변 접기', exact: true }).click();
     assert.equal(await popup.locator('.answer-popup__content').isVisible(), false);
     await popup.getByRole('button', { name: '답변 펼치기', exact: true }).click();
@@ -295,13 +309,40 @@ async function main(): Promise<void> {
     await page.waitForFunction(() => document.querySelectorAll('.answer-popup .research-turn .md').length >= 2);
     assert.equal(await popup.locator('.research-turn').count(), 2);
     console.log('PASS popup follow-up joins the same conversation');
-    await popup.getByRole('button', { name: '답변 닫기', exact: true }).click();
+    await popup.getByRole('button', { name: '답변 접기', exact: true }).click();
+    assert.equal(await popup.getByRole('button', { name: '답변 펼치기', exact: true }).innerText(), '?');
+    await selectText('The measured result');
+    await page.locator('.selection-menu button').filter({ hasText: '질문' }).click();
+    await page.waitForFunction(() => document.querySelectorAll('.answer-popup').length === 2);
+    console.log('PASS second Ask retains the first card');
+    const second = page.locator('.answer-popup').nth(1);
+    await second.getByRole('textbox', { name: '질문', exact: true }).fill('Second card question');
+    await second.locator('button[type="submit"]').click();
+    await second.locator('.research-turn .md').first().waitFor();
+    await page.screenshot({ path: join(qaDir, 'multiple-cards.png') });
+    page.once('dialog', (dialog) => void dialog.accept());
+    await second.getByRole('button', { name: '답변 삭제', exact: true }).click();
+    await page.waitForFunction(() => document.querySelectorAll('.answer-popup').length === 1);
+    await popup.getByRole('button', { name: '답변 펼치기', exact: true }).click();
+    page.once('dialog', (dialog) => void dialog.accept());
+    await popup.getByRole('button', { name: '답변 삭제', exact: true }).click();
+    await popup.waitFor({ state: 'detached' });
+    console.log('PASS delete removes only the card');
     await page.locator('.reader-bar__action[aria-controls]').first().click();
     await page.locator('.panel-tabs [role="tab"]').filter({ hasText: '기록' }).click();
     await page.locator('.research-panel .research-thread').filter({ hasText: 'What is the measured result?' }).filter({ hasText: '2' }).waitFor();
     console.log('PASS popup conversation is listed in research history');
-    await page.locator('.research-panel > header button').click();
+    await page.locator('.research-thread').filter({ hasText: 'What is the measured result?' }).click();
+    await popup.waitFor();
+    await popup.locator('.research-turn__user').filter({ hasText: 'Why is that the result?' }).waitFor();
+    assert.equal(await popup.locator('.research-turn').count(), 2);
+    await page.screenshot({ path: join(qaDir, 'history-reopened.png') });
+    console.log('PASS History reopens the deleted card and its original conversation');
+    page.once('dialog', (dialog) => void dialog.accept());
+    await popup.getByRole('button', { name: '답변 삭제', exact: true }).click();
+    await popup.waitFor({ state: 'detached' });
 
+    await page.locator('.highlight-box').first().scrollIntoViewIfNeeded();
     const highlightBox = await page.locator('.highlight-box').first().boundingBox();
     assert.ok(highlightBox);
     await page.mouse.click(highlightBox.x + highlightBox.width / 2, highlightBox.y + highlightBox.height / 2);
@@ -327,6 +368,31 @@ async function main(): Promise<void> {
     await page.locator('.selection-menu').waitFor();
     assert.equal(await live.count(), 0);
     await page.keyboard.press('Escape');
+
+    // Seed saved placements directly so restore is covered even when the Hub placement
+    // route is being integrated in a parallel worktree.
+    const history = store.listHistory(paper.paperKey);
+    const roots = history
+      .filter((entry) => entry.question === 'What is the measured result?' || entry.question === 'Second card question')
+      .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+    assert.equal(roots.length, 2);
+    const hadPlacementRoute = roots.every((entry) => entry.placement !== undefined);
+    console.log(hadPlacementRoute ? 'PASS placement endpoint persisted card states' : 'NOTE placement route absent; client retained placements in memory');
+    roots.forEach((entry, index) =>
+      store.putHistory({
+        ...entry,
+        placement: { page: 1, x: index ? 0.75 : 0.35, y: 0.18, state: index ? 'collapsed' : 'open', updatedAt: new Date().toISOString() },
+      }),
+    );
+    const countBeforeRestore = history.length;
+    await page.reload();
+    await page.waitForFunction(() => document.querySelectorAll('.answer-popup').length === 2);
+    await page.locator('.answer-popup:not(.answer-popup--collapsed) .research-turn__user').filter({ hasText: 'Why is that the result?' }).waitFor();
+    const marker = page.locator('.answer-popup--collapsed');
+    assert.equal(await marker.getByRole('button', { name: '답변 펼치기', exact: true }).innerText(), '?');
+    await page.screenshot({ path: join(qaDir, 'restored-cards.png') });
+    assert.equal(store.listHistory(paper.paperKey).length, countBeforeRestore);
+    console.log('PASS reader reopen restores saved open and collapsed cards without asking again');
 
     await page.goto(`${url}/#/settings`);
     await page.locator('#settings-ai').waitFor();

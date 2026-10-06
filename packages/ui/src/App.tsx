@@ -17,7 +17,7 @@ import type {
 } from '@fractal/shared';
 import { useReaderProvenance } from './reader/useReaderProvenance';
 import { useCatalog } from './shell/PublicationControls';
-import { AnswerPopup, type AnswerAnchor } from './reader/AnswerPopup';
+import { AnswerPopup, openAnswerThread, type AnswerAnchor } from './reader/AnswerPopup';
 import { PanelResizeHandle, usePanelWidth } from './reader/PanelResizeHandle';
 import { ResearchPanel, type ResearchIntent } from './reader/ResearchPanel';
 import { HighlightPopover } from './components/HighlightLayer';
@@ -1344,9 +1344,9 @@ export function App(): JSX.Element {
               }
             : {}),
         });
-        setAnswerAnchor(null);
+        setAnswerAnchor(passageAnchor(item.page, renderedBox ?? item.bbox));
         setChatMounted(true);
-        setChatOpen(true);
+        setChatOpen(false);
         setPanelTab('questions');
         setCitation(null);
       },
@@ -2113,6 +2113,10 @@ export function App(): JSX.Element {
                     intent={chatQuote && !answerAnchor ? chatQuote : null}
                     onClose={closeChat}
                     onQuestion={() => setPanelTab('questions')}
+                    onOpenThread={(rows) => {
+                      openAnswerThread(rows);
+                      closeChat();
+                    }}
                     onPage={(page) => {
                       chooseView('source');
                       goToPage(page);
@@ -2138,18 +2142,15 @@ export function App(): JSX.Element {
         />
       ) : null}
 
-      {paperKey && chatQuote && answerAnchor ? (
+      {paperKey ? (
         <AnswerPopup
-          key={`${paperKey}:${chatQuote.id}`}
+          key={paperKey}
           answerLanguage={preferences?.answerLanguage || undefined}
           hub={hub}
           paperKey={paperKey}
           intent={chatQuote}
           anchor={answerAnchor}
-          onClose={() => {
-            setChatQuote(null);
-            setAnswerAnchor(null);
-          }}
+          getLayout={getTextLayout}
           onSettings={openAiSettings}
           onPage={(page) => {
             chooseView('source');
