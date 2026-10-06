@@ -56,7 +56,17 @@ function ByHand({ command }: { command: string }): JSX.Element {
 }
 
 /** Installs a missing CLI through the hub and reports each step. */
-export function InstallControl({ hub, provider, onInstalled }: { hub: HubApi; provider: ProviderStatus['id']; onInstalled(): void }): JSX.Element {
+export function InstallControl({
+  hub,
+  provider,
+  command,
+  onInstalled,
+}: {
+  hub: HubApi;
+  command?: string;
+  provider: ProviderStatus['id'];
+  onInstalled(): void;
+}): JSX.Element {
   const [started, setStarted] = useState(false);
   const [unsupported, setUnsupported] = useState(false);
   const read = useCallback(() => hub.installStatus(provider), [hub, provider]);
@@ -78,7 +88,7 @@ export function InstallControl({ hub, provider, onInstalled }: { hub: HubApi; pr
     return (
       <div className="setup__action">
         <span className="settings__quiet">{t('setup.installByHand')}</span>
-        <code className="command">{INSTALL_COMMAND[provider]}</code>
+        <code className="command">{command ?? INSTALL_COMMAND[provider]}</code>
       </div>
     );
   }
@@ -95,7 +105,7 @@ export function InstallControl({ hub, provider, onInstalled }: { hub: HubApi; pr
       <button type="button" className="button" onClick={start}>
         {job?.state === 'failed' ? t('setup.retryInstall') : t('setup.install', { provider: PROVIDER_NAME[provider] })}
       </button>
-      <ByHand command={INSTALL_COMMAND[provider]} />
+      <ByHand command={command ?? INSTALL_COMMAND[provider]} />
     </div>
   );
 }
@@ -168,7 +178,7 @@ export function ProviderCard({
       </div>
       <p className="setup-card__deck">{t(WHAT_IT_USES[status.id])}</p>
       {ready ? null : !status.installed ? (
-        <InstallControl hub={hub} provider={status.id} onInstalled={onChange} />
+        <InstallControl hub={hub} provider={status.id} command={status.installCommand} onInstalled={onChange} />
       ) : account !== undefined ? (
         <LoginControl hub={hub} account={account} command={status.loginCommand} onSignedIn={onChange} />
       ) : (

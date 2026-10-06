@@ -1,26 +1,23 @@
 import { spawn, execFile } from 'node:child_process';
+import { constants } from 'node:fs';
 import { access } from 'node:fs/promises';
-import { homedir } from 'node:os';
-import { delimiter, join } from 'node:path';
+import { join } from 'node:path';
 import { promisify } from 'node:util';
 import type { AiInstallProgress, ProviderId } from '@fractal/shared';
 import { resolveCodexExecutable } from '../codex/runtime';
+import { cliEnvironment, cliSearchDirectories } from './cli-paths';
 import { resolveClaudePtyCommand } from './claude-usage';
 
 const exec = promisify(execFile);
 const COMMAND_TIMEOUT_MS = 5 * 60_000;
 
 async function executableOnPath(name: string): Promise<string | null> {
-  const paths = (process.env.PATH ?? process.env.Path ?? '').split(delimiter);
-  if (process.platform === 'win32') {
-    const local = process.env.LOCALAPPDATA ?? join(process.env.USERPROFILE ?? homedir(), 'AppData', 'Local');
-    paths.push(join(local, 'Microsoft', 'WindowsApps'));
-  }
+  const paths = cliSearchDirectories();
   for (const directory of paths) {
     if (!directory) continue;
     const file = join(directory.replace(/^"|"$/g, ''), name);
     try {
-      await access(file);
+      await access(file, process.platform === 'win32' ? constants.F_OK : constants.X_OK);
       return file;
     } catch {
       /* check the next directory */
@@ -32,7 +29,7 @@ async function executableOnPath(name: string): Promise<string | null> {
 async function installed(provider: ProviderId): Promise<boolean> {
   try {
     const command = provider === 'codex' ? { file: await resolveCodexExecutable(), args: [] } : resolveClaudePtyCommand(process.env);
-    await exec(command.file, [...command.args, '--version'], { windowsHide: true, timeout: 10_000 });
+    await exec(command.file, [...command.args, '--version'], { windowsHide: true, timeout: 10_000, env: cliEnvironment(process.env, command.file) });
     return true;
   } catch {
     return false;
@@ -41,7 +38,14 @@ async function installed(provider: ProviderId): Promise<boolean> {
 
 async function execute(file: string, args: string[], signal: AbortSignal): Promise<void> {
   await new Promise<void>((resolve, reject) => {
-    const child = spawn(file, args, { windowsHide: true, shell: false, stdio: 'ignore', signal, timeout: COMMAND_TIMEOUT_MS });
+    const child = spawn(file, args, {
+      windowsHide: true,
+      shell: false,
+      stdio: 'ignore',
+      signal,
+      timeout: COMMAND_TIMEOUT_MS,
+      env: cliEnvironment(process.env, file),
+    });
     child.once('error', reject);
     child.once('close', (code) => (code === 0 ? resolve() : reject(new Error(`Installer exited with code ${code ?? 'unknown'}`))));
   });
@@ -92,8 +96,29 @@ export class ProviderInstallManager {
         this.set(provider, { state: 'done', step: 'Ready' });
         return;
       }
-      if ((this.dependencies.platform ?? process.platform) !== 'win32') throw new Error('This installer currently supports Windows only');
-      if (provider === 'claude') {
+      const platform = this.dependencies.platform ?? process.platform;
+      if (platform === 'darwin' || platform === 'linux') {
+        step = provider === 'claude' ? 'Installing Claude Code' : 'Installing Codex CLI';
+        this.set(provider, { state: 'running', step });
+        if (provider === 'claude') {
+          await launch('/bin/bash', ['-lc', 'curl -fsSL https://claude.ai/install.sh | bash'], signal);
+        } else {
+          const brew = platform === 'darwin' ? await find('brew') : null;
+          if (brew) await launch(brew, ['install', '--cask', 'codex'], signal);
+          else {
+            const npm = await find('npm');
+            if (!npm)
+              throw new Error(
+                platform === 'darwin'
+                  ? 'Codex needs Homebrew (brew install --cask codex) or Node.js with npm (npm install -g @openai/codex)'
+                  : 'Codex needs Node.js with npm (npm install -g @openai/codex)',
+              );
+            await launch(npm, ['install', '-g', '@openai/codex'], signal);
+          }
+        }
+      } else if (platform !== 'win32') {
+        throw new Error('CLI installation is supported on Windows, macOS, and Linux');
+      } else if (provider === 'claude') {
         step = 'Installing Claude Code';
         this.set(provider, { state: 'running', step });
         const powershell =

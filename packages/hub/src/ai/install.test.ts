@@ -62,4 +62,50 @@ describe('provider installation jobs', () => {
       expect.any(AbortSignal),
     );
   });
+  it.each(['darwin', 'linux'] as const)('uses the official Claude shell installer on %s', async (platform) => {
+    const execute = vi.fn(async () => {});
+    const installed = vi.fn().mockResolvedValueOnce(false).mockResolvedValueOnce(true);
+    const manager = new ProviderInstallManager({ platform, installed, execute });
+    manager.start('claude');
+    expect(await waitForJob(manager, 'claude')).toMatchObject({ state: 'done' });
+    expect(execute).toHaveBeenCalledWith('/bin/bash', ['-lc', 'curl -fsSL https://claude.ai/install.sh | bash'], expect.any(AbortSignal));
+    expect(installed).toHaveBeenCalledTimes(2);
+  });
+  it('prefers Homebrew on macOS and falls back to npm', async () => {
+    for (const brewAvailable of [true, false]) {
+      const execute = vi.fn(async () => {});
+      const installed = vi.fn().mockResolvedValueOnce(false).mockResolvedValueOnce(true);
+      const manager = new ProviderInstallManager({
+        platform: 'darwin',
+        installed,
+        execute,
+        find: async (name) => (name === 'brew' ? (brewAvailable ? '/opt/homebrew/bin/brew' : null) : '/usr/local/bin/npm'),
+      });
+      manager.start('codex');
+      expect(await waitForJob(manager, 'codex')).toMatchObject({ state: 'done' });
+      expect(execute).toHaveBeenCalledWith(
+        brewAvailable ? '/opt/homebrew/bin/brew' : '/usr/local/bin/npm',
+        brewAvailable ? ['install', '--cask', 'codex'] : ['install', '-g', '@openai/codex'],
+        expect.any(AbortSignal),
+      );
+    }
+  });
+  it.each(['darwin', 'linux'] as const)('reports missing prerequisites without launching an installer on %s', async (platform) => {
+    const execute = vi.fn();
+    const manager = new ProviderInstallManager({ platform, installed: async () => false, find: async () => null, execute });
+    manager.start('codex');
+    expect(await waitForJob(manager, 'codex')).toMatchObject({ state: 'failed', message: expect.stringContaining('npm install -g @openai/codex') });
+    if (platform === 'darwin') expect(manager.get('codex').message).toContain('brew install --cask codex');
+    expect(execute).not.toHaveBeenCalled();
+  });
+  it('uses only npm on Linux', async () => {
+    const execute = vi.fn(async () => {});
+    const installed = vi.fn().mockResolvedValueOnce(false).mockResolvedValueOnce(true);
+    const find = vi.fn(async () => '/usr/bin/npm');
+    const manager = new ProviderInstallManager({ platform: 'linux', installed, find, execute });
+    manager.start('codex');
+    expect(await waitForJob(manager, 'codex')).toMatchObject({ state: 'done' });
+    expect(find).toHaveBeenCalledExactlyOnceWith('npm');
+    expect(execute).toHaveBeenCalledWith('/usr/bin/npm', ['install', '-g', '@openai/codex'], expect.any(AbortSignal));
+  });
 });

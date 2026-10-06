@@ -1,9 +1,10 @@
+import { providerInstallCommand } from './cli-paths';
 import type { ProviderModel, ProviderStatus, PaperChat, Translator } from '@fractal/shared';
 import { randomUUID } from 'node:crypto';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import type { AiProvider, CompleteInput, ProviderDelta } from './provider';
-import { resolveCodexExecutable } from '../codex/runtime';
+import { childEnvironment, resolveCodexExecutable } from '../codex/runtime';
 
 const run = promisify(execFile);
 
@@ -12,7 +13,9 @@ export class CodexProvider implements AiProvider {
   constructor(
     private readonly translator: Translator & PaperChat,
     private readonly versionProbe = async () =>
-      (await run(await resolveCodexExecutable(), ['--version'], { windowsHide: true, timeout: 10_000, signal: this.shutdown })).stdout.trim(),
+      (
+        await run(await resolveCodexExecutable(), ['--version'], { env: childEnvironment(), windowsHide: true, timeout: 10_000, signal: this.shutdown })
+      ).stdout.trim(),
     private readonly shutdown?: AbortSignal,
   ) {}
   async status(): Promise<ProviderStatus> {
@@ -33,6 +36,7 @@ export class CodexProvider implements AiProvider {
     }[state.status];
     return {
       id: this.id,
+      installCommand: providerInstallCommand(this.id),
       installed: state.status !== 'missing',
       loggedIn: state.status === 'subscription',
       version,

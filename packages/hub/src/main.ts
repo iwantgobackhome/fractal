@@ -1,3 +1,4 @@
+export { augmentCliPath } from './ai/cli-paths';
 import { readFileSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
