@@ -79,6 +79,7 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
     var panel by remember(paper.paperKey) { mutableStateOf(false) }
     var panelTab by remember { mutableStateOf("notes") }
     var selection by remember(paper.paperKey) { mutableStateOf<Pair<Int, PdfTextSelection>?>(null) }
+    var questionThreadId by remember(paper.paperKey) { mutableStateOf(java.util.UUID.randomUUID().toString()) }
     var quote by remember(paper.paperKey) { mutableStateOf<Pair<Int, PdfTextSelection>?>(null) }
     var selectionMessage by remember { mutableStateOf("") }
     var regionMode by remember { mutableStateOf(false) }
@@ -97,7 +98,7 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
         val rect = selected?.second?.rects?.firstOrNull()
         val origin = selected?.first?.let { pageOrigins[it] }
         val anchor = if (origin != null && rect != null) origin.topLeft - rootPosition + Offset(rect.x * origin.width, (rect.y + rect.height) * origin.height) else null
-        answerTarget = ReaderAnswerTarget(selected, explain = explain, requestId = requestId, anchor = anchor)
+        answerTarget = ReaderAnswerTarget(selected, explain = explain, requestId = requestId, anchor = anchor, threadId = questionThreadId)
         answerPosition = null; panel = false
     }
     var fullTitle by remember { mutableStateOf(false) }
@@ -300,7 +301,7 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                                             Box(Modifier.matchParentSize().onGloballyPositioned { pageOrigins[index + 1] = it.boundsInWindow() })
                                             ReaderStructureOverlay(structure?.items.orEmpty().filter { it.page == index + 1 }, width, height) { item, anchor ->
                                                 answerTarget = ReaderAnswerTarget(structureSelection(item, source.pdfSha256), item,
-                                                    textPage?.text ?: sourcePageContext[index + 1].orEmpty(), explain = true, anchor = anchor - rootPosition)
+                                                    textPage?.text ?: sourcePageContext[index + 1].orEmpty(), explain = true, anchor = anchor - rootPosition, threadId = questionThreadId)
                                                 answerPosition = null; panel = false
                                             }
                                             ReaderAnswerPins(answerPins.filter { pin -> pin.page == index + 1 && answerTarget.let { open -> open == null ||
@@ -347,8 +348,8 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                                 Modifier.padding(horizontal = 12.dp, vertical = 4.dp), maxLines = 2, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodySmall)
                                 Row(Modifier.horizontalScroll(rememberScrollState())) {
                                     TextButton(enabled = selected.second.text.isNotBlank(), onClick = { clipboard.setText(androidx.compose.ui.text.AnnotatedString(selected.second.text)) }) { Text(libraryText("Copy", "복사")) }
-                                    TextButton(onClick = { openAnswer(selected, explain = selected.second.origin == "original"); selection = null }) { Text(libraryText("Quote / explain", "인용 / 설명")) }
-                                    TextButton(onClick = { openAnswer(selected); selection = null }) { Text(libraryText("Ask", "질문")) }
+                                    TextButton(onClick = { openAnswer(selected, explain = selected.second.origin == "original"); selection = null }) { Text(libraryText(if (selected.second.origin == "original") "Explain" else "Attach quote", if (selected.second.origin == "original") "설명" else "인용 첨부")) }
+                                    TextButton(onClick = { quote = selected; panel = true; panelTab = "questions"; answerTarget = null; selection = null }) { Text(libraryText("Ask", "질문")) }
                                     TextButton(onClick = { scope.launch { saveHighlight(app, paper.paperKey, selected.first, selected.second, "yellow") }; selection = null }) { Text(libraryText("Highlight", "강조")) }
                                     TextButton(onClick = { noteSelection = selected; selection = null }) { Text(libraryText("Note", "노트")) }
                                     TextButton(onClick = { selection = null }) { Text(libraryText("Clear", "해제")) }
@@ -357,17 +358,17 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                         }
                     }
                     if (panel && !compact) SidePanel(app, paper.paperKey, annotations, pages, panelTab, { panelTab = it }, ::jump,
-                        Modifier.align(Alignment.CenterEnd).width(panelWidth).fillMaxHeight(), quote, { quote = null }, onClose = { panel = false }, onRequestCreated = { id, selected -> openAnswer(selected, requestId = id) })
+                        Modifier.align(Alignment.CenterEnd).width(panelWidth).fillMaxHeight(), quote, { quote = null }, onClose = { panel = false }, threadId = questionThreadId, onThreadChange = { questionThreadId = it })
                 }
             }
         }
         answerTarget?.let { target ->
             ReaderAnswerCard(app, paper.paperKey, pages, target, answerPosition, { answerPosition = it },
-                with(density) { maxWidth.toPx() }, with(density) { maxHeight.toPx() }, ::jump, { answerTarget = null })
+                with(density) { maxWidth.toPx() }, with(density) { maxHeight.toPx() }, ::jump, { answerTarget = null }, onThreadChange = { questionThreadId = it })
         }
         if (panel && compact) ModalBottomSheet(onDismissRequest = { panel = false }, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
             SidePanel(app, paper.paperKey, annotations, pages, panelTab, { panelTab = it }, ::jump,
-                Modifier.fillMaxWidth().height(availableHeight * .85f), quote, { quote = null }, onClose = { panel = false }, onRequestCreated = { id, selected -> openAnswer(selected, requestId = id) })
+                Modifier.fillMaxWidth().height(availableHeight * .85f), quote, { quote = null }, onClose = { panel = false }, threadId = questionThreadId, onThreadChange = { questionThreadId = it })
         }
     }
     noteSelection?.let { (page, selected) -> NoteEditor(null, selected.text, onDismiss = { noteSelection = null }) { text, color ->

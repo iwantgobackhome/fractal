@@ -18,12 +18,14 @@ internal fun readerNoteText(kind: String, json: JsonObject?): ReaderNoteText {
 /** A request override never changes the Hub's global language preference. */
 internal fun readerQuestionBody(
     question: String,
-    language: String,
+    language: String?,
     model: Pair<String, String>?,
     selected: Pair<Int, PdfTextSelection>?,
+    threadId: String? = null,
 ): JsonObject = buildJsonObject {
     put("question", question)
-    put("answerLanguage", language)
+    language?.let { put("answerLanguage", it) }
+    threadId?.let { put("threadId", it) }
     selected?.let { (page, selection) ->
         put("page", page)
         put("provenance", selectionProvenance(page, selection))

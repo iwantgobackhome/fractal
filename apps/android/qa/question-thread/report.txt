@@ -1,0 +1,39 @@
+Android question threads — implementation and QA
+
+Scope: apps/android only, on iwantgobackhome/q-thread-android.
+
+Implemented:
+- The question panel displays the active conversation oldest first, with each submitted question, its optional quote, and the durable answer or generation state.
+- New question allocates a UUID and clears the draft and attachment while preserving previous threads in History.
+- Thread grouping reads context.threadId directly from retained Hub JSON; legacy entries use their entry ID, and follow-ups carrying that ID group with the original entry.
+- Pending local intents participate in grouping before Hub history arrives, including the interval after request attachment but before history refresh; attached requests are deduplicated against Hub entries.
+- Selection Ask attaches a one-message excerpt chip without sending; removing it and editing the composer/model leave existing answers visible.
+- Sending clears the question and consumes the attachment. The attachment remains in the durable submitted user turn.
+- Figure/region Explain immediately submits in the current workspace thread, and floating-card follow-ups reuse that thread and keep earlier answers visible.
+- History lists thread titles from the first question and turn counts; opening one returns to its conversation.
+- Both composers now use a text field, compact model menu, and send action. Answer-language selectors are removed.
+
+Language policy:
+Android has no independent answer-language settings preference. Production question/explanation callers pass no language override, so answerLanguage is omitted and the Hub default applies. Existing request builders still support optional explicit language for compatibility.
+
+Storage:
+No schema migration is needed. HistoryRepository and SyncEngine project complete JSON through historyEntity; context.threadId is preserved and parsed by the reader grouping helper. A data unit test covers this projection.
+
+Validation:
+JDK: /Users/dowankim/Library/Java/JavaVirtualMachines/jdk-17.0.20.1+1/Contents/Home
+ANDROID_HOME: /Users/dowankim/Library/Android/sdk
+bash ./gradlew :data:testDebugUnitTest :app:testDebugUnitTest :sync:testDebugUnitTest :app:assembleDebug
+PASS: data 20 tests, app 21 tests, sync 11 tests; debug APK assembled.
+:app:assembleDebugAndroidTest also passes.
+
+Instrumented tests use only Galaxy_23_API_34 on emulator-5556. emulator-5554 remains paired and was never installed to, cleared, or unpaired.
+PASS: ReaderQuestionThreadTest (2 tests), ReaderAnswerCardTest (1 test), ReaderInteractionTest#readerLongPressDragShowsLiveHandlesWithoutInkOrScrolling (1 test).
+PASS: ReaderStageTest#genuineCachedRangeCopyQuoteAndHandles (1 test, corrected selection Ask selector; final targeted rerun recorded in selection-tests.txt).
+The changed DiscoveryNativeTest selector is compiled; its actual HTTP scenario was not run because this task uses an unpaired fixture emulator.
+
+Screenshots:
+- two-turn-thread-with-chip.png: two completed fixture turns, a quoted excerpt in the first user turn, and the attachment for the next message above the composer.
+- thread-history.png: a two-turn thread and a legacy single-turn entry.
+Screenshots show deterministic local retained-history fixtures in Korean locale; they are not live Hub generation evidence.
+
+Logs: gradle-tests.txt, instrumentation-tests.txt, selection-tests.txt. The combined instrumented log retains the initial cached-selection ambiguous-button failure; selection-tests.txt records its successful final rerun. Five affected tests passed overall.
