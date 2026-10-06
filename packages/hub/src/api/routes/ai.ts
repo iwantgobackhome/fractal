@@ -23,6 +23,8 @@ import { paperInstructions } from '../../chat/paper-text';
 import type { AiRouteContext as RouteContext, Result } from './types';
 import { SqlitePaperStore } from '../../store/sqlite';
 import { persistentGeneration } from '../../ai/history';
+import { threadContext } from '../../ai/thread-context';
+import type { AiMessage } from '../../ai/provider';
 import { sha256 } from '../../pdf/index';
 import { TEXT_LAYOUT_VERSION } from '../../pdf/text-layout';
 import { HttpError } from '../errors';
@@ -160,6 +162,7 @@ function glossaryTerms(text: string): { term: string; page: number; definition: 
 }
 const glossaryCache = new Map<string, { text: string; terms: ReturnType<typeof glossaryTerms>; answer: AiAnswer }>();
 interface GenerateOptions {
+  earlierMessages?: AiMessage[];
   sourceContext?: Pick<AiAnswer, 'citations' | 'contextSourceStatus'>;
   page?: number;
   equation?: boolean;
@@ -196,7 +199,7 @@ async function* generateEvents(
   const start = Date.now();
   for await (const delta of ctx.registry.complete(
     feature,
-    { system, messages: [{ role: 'user', content: question }], signal: options?.signal },
+    { system, messages: [...(options?.earlierMessages ?? []), { role: 'user', content: question }], signal: options?.signal },
     chosen.selection,
   )) {
     if (delta.type === 'text') {
@@ -328,6 +331,12 @@ export async function handleAi(method: string, segments: string[], request: Inco
         {
           page,
           sourceContext: source,
+          earlierMessages: threadContext(
+            input.threadId && ctx.store instanceof SqlitePaperStore ? ctx.store.listHistory(key) : [],
+            key,
+            input.threadId,
+            input.requestId,
+          ),
           history: {
             paperKey: key,
             kind: 'question',
@@ -337,6 +346,7 @@ export async function handleAi(method: string, segments: string[], request: Inco
               page: input.page,
               rect: input.rect,
               selectedText: input.selectedText,
+              ...(input.threadId === undefined ? {} : { threadId: input.threadId }),
               selection: input.selection,
               ...(input.answerLanguage === undefined ? {} : { answerLanguage: input.answerLanguage }),
               ...(input.provenance ? { provenance: input.provenance } : {}),
@@ -371,6 +381,12 @@ export async function handleAi(method: string, segments: string[], request: Inco
         {
           page: input.page,
           sourceContext: source,
+          earlierMessages: threadContext(
+            input.threadId && ctx.store instanceof SqlitePaperStore ? ctx.store.listHistory(key) : [],
+            key,
+            input.threadId,
+            input.requestId,
+          ),
           equation: input.kind === 'equation',
           history: {
             paperKey: key,
@@ -381,6 +397,7 @@ export async function handleAi(method: string, segments: string[], request: Inco
               page: input.page,
               rect: input.bbox,
               selectedText: input.surroundingText,
+              ...(input.threadId === undefined ? {} : { threadId: input.threadId }),
               explanationKind: input.kind,
               selection: input.selection,
               ...(input.answerLanguage === undefined ? {} : { answerLanguage: input.answerLanguage }),
