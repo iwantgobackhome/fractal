@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.1 — 2026-10-06
+
+The "News Papers" wordmark stays on one line in the desktop sidebar. Android versionCode 8. See [release notes](docs/releases/0.3.1.md).
+
 ## 0.3.0 — 2026-10-06
 
 Fractal is renamed News Papers (repository `iwantgobackhome/news-papers`). Desktop data is copied to the new location on first start. Android is a new app (`app.newspapers.reader`), with a transitional Fractal-named APK for 0.2.x updaters. New N·P icon generated from one source, a macOS grid app icon and a monochrome menu-bar template. Settings show the version and a Check for updates button. Android versionCode 7. See [release notes](docs/releases/0.3.0.md).

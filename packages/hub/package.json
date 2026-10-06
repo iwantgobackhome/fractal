@@ -1,6 +1,6 @@
 {
   "name": "@fractal/hub",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "private": true,
   "type": "module",
   "main": "./dist/index.mjs",
@@ -20,7 +20,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@fractal/shared": "0.3.0",
+    "@fractal/shared": "0.3.1",
     "@lydell/node-pty": "^1.2.0-beta.15",
     "@mozilla/readability": "^0.6.0",
     "linkedom": "^0.18.13",
