@@ -123,6 +123,12 @@ const messages: Record<ErrorCode, { ko: string; en: string }> = {
 };
 
 export function localizeError(error: AppError, language: 'ko' | 'en'): AppError {
+  if (error.code === 'TOO_LARGE' && language === 'en') {
+    const pages = /PDF 페이지 제한\((\d+)쪽\)/u.exec(error.message);
+    const bytes = /PDF 크기 제한\((\d+) MiB\)/u.exec(error.message);
+    if (pages) return { ...error, message: `PDF exceeds the ${pages[1]}-page limit.` };
+    if (bytes || /PDF.*300 MiB|300 MiB.*PDF/u.test(error.message)) return { ...error, message: `PDF exceeds the ${bytes?.[1] ?? '300'} MiB size limit.` };
+  }
   const publication = publicationFailures.get(error);
   if (publication) return { ...error, message: publicationMessages[publication][language] };
   if (error.code === 'UNSAFE_RUNTIME') return error;

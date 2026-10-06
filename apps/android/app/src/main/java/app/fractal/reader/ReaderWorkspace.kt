@@ -112,6 +112,19 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
             }
         }
     }
+    // Long-book metadata contains a bounded window; refresh only when crossing a window.
+    LaunchedEffect(paper.paperKey, (if (driver == "translation") translatedAnchor.page else sourceAnchor.page) / 15, pages?.pageCount) {
+        if ((pages?.pageCount ?: paper.pageCount ?: 0) > 300) {
+            val current = if (driver == "translation") translatedAnchor.page else sourceAnchor.page
+            val start = (current - 1).coerceAtLeast(1)
+            runCatching { app.sync.refreshPaperMetadata(paper.paperKey, pageStart = start) }.onSuccess {
+                app.database.metadata().snapshot(paper.paperKey)?.let { cached ->
+                    val snapshot = WireJson.format.parseToJsonElement(cached.json).jsonObject
+                    blocks = translatedBlocks(snapshot); sourcePageContext = structurePageContext(snapshot)
+                }
+            }
+        }
+    }
     LaunchedEffect(paper.paperKey) {
         try {
             val file = paper.pdfSha256?.let { app.cache.verified(it) } ?: run {

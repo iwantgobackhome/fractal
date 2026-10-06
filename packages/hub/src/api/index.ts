@@ -1,3 +1,5 @@
+import { createReadStream } from 'node:fs';
+import { pipeline as streamPipeline } from 'node:stream/promises';
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
 import { randomBytes, randomUUID } from 'node:crypto';
 import type { AddressInfo } from 'node:net';
@@ -450,6 +452,15 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
           );
         }
         response.end();
+      } else if (result.kind === 'file') {
+        response.writeHead(result.status, {
+          ...baseHeaders(),
+          ...result.headers,
+          'content-type': result.contentType,
+          'content-length': String(result.to - result.from + 1),
+          'content-disposition': 'inline',
+        });
+        await streamPipeline(createReadStream(result.path, { start: result.from, end: result.to }), response);
       } else {
         const headers = { ...baseHeaders() };
         // The entry document must load its own script; the API CSP forbids everything.
@@ -470,7 +481,8 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
     } catch (cause) {
       const { status, error } = toHttp(cause);
       if (publicationFailure) markPublicationFailure(error, cause);
-      sendError(response, status, error);
+      if (response.headersSent) response.destroy();
+      else sendError(response, status, error);
       log({ event: 'http', route, method, status, code: error.code });
     }
   }
@@ -567,7 +579,7 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
       if (segments.length >= 3) {
         const paperKey = readPaperKey(segments[2]);
 
-        if (segments.length === 3 && method === 'GET') return json(snapshot(paperKey));
+        if (segments.length === 3 && method === 'GET') return json(snapshot(paperKey, new URL(request.url ?? '/', 'http://localhost').searchParams));
         if (segments.length === 3 && method === 'DELETE') {
           if (store.getPaper(paperKey) === null) throw notFound(`저장된 논문이 없습니다: ${paperKey}`);
           // The question answer stops (written as stopped, in case the removal fails) and its
@@ -594,7 +606,7 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
         }
         if (segments.length === 4 && segments[3] === 'translation' && method === 'POST') {
           const body = await readJsonBody(request);
-          return json({ job: await startTranslation(paperKey, requireString(body, 'modelId', 100)) });
+          return json({ job: await startTranslation(paperKey, requireString(body, 'modelId', 100), body) });
         }
         if (segments.length === 5 && segments[3] === 'translation' && segments[4] === 'restart' && method === 'POST') {
           const body = await readJsonBody(request);
@@ -661,6 +673,7 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
         }
         const job = await locked(async () => {
           const current = jobs.getJob(jobId) ?? existing;
+          if ((store.getPaper(current.paperKey)?.pageCount ?? 0) > 300 && !current.pageRange) throw invalidInput('Choose a page range to translate this book');
           if (current.state === 'running') return current;
           // Refused before the record changes: a resume while signed out would only create
           // a running job that pauses itself on its first request.
@@ -679,13 +692,21 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
     throw notFound('없는 경로입니다.');
   }
 
-  function snapshot(paperKey: string): Snapshot {
+  function snapshot(paperKey: string, params = new URLSearchParams()): Snapshot {
     const paper = store.getPaper(paperKey);
     if (paper === null) throw notFound(`저장된 논문이 없습니다: ${paperKey}`);
+    const windowed = (paper.pageCount ?? 0) > 300 || params.has('pageStart');
+    const start = Number(params.get('pageStart') ?? 1);
+    const end = Math.min(paper.pageCount ?? 0, Number(params.get('pageEnd') ?? start + 29));
+    if (windowed && (!Number.isInteger(start) || !Number.isInteger(end) || start < 1 || end < start || end - start >= 30 || start > (paper.pageCount ?? 0)))
+      throw invalidInput('Choose a snapshot range of up to 30 physical pages');
+    const blocks = store.listBlocks(paperKey, windowed ? { start, end } : undefined);
+    const ids = new Set(blocks.map((b) => b.blockId));
     return {
+      ...(windowed ? { blockPageRange: { start, end, totalPages: paper.pageCount ?? 0 } } : {}),
       paper,
-      blocks: store.listBlocks(paperKey),
-      translations: currentTranslations(paperKey),
+      blocks,
+      translations: windowed ? currentTranslations(paperKey).filter((t) => ids.has(t.blockId)) : currentTranslations(paperKey),
       job: store.getJobForPaper(paperKey)?.promptVersion === promptVersion() ? store.getJobForPaper(paperKey) : null,
     };
   }
@@ -924,14 +945,28 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
   }
 
   /** Start (or rejoin) the single translation job and kick the pipeline loop. */
-  async function startTranslation(paperKey: string, modelId: string): Promise<Job> {
+  async function startTranslation(paperKey: string, modelId: string, body: Record<string, unknown> = {}): Promise<Job> {
     // Refuse a forbidden model at the entrance: without this a job is created
     // (and pinned to that model) before the translator ever gets to object.
     if (isExcludedModel(modelId)) {
       throw appError('MODEL_UNAVAILABLE', '이 모델은 사용하지 않도록 설정되어 있습니다.', false);
     }
     return locked(async () => {
-      requireReadablePaper(paperKey);
+      const paper = requireReadablePaper(paperKey);
+      if ((paper.pageCount ?? 0) > 300 || body.pageStart !== undefined || body.pageEnd !== undefined) {
+        const start = Number(body.pageStart ?? 1),
+          end = Number(body.pageEnd ?? Math.min(paper.pageCount ?? 0, start + 29));
+        if (!Number.isInteger(start) || !Number.isInteger(end) || start < 1 || end < start || end > (paper.pageCount ?? 0) || end - start >= 30)
+          throw invalidInput('번역할 페이지 범위는 문서 안의 최대 30쪽이어야 합니다. / Choose up to 30 pages.');
+        const existing = store.getJobForPaper(paperKey);
+        if (existing?.state === 'running' && existing.pageRange?.start === start && existing.pageRange.end === end) return existing;
+        if (existing?.state === 'running') throw appError('BUSY', '먼저 현재 구간의 번역을 일시정지해 주세요. / Pause the current section first.', true);
+        await assertAccountReady(modelId);
+        if (existing) await settleLoop(existing.jobId);
+        const job = jobs.startRange(paperKey, modelId, promptVersion(), { start, end });
+        drive(job);
+        return job;
+      }
       const existing = store.getJobForPaper(paperKey);
       // A finished or running job is simply reported: nothing is sent, so no account is needed.
       if (
@@ -972,7 +1007,8 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
       throw appError('MODEL_UNAVAILABLE', '이 모델은 사용하지 않도록 설정되어 있습니다.', false);
     }
     return locked(async () => {
-      requireReadablePaper(paperKey);
+      if ((requireReadablePaper(paperKey).pageCount ?? 0) > 300)
+        throw invalidInput('긴 문서는 페이지 범위를 선택해 번역해 주세요. / Choose a page range for this book.');
       const existing = store.getJobForPaper(paperKey);
       if (existing === null) throw notFound('이 논문에는 아직 번역 작업이 없습니다. 번역 시작을 사용해 주세요.');
       // A replay of a request that already went through returns the job it created and

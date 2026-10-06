@@ -247,12 +247,15 @@ export class PaperStore {
   }
 
   /** Read the committed block list, ordered. Returns [] when absent or torn. */
-  listBlocks(paperKey: string): Block[] {
+  listBlocks(paperKey: string, range?: { start: number; end: number }): Block[] {
     assertSafeKey(paperKey);
     const record = readRecord<Block[]>(join(this.root, paperKey, BLOCKS_FILE));
     if (record === null || !Array.isArray(record)) return [];
     try {
-      return record.map((b) => validateBlock(b, paperKey)).sort((a, b) => a.order - b.order);
+      return record
+        .map((b) => validateBlock(b, paperKey))
+        .filter((b) => !range || b.regions.some((r) => r.page >= range.start && r.page <= range.end))
+        .sort((a, b) => a.order - b.order);
     } catch {
       return [];
     }

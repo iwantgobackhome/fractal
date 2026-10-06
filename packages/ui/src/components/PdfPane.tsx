@@ -99,10 +99,15 @@ export function PageCanvas({
   useEffect(() => {
     let cancelled = false;
     let task: { cancel(): void } | null = null;
+    let loadedPage: { cleanup(): boolean } | null = null;
 
     void (async () => {
       const proxy = await doc.getPage(page);
-      if (cancelled) return;
+      loadedPage = proxy;
+      if (cancelled) {
+        if (doc.numPages > 300) proxy.cleanup();
+        return;
+      }
       const intrinsic = intrinsicSize(proxy);
       const rendered = pageRenderSize(intrinsic, zoom);
       setRenderedSize(rendered);
@@ -136,6 +141,7 @@ export function PageCanvas({
     return () => {
       cancelled = true;
       task?.cancel();
+      if (doc.numPages > 300) loadedPage?.cleanup();
     };
   }, [doc, page, zoom, dpr, onSize, pageColors?.background, pageColors?.foreground]);
 

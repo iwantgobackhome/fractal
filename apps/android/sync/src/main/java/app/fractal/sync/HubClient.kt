@@ -210,7 +210,7 @@ class HubClient(private val credentials: HubCredentialStore) : HubHistoryClient 
 
     /** Explicit user-selected association. No URL fetching, catalog identity derivation or read event. */
     suspend fun linkPdf(key: String, bytes: ByteArray, session: HubPdfSession = captured()): JsonObject = withContext(Dispatchers.IO) {
-        require(bytes.size in 1..(50 * 1024 * 1024)) { "Choose a PDF no larger than 50 MiB." }
+        require(bytes.size in 1..(300 * 1024 * 1024)) { "Choose a PDF no larger than 300 MiB." }
         session.executeLink(key, bytes).use {
             if (!it.isSuccessful) throw hubFailure(it)
             session.ensureCurrent()

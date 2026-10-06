@@ -247,6 +247,8 @@ export function App(): JSX.Element {
   const [doc, setDoc] = useState<PDFDocumentProxy | null>(null);
   const [pageCount, setPageCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
+  const currentPageRef = useRef(1);
+  currentPageRef.current = currentPage;
   const [zoom, setZoom] = useState(1);
   const zoomRef = useRef(1);
   const [split, setSplit] = useState(0.5);
@@ -403,7 +405,8 @@ export function App(): JSX.Element {
     async (key: string) => {
       const mine = epoch.current;
       try {
-        const next = await client.snapshot(key);
+        const long = (snapshotRef.current?.paper.pageCount ?? 0) > 300;
+        const next = await client.snapshot(key, long ? Math.max(1, currentPageRef.current - 1) : undefined);
         // A late answer for a paper that was left, or for the epoch before a restart, is stale.
         if (epoch.current !== mine || paperKeyRef.current !== key) return;
         applySnapshot(next);
@@ -413,6 +416,10 @@ export function App(): JSX.Element {
     },
     [applySnapshot, fail],
   );
+
+  useEffect(() => {
+    if (paperKey && (paper?.pageCount ?? 0) > 300) void refresh(paperKey);
+  }, [paperKey, currentPage, paper?.pageCount, refresh]);
 
   // Poll only while acquisition or a translation job is genuinely in flight.
   useEffect(() => {
@@ -449,7 +456,7 @@ export function App(): JSX.Element {
     };
   }, [paperKey, paper?.status, pdfRetry]);
 
-  // Read every page's native dimensions without rasterising it. Virtual Korean pages use
+  // Read normal papers' native dimensions; books only load nearby pages. Virtual Korean pages use
   // these same dimensions as measured pages and boundary calculations.
   useEffect(() => {
     intrinsic.current.clear();
@@ -457,13 +464,16 @@ export function App(): JSX.Element {
     setIntrinsicVersion((version) => version + 1);
     if (doc === null) return;
     let cancelled = false;
-    void Promise.all(Array.from({ length: doc.numPages }, async (_, index) => [index + 1, intrinsicSize(await doc.getPage(index + 1))] as const)).then(
-      (sizes) => {
-        if (cancelled) return;
-        for (const [page, size] of sizes) intrinsic.current.set(page, size);
-        setIntrinsicVersion((version) => version + 1);
-      },
-    );
+    void Promise.all(
+      Array.from(
+        { length: doc.numPages > 300 ? Math.min(3, doc.numPages) : doc.numPages },
+        async (_, index) => [index + 1, intrinsicSize(await doc.getPage(index + 1))] as const,
+      ),
+    ).then((sizes) => {
+      if (cancelled) return;
+      for (const [page, size] of sizes) intrinsic.current.set(page, size);
+      setIntrinsicVersion((version) => version + 1);
+    });
     return () => {
       cancelled = true;
     };
@@ -720,6 +730,22 @@ export function App(): JSX.Element {
     },
     [paperKey, job, sendRestart],
   );
+
+  useEffect(() => {
+    if (doc === null || doc.numPages <= 300) return;
+    let cancelled = false;
+    const nearby = [currentPage - 1, currentPage, currentPage + 1].filter((page) => page >= 1 && page <= doc.numPages && !intrinsic.current.has(page));
+    void Promise.all(nearby.map(async (page) => [page, intrinsicSize(await doc.getPage(page))] as const))
+      .then((sizes) => {
+        if (cancelled || !sizes.length) return;
+        for (const [page, size] of sizes) intrinsic.current.set(page, size);
+        setIntrinsicVersion((version) => version + 1);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [doc, currentPage]);
 
   // ------------------------------------------------------------- highlights
 
@@ -1891,9 +1917,9 @@ export function App(): JSX.Element {
             disabledReason={resetting ? t('reader.resetting') : blockedReason}
             sendHint={t('reader.sendHint')}
             onModelChange={setModelId}
-            onStart={(chosen) => {
+            onStart={(chosen, range) => {
               chooseView('split');
-              void act(() => client.startTranslation(paperKey, chosen));
+              void act(() => client.startTranslation(paperKey, chosen, range));
             }}
             onPause={(jobId) => void act(() => client.pauseJob(jobId))}
             onResume={(jobId) => void act(() => client.resumeJob(jobId))}
@@ -2045,6 +2071,9 @@ export function App(): JSX.Element {
                     zoom={zoom}
                     blocks={snapshot?.blocks ?? []}
                     translations={snapshot?.translations ?? []}
+                    onTranslateSection={(page) => {
+                      if (paperKey && modelId) void act(() => client.startTranslation(paperKey, modelId, { start: page, end: Math.min(pageCount, page + 29) }));
+                    }}
                     pageHeights={koreanHeights}
                     pageIntrinsicSize={pageIntrinsicSize}
                     onPageHeight={recordKoreanHeight}

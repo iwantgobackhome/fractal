@@ -237,7 +237,10 @@ export function validateJob(job: unknown): Job {
     throw invalidInput('job.currentPage must be a positive integer or null');
   }
 
+  if (j.pageRange && (!isInt(j.pageRange.start) || !isInt(j.pageRange.end) || j.pageRange.start < 1 || j.pageRange.end < j.pageRange.start))
+    throw invalidInput('job.pageRange must contain an inclusive physical page range');
   return {
+    ...(j.pageRange ? { pageRange: { ...j.pageRange } } : {}),
     jobId: j.jobId,
     paperKey: j.paperKey,
     modelId: j.modelId,

@@ -35,6 +35,8 @@ export interface Job {
   usage: Usage;
   updatedAt: string;
   currentPage: number | null;
+  /** Inclusive physical pages; absent on legacy whole-paper jobs. */
+  pageRange?: { start: number; end: number };
 }
 export interface Connection {
   status: 'missing' | 'signed_out' | 'subscription' | 'api_key' | 'unavailable';

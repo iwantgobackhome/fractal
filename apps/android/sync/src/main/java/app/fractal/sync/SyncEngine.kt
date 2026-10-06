@@ -278,9 +278,10 @@ class SyncEngine(private val database: FractalDatabase, private val client: HubD
         }
     }
 
-    suspend fun refreshPaperMetadata(key: String, session: HubDataClient = client, guard: () -> Unit = {}): Pair<String, Int>? {
+    suspend fun refreshPaperMetadata(key: String, session: HubDataClient = client, guard: () -> Unit = {}, pageStart: Int? = null): Pair<String, Int>? {
         guard()
-        val snapshot = session.data("/api/papers/${HubClient.keyPath(key)}").jsonObject
+        val range = pageStart?.let { "?pageStart=$it&pageEnd=${it + 29}" }.orEmpty()
+        val snapshot = session.data("/api/papers/${HubClient.keyPath(key)}$range").jsonObject
         val paper = snapshot["paper"]?.jsonObject ?: return null
         val sha = paper.text("pdfSha256") ?: return null
         val pages = paper.text("pageCount")?.toIntOrNull()

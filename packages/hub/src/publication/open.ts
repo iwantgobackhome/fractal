@@ -62,7 +62,7 @@ async function acquire(
 ): Promise<PublicationPdfLinkResult> {
   // One total budget spans DNS, redirects, provider bodies and all candidates.
   const signal = AbortSignal.any([AbortSignal.timeout(Math.min(options.timeoutMs ?? 60_000, 60_000)), ...(options.signal ? [options.signal] : [])]);
-  const network = { ...options, signal, maxBytes: Math.min(options.maxBytes ?? 50 * 1024 * 1024, 50 * 1024 * 1024) };
+  const network = { ...options, signal, maxBytes: Math.min(options.maxBytes ?? 300 * 1024 * 1024, 300 * 1024 * 1024) };
   const tried = new Set<string>();
   const errors: SourceError[] = [];
   const record = store.getLibrary(key)!;

@@ -77,6 +77,8 @@
     ],
     "asar": true,
     "asarUnpack": [
+      "apps/desktop/dist/pdf-extraction.worker.mjs",
+      "apps/desktop/dist/pdf.worker.mjs",
       "node_modules/@lydell/node-pty-*/**"
     ],
     "win": {

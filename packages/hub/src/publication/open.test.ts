@@ -411,10 +411,11 @@ describe('publication acquisition over authenticated application HTTP', () => {
     expect(Date.now() - start).toBeLessThan(1000);
     expect(store.listPapers()).toEqual([]);
   });
-  it('enforces declared and streamed 50 MiB boundaries before extraction', async () => {
-    const { post } = await application(() => ({ headers: { 'content-length': String(50 * 1024 * 1024 + 1) }, body: bytes }));
+  it('enforces declared and streamed 300 MiB boundaries before extraction', async () => {
+    const { post } = await application(() => ({ headers: { 'content-length': String(300 * 1024 * 1024 + 1) }, body: bytes }));
     expect(await post()).toMatchObject({ status: 400, error: { code: 'TOO_LARGE' } });
-    const streamed = await application(() => ({ body: Buffer.alloc(50 * 1024 * 1024 + 1) }));
+    // A small explicit budget exercises streamed rejection without allocating 300 MiB.
+    const streamed = await application(() => ({ body: Buffer.alloc(1025) }), { maxBytes: 1024 });
     expect(await streamed.post()).toMatchObject({ status: 400, error: { code: 'TOO_LARGE' } });
   });
   it('does not overwrite an existing revision or force saved true; linkPdf still rejects changed bytes', async () => {

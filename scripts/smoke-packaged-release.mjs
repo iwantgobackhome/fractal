@@ -36,8 +36,8 @@ try {
   const result = JSON.parse(await readFile(report, 'utf8'));
   assert.equal(result.platform, platform);
   assert.equal(result.arch, arch);
-  assert.ok(result.hubStarted && result.ptySpawn);
-  console.log(`Actual packaged Hub and PTY passed: ${platform}-${arch}`);
+  assert.ok(result.hubStarted && result.ptySpawn && result.pdfWorkerStarted);
+  console.log(`Actual packaged Hub, PDF worker and PTY passed: ${platform}-${arch}`);
 } finally {
   // Only the uniquely created directory from this process is removed.
   assert.equal(dirname(resolve(temporary)), resolve('dist'));

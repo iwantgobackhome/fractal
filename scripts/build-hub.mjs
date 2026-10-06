@@ -6,13 +6,14 @@ import { join } from 'node:path';
 const root = fileURLToPath(new URL('..', import.meta.url));
 
 await build({
-  entryPoints: ['packages/hub/src/main.ts'],
+  entryPoints: { index: 'packages/hub/src/main.ts', 'pdf-extraction.worker': 'packages/hub/src/pdf/extraction-worker.ts' },
   bundle: true,
   platform: 'node',
   format: 'esm',
   target: 'node22',
   external: ['@lydell/node-pty'],
-  outfile: 'packages/hub/dist/index.mjs',
+  outdir: 'packages/hub/dist',
+  outExtension: { '.js': '.mjs' },
   absWorkingDir: root,
   banner: { js: "import { createRequire as fractalCreateRequire } from 'node:module'; const require = fractalCreateRequire(import.meta.url);" },
 });

@@ -1,3 +1,5 @@
+import { PDF_LIMITS, decodePdfPage, yieldPdfPage } from './limits';
+import { Worker } from 'node:worker_threads';
 import { createHash } from 'node:crypto';
 import { getDocument, OPS } from 'pdfjs-dist/legacy/build/pdf.mjs';
 import type { Block, Coverage, Region } from '@fractal/shared';
@@ -8,11 +10,16 @@ export const sha256 = (data: string | Uint8Array) => createHash('sha256').update
 export interface ExtractionOptions {
   maxPages?: number;
   maxBytes?: number;
+  pageTimeoutMs?: number;
+  onProgress?: (completedPages: number, totalPages: number) => void;
 }
 export interface PdfExtraction {
   blocks: Block[];
   coverage: Coverage;
   extractionVersion: string;
+  documentTitle?: string | null;
+  documentDoi?: string | null;
+  documentArxivId?: string | null;
 }
 /** The page-1 heading set in the largest type, offered as a title only when arXiv metadata
  * is missing. A heuristic, so real metadata always wins and nothing here is ever a claim
@@ -770,18 +777,103 @@ function findTables(lines: Line[], kindOf: (l: Line) => LineKind, gutter: Gutter
 }
 
 /** Parse as inert data only. Never request annotations/actions/attachments or run PDF JS. */
+// At most one large decode runs: queued imports do not duplicate their input buffers.
+let largeExtractionTail: Promise<unknown> = Promise.resolve();
 export async function extractPdf(bytes: Uint8Array, paperKey: string, options: ExtractionOptions = {}): Promise<PdfExtraction> {
-  const maxPages = options.maxPages ?? 300,
-    maxBytes = options.maxBytes ?? 50 * 1024 * 1024;
+  if (bytes.byteLength <= 1024 * 1024 || bytes.byteLength > (options.maxBytes ?? PDF_LIMITS.bytes)) return extractPdfInProcess(bytes, paperKey, options);
+  const previous = largeExtractionTail;
+  let release!: () => void;
+  largeExtractionTail = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  await previous;
+  try {
+    const data = Uint8Array.from(bytes);
+    const { onProgress, ...serializable } = options;
+    const source = import.meta.url.endsWith('.ts') ? './extraction-bootstrap.mjs' : './pdf-extraction.worker.mjs';
+    // Node worker_threads cannot execute an entrypoint in Electron's virtual ASAR filesystem.
+    const workerUrl = new URL(source, import.meta.url);
+    workerUrl.pathname = workerUrl.pathname.replace('/app.asar/', '/app.asar.unpacked/');
+    let worker: Worker;
+    try {
+      worker = new Worker(workerUrl, {
+        workerData: { bytes: data, paperKey, options: serializable },
+        transferList: [data.buffer],
+        resourceLimits: { maxOldGenerationSizeMb: 384, maxYoungGenerationSizeMb: 16 },
+      });
+    } catch {
+      return await extractPdfInProcess(bytes, paperKey, options);
+    }
+    let workerResponded = false;
+    try {
+      return await new Promise<PdfExtraction>((resolve, reject) => {
+        // The HTTP thread can stop a pathological page even if its worker's JS is blocked.
+        const timer = setTimeout(
+          () => reject(new SourceError('UNSUPPORTED_PDF', 'PDF 한 쪽의 처리 시간이 초과되었습니다. 다른 PDF를 올려 주세요.', false, 'PAGE_TIMEOUT')),
+          options.pageTimeoutMs ?? 30_000,
+        );
+        const done = () => clearTimeout(timer);
+        worker.on('message', (message) => {
+          workerResponded = true;
+          if (message.progress) {
+            timer.refresh();
+            onProgress?.(message.progress[0], message.progress[1]);
+          }
+          if (message.result) {
+            done();
+            resolve(message.result);
+          }
+          if (message.error) {
+            done();
+            reject(
+              new SourceError(
+                message.error.code ?? 'UNSUPPORTED_PDF',
+                message.error.message ?? 'PDF를 읽을 수 없습니다.',
+                message.error.retryable,
+                message.error.reason,
+              ),
+            );
+          }
+        });
+        worker.once('error', (error) => {
+          done();
+          if (!workerResponded && !(error as NodeJS.ErrnoException).code) Object.assign(error, { code: 'ERR_WORKER_INIT_FAILED' });
+          reject(error);
+        });
+        worker.once('exit', () => {
+          done();
+          reject(new SourceError('UNSUPPORTED_PDF', 'PDF 추출 작업이 중단되었습니다.'));
+        });
+      });
+    } finally {
+      await worker.terminate();
+    }
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException)?.code ?? '';
+    // Packaging/startup failures must not make otherwise readable papers fail.
+    // Keep decode errors and page watchdog failures visible to the caller.
+    if (code === 'ERR_MODULE_NOT_FOUND' || code === 'MODULE_NOT_FOUND' || code === 'ENOENT' || code.startsWith('ERR_WORKER_')) {
+      return await extractPdfInProcess(bytes, paperKey, options);
+    }
+    throw error;
+  } finally {
+    release();
+  }
+}
+
+/** Internal worker entry: all PDF.js caches are released when the worker exits. */
+export async function extractPdfInProcess(bytes: Uint8Array, paperKey: string, options: ExtractionOptions = {}, copyBytes = true): Promise<PdfExtraction> {
+  const maxPages = options.maxPages ?? PDF_LIMITS.pages,
+    maxBytes = options.maxBytes ?? PDF_LIMITS.bytes;
   if (!Number.isInteger(maxPages) || maxPages < 1 || !Number.isSafeInteger(maxBytes) || maxBytes < 1)
     throw new SourceError('INVALID_INPUT', 'PDF 제한 설정이 올바르지 않습니다.');
-  if (bytes.byteLength > maxBytes) throw new SourceError('TOO_LARGE', 'PDF 크기 제한을 초과했습니다.');
+  if (bytes.byteLength > maxBytes) throw new SourceError('TOO_LARGE', `PDF 크기 제한(${Math.floor(maxBytes / 1024 / 1024)} MiB)을 초과했습니다.`);
   if (!/^%PDF-\d\.\d/.test(Buffer.from(bytes.subarray(0, 8)).toString('ascii')))
     throw new SourceError('UNSUPPORTED_PDF', 'PDF가 아닌 응답입니다.', false, 'NOT_PDF');
   if (!/%%EOF\s*$/.test(Buffer.from(bytes.subarray(Math.max(0, bytes.length - 1024))).toString('ascii')))
     throw new SourceError('UNSUPPORTED_PDF', 'PDF 파일이 손상되었거나 불완전합니다.', false, 'DAMAGED_PDF');
   const task = getDocument({
-    data: new Uint8Array(bytes),
+    data: copyBytes ? new Uint8Array(bytes) : bytes,
     useSystemFonts: true,
     disableFontFace: true,
     stopAtErrors: true,
@@ -790,15 +882,20 @@ export async function extractPdf(bytes: Uint8Array, paperKey: string, options: E
     isOffscreenCanvasSupported: false,
   });
   try {
-    const doc = await task.promise;
-    if (doc.numPages > maxPages) throw new SourceError('TOO_LARGE', 'PDF 페이지 제한을 초과했습니다.');
+    const doc = await decodePdfPage(task.promise, options.pageTimeoutMs);
+    if (doc.numPages > maxPages) throw new SourceError('TOO_LARGE', `PDF 페이지 제한(${maxPages}쪽)을 초과했습니다.`);
+    const metadata = typeof doc.getMetadata === 'function' ? await decodePdfPage(doc.getMetadata(), options.pageTimeoutMs).catch(() => null) : null;
+    const title = (metadata?.info as { Title?: unknown } | undefined)?.Title;
+    const documentTitle = typeof title === 'string' && title.trim() ? title.trim().slice(0, 300) : null;
+    const infoText = [documentTitle ?? '', String((metadata?.info as { Subject?: unknown } | undefined)?.Subject ?? '')];
     const drafts: Draft[] = [];
     const unsupportedPages: number[] = [];
     let textPages = 0,
       references = false;
     for (let pageNum = 1; pageNum <= doc.numPages; pageNum++) {
       const full: Region = { page: pageNum, x: 0, y: 0, width: 1, height: 1 };
-      const page = await doc.getPage(pageNum);
+      await yieldPdfPage();
+      const page = await decodePdfPage(doc.getPage(pageNum), options.pageTimeoutMs);
       let ordinal = 0;
       const push = (draft: Draft) => {
         drafts.push(draft);
@@ -819,8 +916,16 @@ export async function extractPdf(bytes: Uint8Array, paperKey: string, options: E
       try {
         // Fetching the operator list first populates page.commonObjs with resolved font
         // objects (bold, etc.); getTextContent's per-item styles never carry that.
-        const operators = await page.getOperatorList();
-        const content = await page.getTextContent();
+        const operators = await decodePdfPage(page.getOperatorList(), options.pageTimeoutMs);
+        const content = await decodePdfPage(page.getTextContent(), options.pageTimeoutMs);
+        if (pageNum === 1)
+          infoText.push(
+            content.items
+              .filter((item) => 'str' in item)
+              .map((item) => ('str' in item ? item.str : ''))
+              .join(' ')
+              .slice(0, 200_000),
+          );
         const pageHeight = page.view[3] - page.view[1],
           pageWidth = page.view[2] - page.view[0];
         const raw: Line[] = [];
@@ -1461,6 +1566,8 @@ export async function extractPdf(bytes: Uint8Array, paperKey: string, options: E
         push(crop('unsupported', full));
       } finally {
         page.cleanup();
+        if (pageNum % 30 === 0) await doc.cleanup(true);
+        options.onProgress?.(pageNum, doc.numPages);
       }
     }
     // Repeated near-edge text and standalone folios are not article prose.
@@ -1524,7 +1631,18 @@ export async function extractPdf(bytes: Uint8Array, paperKey: string, options: E
       fontSize: d.fontSize,
       pageOrdinal: d.pageOrdinal,
     }));
-    return { blocks, coverage: { totalPages: doc.numPages, textPages, unsupportedPages }, extractionVersion: EXTRACTION_VERSION };
+    return {
+      blocks,
+      coverage: { totalPages: doc.numPages, textPages, unsupportedPages },
+      extractionVersion: EXTRACTION_VERSION,
+      documentTitle,
+      documentDoi:
+        infoText
+          .join(' ')
+          .match(/10\.\d{4,9}\/[\w.()/:;-]+/i)?.[0]
+          ?.replace(/[.;]$/, '') ?? null,
+      documentArxivId: infoText.join(' ').match(/(?:arxiv:\s*|arxiv\.org\/abs\/)(\d{4}\.\d{4,5}(?:v\d+)?)/i)?.[1] ?? null,
+    };
   } catch (error) {
     if (error instanceof SourceError) throw error;
     throw new SourceError('UNSUPPORTED_PDF', 'PDF 파일을 안전하게 해석할 수 없습니다.', false, 'DAMAGED_PDF');

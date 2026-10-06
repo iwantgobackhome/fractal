@@ -1,4 +1,4 @@
-import { t } from '../i18n';
+import { t, useLanguage } from '../i18n';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type JSX } from 'react';
 import type { Block, Translation } from '@fractal/shared';
 import { pageRenderSize, regionToPixels, sourceClickRegions, type Size } from '../lib/geometry';
@@ -32,11 +32,16 @@ function useSourcePageImage(doc: PDFDocumentProxy, page: number, zoom: number, d
   useEffect(() => {
     let cancelled = false;
     let task: { cancel(): void } | null = null;
+    let loadedPage: { cleanup(): boolean } | null = null;
     setState(null);
 
     void (async () => {
       const proxy = await doc.getPage(page);
-      if (cancelled) return;
+      loadedPage = proxy;
+      if (cancelled) {
+        if (doc.numPages > 300) proxy.cleanup();
+        return;
+      }
       const intrinsic = intrinsicSize(proxy);
       const rendered = pageRenderSize(intrinsic, zoom);
       const canvas = document.createElement('canvas');
@@ -63,6 +68,7 @@ function useSourcePageImage(doc: PDFDocumentProxy, page: number, zoom: number, d
     return () => {
       cancelled = true;
       task?.cancel();
+      if (doc.numPages > 300) loadedPage?.cleanup();
     };
   }, [doc, page, zoom, dpr, pageColors?.background, pageColors?.foreground]);
 
@@ -119,7 +125,7 @@ function TextFlow({ item, renderedPageHeight, onSelectBlock }: TextFlowProps): J
         onSelectBlock(item.block, 'control');
       }}
     >
-      {item.text ?? ''}
+      {item.text ?? item.block.sourceText}
     </p>
   );
 }
@@ -181,6 +187,7 @@ interface KoreanPageViewProps {
   onHeight(page: number, heightPx: number): void;
   onSelectBlock(block: Block, via: SelectVia): void;
   pageColors?: PageColors;
+  onTranslateSection?(page: number): void;
 }
 
 /**
@@ -201,9 +208,14 @@ export function KoreanPageView({
   translations,
   placeholder,
   onHeight,
+  onTranslateSection,
   onSelectBlock,
   pageColors,
 }: KoreanPageViewProps): JSX.Element {
+  const ko = useLanguage() === 'ko';
+  const pageTranslated = blocks.some(
+    (b) => b.regions.some((r) => r.page === page) && translations.some((t) => t.blockId === b.blockId && t.status === 'completed'),
+  );
   const image = useSourcePageImage(doc, page, zoom, dpr, pageColors);
   const layout = useMemo(() => buildKoreanLayout(blocks, translations, page), [blocks, translations, page]);
   const segments = useMemo(() => groupKoreanSegments(layout.items, layout.columnCount), [layout]);
@@ -236,10 +248,15 @@ export function KoreanPageView({
   const marginTop = PAGE_MARGIN_TOP * renderedPageHeight;
   const marginBottom = PAGE_MARGIN_BOTTOM * renderedPageHeight;
 
-  if (layout.sourceOnly) {
+  if (layout.sourceOnly || (onTranslateSection && !pageTranslated)) {
     return (
       <div className="kr-page kr-source-only" data-page={page} ref={containerRef} style={{ width: image.size.width, height: image.size.height }}>
         <img src={image.url} alt={t('misc.pageOriginal', { page })} style={{ width: image.size.width, height: image.size.height, display: 'block' }} />
+        {onTranslateSection && !pageTranslated ? (
+          <button type="button" style={{ position: 'absolute', top: 8, right: 8, zIndex: 2 }} onClick={() => onTranslateSection(page)}>
+            {ko ? '이 구간 번역' : 'Translate this section'}
+          </button>
+        ) : null}
         {sourceClickRegions(blocks, page).map(({ block, region }, index) => (
           <button
             key={`${block.blockId}-${index}`}
@@ -295,6 +312,7 @@ export interface KoreanPaneProps {
   pageIntrinsicSize(page: number): Size;
   /** Dark and sepia page colours, so cropped figures and equations match the page. */
   pageColors?: PageColors;
+  onTranslateSection?(page: number): void;
   /** The measured rendered height of a live page, in pixels — the next stage uses this to
    * compute the Korean pane's own page boundaries. */
   onPageHeight(page: number, heightPx: number): void;
@@ -385,6 +403,7 @@ export function KoreanPages(props: KoreanPaneProps): JSX.Element {
             dpr={dpr}
             blocks={blocks}
             translations={translations}
+            onTranslateSection={props.onTranslateSection}
             placeholder={placeholderSize(page)}
             onHeight={reportHeight}
             onSelectBlock={onSelectBlock}
