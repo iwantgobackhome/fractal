@@ -10,6 +10,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
@@ -316,10 +318,20 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                             Text(libraryText("No translated content is cached for page $translationGapPage.", "$translationGapPage 쪽의 번역 내용이 캐시되지 않았습니다."), style = MaterialTheme.typography.bodyLarge)
                             TextButton(onClick = { translationToSource(translatedAnchor); mode = "original"; driver = "original" }) { Text(libraryText("Read original page", "원문 페이지 읽기")) }
                         } else if (translationOnly || split) LazyColumn(state = translationList, modifier = Modifier.weight(1f).fillMaxHeight().readingDriver { driver = "translation" }) {
-                            items(blocks, key = { it.blockId }) { block -> TranslatedReaderBlock(block) { text ->
-                                quote = block.page to PdfTextSelection(text, emptyList(), origin = if (block.translated) "translated" else "original", blockId = block.blockId, provenance = if (block.translated) "translated-copy" else "source-block-copy")
-                                panel = true; panelTab = "questions"
-                            } }
+                            itemsIndexed(blocks, key = { _, block -> block.blockId }) { index, block ->
+                                Column {
+                                    if (index == 0 || blocks[index - 1].page != block.page) {
+                                        HorizontalDivider(color = colors.rule)
+                                        Text(libraryText("Page ${block.page}", "${block.page}쪽"), Modifier.padding(horizontal = 20.dp, vertical = 12.dp),
+                                            style = MaterialTheme.typography.labelMedium, color = colors.inkSoft)
+                                    }
+                                    if (block.isSourceCrop) TranslatedSourceBlock(block, pages)
+                                    else TranslatedReaderBlock(block) { text ->
+                                        quote = block.page to PdfTextSelection(text, emptyList(), origin = if (block.translated) "translated" else "original", blockId = block.blockId, provenance = if (block.translated) "translated-copy" else "source-block-copy")
+                                        panel = true; panelTab = "questions"
+                                    }
+                                }
+                            }
                         }
                     }
                     if (selectionMessage.isNotBlank()) Surface(Modifier.align(Alignment.BottomCenter).fillMaxWidth().nativeInkBlocker(), color = colors.paper) {
@@ -379,11 +391,13 @@ private fun TranslatedReaderBlock(block: TranslatedBlock, onQuote: (String) -> U
             toolbar.showMenu(rect, onCopyRequested?.let { copy -> { copy(); copied = clipboard.getText()?.text } }, onPasteRequested, onCutRequested, onSelectAllRequested)
         }
     } }
-    Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp)) {
-        Text(if (block.translated) libraryText("Translation · page ${block.page}", "번역 · ${block.page}쪽") else libraryText("Original passage · page ${block.page}", "원문 내용 · ${block.page}쪽"), style = MaterialTheme.typography.bodySmall, color = colors.inkSoft)
+    val quoteLabel = if (block.translated) libraryText("Quote this translated block", "번역 블록 인용") else libraryText("Quote original passage", "원문 내용 인용")
+    Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp).semantics {
+        customActions = listOf(androidx.compose.ui.semantics.CustomAccessibilityAction(quoteLabel) { onQuote(block.text); true })
+    }) {
         CompositionLocalProvider(LocalTextToolbar provides wrapped) { SelectionContainer {
-            Text(block.text, style = if (block.kind == "heading") MaterialTheme.typography.titleLarge else MaterialTheme.typography.bodyLarge, color = colors.ink)
+            Text(block.text, style = if (block.kind == "heading") MaterialTheme.typography.titleLarge else if (block.kind == "caption") MaterialTheme.typography.bodyMedium else MaterialTheme.typography.bodyLarge, color = colors.ink)
         } }
-        TextButton(onClick = { onQuote(copied ?: block.text) }) { Text(if (copied != null) libraryText("Quote copied excerpt", "복사한 부분 인용") else if (block.translated) libraryText("Quote this translated block", "번역 블록 인용") else libraryText("Quote original passage", "원문 내용 인용")) }
+        if (copied != null) TextButton(onClick = { onQuote(copied!!) }) { Text(libraryText("Quote copied excerpt", "복사한 부분 인용")) }
     }
 }
