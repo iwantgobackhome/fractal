@@ -218,9 +218,9 @@ class HubClient(private val credentials: HubCredentialStore) : HubHistoryClient 
     suspend fun claim(
         url: String,
         code: String,
-        hubName: String = "Fractal",
+        hubName: String = "News Papers",
         hubId: String = "",
-        deviceName: String = "Fractal Android",
+        deviceName: String = "News Papers Android",
     ): HubCredentials = withContext(Dispatchers.IO) {
         val base = url.trimEnd('/')
         http.newCall(request(base, "/api/hub/ping")).execute().use { ping ->

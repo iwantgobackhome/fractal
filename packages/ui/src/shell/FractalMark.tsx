@@ -1,7 +1,7 @@
 import type { JSX } from 'react';
 
 /**
- * The Fractal mark: one stem that branches, and branches again — the same shape
+ * The News Papers mark: one stem that branches, and branches again — the same shape
  * at every scale, like a paper and the papers it cites. Drawn with the current
  * text colour so it sits in any theme.
  */

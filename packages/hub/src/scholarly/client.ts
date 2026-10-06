@@ -72,10 +72,10 @@ export class ScholarlyClient {
         if (gate.cooldown > now()) throw new ProviderFailure({ ...gate.failure!, retryAt: new Date(gate.cooldown).toISOString() });
         await delay(gate.next - now(), signal);
         gate.next = now() + (this.options.intervalMs ?? 1000);
-        const headers: Record<string, string> = { 'User-Agent': 'Fractal/0.1 (personal research reader)', ...extra };
+        const headers: Record<string, string> = { 'User-Agent': 'News-Papers/0.1 (personal research reader)', ...extra };
         const email = process.env.FRACTAL_CONTACT_EMAIL?.trim();
         if (email && /^[^\s@]+@[^\s@]+$/.test(email)) {
-          headers['User-Agent'] = `Fractal/0.1 (mailto:${email})`;
+          headers['User-Agent'] = `News-Papers/0.1 (mailto:${email})`;
           if (provider === 'crossref') url.searchParams.set('mailto', email);
         }
         if (provider === 'openAlex' && process.env.OPENALEX_API_KEY) headers.Authorization = `Bearer ${process.env.OPENALEX_API_KEY}`;

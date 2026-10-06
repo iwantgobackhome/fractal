@@ -1,4 +1,4 @@
-# Fractal for Android — screen specification
+# News Papers for Android — screen specification
 
 Target: Galaxy Tab with S Pen first (11"–14.6", portrait and landscape, split screen, pop-up window, DeX), phones second. Kotlin + Jetpack Compose. The same principles as the desktop apply (`principles.md`): the paper leads, hairlines instead of boxes, one accent, type does the hierarchy, no explanatory sentences. Colours, sizes and spacing come only from `FractalTokens` (generated from `packages/shared/tokens/tokens.json`); themes are light, sepia and dark, following the system by default.
 
@@ -18,7 +18,7 @@ Never hard-code pixel positions; the page is laid out from its aspect ratio and 
 
 ### 1. Connect (first run, and Settings → 허브)
 
-- Serif wordmark, one line: "PC의 Fractal과 연결합니다".
+- Serif wordmark, one line: "PC의 News Papers와 연결합니다".
 - Primary action: **QR 스캔** (CameraX + ML Kit). Secondary text link: "주소와 코드 직접 입력".
 - After a successful claim: hub name + address in muted text, "연결됨". Store the device token in EncryptedSharedPreferences / Keystore; never log it.
 - If the hub is unreachable later, the app keeps working offline; a thin top line in `muted` says "허브에 연결되지 않음 · 마지막 동기화 3분 전" — no banners, no dialogs.

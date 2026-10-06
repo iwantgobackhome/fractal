@@ -1,6 +1,6 @@
 # Architecture
 
-Fractal is an npm workspaces monorepo. The Node hub and React browser UI run inside the Electron desktop shell or as a headless service. The Kotlin Android app pairs with the hub for reading and sync.
+News Papers is an npm workspaces monorepo. The Node hub and React browser UI run inside the Electron desktop shell or as a headless service. The Kotlin Android app pairs with the hub for reading and sync.
 
 | Path | Responsibility |
 | --- | --- |
@@ -14,7 +14,7 @@ Fractal is an npm workspaces monorepo. The Node hub and React browser UI run ins
 
 1. `npm run build` builds shared declarations and the UI, then typechecks the hub. `npm run hub` starts the hub on `127.0.0.1:7327` and serves `packages/ui/dist` directly.
 2. The hub injects a startup token into the UI HTML. The browser calls `/api/*` on the same loopback host. State-changing calls carry the token in `x-paperread-token` and a loopback `Origin`.
-3. The hub resolves arXiv IDs, DOI links, or public publication URLs, or accepts a PDF upload. It extracts the PDF and stores metadata and blocks in SQLite under the Fractal data directory. The UI reads paper and job state and the saved PDF.
+3. The hub resolves arXiv IDs, DOI links, or public publication URLs, or accepts a PDF upload. It extracts the PDF and stores metadata and blocks in SQLite under the News Papers data directory. The UI reads paper and job state and the saved PDF.
 4. Translation and questions use the official Codex CLI app server with an app-owned `.codex-home`. The hub persists translations, highlights, chat, and job state. Credentials stay in that app-owned directory.
 
 `npm run dev` starts the hub and Vite together. Vite proxies `/api` to the hub and receives the hub's startup token for its dev page.
@@ -29,13 +29,13 @@ Android v1 uses HTTP with a bearer token. Tailscale provides WireGuard encryptio
 
 ## Android connection
 
-The Android client claims a pairing code, stores its bearer credential with Android Keystore protection, caches PDFs, and syncs library and annotations over LAN or Tailscale. Ink strokes preserve optional brush, shape, and tilt data through the hub's annotation and sync routes. The HTTP credential header name remains compatible with PaperRead; PaperRead files are imported into the Fractal data directory on first startup.
+The Android client claims a pairing code, stores its bearer credential with Android Keystore protection, caches PDFs, and syncs library and annotations over LAN or Tailscale. Ink strokes preserve optional brush, shape, and tilt data through the hub's annotation and sync routes. The HTTP credential header name remains compatible with PaperRead; PaperRead files are imported into the News Papers data directory on first startup.
 
 ## AI provider routing
 
 The hub's `ai/` layer wraps the isolated Codex app-server question path and a headless Claude CLI process behind one streaming provider interface. `ProviderRegistry` resolves saved defaults and per-feature overrides, records UTC daily usage in `ai-usage.json`, and exposes best-effort provider limits. `settings.json` holds the small provider settings record. Both files live in the hub data directory, separate from paper records. `RegistryLegacyAdapter` keeps existing chat and translation endpoints on the same selection path: Codex calls delegate directly to their original methods, while Claude uses the same Korean translation prompts and validators from `translation/prompt.ts`. The AI route module performs input validation and streams SSE frames; production library questions use SQLite FTS search over stored papers and blocks.
 
-The HTTP credential name remains compatible with the browser. PaperRead data is imported once into the new Fractal directory without altering its source files.
+The HTTP credential name remains compatible with the browser. PaperRead data is imported once into the new News Papers directory without altering its source files.
 
 ## Paper structure
 
@@ -47,7 +47,7 @@ Equation matching joins right-margin PDF equation numbers, source environment nu
 
 ## Library storage and sync
 
-The hub opens `%LOCALAPPDATA%/Fractal` on Windows or `$XDG_DATA_HOME/fractal` on Unix; `FRACTAL_DATA` overrides it. `node:sqlite` holds paper snapshots, blocks, translations, jobs, bibliography, collections, tags, annotations, conversations, a migration ledger, and an append-only change log. PDFs are files named by SHA-256 under `pdfs/`. On first startup it imports verified records from the old PaperRead directory, including highlights. FTS5 indexes bibliography fields and extracted block text.
+The hub opens `%LOCALAPPDATA%/News Papers` on Windows or `$XDG_DATA_HOME/news-papers` on Unix; `FRACTAL_DATA` overrides it. `node:sqlite` holds paper snapshots, blocks, translations, jobs, bibliography, collections, tags, annotations, conversations, a migration ledger, and an append-only change log. PDFs are files named by SHA-256 under `pdfs/`. On first startup it imports verified records from the old PaperRead directory, including highlights. FTS5 indexes bibliography fields and extracted block text.
 
 The API has separate library, annotation, and sync route modules. URL and upload ingestion converge on DOI, arXiv ID, or PDF hash to merge existing papers. A sync pull reads the change log after a cursor; pushes use last-writer-wins by timestamp and device ID while retaining tombstones. Reader routes still call the same store methods, now backed by SQLite.
 

@@ -435,7 +435,7 @@ export class CachedFetcher {
       { etag: string | null; modified: string | null; body: string } | undefined;
     const email = process.env.FRACTAL_CONTACT_EMAIL;
     const headers: Record<string, string> = {
-      'User-Agent': email ? `Fractal/0.1 (mailto:${email})` : 'Fractal/0.1 (personal research reader)',
+      'User-Agent': email ? `News-Papers/0.1 (mailto:${email})` : 'News-Papers/0.1 (personal research reader)',
       ...extraHeaders,
     };
     if (requestBody) headers['Content-Type'] = 'application/json';

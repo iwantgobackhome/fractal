@@ -9,7 +9,7 @@ android {
     namespace = "app.fractal.reader"
     compileSdk = 35
     defaultConfig {
-        applicationId = "app.fractal.reader"
+        applicationId = "app.newspapers.reader"
         minSdk = 29
         targetSdk = 35
         versionCode = 6

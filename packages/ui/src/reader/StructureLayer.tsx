@@ -24,7 +24,7 @@ const box = (b: { x: number; y: number; width: number; height: number }) => ({
 });
 
 /**
- * What Fractal recognised on one page. Figures, tables and equations show a thin frame
+ * What News Papers recognised on one page. Figures, tables and equations show a thin frame
  * and a small 설명 tab only while the pointer is over them; citation numbers become
  * quiet targets that open the reference.
  */

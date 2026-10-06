@@ -55,11 +55,11 @@ internal class UpdateViewModel(application: Application) : AndroidViewModel(appl
         scope.launch {
             try {
                 val release = withContext(Dispatchers.IO) {
-                    val json = Json.parseToJsonElement(getText("https://api.github.com/repos/iwantgobackhome/fractal/releases/latest")).jsonObject
+                    val json = Json.parseToJsonElement(getText("https://api.github.com/repos/iwantgobackhome/news-papers/releases/latest")).jsonObject
                     val tag = requireNotNull(json["tag_name"]).jsonPrimitive.content
                     if (ReleaseVersion.parse(tag) <= ReleaseVersion.parse(BuildConfig.VERSION_NAME)) return@withContext null
                     val version = tag.removePrefix("v")
-                    val name = "Fractal-$version-android-debug.apk"
+                    val name = "News-Papers-$version-android-debug.apk"
                     val assets = requireNotNull(json["assets"]).jsonArray.map { it.jsonObject }
                     fun assetUrl(assetName: String): String = requireNotNull(assets.singleOrNull { it["name"]?.jsonPrimitive?.content == assetName })["browser_download_url"]!!.jsonPrimitive.content
                     ReleaseUpdate(version, name, assetUrl(name), assetUrl("SHA256SUMS.txt"))
@@ -130,7 +130,7 @@ internal class UpdateViewModel(application: Application) : AndroidViewModel(appl
 
     suspend fun verifiedInstaller(): File = withContext(Dispatchers.IO) {
         val name = requireNotNull(preferences.getString("pendingName", null))
-        require(Regex("Fractal-[0-9A-Za-z.+-]+-android-debug\\.apk").matches(name))
+        require(Regex("News-Papers-[0-9A-Za-z.+-]+-android-debug\\.apk").matches(name))
         val file = File(directory, name)
         val digest = MessageDigest.getInstance("SHA-256")
         file.inputStream().use { input ->
@@ -149,7 +149,7 @@ internal class UpdateViewModel(application: Application) : AndroidViewModel(appl
     }
     private fun request(url: String): Request {
         require(url.startsWith("https://")) { "HTTPS required" }
-        return Request.Builder().url(url).header("Accept", "application/vnd.github+json").header("User-Agent", "Fractal/${BuildConfig.VERSION_NAME}").build()
+        return Request.Builder().url(url).header("Accept", "application/vnd.github+json").header("User-Agent", "News Papers/${BuildConfig.VERSION_NAME}").build()
     }
     private fun getText(url: String): String = client.newCall(request(url)).execute().use { response ->
         check(response.isSuccessful) { "Release request failed" }

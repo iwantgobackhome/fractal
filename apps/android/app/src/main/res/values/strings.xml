@@ -3,8 +3,8 @@
     <string name="show_reader_controls">Show reader controls</string>
     <string name="clear_quote">Clear selection</string>
     <string name="region_selection_hint">This region has no selectable text. You can highlight it or add a memo.</string>
-    <string name="app_name">Fractal</string>
-    <string name="connect_subtitle">Connect to Fractal on your PC</string>
+    <string name="app_name">News Papers</string>
+    <string name="connect_subtitle">Connect to News Papers on your PC</string>
     <string name="hub_address">Hub address</string>
     <string name="connection_code">Connection code</string>
     <string name="connect">Connect</string>
@@ -48,7 +48,7 @@
     <string name="language_intro_title">Choose your reading language</string>
     <string name="language_intro_subtitle">You can change this later in Settings.</string>
     <string name="continue_label">Continue</string>
-    <string name="app_version">Fractal · 0.1</string>
+    <string name="app_version">News Papers · 0.1</string>
     <string name="more_authors">%1$s and %2$d others</string>
     <string name="offline_indicator">↓</string>
     <string name="back_symbol">‹</string>
@@ -80,7 +80,7 @@
     <string name="question_failed">Question failed</string>
     <string name="pairing_enable_network">Enable LAN or Tailscale on your PC before pairing.</string>
     <string name="connected_sync_failed">Connected. Initial sync failed and will retry: %1$s</string>
-    <string name="sync_large_item_pending">A large sync item remains on this device because the Hub rejected it. Update Fractal on your PC or reduce the item size; other items still sync.</string>
+    <string name="sync_large_item_pending">A large sync item remains on this device because the Hub rejected it. Update News Papers on your PC or reduce the item size; other items still sync.</string>
     <string name="update_check">Check for updates</string>
     <string name="update_checking">Checking for updates…</string>
     <string name="update_available">New version %1$s</string>
@@ -92,5 +92,5 @@
     <string name="update_install">Install update</string>
     <string name="update_error">Could not update. Please try again later.</string>
     <string name="update_current">You have the latest version.</string>
-    <string name="update_permission">Allow Fractal to install apps, then try installing again.</string>
+    <string name="update_permission">Allow News Papers to install apps, then try installing again.</string>
 </resources>

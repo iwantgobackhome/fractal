@@ -32,7 +32,7 @@ function version(p: ProviderStatus): string {
 }
 
 /**
- * Codex and Claude as the hub sees them: Fractal uses the command-line tools the reader
+ * Codex and Claude as the hub sees them: News Papers uses the command-line tools the reader
  * already signed in to, so the fix for "not connected" is always a terminal command.
  */
 export function AiConnection({ providers, onRecheck, checking }: { providers: ProviderStatus[]; onRecheck(): void; checking: boolean }): JSX.Element {

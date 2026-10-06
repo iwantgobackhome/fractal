@@ -30,7 +30,7 @@ export async function resolveDoi(doi: string, fetcher: typeof fetch = fetch, ema
     throw invalidInput('DOI 형식이 올바르지 않습니다.');
   }
   if (!/^10\.\d{4,9}\/\S+$/.test(doi)) throw invalidInput('DOI 형식이 올바르지 않습니다.');
-  const headers: HeadersInit = email ? { 'User-Agent': `Fractal/0.1 (mailto:${email})` } : {};
+  const headers: HeadersInit = email ? { 'User-Agent': `News-Papers/0.1 (mailto:${email})` } : {};
   let work: Record<string, unknown>;
   try {
     const url = new URL(`https://api.crossref.org/works/${encodeURIComponent(doi)}`);

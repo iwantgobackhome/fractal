@@ -44,7 +44,7 @@ function NewsTitle({ item, className }: { item: FeedEntry; className: string }):
   );
 }
 
-/** A news story: picture, headline, outlet and age. Opens inside Fractal. */
+/** A news story: picture, headline, outlet and age. Opens inside News Papers. */
 function Story({ hub, item, withPicture }: { hub: HubApi; item: FeedEntry; withPicture: boolean }): JSX.Element {
   const read = useReader(item);
   return (

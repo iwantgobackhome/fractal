@@ -232,7 +232,7 @@ export class SqlitePaperStore extends PaperStore {
         this.db.exec('COMMIT');
       } catch (error) {
         this.db.exec('ROLLBACK');
-        process.stderr.write(`Fractal: skipped legacy paper ${key}: ${String(error)}\n`);
+        process.stderr.write(`News Papers: skipped legacy paper ${key}: ${String(error)}\n`);
       }
     }
   }

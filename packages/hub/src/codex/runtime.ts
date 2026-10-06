@@ -123,7 +123,7 @@ export async function assertNoCustomInstructions(env: NodeJS.ProcessEnv): Promis
     throw failure('UNSAFE_RUNTIME', 'Codex configuration could not be checked.');
   }
   if (/^\s*(?:model_instructions_file|experimental_instructions_file|developer_instructions|instructions)\s*=/m.test(config))
-    throw failure('UNSAFE_RUNTIME', 'Codex custom instructions are not allowed for Fractal threads.');
+    throw failure('UNSAFE_RUNTIME', 'Codex custom instructions are not allowed for News Papers threads.');
 }
 /** Resolve native official npm binary on Windows: never run a .cmd through a shell. */
 export async function resolveCodexExecutable(env: NodeJS.ProcessEnv = process.env, platform: NodeJS.Platform = process.platform): Promise<string> {

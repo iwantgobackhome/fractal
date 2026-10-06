@@ -75,7 +75,7 @@ export function Welcome({ hub, preferences, onPreferencesChange, onDone }: Props
       <header className="welcome__top">
         <span className="welcome__brand">
           <FractalMark size={22} />
-          <span>Fractal</span>
+          <span>News Papers</span>
         </span>
         <button type="button" className="text-link text-link--quiet" onClick={onDone}>
           {t('welcome.skip')}

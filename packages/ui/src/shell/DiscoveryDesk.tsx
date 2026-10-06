@@ -453,7 +453,7 @@ export function DiscoveryDesk({
           </div>
         ) : null}
         <footer className="index-footer">
-          Fractal · {visible.length} {say('papers', '논문')} · {news.length} {say('stories', '소식')}
+          News Papers · {visible.length} {say('papers', '논문')} · {news.length} {say('stories', '소식')}
         </footer>
         {dossier ? (
           <PublicationDossier

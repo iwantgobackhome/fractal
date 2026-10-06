@@ -22,16 +22,18 @@ await writeFile(
   JSON.stringify({ version, commit, runId: process.env.GITHUB_RUN_ID ?? null, files: source }, null, 2) + '\n',
 );
 if (label === 'android') {
+  // Legacy 0.2.x clients require this exact name during the clean-break transition.
   await copyFile('apps/android/app/build/outputs/apk/debug/app-debug.apk', join(output, `Fractal-${version}-android-debug.apk`));
+  await copyFile('apps/android/app/build/outputs/apk/debug/app-debug.apk', join(output, `News-Papers-${version}-android-debug.apk`));
 } else {
   const platform = label.split('-')[0];
   const arch = label.split('-')[1];
   const expected =
     platform === 'win32'
-      ? [`Fractal-${version}-win-${arch}.exe`]
+      ? [`News-Papers-${version}-win-${arch}.exe`]
       : platform === 'darwin'
-        ? [`Fractal-${version}-mac-${arch}.dmg`]
-        : [`Fractal-${version}-linux-${arch}.AppImage`, `Fractal-${version}-linux-${arch}.deb`];
+        ? [`News-Papers-${version}-mac-${arch}.dmg`]
+        : [`News-Papers-${version}-linux-${arch}.AppImage`, `News-Papers-${version}-linux-${arch}.deb`];
   for (const name of expected) await copyFile(join('dist/installer', name), join(output, name));
   if (platform === 'win32' || platform === 'linux') {
     const metadata = platform === 'win32' ? 'latest.yml' : 'latest-linux.yml';
@@ -52,7 +54,7 @@ if (label === 'android') {
       ? 'dist/installer/win-unpacked'
       : platform === 'linux'
         ? 'dist/installer/linux-unpacked'
-        : `dist/installer/${arch === 'arm64' ? 'mac-arm64' : 'mac'}/Fractal.app`;
+        : `dist/installer/${arch === 'arm64' ? 'mac-arm64' : 'mac'}/News Papers.app`;
   const files = [];
   async function walk(directory) {
     for (const entry of await readdir(directory, { withFileTypes: true })) {

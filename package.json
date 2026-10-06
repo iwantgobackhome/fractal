@@ -41,14 +41,16 @@
     "vitest": "^3.2.0"
   },
   "build": {
-    "appId": "app.fractal.desktop",
-    "productName": "Fractal",
+    "appId": "app.newspapers.desktop",
+    "productName": "News Papers",
+    "executableName": "news-papers",
     "directories": {
       "output": "dist/installer"
     },
     "files": [
       "apps/desktop/main.cjs",
       "apps/desktop/preload.cjs",
+      "apps/desktop/data-migration.cjs",
       "apps/desktop/assets/**",
       "apps/desktop/dist/**",
       "packages/ui/dist/**",
@@ -95,6 +97,7 @@
       "uninstallerIcon": "apps/desktop/assets/fractal.ico"
     },
     "mac": {
+      "executableName": "News Papers",
       "target": [
         {
           "target": "dmg",
@@ -107,7 +110,10 @@
       "category": "public.app-category.productivity",
       "icon": "apps/desktop/assets/fractal.icns"
     },
-    "artifactName": "Fractal-${version}-${os}-${arch}.${ext}",
+    "artifactName": "News-Papers-${version}-${os}-${arch}.${ext}",
+    "deb": {
+      "packageName": "news-papers"
+    },
     "linux": {
       "target": [
         {
@@ -125,7 +131,7 @@
       ],
       "icon": "apps/desktop/assets/icon-512.png",
       "category": "Education",
-      "maintainer": "Fractal contributors"
+      "maintainer": "News Papers contributors"
     }
   },
   "dependencies": {
@@ -134,5 +140,5 @@
   },
   "description": "Research reader, library and discovery desk",
   "license": "Apache-2.0",
-  "homepage": "https://github.com/iwantgobackhome/fractal"
+  "homepage": "https://github.com/iwantgobackhome/news-papers"
 }

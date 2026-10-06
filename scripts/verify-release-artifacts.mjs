@@ -8,17 +8,18 @@ const version = JSON.parse(await readFile('package.json', 'utf8')).version;
 const labels = ['win32-x64', 'linux-x64', 'darwin-arm64', 'darwin-x64', 'android'];
 const files = await readdir(directory);
 const payloads = [
-  `Fractal-${version}-win-x64.exe`,
-  `Fractal-${version}-linux-x64.AppImage`,
-  `Fractal-${version}-linux-x64.deb`,
-  `Fractal-${version}-mac-arm64.dmg`,
-  `Fractal-${version}-mac-x64.dmg`,
+  `News-Papers-${version}-win-x64.exe`,
+  `News-Papers-${version}-linux-x64.AppImage`,
+  `News-Papers-${version}-linux-x64.deb`,
+  `News-Papers-${version}-mac-arm64.dmg`,
+  `News-Papers-${version}-mac-x64.dmg`,
+  `News-Papers-${version}-android-debug.apk`,
   `Fractal-${version}-android-debug.apk`,
 ];
 for (const name of payloads) assert.ok(files.includes(name), `missing ${name}`);
 const updateFiles = {
-  'win32-x64': ['latest.yml', `Fractal-${version}-win-x64.exe.blockmap`],
-  'linux-x64': ['latest-linux.yml', `Fractal-${version}-linux-x64.AppImage.blockmap`],
+  'win32-x64': ['latest.yml', `News-Papers-${version}-win-x64.exe.blockmap`],
+  'linux-x64': ['latest-linux.yml', `News-Papers-${version}-linux-x64.AppImage.blockmap`],
 };
 const verified = new Map();
 let commit;
@@ -64,12 +65,17 @@ for (const label of labels) {
     const apk = JSON.parse(await readFile(join(directory, 'android-verification.json'), 'utf8'));
     assert.equal(apk.version, version);
     assert.equal(apk.versionCode, 6);
-    assert.equal(apk.applicationId, 'app.fractal.reader');
+    assert.equal(apk.applicationId, 'app.newspapers.reader');
     assert.ok(apk.debugSigned && apk.signatureVerified);
     assert.match(apk.certificateSha256, /^[a-f0-9]{64}$/);
     if (process.env.GITHUB_REF_TYPE === 'tag') assert.ok(apk.previousReleaseCertificateMatched, 'published APK must preserve previous signature');
   }
 }
+assert.equal(
+  verified.get(`News-Papers-${version}-android-debug.apk`),
+  verified.get(`Fractal-${version}-android-debug.apk`),
+  'legacy Android alias must be identical',
+);
 for (const name of payloads) assert.ok(verified.has(name), `unverified distribution ${name}`);
 for (const name of files)
   assert.ok(verified.has(name) || /^SHA256SUMS-(win32-x64|linux-x64|darwin-arm64|darwin-x64|android)\.txt$/.test(name), `unexpected file ${name}`);
@@ -81,4 +87,4 @@ for (const name of files.sort()) {
   lines.push(`${hash}  ${name}`);
 }
 await writeFile(join(directory, 'SHA256SUMS.txt'), lines.join('\n') + '\n');
-console.log(`All five native jobs and six installers and Windows/Linux update metadata and blockmaps verified at ${commit}`);
+console.log(`All five native jobs and six installers, the legacy Android alias, and Windows/Linux update metadata and blockmaps verified at ${commit}`);

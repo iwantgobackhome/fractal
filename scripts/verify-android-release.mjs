@@ -9,7 +9,7 @@ const tools = join(sdk, 'build-tools', '35.0.0');
 assert.ok((await readdir(join(sdk, 'build-tools'))).includes('35.0.0'));
 const apk = 'apps/android/app/build/outputs/apk/debug/app-debug.apk';
 const badging = execFileSync(join(tools, process.platform === 'win32' ? 'aapt.exe' : 'aapt'), ['dump', 'badging', apk], { encoding: 'utf8' });
-assert.match(badging, /package: name='app\.fractal\.reader' versionCode='6' versionName='0\.2\.4'/);
+assert.match(badging, /package: name='app\.newspapers\.reader' versionCode='6' versionName='0\.2\.4'/);
 assert.match(badging, /sdkVersion:'29'/);
 assert.match(badging, /targetSdkVersion:'35'/);
 const signer = execFileSync(join(tools, process.platform === 'win32' ? 'apksigner.bat' : 'apksigner'), ['verify', '--verbose', '--print-certs', apk], { encoding: 'utf8', shell: process.platform === 'win32' });
@@ -20,5 +20,5 @@ const expected = process.env.EXPECT_ANDROID_CERT_SHA256?.replaceAll(':', '').toL
 if (process.env.GITHUB_REF_TYPE === 'tag') assert.ok(expected, 'Configure ANDROID_RELEASE_CERT_SHA256 with the previous public release certificate');
 if (expected) assert.equal(certificateSha256, expected, 'APK must preserve the previous release signing identity');
 await mkdir('dist/release/android', { recursive: true });
-await writeFile('dist/release/android/android-verification.json', JSON.stringify({ version: '0.2.4', versionCode: 6, applicationId: 'app.fractal.reader', minSdk: 29, targetSdk: 35, debugSigned: true, signatureVerified: true, certificateSha256, previousReleaseCertificateMatched: Boolean(expected), badging, signer, runtimeVerified: false }, null, 2) + '\n');
+await writeFile('dist/release/android/android-verification.json', JSON.stringify({ version: '0.2.4', versionCode: 6, applicationId: 'app.newspapers.reader', minSdk: 29, targetSdk: 35, debugSigned: true, signatureVerified: true, certificateSha256, previousReleaseCertificateMatched: Boolean(expected), badging, signer, runtimeVerified: false }, null, 2) + '\n');
 console.log('APK manifest and actual debug signature verified; no installation/runtime claim');

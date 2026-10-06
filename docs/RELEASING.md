@@ -1,4 +1,4 @@
-# Building and reviewing a Fractal release
+# Building and reviewing a News Papers release
 
 The release workflow builds one reviewed source commit on Windows x64, Linux x64, macOS arm64, macOS x64 and an Android build host. It does not publish automatically: a matching `v<version>` tag can create a draft only after all jobs and the aggregate checksum job succeed. Branch and manual validation upload Actions artifacts without creating a release. The coordinator owns pushes, tags, CI dispatches and the final release decision.
 
@@ -12,10 +12,10 @@ The workflow accepts `release/**` pushes, `v*` tags and manual dispatches on a r
 
 | Host | Command | Expected files under `dist/installer/` |
 | --- | --- | --- |
-| Windows x64 | `npm run desktop:dist:win` | `Fractal-0.2.4-win-x64.exe` |
-| Linux x64 | `npm run desktop:dist:linux` | `Fractal-0.2.4-linux-x64.AppImage`, `Fractal-0.2.4-linux-x64.deb` |
-| macOS Apple Silicon | `npm run desktop:dist:mac` | `Fractal-0.2.4-mac-arm64.dmg` |
-| macOS Intel | `npm run desktop:dist:mac` | `Fractal-0.2.4-mac-x64.dmg` |
+| Windows x64 | `npm run desktop:dist:win` | `News-Papers-0.2.4-win-x64.exe` |
+| Linux x64 | `npm run desktop:dist:linux` | `News-Papers-0.2.4-linux-x64.AppImage`, `News-Papers-0.2.4-linux-x64.deb` |
+| macOS Apple Silicon | `npm run desktop:dist:mac` | `News-Papers-0.2.4-mac-arm64.dmg` |
+| macOS Intel | `npm run desktop:dist:mac` | `News-Papers-0.2.4-mac-x64.dmg` |
 
 CI uses `windows-2025`, `ubuntu-24.04`, `macos-15` (Apple Silicon) and `macos-15-intel`, checks the actual Node host architecture, and builds each Mac architecture on its native runner. The local macOS command builds only the host architecture, matching npm's installed optional PTY package; produce the second DMG on a host of that architecture. Local cross-architecture packaging cannot establish native runtime success. Every builder passes `--publish never`.
 
@@ -27,9 +27,9 @@ After packaging, run `node scripts/smoke-packaged-release.mjs`, then `node scrip
 
 Packaged Windows NSIS and Linux AppImage/deb builds check the published GitHub release after ten seconds and every six hours. The tray also offers **Check for updates**. Downloads begin only after **Update**, and installation waits for **Restart to update**. **Later** hides that version until a different version appears. Development builds have no updater. Packaged macOS builds are unsigned, so Squirrel.Mac cannot apply updates: they read the GitHub `releases/latest` API on the same schedule, show **Open download page** for a newer version, and open the release page in the browser. macOS remains DMG-only and needs no `latest-mac.yml`.
 
-`release-config.cjs` declares the GitHub publish provider for `iwantgobackhome/fractal`, while all builds retain `--publish never`. Upload `latest.yml` and the matching `.exe.blockmap` from Windows, and `latest-linux.yml` and the matching `.AppImage.blockmap` from Linux alongside the installers. AppImage's runtime uses its embedded differential map; the build hook additionally exports the external map for the release checksum contract. Matching `.deb.blockmap` files are copied if present. The manifest and aggregate verifier require the metadata and primary blockmaps, hash them, and reject unknown files even when a platform checksum lists them. Run `node --test scripts/release-artifacts.test.mjs` to exercise copying, aggregate acceptance, missing metadata/maps and unknown-file rejection with isolated fixtures. The packaged Hub/PTY smoke is unchanged and does not launch the updater.
+`release-config.cjs` declares the GitHub publish provider for `iwantgobackhome/news-papers`, while all builds retain `--publish never`. Upload `latest.yml` and the matching `.exe.blockmap` from Windows, and `latest-linux.yml` and the matching `.AppImage.blockmap` from Linux alongside the installers. AppImage's runtime uses its embedded differential map; the build hook additionally exports the external map for the release checksum contract. Matching `.deb.blockmap` files are copied if present. The manifest and aggregate verifier require the metadata and primary blockmaps, hash them, and reject unknown files even when a platform checksum lists them. Run `node --test scripts/release-artifacts.test.mjs` to exercise copying, aggregate acceptance, missing metadata/maps and unknown-file rejection with isolated fixtures. The packaged Hub/PTY smoke is unchanged and does not launch the updater.
 
-Android checks `releases/latest` at app startup at most once per 24 hours, with a manual **Check for updates** button in Settings. It compares the release tag against `BuildConfig.VERSION_NAME`, downloads the exact `Fractal-<version>-android-debug.apk`, and verifies its SHA-256 against the same release's aggregate `SHA256SUMS.txt` before opening the Android installer. Android may ask the user to allow Fractal to install apps; installation resumes after approval. APK signing identity must still match the installed app. Only published releases are visible to update checks: review and manually publish the draft with all installers, metadata, maps and checksums together.
+Android checks `releases/latest` at app startup at most once per 24 hours, with a manual **Check for updates** button in Settings. It compares the release tag against `BuildConfig.VERSION_NAME`, downloads the exact `News-Papers-<version>-android-debug.apk`, and verifies its SHA-256 against the same release's aggregate `SHA256SUMS.txt` before opening the Android installer. Android may ask the user to allow News Papers to install apps; installation resumes after approval. The clean break uses application ID `app.newspapers.reader`, so Android installs News Papers as a separate app from Fractal even though the debug signing certificate is retained. Only published releases are visible to update checks: review and manually publish the draft with all installers, metadata, maps and checksums together.
 
 ## Signing
 
@@ -41,7 +41,7 @@ Optional Mac Actions secrets are `MAC_CSC_LINK`, `MAC_CSC_KEY_PASSWORD`, `APPLE_
 
 CI uses JDK 17, SDK platform 35 and build-tools 35.0.0, then runs `bash gradlew --no-daemon :app:assembleDebug` in `apps/android`. It restores the stable debug keystore from the private `ANDROID_DEBUG_KEYSTORE_BASE64` Actions secret to an isolated runner temporary path. Restore and Gradle use the same explicit `FRACTAL_ANDROID_KEYSTORE_PATH`; CI refuses a missing path or key and never falls back to a random signing identity. Before assembly, JDK keytool exports the public certificate and checks its SHA-256 against the previous release. Restoration refuses to overwrite an existing file. Local builds retain their existing default signing configuration when the CI path variable is absent. Never commit the key or upload it in artifacts.
 
-Set the public repository variable `ANDROID_RELEASE_CERT_SHA256` to the prior APK certificate SHA-256 (hex, colons optional); every release workflow build requires it for the prebuild key check. `verify-android-release.mjs` then independently checks the assembled APK application ID, version/code, min/target SDK, debug signature and certificate. The report contains only public certificate information. `release-manifest.mjs android` copies the APK as `Fractal-0.2.4-android-debug.apk` and hashes the payload. No new release keystore or SDK credentials are needed for this debug distribution. These checks make no emulator, physical-device or API 35 runtime claim.
+Set the public repository variable `ANDROID_RELEASE_CERT_SHA256` to the prior APK certificate SHA-256 (hex, colons optional); every release workflow build requires it for the prebuild key check. `verify-android-release.mjs` then independently checks the assembled APK application ID, version/code, min/target SDK, debug signature and certificate. The report contains only public certificate information. `release-manifest.mjs android` copies the APK as `News-Papers-0.2.4-android-debug.apk` and hashes the payload. No new release keystore or SDK credentials are needed for this debug distribution. These checks make no emulator, physical-device or API 35 runtime claim.
 
 ## Aggregate review and draft publication
 
@@ -56,3 +56,7 @@ Before promoting that draft, download and verify the files and manifests, inspec
 - [electron-builder v26 macOS and notarization environment](https://www.electron.build/v26/docs/mac/)
 - [electron-builder v26 Linux targets](https://www.electron.build/v26/docs/linux/)
 - [actionlint 1.7.12](https://github.com/rhysd/actionlint/releases/tag/v1.7.12)
+
+For the 0.2.x → 0.3 transition, publish an identical APK alias named `Fractal-${version}-android-debug.apk` alongside `News-Papers-${version}-android-debug.apk`. Old Android clients require the legacy name to discover and verify the download. Both names must appear in `SHA256SUMS-android.txt` and aggregate `SHA256SUMS.txt`, with identical hashes; the verifier requires this one alias. It can be dropped in a later release. Windows/Linux updater metadata retains `latest.yml`/`latest-linux.yml`; GitHub redirects the old repository after its rename.
+
+Desktop startup copies the old Hub data and Electron profile before opening either location: Windows `%LOCALAPPDATA%\Fractal` → `%LOCALAPPDATA%\News Papers` and `%APPDATA%\Fractal` → `%APPDATA%\News Papers`; macOS/Linux `${XDG_DATA_HOME:-~/.local/share}/fractal` → `news-papers`, plus macOS `~/Library/Application Support/Fractal` → `News Papers` or Linux `${XDG_CONFIG_HOME:-~/.config}/Fractal` → `News Papers`. Existing destinations and explicit `FRACTAL_DATA`/`FRACTAL_DESKTOP_PROFILE` overrides are preserved. Copies use a temporary sibling then rename, retry interrupted copies at next startup, and retain originals. Run `node --test scripts/data-migration.test.cjs` for isolated migration checks.

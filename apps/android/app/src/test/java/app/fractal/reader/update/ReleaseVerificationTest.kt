@@ -20,11 +20,11 @@ class ReleaseVerificationTest {
     }
     @Test fun parsesAggregateChecksumsAndExactApkNames() {
         val hash = "ab".repeat(32)
-        val name = "Fractal-0.3.0-android-debug.apk"
+        val name = "News-Papers-0.3.0-android-debug.apk"
         val checksums = parseChecksums("$hash  $name\r\n${hash.uppercase()} *latest.yml\n")
         assertEquals(checksums[name], hash)
         assertEquals(checksums["latest.yml"], hash)
-        assertNull(checksums["Fractal-0.2.0-android-debug.apk"])
+        assertNull(checksums["News-Papers-0.2.0-android-debug.apk"])
     }
     @Test fun rejectsMissingMalformedDuplicateAndPathChecksums() {
         val hash = "ab".repeat(32)

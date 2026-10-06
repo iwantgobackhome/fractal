@@ -126,9 +126,9 @@ function AddAccount({ hub, provider, onAdded }: { hub: HubApi; provider: AiAccou
 }
 
 /**
- * Every Codex and Claude sign-in Fractal can use, one of each running at a time. The
+ * Every Codex and Claude sign-in News Papers can use, one of each running at a time. The
  * reader's own terminal login is always there; more accounts sign in through the
- * CLI's browser flow and live in Fractal's data folder.
+ * CLI's browser flow and live in News Papers's data folder.
  */
 export function AccountsPanel({
   hub,

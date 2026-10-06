@@ -21,6 +21,7 @@ for (const name of ['shared', 'hub', 'ui']) {
 }
 const android = readFileSync('apps/android/app/build.gradle.kts', 'utf8');
 assert.equal(android.match(/versionName\s*=\s*"([^"]+)"/)[1], root.version);
+assert.match(android, /applicationId\s*=\s*"app\.newspapers\.reader"/);
 assert.equal(Number(android.match(/versionCode\s*=\s*(\d+)/)[1]), 6);
 if (process.env.GITHUB_REF_TYPE === 'tag') {
   assert.equal(process.env.GITHUB_REF_NAME, `v${root.version}`, 'tag must exactly match every package');
