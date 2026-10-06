@@ -136,6 +136,17 @@ export function PrintView(props: Props): JSX.Element {
     return () => window.cancelAnimationFrame(frame);
   }, [fontsReady, fitted, pageCount]);
 
+  // A page that never finishes measuring (a failed raster) must not block the export forever;
+  // well past the normal fit time, print whatever has been laid out.
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      if (done.current) return;
+      done.current = true;
+      readyRef.current();
+    }, 30_000 + pageCount * 1_500);
+    return () => window.clearTimeout(timer);
+  }, [pageCount]);
+
   const style = { '--print-gap': `${dimensions.gap}px` } as CSSProperties;
   return createPortal(
     <div className={`print-root print-root--${mode}`} style={style} aria-hidden="true">
