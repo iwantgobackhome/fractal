@@ -5,7 +5,7 @@ import { useLanguage } from '../i18n';
 import type { HubApi } from '../shell/hub-api';
 import { ResearchPanel, type ResearchIntent } from './ResearchPanel';
 import { groupThreads, threadKey } from './research-state';
-import { clampCard, defaultPlacement, threadRoot } from './answer-placement';
+import { clampCard, defaultPlacement, mergeLineRegions, threadRoot } from './answer-placement';
 import { renderedRegion } from './useReaderProvenance';
 export interface AnswerAnchor {
   rect: DOMRect;
@@ -158,7 +158,12 @@ export function AnswerPopup({
         Math.abs(c.placement.y - point.y) * pageBox.height < 120,
     ).length;
     if (nearby)
-      point = clampCard({ x: point.x, y: point.y + (nearby * 28) / pageBox.height }, Math.min(420, pageBox.width), Math.min(560, pageBox.height), pageBox);
+      point = clampCard(
+        { x: point.x + (nearby * 32) / pageBox.width, y: point.y + (nearby * 48) / pageBox.height },
+        Math.min(420, pageBox.width),
+        Math.min(560, pageBox.height),
+        pageBox,
+      );
     const placement: AnswerPlacement = {
       page: intent.page,
       ...point,
@@ -279,7 +284,7 @@ function PageCard({
           });
       }
       if (!shown.length && card.source.rect) shown = [renderedRegion({ ...card.source.rect, page: card.source.page }, card.source.provenance, rotation)];
-      if (live) setRegions(shown);
+      if (live) setRegions(mergeLineRegions(shown));
     })();
     return () => {
       live = false;

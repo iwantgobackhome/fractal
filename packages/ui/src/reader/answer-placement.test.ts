@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { HistoryEntry } from '@fractal/shared';
-import { cardPoint, pagePoint, clampCard, defaultPlacement, threadRoot } from './answer-placement';
+import { cardPoint, pagePoint, clampCard, defaultPlacement, mergeLineRegions, threadRoot } from './answer-placement';
 describe('answer card placement', () => {
   const page = { left: 50, top: -100, width: 800, height: 1000 };
   it('round trips page and screen coordinates, including scrolling', () => {
@@ -26,5 +26,17 @@ describe('answer card placement', () => {
     expect(threadRoot([oldest, root])).toBe(root);
     expect(threadRoot([entry('new', '2026-03-01'), oldest])).toBe(oldest);
     expect(threadRoot([])).toBeUndefined();
+  });
+});
+
+describe('mergeLineRegions', () => {
+  it('joins character boxes on one line and keeps separate lines apart', () => {
+    const chars = [0, 0.05, 0.1].map((x) => ({ page: 1, x, y: 0.2, width: 0.04, height: 0.02 }));
+    const next = { page: 1, x: 0, y: 0.25, width: 0.04, height: 0.02 };
+    const merged = mergeLineRegions([...chars, next]);
+    expect(merged).toHaveLength(2);
+    expect(merged[0]).toMatchObject({ x: 0, y: 0.2 });
+    expect(merged[0].height).toBeCloseTo(0.02);
+    expect(merged[0].width).toBeCloseTo(0.14);
   });
 });
