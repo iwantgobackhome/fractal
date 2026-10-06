@@ -1,6 +1,7 @@
 import { Selector } from '../components/Selector';
 import { useCallback, useEffect, useState, type JSX } from 'react';
-import { t } from '../i18n';
+import { t, useLanguage } from '../i18n';
+import { languageSchema } from '@fractal/shared';
 import type { HubApi, Preferences, ProviderStatus, ProvidersResult } from './hub-api';
 import { TRANSLATION_LANGUAGES, UI_LANGUAGES } from './preferences';
 
@@ -85,6 +86,9 @@ export function useProviders(hub: HubApi): { data: Loaded<ProvidersResult>; setD
 
 /** Interface, translation and answer languages. */
 export function LanguageFields({ preferences, onChange }: { preferences: Preferences; onChange(change: Partial<Preferences>): void }): JSX.Element {
+  const ko = useLanguage() === 'ko';
+  const [custom, setCustom] = useState('');
+  const [invalid, setInvalid] = useState(false);
   return (
     <div className="language-fields">
       <div className="field-row">
@@ -116,10 +120,34 @@ export function LanguageFields({ preferences, onChange }: { preferences: Prefere
           id="pref-answer"
           label={t('lang.answer')}
           value={preferences.answerLanguage}
-          options={[{ value: 'auto', label: t('lang.answerAuto') }, ...TRANSLATION_LANGUAGES.map((l) => ({ value: l.code, label: l.name }))]}
+          options={[
+            { value: 'auto', label: t('lang.answerAuto') },
+            ...TRANSLATION_LANGUAGES.map((l) => ({ value: l.code, label: l.name })),
+            ...(!['', 'auto', ...TRANSLATION_LANGUAGES.map((l) => l.code)].includes(preferences.answerLanguage)
+              ? [{ value: preferences.answerLanguage, label: preferences.answerLanguage }]
+              : []),
+          ]}
           onChange={(value) => onChange({ answerLanguage: value })}
         />
       </div>
+      <details className="settings-custom-language">
+        <summary>{ko ? '사용자 지정 답변 언어' : 'Custom answer language'}</summary>
+        <label>
+          {ko ? 'BCP47 언어 코드' : 'BCP47 language tag'}
+          <input aria-label={ko ? 'BCP47 언어 코드' : 'BCP47 language tag'} placeholder="zh-Hant" value={custom} onChange={(e) => setCustom(e.target.value)} />
+        </label>
+        <button
+          type="button"
+          onClick={() => {
+            const parsed = languageSchema.safeParse(custom.trim());
+            setInvalid(!parsed.success);
+            if (parsed.success) onChange({ answerLanguage: parsed.data });
+          }}
+        >
+          {ko ? '언어 적용' : 'Use language'}
+        </button>
+        {invalid ? <p role="alert">{ko ? '유효한 BCP47 언어 코드를 입력하세요.' : 'Enter a valid BCP47 language tag.'}</p> : null}
+      </details>
     </div>
   );
 }

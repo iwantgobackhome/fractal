@@ -18,6 +18,7 @@ import type {
 import { useReaderProvenance } from './reader/useReaderProvenance';
 import { useCatalog } from './shell/PublicationControls';
 import { AnswerPopup, type AnswerAnchor } from './reader/AnswerPopup';
+import { PanelResizeHandle, usePanelWidth } from './reader/PanelResizeHandle';
 import { ResearchPanel, type ResearchIntent } from './reader/ResearchPanel';
 import { HighlightPopover } from './components/HighlightLayer';
 import { KoreanPages, type SelectVia } from './components/KoreanPane';
@@ -221,6 +222,7 @@ export function App(): JSX.Element {
   // The question panel: open or shut, mounted from its first opening, and a passage to quote.
   const [chatOpen, setChatOpen] = useState(false);
   const [chatMounted, setChatMounted] = useState(false);
+  const panelWidth = usePanelWidth();
   const [chatQuote, setChatQuote] = useState<ResearchIntent | null>(null);
   const [answerAnchor, setAnswerAnchor] = useState<AnswerAnchor | null>(null);
   const chatButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -1342,7 +1344,10 @@ export function App(): JSX.Element {
               }
             : {}),
         });
-        setAnswerAnchor({ rect: anchor, element: pageNodes.current.get(item.page) });
+        setAnswerAnchor(null);
+        setChatMounted(true);
+        setChatOpen(true);
+        setPanelTab('questions');
         setCitation(null);
       },
       onCitation: (marker, anchor) => {
@@ -2016,6 +2021,7 @@ export function App(): JSX.Element {
 
             {chatOpen ? <button type="button" className="chat-scrim" aria-label={t('reader.closeQuestions')} tabIndex={-1} onClick={closeChat} /> : null}
             <aside
+              style={panelWidth.style}
               ref={chatDockRef}
               id={CHAT_PANEL_ID}
               className={`chat-dock${chatOpen ? ' is-open' : ''}`}
@@ -2024,6 +2030,7 @@ export function App(): JSX.Element {
               // reachable (it holds the toggle that closes the sheet), so the dialog is not modal.
               role={chatSheet && chatOpen ? 'dialog' : undefined}
             >
+              {!chatSheet && chatOpen ? <PanelResizeHandle width={panelWidth.width} onChange={panelWidth.update} /> : null}
               <div
                 className="panel-tabs"
                 role="tablist"
@@ -2102,7 +2109,8 @@ export function App(): JSX.Element {
                     paperKey={paperKey}
                     open={chatOpen}
                     historyMode={panelTab === 'history'}
-                    intent={null}
+                    answerLanguage={preferences?.answerLanguage || undefined}
+                    intent={chatQuote && !answerAnchor ? chatQuote : null}
                     onClose={closeChat}
                     onQuestion={() => setPanelTab('questions')}
                     onPage={(page) => {
@@ -2133,6 +2141,7 @@ export function App(): JSX.Element {
       {paperKey && chatQuote && answerAnchor ? (
         <AnswerPopup
           key={`${paperKey}:${chatQuote.id}`}
+          answerLanguage={preferences?.answerLanguage || undefined}
           hub={hub}
           paperKey={paperKey}
           intent={chatQuote}

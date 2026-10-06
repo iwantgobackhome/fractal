@@ -10,6 +10,7 @@ export function useResearchRequest(hub: HubApi, paperKey: string) {
       context,
       question,
       requestId,
+      threadId,
       selection,
       answerLanguage,
       explanation,
@@ -19,6 +20,7 @@ export function useResearchRequest(hub: HubApi, paperKey: string) {
       context: ResearchIntent | null;
       question: string;
       requestId: string;
+      threadId: string;
       selection: ModelSelection;
       answerLanguage?: string;
       explanation: boolean;
@@ -33,6 +35,7 @@ export function useResearchRequest(hub: HubApi, paperKey: string) {
               bbox: context.rect,
               surroundingText: context.text,
               requestId,
+              threadId,
               selection,
               ...(context.provenance ? { provenance: context.provenance } : {}),
               ...(answerLanguage ? { answerLanguage } : {}),
@@ -40,6 +43,7 @@ export function useResearchRequest(hub: HubApi, paperKey: string) {
           : hub.ask(paperKey, {
               question: question.trim(),
               requestId,
+              threadId,
               selection,
               ...(answerLanguage ? { answerLanguage } : {}),
               ...(context
