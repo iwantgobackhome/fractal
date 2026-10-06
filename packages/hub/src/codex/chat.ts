@@ -1,3 +1,4 @@
+import { imageMediaType } from '../ai/images';
 import { createHash } from 'node:crypto';
 import { readdir } from 'node:fs/promises';
 import type { AppError, ChatUsage, PaperChat, PaperQuestionInput, PaperQuestionOutput } from '@fractal/shared';
@@ -526,5 +527,5 @@ export class CodexPaperChat implements PaperChat {
 
 /** App-server v2 accepts image data URLs; no temporary files or filesystem tools are needed. */
 export function buildCodexQuestionInput(text: string, images: string[] = []) {
-  return [{ type: 'text', text, text_elements: [] }, ...images.map((data) => ({ type: 'image', url: `data:image/png;base64,${data}` }))];
+  return [{ type: 'text', text, text_elements: [] }, ...images.map((data) => ({ type: 'image', url: `data:${imageMediaType(data)};base64,${data}` }))];
 }

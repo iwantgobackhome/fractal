@@ -435,6 +435,7 @@ async function main(): Promise<void> {
     assert.ok(figureHistory && figureHistory.question.length < 100);
     assert.equal(figureHistory.context.selectedText, undefined);
     assert.equal(figureHistory.answer?.imageInput, 'sent');
+    await page.screenshot({ path: join(process.cwd(), 'packages/ui/qa/image-questions/desktop-attachment-chip.png') });
     console.log('PASS figure explain sends an image and shows an attachment chip with a short question');
     await page.goto(`${url}/#/settings`);
     await page.locator('#settings-ai').waitFor();

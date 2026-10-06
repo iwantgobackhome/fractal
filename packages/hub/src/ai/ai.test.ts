@@ -1,4 +1,3 @@
-import { createCanvas } from '@napi-rs/canvas';
 import { describe, it, expect, vi } from 'vitest';
 import { EventEmitter } from 'node:events';
 import { PassThrough, Readable } from 'node:stream';
@@ -101,7 +100,8 @@ describe('AI providers and routes', () => {
     const registry = new ProviderRegistry([provider], new MemorySettings());
     const bbox = { x: 0.1, y: 0.2, width: 0.3, height: 0.4 };
     const attachment = { page: 2, bbox, kind: 'figure', label: 'Figure 3' };
-    const croppedPngBase64 = createCanvas(32, 32).toBuffer('image/png').toString('base64');
+    const croppedPngBase64 =
+      'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAAKElEQVR4nO3NsQ0AAAzCMP5/un0CNkuZ41wybXsHAAAAAAAAAAAAxR4yw/wuPL6QkAAAAABJRU5ErkJggg==';
     for (const endpoint of ['ask', 'explain']) {
       const result = await handleAi(
         'POST',

@@ -1,12 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { createCanvas, loadImage } from '@napi-rs/canvas';
 import { buildClaudeImageMessage } from './claude';
 import { buildCodexQuestionInput } from '../codex/chat';
 import { prepareQuestionImage } from './images';
 import { ProviderRegistry } from './registry';
 import type { AiProvider, CompleteInput, ProviderDelta } from './provider';
 
-const crop = () => createCanvas(32, 32).toBuffer('image/png').toString('base64');
+const crop = () => 'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAAKElEQVR4nO3NsQ0AAAzCMP5/un0CNkuZ41wybXsHAAAAAAAAAAAAxR4yw/wuPL6QkAAAAABJRU5ErkJggg==';
 describe('image questions', () => {
   it('builds Claude stream-json with PNG image blocks and text', () => {
     expect(JSON.parse(buildClaudeImageMessage('Explain figure', [crop()]))).toEqual({
@@ -26,16 +25,21 @@ describe('image questions', () => {
       { type: 'image', url: 'data:image/png;base64,png' },
     ]);
   });
-  it('caps the longest side and rejects oversized decoded dimensions', async () => {
-    const data = createCanvas(2000, 1000).toBuffer('image/png').toString('base64');
-    const result = Buffer.from(await prepareQuestionImage(data), 'base64');
-    const image = await loadImage(result);
-    expect([image.width, image.height]).toEqual([1600, 800]);
-    expect(result.length).toBeLessThanOrEqual(1_500_000);
-    await expect(prepareQuestionImage('not-png')).rejects.toThrow('Invalid PNG');
+  it('validates headers without changing pixels and rejects excessive dimensions, bytes and malformed base64', async () => {
+    await expect(prepareQuestionImage(crop())).resolves.toBe(crop());
+    await expect(prepareQuestionImage('not-png')).rejects.toThrow('base64');
     const huge = Buffer.from(crop(), 'base64');
-    huge.writeUInt32BE(2000000, 16);
+    huge.writeUInt32BE(4097, 16);
     await expect(prepareQuestionImage(huge.toString('base64'))).rejects.toThrow('dimensions');
+    await expect(prepareQuestionImage(Buffer.alloc(2_000_001).toString('base64'))).rejects.toThrow('2 MB');
+    await expect(prepareQuestionImage(Buffer.from('invalid header').toString('base64'))).rejects.toThrow('PNG or JPEG');
+  });
+  it('accepts JPEG SOF headers and builds both providers with JPEG media types', async () => {
+    const jpeg = Buffer.from([255, 216, 255, 192, 0, 11, 8, 0, 32, 0, 32, 1, 1, 17, 0, 255, 217]).toString('base64');
+    await expect(prepareQuestionImage(jpeg)).resolves.toBe(jpeg);
+    expect(JSON.parse(buildClaudeImageMessage('Question', [jpeg])).message.content[0].source.media_type).toBe('image/jpeg');
+    expect(buildCodexQuestionInput('Question', [jpeg])[1]).toEqual({ type: 'image', url: `data:image/jpeg;base64,${jpeg}` });
+    await expect(prepareQuestionImage(Buffer.from([255, 216, 255, 192, 0, 11]).toString('base64'))).rejects.toThrow('header');
   });
   it('falls back once for an unsupported image model and reports metadata', async () => {
     const seen: CompleteInput[] = [];

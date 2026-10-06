@@ -1,3 +1,4 @@
+import { imageMediaType } from './images';
 import { cliEnvironment, providerInstallCommand } from './cli-paths';
 import { spawn, execFile, type ChildProcessWithoutNullStreams } from 'node:child_process';
 import { createInterface } from 'node:readline';
@@ -43,7 +44,7 @@ export function buildClaudeImageMessage(text: string, images: string[]): string 
       type: 'user',
       message: {
         role: 'user',
-        content: [...images.map((data) => ({ type: 'image', source: { type: 'base64', media_type: 'image/png', data } })), { type: 'text', text }],
+        content: [...images.map((data) => ({ type: 'image', source: { type: 'base64', media_type: imageMediaType(data), data } })), { type: 'text', text }],
       },
     }) + '\n'
   );

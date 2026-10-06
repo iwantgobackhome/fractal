@@ -40,13 +40,26 @@ internal suspend fun withReaderCrop(body: JsonObject, pages: PdfPages?, selected
     val encoded = withContext(Dispatchers.IO) {
         fun n(key: String) = rect[key]?.jsonPrimitive?.floatOrNull ?: 0f
         val crop = source.cropBitmap(selected.first - 1, PdfRect(n("x"), n("y"), n("width"), n("height")), 1400)
-        val scale = minOf(1f, 1600f / maxOf(crop.width, crop.height))
-        val reduced = if (scale < 1f) Bitmap.createScaledBitmap(crop, maxOf(1, (crop.width * scale).toInt()), maxOf(1, (crop.height * scale).toInt()), true) else crop
-        try {
-            val bytes = java.io.ByteArrayOutputStream()
-            reduced.compress(Bitmap.CompressFormat.PNG, 100, bytes)
-            Base64.encodeToString(bytes.toByteArray(), Base64.NO_WRAP).takeIf { it.length <= 4_000_000 }
-        } finally { if (reduced !== crop) reduced.recycle() }
+        var scale = minOf(1f, 1600f / maxOf(crop.width, crop.height))
+        var result: String? = null
+        for (attempt in 0 until 8) {
+            val reduced = if (scale < 1f) Bitmap.createScaledBitmap(crop, maxOf(1, (crop.width * scale).toInt()), maxOf(1, (crop.height * scale).toInt()), true) else crop
+            try {
+                val bytes = java.io.ByteArrayOutputStream()
+                reduced.compress(Bitmap.CompressFormat.PNG, 100, bytes)
+                if (bytes.size() > 1_500_000) {
+                    for (quality in listOf(85, 65, 45)) {
+                        bytes.reset()
+                        reduced.compress(Bitmap.CompressFormat.JPEG, quality, bytes)
+                        if (bytes.size() <= 1_500_000) break
+                    }
+                }
+                if (bytes.size() <= 1_500_000) result = Base64.encodeToString(bytes.toByteArray(), Base64.NO_WRAP)
+            } finally { if (reduced !== crop) reduced.recycle() }
+            if (result != null) break
+            scale *= 0.7f
+        }
+        result
     }
     return if (encoded == null) body else readerBodyWithImage(body, encoded)
 }

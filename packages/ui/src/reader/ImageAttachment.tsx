@@ -7,11 +7,21 @@ export function cropPageCanvas(source: HTMLCanvasElement, box: ImageAttachment['
   const width = Math.max(1, Math.round(source.width * box.width)),
     height = Math.max(1, Math.round(source.height * box.height));
   const scale = Math.min(1, 1600 / Math.max(width, height));
-  const canvas = document.createElement('canvas');
-  canvas.width = Math.max(1, Math.round(width * scale));
-  canvas.height = Math.max(1, Math.round(height * scale));
-  canvas.getContext('2d')?.drawImage(source, source.width * box.x, source.height * box.y, width, height, 0, 0, canvas.width, canvas.height);
-  return canvas.toDataURL('image/png').split(',')[1];
+  let factor = scale;
+  for (let attempt = 0; attempt < 8; attempt++) {
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(width * factor));
+    canvas.height = Math.max(1, Math.round(height * factor));
+    canvas.getContext('2d')?.drawImage(source, source.width * box.x, source.height * box.y, width, height, 0, 0, canvas.width, canvas.height);
+    const png = canvas.toDataURL('image/png').split(',')[1];
+    if ((png.length * 3) / 4 <= 1_500_000) return png;
+    for (const quality of [0.85, 0.65, 0.45]) {
+      const jpeg = canvas.toDataURL('image/jpeg', quality).split(',')[1];
+      if ((jpeg.length * 3) / 4 <= 1_500_000) return jpeg;
+    }
+    factor *= 0.7;
+  }
+  return undefined;
 }
 
 /** Render from the PDF, including when the original page has scrolled out of the viewport. */
@@ -48,7 +58,7 @@ export function ImageAttachmentChip({ paperKey, attachment }: { paperKey: string
   }, [paperKey, attachment.page, attachment.bbox.x, attachment.bbox.y, attachment.bbox.width, attachment.bbox.height]);
   return (
     <span className="research-image-attachment" data-testid="image-attachment-chip">
-      {png ? <img src={`data:image/png;base64,${png}`} alt="" /> : <span aria-hidden="true">📎</span>}
+      {png ? <img src={`data:${png.startsWith('/9j/') ? 'image/jpeg' : 'image/png'};base64,${png}`} alt="" /> : <span aria-hidden="true">📎</span>}
       <span>
         {attachment.label} · p.{attachment.page}
       </span>
