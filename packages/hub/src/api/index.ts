@@ -434,6 +434,8 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
       const result = await route_(method, segments, request, { devices: options.devices, pairing: options.pairing, network: options.network, local, url });
       if (result.kind === 'json') {
         send(response, result.status, { data: result.data });
+      } else if (result.kind === 'sync-sse') {
+        result.start(response);
       } else if (result.kind === 'sse') {
         response.writeHead(200, { ...baseHeaders(), 'content-type': 'text/event-stream; charset=utf-8', connection: 'keep-alive' });
         try {

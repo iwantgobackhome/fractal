@@ -8,13 +8,14 @@ import kotlinx.serialization.json.*
 import java.time.Instant
 import java.util.UUID
 
-class SyncEngine(private val database: FractalDatabase, private val client: HubDataClient) {
+class SyncEngine(private val database: FractalDatabase, private val client: HubDataClient, private val onLocalChange: (String) -> Unit = {}) {
     companion object { private val syncMutex = Mutex() }
     var lastWarning: String? = null
         private set
 
     suspend fun saveLocal(value: JsonObject) {
         database.annotations().upsert(WireJson.annotationEntity(value, dirty = true))
+        value.text("paperKey")?.let(onLocalChange)
     }
 
     /** Import direct bookmark/link responses through the same pending-edit projection as pulls. */

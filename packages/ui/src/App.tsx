@@ -1,3 +1,4 @@
+import { debouncedRefresh } from './lib/realtime-refresh';
 import { UpdateToast } from './updates/UpdateToast';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type JSX, type RefObject } from 'react';
 import type {
@@ -1169,6 +1170,12 @@ export function App(): JSX.Element {
     let cancelled = false;
     const load = () => {
       if (document.visibilityState !== 'visible') return;
+      client
+        .listHighlights(paperKey)
+        .then((items) => {
+          if (!cancelled) setHighlights(items);
+        })
+        .catch(() => undefined);
       hub
         .annotations(paperKey)
         .then((list) => {
@@ -1182,9 +1189,37 @@ export function App(): JSX.Element {
         .catch(() => undefined);
     };
     load();
-    const timer = window.setInterval(load, 10_000);
+    const controller = new AbortController();
+    let connected = false;
+    const refresh = debouncedRefresh(load);
+    let retry: number | undefined;
+    let backoff = 1000;
+    const changed = refresh.notify;
+    const connect = () => {
+      hub
+        .syncEvents(paperKey, controller.signal, changed, () => {
+          connected = true;
+          backoff = 1000;
+          load();
+        })
+        .catch(() => undefined)
+        .finally(() => {
+          connected = false;
+          if (!cancelled) {
+            retry = window.setTimeout(connect, backoff);
+            backoff = Math.min(backoff * 2, 30_000);
+          }
+        });
+    };
+    connect();
+    const timer = window.setInterval(() => {
+      if (!connected) load();
+    }, 10_000);
     return () => {
       cancelled = true;
+      controller.abort();
+      refresh.cancel();
+      window.clearTimeout(retry);
       window.clearInterval(timer);
     };
   }, [paperKey]);
