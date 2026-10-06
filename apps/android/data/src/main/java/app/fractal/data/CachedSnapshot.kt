@@ -17,6 +17,8 @@ fun translatedBlocks(snapshot: JsonObject): List<TranslatedBlock> {
         val text = value.text("text")
         if (value.text("status") == "completed" && !text.isNullOrBlank()) id to text else null
     }.toMap()
+    // Media crops accompany a translation; with nothing translated there is no translated view.
+    if (translations.isEmpty()) return emptyList()
     return (snapshot["blocks"] as? JsonArray).orEmpty().sortedBy {
         it.jsonObject.text("order")?.toIntOrNull() ?: Int.MAX_VALUE
     }.mapNotNull {
@@ -37,9 +39,13 @@ fun translatedBlocks(snapshot: JsonObject): List<TranslatedBlock> {
                 val height = number("height")?.coerceIn(0f, 1f - y) ?: return@mapNotNull null
                 if (width <= 0f || height <= 0f) null else TranslatedRegion(physicalPage, x, y, width, height)
             }
-            return@mapNotNull regions.takeIf { it.isNotEmpty() }?.let { TranslatedBlock(id, it.first().page, kind, "", false, it) }
+            // The hub stores one region per extracted line; one crop per physical page reads as the figure.
+            val crops = regions.groupBy { it.page }.map { (physicalPage, onPage) ->
+                val left = onPage.minOf { it.x }; val top = onPage.minOf { it.y }
+                TranslatedRegion(physicalPage, left, top, onPage.maxOf { it.x + it.width } - left, onPage.maxOf { it.y + it.height } - top)
+            }
+            return@mapNotNull crops.takeIf { it.isNotEmpty() }?.let { TranslatedBlock(id, it.first().page, kind, "", false, it) }
         }
-        if (translations.isEmpty()) return@mapNotNull null
         val text = translations[id] ?: block.text("sourceText")
         if (text.isNullOrBlank()) null else TranslatedBlock(id, page, block.text("kind").orEmpty(), text, translations[id] != null)
     }

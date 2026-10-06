@@ -51,8 +51,15 @@ class MetadataMergeTest {
         assertEquals(blocks[2].text, "Translated caption")
         assertFalse(blocks[0].translated)
         assertTrue(blocks.filter { it.isSourceCrop }.all { it.text.isEmpty() && !it.translated })
-        assertEquals(translatedBlocks(JsonObject(snapshot + ("translations" to JsonArray(emptyList())))).map { it.blockId },
-            listOf("figure", "table", "equation", "unsupported"))
+        assertEquals(translatedBlocks(JsonObject(snapshot + ("translations" to JsonArray(emptyList())))), emptyList<TranslatedBlock>())
+    }
+    @Test fun lineRegionsOfOneFigureBecomeOneCropPerPage() {
+        val snapshot = json("""{"blocks":[
+            {"blockId":"eq","order":1,"kind":"equation","regions":[{"page":4,"x":0.2,"y":0.5,"width":0.3,"height":0.02},{"page":4,"x":0.1,"y":0.53,"width":0.5,"height":0.02}]}
+        ],"translations":[{"blockId":"other","status":"completed","text":"x"}]}""")
+        assertEquals(translatedBlocks(snapshot).single().regions.single().let { listOf(it.page.toFloat(), it.x, it.y) }, listOf(4f, .1f, .5f))
+        val crop = translatedBlocks(snapshot).single().regions.single()
+        assertEquals(.5f, crop.width, 1e-5f); assertEquals(.05f, crop.height, 1e-5f)
     }
 
 }
