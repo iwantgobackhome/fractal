@@ -40,9 +40,14 @@ import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.layout.positionInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.findRootCoordinates
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.graphics.Path
@@ -59,6 +64,8 @@ import app.fractal.ink.InkCanvas
 import app.fractal.ink.InkPageState
 import app.fractal.ink.InkStroke
 import app.fractal.ink.InkToolState
+import app.fractal.pdf.PdfRenderBudget
+import app.fractal.pdf.PdfTileSpec
 import app.fractal.pdf.PdfPages
 import app.fractal.pdf.PdfRect
 import app.fractal.pdf.PdfTextSelection
@@ -69,6 +76,9 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+
+internal val PdfTilePageWidth = SemanticsPropertyKey<Int>("PdfTilePageWidth")
+internal val PdfTilePixels = SemanticsPropertyKey<Int>("PdfTilePixels")
 
 @Composable
 fun PdfPage(
@@ -146,32 +156,49 @@ fun PdfPage(
         // Page dimensions are available before bitmap rendering; do not lay out a guessed ratio.
         val aspect = remember(source, index) { source.aspectRatio(index) }
         var bitmap by remember(source, index) { mutableStateOf<android.graphics.Bitmap?>(null) }
-        LaunchedEffect(source, index) {
+        // Keep one viewport-width base at every zoom; a late base render cannot downgrade it.
+        val baseWidthPx = viewportWidthPx.roundToInt()
+        LaunchedEffect(source, index, baseWidthPx) {
+            if (bitmap != null) kotlinx.coroutines.delay(200)
             try {
-                bitmap = withContext(Dispatchers.IO) {
+                val rendered = withContext(Dispatchers.IO) {
                     val context = kotlinx.coroutines.currentCoroutineContext()
-                    source.bitmap(index, viewportWidthPx.roundToInt()) { context.ensureActive() }
+                    source.bitmap(index, baseWidthPx) { context.ensureActive() }
                 }
-            } catch (_: OutOfMemoryError) { /* Leave any displayed raster intact under heap pressure. */ }
+                if (bitmap == null || rendered.width >= bitmap!!.width) bitmap = rendered
+            } catch (_: OutOfMemoryError) { /* Keep the displayed base under heap pressure. */ }
         }
-        LaunchedEffect(source, index, widthPx) {
+        var visibleTile by remember(source, index) { mutableStateOf<PdfTileSpec?>(null) }
+        var tile by remember(source, index) { mutableStateOf<Pair<PdfTileSpec, android.graphics.Bitmap>?>(null) }
+        LaunchedEffect(source, index, zoom, visibleTile) {
+            val spec = visibleTile ?: return@LaunchedEffect
+            if (zoom <= 1f) return@LaunchedEffect
             kotlinx.coroutines.delay(200)
             try {
-                bitmap = withContext(Dispatchers.IO) {
+                val rendered = withContext(Dispatchers.IO) {
                     val context = kotlinx.coroutines.currentCoroutineContext()
-                    source.bitmap(index, widthPx) { context.ensureActive() }
+                    source.tileBitmap(index, spec) { context.ensureActive() }
                 }
-            } catch (_: OutOfMemoryError) { /* Keep the previous raster if even the fallback cannot allocate. */ }
+                tile = spec to rendered
+            } catch (_: OutOfMemoryError) { /* The scaled base and previous tile remain visible. */ }
         }
         val height = width / aspect
         Box(Modifier.fillMaxWidth().height(height).clipToBounds()) {
             // Allow the zoomed page its real width; clipping belongs to the viewport, not the page.
             Box(Modifier.offset { IntOffset(boundedPan.roundToInt(), 0) }
                 .wrapContentSize(Alignment.TopStart, unbounded = true)
-                .width(width).height(height).border(.5.dp, colors.rule).background(colors.surface)) {
-                bitmap?.let { rendered ->
-                    Image(rendered.asImageBitmap(), null, Modifier.matchParentSize().testTag("pdf-page-${index + 1}-bitmap"),
-                        colorFilter = if (colors.paper.red < .3f) {
+                .width(width).height(height).onGloballyPositioned { coordinates ->
+                    val origin = coordinates.positionInWindow()
+                    val bounds = androidx.compose.ui.geometry.Rect(origin.x, origin.y, origin.x + coordinates.size.width, origin.y + coordinates.size.height)
+                    val viewport = nativeViewport?.let { androidx.compose.ui.geometry.Rect(it.left.toFloat(), it.top.toFloat(), it.right.toFloat(), it.bottom.toFloat()) }
+                        ?: coordinates.findRootCoordinates().boundsInWindow()
+                    val intersection = bounds.intersect(viewport)
+                    visibleTile = if (intersection.width <= 0 || intersection.height <= 0) null else PdfRenderBudget.tile(
+                        widthPx, with(density) { height.roundToPx() },
+                        (intersection.left - bounds.left).roundToInt(), (intersection.top - bounds.top).roundToInt(),
+                        intersection.width.roundToInt(), intersection.height.roundToInt())
+                }.border(.5.dp, colors.rule).background(colors.surface)) {
+                val paperFilter = if (colors.paper.red < .3f) {
                             ColorFilter.colorMatrix(ColorMatrix(floatArrayOf(
                                 -.8f, 0f, 0f, 0f, 255f,
                                 0f, -.8f, 0f, 0f, 255f,
@@ -185,7 +212,20 @@ fun PdfPage(
                                 0f, 0f, .72f, 0f, 28f,
                                 0f, 0f, 0f, 1f, 0f,
                             )))
-                        } else null)
+                        } else null
+                bitmap?.let { rendered ->
+                    Image(rendered.asImageBitmap(), null, Modifier.matchParentSize().testTag("pdf-page-${index + 1}-bitmap"),
+                        colorFilter = paperFilter)
+                }
+                if (zoom > 1f) tile?.let { (spec, rendered) ->
+                    val x = width * (spec.left.toFloat() / spec.pageWidth)
+                    val y = height * (spec.top.toFloat() / spec.pageHeight)
+                    Image(rendered.asImageBitmap(), null,
+                        Modifier.offset(x, y).size(width * (spec.width.toFloat() / spec.pageWidth), height * (spec.height.toFloat() / spec.pageHeight))
+                            .testTag("pdf-page-${index + 1}-tile").semantics {
+                                this[PdfTilePageWidth] = spec.pageWidth
+                                this[PdfTilePixels] = rendered.width * rendered.height
+                            }, colorFilter = paperFilter)
                 }
                 Canvas(Modifier.matchParentSize()) {
                     highlights.forEach { row ->

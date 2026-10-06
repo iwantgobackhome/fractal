@@ -34,6 +34,7 @@ data class PdfTextSelection(
 
 /** Bitmap cache is bounded by bytes; a width change renders a fresh page. */
 class PdfPages(file: File, memoryClassMb: Int = (Runtime.getRuntime().maxMemory() / (1024 * 1024)).toInt()) : Closeable {
+    private val renderMemoryClassMb = memoryClassMb
     private val pagePixels = PdfRenderBudget.pagePixels(memoryClassMb)
     private val sourceFile = file
     private val openedLength = file.length()
@@ -68,7 +69,7 @@ class PdfPages(file: File, memoryClassMb: Int = (Runtime.getRuntime().maxMemory(
     fun bitmap(index: Int, widthPx: Int, checkActive: () -> Unit = {}): Bitmap {
         checkActive()
         renderer.openPage(index).use { page ->
-            var safeWidth = PdfRenderBudget.width(widthPx, page.width.toFloat() / page.height, pagePixels)
+            var safeWidth = PdfRenderBudget.baseWidth(widthPx, page.width.toFloat() / page.height, renderMemoryClassMb)
             while (true) {
                 checkActive()
                 val key = "$index:$safeWidth"
@@ -87,6 +88,35 @@ class PdfPages(file: File, memoryClassMb: Int = (Runtime.getRuntime().maxMemory(
                     bitmaps.evictAll()
                     if (safeWidth <= 32) throw error
                     safeWidth = (safeWidth / 2).coerceAtLeast(32)
+                } catch (error: Throwable) { rendered?.recycle(); throw error }
+            }
+        }
+    }
+
+    /** Tiles are not cached: only the currently displayed tile and its replacement stay alive. */
+    @Synchronized
+    fun tileBitmap(index: Int, spec: PdfTileSpec, checkActive: () -> Unit = {}): Bitmap {
+        checkActive()
+        renderer.openPage(index).use { page ->
+            var divisor = 1
+            while (true) {
+                checkActive()
+                var rendered: Bitmap? = null
+                try {
+                    val bitmap = Bitmap.createBitmap(max(1, spec.width / divisor), max(1, spec.height / divisor), Bitmap.Config.ARGB_8888)
+                    rendered = bitmap
+                    bitmap.eraseColor(Color.WHITE)
+                    val scale = spec.pageWidth.toFloat() / page.width / divisor
+                    val matrix = android.graphics.Matrix().apply {
+                        setScale(scale, scale)
+                        postTranslate(-spec.left.toFloat() / divisor, -spec.top.toFloat() / divisor)
+                    }
+                    page.render(bitmap, android.graphics.Rect(0, 0, bitmap.width, bitmap.height), matrix, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+                    return bitmap
+                } catch (error: OutOfMemoryError) {
+                    rendered?.recycle(); bitmaps.evictAll()
+                    if (max(spec.width, spec.height) / divisor <= 32) throw error
+                    divisor *= 2
                 } catch (error: Throwable) { rendered?.recycle(); throw error }
             }
         }

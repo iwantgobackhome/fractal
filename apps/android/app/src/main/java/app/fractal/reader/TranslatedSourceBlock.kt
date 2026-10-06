@@ -25,7 +25,7 @@ internal fun TranslatedSourceBlock(block: TranslatedBlock, pages: PdfPages?) {
     Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp)) {
         block.regions.forEach { region ->
             BoxWithConstraints(Modifier.fillMaxWidth().background(Color.White)) {
-                val cropWidth = maxWidth * region.width.coerceIn(.01f, 1f)
+                val cropWidth = minOf(maxWidth, maxWidth * region.width.coerceIn(.01f, 1f) * 1.6f)
                 val widthPx = with(LocalDensity.current) { cropWidth.roundToPx().coerceAtLeast(1) }
                 var bitmap by remember(pages, region, widthPx) { mutableStateOf<Bitmap?>(null) }
                 var failed by remember(pages, region, widthPx) { mutableStateOf(false) }

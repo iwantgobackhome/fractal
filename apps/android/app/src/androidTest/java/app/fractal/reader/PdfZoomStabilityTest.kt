@@ -40,6 +40,7 @@ class PdfZoomStabilityTest {
             }
         }
         compose.waitUntil(15000) { (1..3).all { compose.onAllNodesWithTag("pdf-page-$it-bitmap").fetchSemanticsNodes().isNotEmpty() } }
+        val fittedWidth = compose.onNodeWithTag("pdf-page-1-bitmap").fetchSemanticsNode().boundsInRoot.width.toInt()
         fun pss(): Int = android.os.Debug.MemoryInfo().also { android.os.Debug.getMemoryInfo(it) }.totalPss
         val before = pss()
         var peak = before
@@ -54,11 +55,23 @@ class PdfZoomStabilityTest {
             compose.runOnUiThread { zoom = if (step % 2 == 0) 4f else .5f }
             compose.mainClock.advanceTimeByFrame()
             (1..3).forEach { compose.onNodeWithTag("pdf-page-$it-bitmap").assertExists() }
-            assertFalse(pages.bitmap(step % 3, (800 * zoom).toInt()).isRecycled)
+            assertFalse(pages.bitmap(step % 3, 800).isRecycled)
             peak = maxOf(peak, pss())
         }
         compose.mainClock.autoAdvance = true
         compose.waitForIdle()
+        compose.runOnIdle { zoom = 3f }
+        compose.waitUntil(15000) { compose.onAllNodesWithTag("pdf-page-1-tile").fetchSemanticsNodes().any { it.config[PdfTilePageWidth] == fittedWidth * 3 } }
+        compose.onNodeWithTag("pdf-page-1-tile").assertExists()
+        compose.runOnIdle { zoom = 4f }
+        compose.mainClock.advanceTimeBy(300)
+        compose.waitForIdle()
+        compose.waitUntil(15000) { compose.onAllNodesWithTag("pdf-page-1-tile").fetchSemanticsNodes().any { it.config[PdfTilePageWidth] == fittedWidth * 4 } }
+        val pixels = compose.onNodeWithTag("pdf-page-1-tile").fetchSemanticsNode().config[PdfTilePixels]
+        assertTrue(pixels <= compose.activity.window.decorView.width * compose.activity.window.decorView.height)
+        peak = maxOf(peak, pss())
+        dump("zoom4")
+        android.util.Log.i("PdfZoomStability", "zoom1PssKb=$before zoom4PssKb=${pss()}")
         dump("after")
         android.util.Log.i("PdfZoomStability", "30 zoom changes completed; beforePssKb=$before peakPssKb=$peak afterPssKb=${pss()}")
         // Dispose consumers before closing the renderer.
