@@ -631,7 +631,7 @@ private class DryInkView(context: Context) : View(context) {
     }
     private fun rebuild() {
         if (width <= 0 || height <= 0) return
-        highlights?.recycle(); ink?.recycle()
+        // Never recycle: RenderThread can still be drawing a recorded frame that references the old cache.
         highlights = null; ink = null
         val visible = current.filterNot { it.deleted || it.points.isEmpty() || (preview != null && it.id in selected) }
         if (visible.isNotEmpty()) {
@@ -651,7 +651,7 @@ private class DryInkView(context: Context) : View(context) {
         drawStroke(canvas, stroke)
     }
     override fun onDetachedFromWindow() {
-        highlights?.recycle(); ink?.recycle(); highlights = null; ink = null
+        highlights = null; ink = null
         super.onDetachedFromWindow()
     }
     override fun onAttachedToWindow() { super.onAttachedToWindow(); if (current.isNotEmpty()) rebuild() }
