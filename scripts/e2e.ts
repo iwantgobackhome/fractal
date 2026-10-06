@@ -228,10 +228,20 @@ async function main(): Promise<void> {
     await page.locator('.selection-menu button').filter({ hasText: '질문' }).click();
     const popup = page.locator('.answer-popup');
     await popup.waitFor();
-    await popup.locator('.history-entry .md').filter({ hasText: 'The result is' }).waitFor();
-    assert.match(await popup.locator('.history-entry__status').innerText(), /작성 중/);
-    await popup.locator('.history-entry .md').filter({ hasText: 'forty two' }).waitFor();
-    console.log('PASS text drag Ask opens a popup with a streamed answer');
+    // Ask attaches the passage to the next question instead of sending it.
+    await popup.locator('.research-attachment').filter({ hasText: 'The measured res' }).waitFor();
+    assert.equal(await popup.locator('.research-turn').count(), 0);
+    const question = popup.getByRole('textbox', { name: '질문', exact: true });
+    await question.fill('What is the measured result?');
+    await popup.locator('button[type="submit"]').click();
+    await popup.locator('.research-turn__user').filter({ hasText: 'What is the measured result?' }).waitFor();
+    await popup.locator('.research-turn__quote').first().waitFor();
+    assert.equal(await question.inputValue(), '');
+    assert.equal(await popup.locator('.research-attachment').count(), 0);
+    await popup.locator('.research-turn .md').filter({ hasText: 'The result is' }).waitFor();
+    assert.match(await popup.locator('.research-turn__answer [role="status"]').first().innerText(), /작성 중/);
+    await popup.locator('.research-turn .md').filter({ hasText: 'forty two' }).waitFor();
+    console.log('PASS text drag Ask attaches a quote; sending streams an answer and clears the input');
 
     const before = await popup.boundingBox();
     const heading = await popup.locator('.answer-popup__header strong').boundingBox();
@@ -277,16 +287,19 @@ async function main(): Promise<void> {
     assert.equal(await popup.locator('.answer-popup__content').isVisible(), true);
     console.log('PASS popup model list stays open across reader updates');
 
-    await popup.getByRole('textbox', { name: '질문', exact: true }).fill('Why is that the result?');
+    await question.fill('Why is that the result?');
+    // Editing the input never hides earlier turns.
+    assert.equal(await popup.locator('.research-turn').count(), 1);
     await popup.locator('button[type="submit"]').click();
-    await popup.locator('.history-entry h3').filter({ hasText: 'Why is that the result?' }).waitFor();
-    await popup.locator('.history-entry .md').filter({ hasText: 'forty two' }).waitFor();
-    console.log('PASS popup accepts an in-place follow-up');
+    await popup.locator('.research-turn__user').filter({ hasText: 'Why is that the result?' }).waitFor();
+    await page.waitForFunction(() => document.querySelectorAll('.answer-popup .research-turn .md').length >= 2);
+    assert.equal(await popup.locator('.research-turn').count(), 2);
+    console.log('PASS popup follow-up joins the same conversation');
     await popup.getByRole('button', { name: '답변 닫기', exact: true }).click();
     await page.locator('.reader-bar__action[aria-controls]').first().click();
     await page.locator('.panel-tabs [role="tab"]').filter({ hasText: '기록' }).click();
-    await page.locator('.research-panel .history-entry h3').filter({ hasText: 'Why is that the result?' }).waitFor();
-    console.log('PASS popup answers remain in research history');
+    await page.locator('.research-panel .research-thread').filter({ hasText: 'What is the measured result?' }).filter({ hasText: '2' }).waitFor();
+    console.log('PASS popup conversation is listed in research history');
     await page.locator('.research-panel > header button').click();
 
     const highlightBox = await page.locator('.highlight-box').first().boundingBox();
