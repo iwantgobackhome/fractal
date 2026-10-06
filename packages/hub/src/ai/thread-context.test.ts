@@ -25,6 +25,11 @@ function entry(id: number, patch: Partial<HistoryEntry> = {}): HistoryEntry {
   };
 }
 describe('thread context', () => {
+  it('continues a legacy single-shot entry whose id became the thread id', () => {
+    const legacy = entry(1, { id: 'legacy', context: {} });
+    const followUp = entry(2, { context: { threadId: 'legacy' } });
+    expect(threadContext([followUp, legacy], 'paper', 'legacy').filter((m) => m.role === 'user').map((m) => m.content)).toEqual(['Question 1', 'Question 2']);
+  });
   it('orders matching completed turns and excludes the current request and unrelated or unsettled entries', () => {
     const entries = [
       entry(2),

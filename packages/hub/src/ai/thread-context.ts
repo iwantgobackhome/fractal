@@ -11,7 +11,7 @@ export function threadContext(entries: readonly HistoryEntry[], paperKey: string
     .filter(
       (entry) =>
         entry.paperKey === paperKey &&
-        entry.context.threadId === threadId &&
+        (entry.context.threadId === threadId || entry.id === threadId) &&
         entry.status === 'completed' &&
         !entry.deleted &&
         (entry.kind === 'question' || entry.kind === 'explanation') &&
