@@ -266,6 +266,38 @@ describe('actual HTTP original provenance and reader prerequisites', () => {
     expect(h.prompts).toHaveLength(globalCalls); // replay is the original completed answer, independent of later global preferences
   });
 
+  it('round-trips ask/explain thread IDs through restart, history and sync and supplies earlier messages', async () => {
+    const h = await harness();
+    await h.link();
+    await h.ask({ question: 'First turn', threadId: 'thread-a', requestId: 'thread-first', selectedText: 'A quotation' });
+    const first = h.store.listHistory(h.key)[0];
+    expect(first.context.threadId).toBe('thread-a');
+    await h.restart();
+    expect((await (await h.get(`/api/papers/${h.key}/history`)).json()).data.history).toContainEqual(first);
+    expect((await (await h.get('/api/sync/pull?since=0')).json()).data.history).toContainEqual(first);
+    const imported = { ...first, id: 'offline-turn', requestId: 'offline-request', deviceId: 'tablet', question: 'Offline turn' };
+    const push = await h.post('/api/sync/push', { annotations: [], history: [{ entry: imported, baseRev: 0, requestId: 'import-thread' }] });
+    expect(push.status).toBe(200);
+    expect((await push.json()).data.metadataResults[0].current.context.threadId).toBe('thread-a');
+    expect((await (await h.get('/api/sync/pull?since=0')).json()).data.history).toContainEqual(h.store.getHistory(imported.id));
+    const explain = await h.post(`/api/papers/${h.key}/explain`, { kind: 'text', page: 1, bbox: rect, threadId: 'thread-a', requestId: 'thread-explain' });
+    expect(await explain.text()).toContain('event: done');
+    expect(h.store.listHistory(h.key).find((e) => e.kind === 'explanation')!.context.threadId).toBe('thread-a');
+    expect(h.prompts.at(-1)!.messages).toHaveLength(5);
+    expect(
+      h.prompts
+        .at(-1)!
+        .messages.map((m) => m.content)
+        .join('\n'),
+    ).toContain('First turn\nSelected text: A quotation');
+    const question = 'q'.repeat(4000);
+    await h.ask({ question, threadId: 'thread-a', requestId: 'thread-follow-up' });
+    expect(h.prompts.at(-1)!.messages.at(-1)!.content).toBe(question);
+    expect(h.prompts.at(-1)!.messages.some((m) => m.content === 'Explain text on page 1')).toBe(true);
+    await h.ask({ question: 'Single shot', requestId: 'single-shot' });
+    expect(h.prompts.at(-1)!.messages).toEqual([{ role: 'user', content: 'Single shot' }]);
+  });
+
   it('keeps figure/later-paragraph citations page-only when passage linkage is unestablished', async () => {
     const h = await harness();
     await h.link();
