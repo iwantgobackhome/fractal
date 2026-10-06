@@ -38,6 +38,21 @@ export const historyChatMessageSchema = z.object({
   usage: z.object({ inputTokens: z.number().nullable(), cachedInputTokens: z.number().nullable(), outputTokens: z.number().nullable() }).nullable(),
 });
 
+/**
+ * Where a conversation's answer card sits on the paper. Stored on the thread's root entry
+ * (the entry whose id is the threadId, else its oldest turn). x/y are the card's top-left in
+ * the page's own [0,1] coordinates, so the card scrolls with the page. `dismissed` removes the
+ * card from the page; the conversation stays in History.
+ */
+export const answerPlacementSchema = z.object({
+  page: z.number().int().positive(),
+  x: z.number().min(0).max(1),
+  y: z.number().min(0).max(1),
+  state: z.enum(['open', 'collapsed', 'dismissed']),
+  updatedAt: z.string().datetime(),
+});
+export type AnswerPlacement = z.infer<typeof answerPlacementSchema>;
+
 /** A durable request, independent of whether its stream or panel is open. */
 export const historyEntrySchema = z.object({
   id: z.string().min(1),
@@ -68,6 +83,7 @@ export const historyEntrySchema = z.object({
   error: historyErrorSchema.nullable(),
   /** Legacy /chat history keeps the original messages and IDs intact. */
   conversation: z.object({ conversationId: z.string(), messages: z.array(historyChatMessageSchema) }).optional(),
+  placement: answerPlacementSchema.optional(),
   rev: z.number().int().nonnegative(),
   deviceId: z.string().min(1),
   deleted: z.boolean(),
