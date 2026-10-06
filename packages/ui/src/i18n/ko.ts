@@ -106,6 +106,11 @@ export const ko = {
     closeLabel: '닫기',
   },
   settings: {
+    about: '정보 / 버전',
+    version: '버전 {version}',
+    checkUpdates: '업데이트 확인',
+    checkingUpdates: '업데이트 확인 중…',
+    upToDate: '최신 버전입니다',
     index: '설정 항목',
     language: '언어',
     appearance: '외관',

@@ -39,11 +39,13 @@ if (!app.requestSingleInstanceLock()) {
     if (window && !window.isDestroyed()) window.webContents.send('fractal:update', event);
   }
   async function checkUpdates() {
-    if (!updater || downloadPromise || updateDownloaded) return;
+    if (!updater) return;
+    if (downloadPromise || updateDownloaded) return availableUpdate ? { status: 'available', version: availableUpdate.version } : undefined;
     try {
       await updater.checkForUpdates();
-    } catch {
-      /* electron-updater emits error */
+      return availableUpdate ? { status: 'available', version: availableUpdate.version } : { status: 'current' };
+    } catch (error) {
+      return { status: 'error', error: error instanceof Error ? error.message : String(error) };
     }
   }
   // macOS builds are unsigned, so Squirrel.Mac cannot apply updates; announce new releases and open the download page.
@@ -64,14 +66,18 @@ if (!app.requestSingleInstanceLock()) {
           const response = await fetch(RELEASES, { headers: { accept: 'application/vnd.github+json' }, signal: AbortSignal.timeout(15000) });
           if (!response.ok) throw new Error(`GitHub ${response.status}`);
           const release = await response.json();
-          if (release.draft || release.prerelease || !newerVersion(release.tag_name, app.getVersion())) return;
+          if (release.draft || release.prerelease || !newerVersion(release.tag_name, app.getVersion())) {
+            updateAvailable = false;
+            availableUpdate = undefined;
+            return;
+          }
           const version = String(release.tag_name).replace(/^v/, '');
           releasePage = `https://github.com/iwantgobackhome/news-papers/releases/tag/v${version}`;
           updateAvailable = true;
           availableUpdate = { version, manual: true };
           sendUpdate('update-available', availableUpdate);
-        } catch {
-          /* offline or rate-limited: try again at the next check */
+        } catch (error) {
+          throw error;
         }
       },
       async downloadUpdate() {
@@ -112,6 +118,10 @@ if (!app.requestSingleInstanceLock()) {
       availableUpdate = { version: info.version, notes: typeof info.releaseNotes === 'string' ? info.releaseNotes : undefined };
       sendUpdate('update-available', availableUpdate);
     });
+    updater.on('update-not-available', () => {
+      updateAvailable = false;
+      availableUpdate = undefined;
+    });
     updater.on('download-progress', ({ percent }) => sendUpdate('download-progress', { percent }));
     updater.on('update-downloaded', () => {
       updateDownloaded = true;
@@ -147,7 +157,8 @@ if (!app.requestSingleInstanceLock()) {
   }
   const headless = process.argv.includes('--headless');
   const icon = nativeImage.createFromPath(join(__dirname, 'assets', 'icon-256.png'));
-  const trayIcon = nativeImage.createFromPath(join(__dirname, 'assets', 'icon-32.png'));
+  const trayIcon = nativeImage.createFromPath(join(__dirname, 'assets', process.platform === 'darwin' ? 'trayTemplate.png' : 'tray-color.png'));
+  if (process.platform === 'darwin') trayIcon.setTemplateImage(true);
   function openWindow() {
     if (headless) return;
     if (window) {
@@ -166,7 +177,7 @@ if (!app.requestSingleInstanceLock()) {
         nodeIntegration: false,
         sandbox: true,
         preload: join(__dirname, 'preload.cjs'),
-        additionalArguments: updater ? ['--fractal-updates'] : [],
+        additionalArguments: [`--fractal-version=${app.getVersion()}`, ...(updater ? ['--fractal-updates'] : [])],
       },
     });
     window.on('minimize', () => window.hide());

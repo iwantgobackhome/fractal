@@ -60,3 +60,27 @@ Before promoting that draft, download and verify the files and manifests, inspec
 For the 0.2.x → 0.3 transition, publish an identical APK alias named `Fractal-${version}-android-debug.apk` alongside `News-Papers-${version}-android-debug.apk`. Old Android clients require the legacy name to discover and verify the download. Both names must appear in `SHA256SUMS-android.txt` and aggregate `SHA256SUMS.txt`, with identical hashes; the verifier requires this one alias. It can be dropped in a later release. Windows/Linux updater metadata retains `latest.yml`/`latest-linux.yml`; GitHub redirects the old repository after its rename.
 
 Desktop startup copies the old Hub data and Electron profile before opening either location: Windows `%LOCALAPPDATA%\Fractal` → `%LOCALAPPDATA%\News Papers` and `%APPDATA%\Fractal` → `%APPDATA%\News Papers`; macOS/Linux `${XDG_DATA_HOME:-~/.local/share}/fractal` → `news-papers`, plus macOS `~/Library/Application Support/Fractal` → `News Papers` or Linux `${XDG_CONFIG_HOME:-~/.config}/Fractal` → `News Papers`. Existing destinations and explicit `FRACTAL_DATA`/`FRACTAL_DESKTOP_PROFILE` overrides are preserved. Copies use a temporary sibling then rename, retry interrupted copies at next startup, and retain originals. Run `node --test scripts/data-migration.test.cjs` for isolated migration checks.
+
+## Icon generation
+
+The only editable icon artwork is `apps/desktop/assets/brand/app-icon.svg`
+(the 1024 canvas, with an 824 × 824 rounded body at 100,100 and transparent
+macOS grid margins) and `apps/desktop/assets/brand/tray.svg` (black glyph on
+transparent). Keep the app body as a filled SVG rect; the Android adaptive
+background is derived from its fill. Center the artwork optically within it.
+
+Run `node scripts/generate-icons.mjs` after changing either source, and commit
+all generated assets. It uses the existing Playwright Chromium renderer, finding
+Chrome automatically on macOS or using `FRACTAL_REVIEW_BROWSER` to select an
+installed browser; otherwise it uses Playwright's Chromium installation. No new
+runtime dependencies are required. macOS `iconutil` produces `fractal.icns`;
+other platforms use PNG ICNS chunks. The script also writes desktop PNGs from
+16 through 1024 px, multi-resolution `fractal.ico`, 16/32 px macOS template tray
+images, the colored Windows/Linux tray image, the UI favicon, and Android legacy
+launcher mipmaps and adaptive foreground/background/monochrome density layers.
+Electron-builder already points at these generated desktop files. Run twice
+and verify that the second run produces no changes. Prefer macOS for committed
+ICNS output because iconutil's encoding differs from the portable fallback.
+
+The older `apps/desktop/tools/generate-icons.mjs` and
+`generate-distribution-icons.mjs` entry points delegate to this pipeline.

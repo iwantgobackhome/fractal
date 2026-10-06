@@ -193,19 +193,31 @@ test('desktop updates are gated to supported installed formats and authorize eve
       app,
       Tray,
       Menu: { buildFromTemplate: (items) => items },
-      nativeImage: { createFromPath() {} },
+      nativeImage: {
+        createFromPath() {
+          return {
+            setTemplateImage(value) {
+              assert.equal(value, true);
+              assert.equal(scenario.platform, 'darwin');
+            },
+          };
+        },
+      },
       BrowserWindow: { fromWebContents: () => ({ isDestroyed: () => false }) },
       ipcMain: { handle: (channel, handler) => handlers.set(channel, handler) },
       shell: { openExternal: async (url) => opened.push(url) },
     };
     const opened = [];
     let latest = { tag_name: 'v0.2.3', draft: false, prerelease: false };
+    let fetchError;
     runInNewContext(source, {
       __dirname: join(root, 'apps/desktop'),
       URL,
       AbortSignal,
+      Error,
       fetch: async (url) => {
         assert.equal(url, 'https://api.github.com/repos/iwantgobackhome/news-papers/releases/latest');
+        if (fetchError) throw fetchError;
         return { ok: true, json: async () => latest };
       },
       process: {
@@ -263,14 +275,16 @@ test('desktop updates are gated to supported installed formats and authorize eve
       assert.equal(intervals[0].ms, 6 * 60 * 60 * 1000);
       const trusted = { sender: { getURL: () => 'http://localhost:4567/' } };
       await assert.rejects(handlers.get('fractal:updates:check')({ sender: { getURL: () => 'https://untrusted.example/' } }), /Updates are unavailable/);
-      await handlers.get('fractal:updates:check')(trusted);
+      assert.equal((await handlers.get('fractal:updates:check')(trusted)).status, 'current');
       assert.equal(await handlers.get('fractal:updates:state')(trusted), undefined, 'same version is not offered');
       latest = { tag_name: 'v0.2.10', draft: false, prerelease: false };
-      await handlers.get('fractal:updates:check')(trusted);
+      assert.equal((await handlers.get('fractal:updates:check')(trusted)).version, '0.2.10');
       assert.deepEqual({ ...(await handlers.get('fractal:updates:state')(trusted)) }, { type: 'update-available', version: '0.2.10', manual: true });
       await handlers.get('fractal:updates:download')(trusted);
       assert.deepEqual(opened, ['https://github.com/iwantgobackhome/news-papers/releases/tag/v0.2.10']);
       await handlers.get('fractal:updates:install')(trusted);
+      fetchError = new Error('Network unavailable');
+      assert.deepEqual({ ...(await handlers.get('fractal:updates:check')(trusted)) }, { status: 'error', error: 'Network unavailable' });
       continue;
     }
     if (!scenario.enabled) {
@@ -314,7 +328,7 @@ test('preload freezes the update API, replays state and removes subscriptions', 
     let bridge;
     const ipc = Object.assign(new EventEmitter(), { invoke: async () => ({ type: 'update-downloaded' }) });
     runInNewContext(source, {
-      process: { argv: enabled ? ['--fractal-updates'] : [] },
+      process: { argv: ['--fractal-version=7.8.9', ...(enabled ? ['--fractal-updates'] : [])] },
       require: () => ({
         contextBridge: {
           exposeInMainWorld: (_name, api) => {
@@ -325,6 +339,7 @@ test('preload freezes the update API, replays state and removes subscriptions', 
       }),
     });
     assert.ok(Object.isFrozen(bridge));
+    assert.equal(bridge.version, '7.8.9');
     assert.equal(!!bridge.updates, enabled);
     if (!enabled) continue;
     assert.ok(Object.isFrozen(bridge.updates));

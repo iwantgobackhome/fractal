@@ -3,6 +3,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld(
   'fractalDesktop',
   Object.freeze({
+    version: process.argv.find((arg) => arg.startsWith('--fractal-version='))?.slice('--fractal-version='.length),
     ...(process.argv.includes('--fractal-updates')
       ? {
           updates: Object.freeze({

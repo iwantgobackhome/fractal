@@ -1,3 +1,4 @@
+import { AboutSection } from './AboutSection';
 import { Selector } from '../components/Selector';
 import { useCallback, useEffect, useState, type JSX } from 'react';
 import { locale, t, type MessageKey } from '../i18n';
@@ -35,6 +36,7 @@ const SECTIONS: { id: string; label: MessageKey }[] = [
   { id: 'ai', label: 'settings.ai' },
   { id: 'devices', label: 'settings.devices' },
   { id: 'data', label: 'settings.data' },
+  { id: 'about', label: 'settings.about' },
 ];
 
 const FEATURES: { id: AiFeature; label: MessageKey }[] = [
@@ -456,6 +458,7 @@ export function SettingsScreen({ hub, theme, onThemeChange, preferences, onPrefe
             </button>
           </div>
         </section>
+        <AboutSection />
       </div>
     </main>
   );

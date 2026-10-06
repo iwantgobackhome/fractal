@@ -16,6 +16,7 @@ declare module '*.css' {
 
 /** What the Electron shell exposes to the page (absent in a plain browser). */
 interface FractalDesktop {
+  version?: string;
   savePdf(options: { suggestedName: string }): Promise<{ saved: boolean; path?: string }>;
 }
 
