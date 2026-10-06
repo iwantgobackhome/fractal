@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.0 — 2026-10-07
+
+Android zoom and pan keep the page visible and no longer crash; changes sync in realtime through Hub events; pen input no longer lags and shapes work; a long-press drags a lasso selection as one group; figure and equation buttons appear only on tap; paragraph selection covers whole lines; translated figures use one scale; figure and region questions send the image itself on desktop and Android; PDFs up to 3000 pages and 300 MiB open, with section translation over 300 pages; the connect screen explains Tailscale. Android versionCode 12. See [release notes](docs/releases/0.5.0.md).
+
 ## 0.4.2 — 2026-10-06
 
 Collapsed answer cards can be dragged by the whole marker on the desktop (a press on the marker was ignored, so only its 4px edge moved it) and can be dragged at all on Android; the source stays highlighted while dragging. Android versionCode 11. See [release notes](docs/releases/0.4.2.md).

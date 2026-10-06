@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { aiAnswerSchema, bboxSchema, modelSelectionSchema } from './ai';
+import { aiAnswerSchema, imageAttachmentSchema, bboxSchema, modelSelectionSchema } from './ai';
 import { originalProvenanceSchema, provenanceMatchesPage } from './provenance';
 import { languageSchema } from './preferences';
 
@@ -72,6 +72,7 @@ export const historyEntrySchema = z.object({
       page: z.number().int().positive().optional(),
       rect: bboxSchema.optional(),
       selectedText: z.string().optional(),
+      attachment: imageAttachmentSchema.optional(),
       explanationKind: z.enum(['figure', 'equation', 'table', 'text']).optional(),
       selection: modelSelectionSchema.optional(),
       /** Turns sharing a threadId form one conversation, oldest first by createdAt. */

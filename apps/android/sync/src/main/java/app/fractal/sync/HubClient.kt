@@ -109,6 +109,35 @@ class HubClient(private val credentials: HubCredentialStore) : HubHistoryClient 
             }
         }
 
+    suspend fun syncEvents(paperKey: String, onChange: () -> Unit): Unit = withContext(Dispatchers.IO) {
+        val paired = credentials.load() ?: throw IOException("Hub is not paired")
+        val call = http.newCall(request(paired.url, "/api/sync/events?paperKey=${keyPath(paperKey)}", token = paired.token))
+        suspendCancellableCoroutine<Unit> { continuation ->
+            continuation.invokeOnCancellation { call.cancel() }
+            call.enqueue(object : Callback {
+                override fun onFailure(call: Call, error: IOException) {
+                    if (continuation.isActive) continuation.resumeWithException(error)
+                }
+                override fun onResponse(call: Call, response: Response) {
+                    try {
+                        response.use {
+                            if (!it.isSuccessful) throw hubFailure(it)
+                            val source = it.body?.source() ?: throw IOException("Empty sync stream")
+                            while (continuation.isActive) {
+                                val line = source.readUtf8Line() ?: break
+                                if (credentials.load() != paired) throw IOException("Hub connection changed")
+                                if (line.startsWith("data:")) onChange()
+                            }
+                        }
+                        if (continuation.isActive) continuation.resume(Unit)
+                    } catch (error: Exception) {
+                        if (continuation.isActive) continuation.resumeWithException(error)
+                    }
+                }
+            })
+        }
+    }
+
     override fun captured(): HubPdfSession {
         val paired = credentials.load() ?: throw IOException("Hub is not paired")
         return object : HubPdfSession {
@@ -181,7 +210,7 @@ class HubClient(private val credentials: HubCredentialStore) : HubHistoryClient 
 
     /** Explicit user-selected association. No URL fetching, catalog identity derivation or read event. */
     suspend fun linkPdf(key: String, bytes: ByteArray, session: HubPdfSession = captured()): JsonObject = withContext(Dispatchers.IO) {
-        require(bytes.size in 1..(50 * 1024 * 1024)) { "Choose a PDF no larger than 50 MiB." }
+        require(bytes.size in 1..(300 * 1024 * 1024)) { "Choose a PDF no larger than 300 MiB." }
         session.executeLink(key, bytes).use {
             if (!it.isSuccessful) throw hubFailure(it)
             session.ensureCurrent()

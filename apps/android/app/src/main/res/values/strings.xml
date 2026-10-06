@@ -94,4 +94,7 @@
     <string name="update_current">You have the latest version.</string>
     <string name="update_permission">Allow News Papers to install apps, then try installing again.</string>
     <string name="open_source_licenses">Open-source licenses</string>
+    <string name="pairing_steps">1. Use the same Wi-Fi, or install Tailscale on both your PC and phone and sign in with the same account.\n2. On your PC: Settings → Devices → enable LAN or Tailscale.\n3. Scan the QR code below.</string>
+    <string name="pairing_open_tailscale">Open or install Tailscale</string>
+    <string name="pairing_network_hint">Cannot reach your PC. Check that both devices use the same Wi-Fi, or that Tailscale is running on both with the same account. Enable LAN or Tailscale in PC Settings → Devices, then scan a fresh QR code.</string>
 </resources>

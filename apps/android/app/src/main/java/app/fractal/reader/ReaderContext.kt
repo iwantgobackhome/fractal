@@ -39,9 +39,12 @@ internal fun readerQuestionBody(
             val y = rect.y.toDouble().coerceIn(0.0, 1.0)
             val width = rect.width.toDouble().coerceIn(0.0, 1.0 - x)
             val height = rect.height.toDouble().coerceIn(0.0, 1.0 - y)
-            if (width > 0 && height > 0) put("rect", buildJsonObject {
-                put("x", x); put("y", y); put("width", width); put("height", height)
-            })
+            if (width > 0 && height > 0) {
+                val box = buildJsonObject { put("x", x); put("y", y); put("width", width); put("height", height) }
+                put("rect", box)
+                if (selection.isImageSelection()) put("attachment", readerImageDescriptor(page, box,
+                    if (selection.provenance == "detected-structure") "figure" else "region", selection.text.lineSequence().firstOrNull()?.takeIf { it.isNotBlank() } ?: "Selected region"))
+            }
         }
     }
     model?.let { (provider, id) ->

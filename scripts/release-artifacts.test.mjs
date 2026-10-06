@@ -48,7 +48,7 @@ test('release manifests preserve update metadata and reject unknown or missing a
       await put(`dist/installer/${bundle}/resources/fixture`);
       await put(
         `dist/release/${label}/smoke-${label}.json`,
-        JSON.stringify({ version, platform, arch, hubStarted: true, uiServed: true, libraryApi: true, ptySpawn: true }),
+        JSON.stringify({ version, platform, arch, hubStarted: true, uiServed: true, libraryApi: true, ptySpawn: true, pdfWorkerStarted: true }),
       );
       const result = run('release-manifest.mjs', label);
       assert.equal(result.status, 0, result.stderr);
@@ -59,7 +59,7 @@ test('release manifests preserve update metadata and reject unknown or missing a
       'dist/release/android/android-verification.json',
       JSON.stringify({
         version,
-        versionCode: 11,
+        versionCode: 12,
         applicationId: 'app.newspapers.reader',
         debugSigned: true,
         signatureVerified: true,

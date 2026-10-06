@@ -98,7 +98,7 @@ internal fun BoxScope.ReaderAnswerCard(app: ReaderApplication, paperKey: String,
                 val selectedModel = resolveReaderModel(model, models)
                 val body = if (explain) withReaderCrop(readerExplainBody(null, selectedModel,
                     selected ?: error("Choose original context first"), target.item, target.pageText, threadId), pages, selected)
-                else readerQuestionBody(question, null, selectedModel, selected, threadId)
+                else readerQuestionWithCrop(question, null, selectedModel, selected, threadId, pages)
                 requestId = app.history.create(paperKey, if (explain) "explanation" else "question", body, selectionContext(selected))
                 question = ""; selectedContext = null; onThreadChange(threadId)
                 app.history.saveDraft(paperKey, buildJsonObject { put("question", ""); put("model", model); put("context", JsonObject(emptyMap())); put("threadId", threadId) })
@@ -167,7 +167,8 @@ internal fun BoxScope.ReaderAnswerCard(app: ReaderApplication, paperKey: String,
                 val turns = readerThreads(history, requests).firstOrNull { it.id == threadId }?.turns.orEmpty()
                 turns.forEach { turn ->
                     Text(turn.question, style = MaterialTheme.typography.titleSmall)
-                    if (turn.quote.isNotBlank()) Text("📎 p.${turn.page ?: "?"} · “${turn.quote}”", maxLines = 3, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis, style = MaterialTheme.typography.bodySmall)
+                    if (turn.imageAttachment() != null) ReaderImageAttachment(pages, turn.imageAttachment()!!)
+                    else if (turn.quote.isNotBlank()) ReaderTextAttachment(turn.page, turn.quote)
                     SelectionContainer { Text(turn.text.ifBlank { readerStateLabel(turn.status) }, Modifier.padding(vertical = 8.dp), style = MaterialTheme.typography.bodyMedium) }
                     val citations = readerTurnCitations(turn, paperKey)
                     if (turn.status in listOf("pending", "running") && turn.text.isNotBlank()) Text(readerStateLabel(turn.status), style = MaterialTheme.typography.bodySmall)
@@ -175,7 +176,10 @@ internal fun BoxScope.ReaderAnswerCard(app: ReaderApplication, paperKey: String,
                 }
                 selectedContext?.let { (page, selected) ->
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("📎 p.$page · “${selected.text.ifBlank { "Selected region" }}”", Modifier.weight(1f), maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis, style = MaterialTheme.typography.bodySmall)
+                        if (selected.isImageSelection() && selected.rects.isNotEmpty()) ReaderImageAttachment(pages,
+                            readerImageDescriptor(page, readerQuestionBody("", null, null, page to selected)["rect"]!!.jsonObject,
+                                target.item?.kind ?: "region", target.item?.label ?: "Selected region"), Modifier.weight(1f))
+                        else ReaderTextAttachment(page, selected.text, Modifier.weight(1f))
                         TextButton(onClick = { selectedContext = null; app.history.saveDraft(paperKey, buildJsonObject { put("context", JsonObject(emptyMap())) }) }) { Text("×") }
                     }
                 }

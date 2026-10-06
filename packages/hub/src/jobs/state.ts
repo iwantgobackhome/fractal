@@ -64,11 +64,12 @@ export class JobManager {
     return job !== null && job.generation === generation;
   }
 
-  private translatablePages(paperKey: string): Map<number, ReturnType<PaperStore['listBlocks']>> {
+  private translatablePages(paperKey: string, range?: Job['pageRange']): Map<number, ReturnType<PaperStore['listBlocks']>> {
     const pages = new Map<number, ReturnType<PaperStore['listBlocks']>>();
-    for (const block of this.store.listBlocks(paperKey)) {
+    for (const block of this.store.listBlocks(paperKey, range)) {
       if (!block.translatable) continue;
       const page = block.regions[0]?.page ?? 1;
+      if (range && (page < range.start || page > range.end)) continue;
       const blocks = pages.get(page);
       if (blocks) {
         blocks.push(block);
@@ -80,23 +81,18 @@ export class JobManager {
   }
 
   private countCompleted(job: Job): number {
-    const translations = this.store.listTranslations(job.paperKey);
-    return [...this.translatablePages(job.paperKey).values()].filter((blocks) =>
-      blocks.every((b) =>
-        translations.some(
-          (t) =>
-            t.blockId === b.blockId &&
-            t.sourceHash === b.sourceHash &&
-            t.modelId === job.modelId &&
-            t.promptVersion === job.promptVersion &&
-            t.status === 'completed',
-        ),
-      ),
-    ).length;
+    const completed = new Map(
+      this.store
+        .listTranslations(job.paperKey)
+        .filter((t) => t.modelId === job.modelId && t.promptVersion === job.promptVersion && t.status === 'completed')
+        .map((t) => [t.blockId, t.sourceHash]),
+    );
+    return [...this.translatablePages(job.paperKey, job.pageRange).values()].filter((blocks) => blocks.every((b) => completed.get(b.blockId) === b.sourceHash))
+      .length;
   }
 
-  private countTranslatable(paperKey: string): number {
-    return this.translatablePages(paperKey).size;
+  private countTranslatable(paperKey: string, range?: Job['pageRange']): number {
+    return this.translatablePages(paperKey, range).size;
   }
 
   private persist(job: Job): Job {
@@ -152,7 +148,7 @@ export class JobManager {
         state: 'running',
         pauseReason: null,
         completedBlocks: this.countCompleted(existing),
-        totalTranslatableBlocks: this.countTranslatable(paperKey),
+        totalTranslatableBlocks: this.countTranslatable(paperKey, existing.pageRange),
       });
     }
 
@@ -173,6 +169,44 @@ export class JobManager {
       updatedAt: nowIso(),
       currentPage: null,
     };
+    return this.persist(job);
+  }
+
+  /** Select another section without deleting translations from earlier sections. */
+  startRange(paperKey: string, modelId: string, promptVersion: string, range: NonNullable<Job['pageRange']>): Job {
+    const paper = this.store.getPaper(paperKey);
+    if (!paper || !['ready', 'partial'].includes(paper.status)) throw invalidInput('Paper is not ready for translation');
+    if (
+      !Number.isInteger(range.start) ||
+      !Number.isInteger(range.end) ||
+      range.start < 1 ||
+      range.end < range.start ||
+      range.end > (paper.pageCount ?? 0) ||
+      range.end - range.start >= 30
+    )
+      throw invalidInput('번역할 페이지 범위는 문서 안의 최대 30쪽이어야 합니다. / Choose up to 30 pages in this document.');
+    const active = this.currentActive();
+    const existing = this.store.getJobForPaper(paperKey);
+    if (active) {
+      if (active.paperKey === paperKey && active.pageRange?.start === range.start && active.pageRange.end === range.end) return active;
+      throw busy('Pause the current translation before choosing another section');
+    }
+    const job: Job = {
+      jobId: existing?.jobId ?? randomUUID(),
+      paperKey,
+      modelId,
+      promptVersion,
+      generation: (existing?.generation ?? 0) + 1,
+      state: 'running',
+      pauseReason: null,
+      completedBlocks: 0,
+      totalTranslatableBlocks: this.countTranslatable(paperKey, range),
+      usage: existing?.usage ?? EMPTY_USAGE,
+      updatedAt: nowIso(),
+      currentPage: null,
+      pageRange: range,
+    };
+    job.completedBlocks = this.countCompleted(job);
     return this.persist(job);
   }
 
@@ -255,7 +289,7 @@ export class JobManager {
   finalizeJob(jobId: string): Job {
     const job = this.requireJob(jobId);
     if (job.state !== 'running') throw invalidInput(`job ${jobId} cannot be finalized from state ${job.state}`);
-    const total = this.countTranslatable(job.paperKey);
+    const total = this.countTranslatable(job.paperKey, job.pageRange);
     const done = this.countCompleted(job);
     const state: JobState = done === total ? 'completed' : 'completed_with_gaps';
     return this.persist({ ...job, state, pauseReason: null, completedBlocks: done, totalTranslatableBlocks: total, currentPage: null });

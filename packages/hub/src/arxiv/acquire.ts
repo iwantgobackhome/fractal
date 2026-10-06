@@ -167,7 +167,7 @@ async function publish(directory: string, key: string, bytes: Uint8Array, hash: 
 }
 export async function acquirePaper(input: string, options: AcquireOptions): Promise<{ paper: Paper; blocks: Block[]; pdfPath: string }> {
   const paper = await resolveArxiv(input, options);
-  const bytes = await boundedGet(paper.sourceUrl, options.maxBytes ?? 50 * 1024 * 1024, options);
+  const bytes = await boundedGet(paper.sourceUrl, options.maxBytes ?? 300 * 1024 * 1024, options);
   const hash = sha256(bytes);
   if (options.expectedSha256 && options.expectedSha256 !== hash) throw new SourceError('SOURCE_CHANGED', '같은 arXiv 버전의 PDF가 변경되었습니다.');
   const extraction = await extractPdf(bytes, paper.paperKey, options);

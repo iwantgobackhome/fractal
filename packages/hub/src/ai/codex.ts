@@ -53,7 +53,6 @@ export class CodexProvider implements AiProvider {
     return (await this.translator.connection()).limits;
   }
   async *complete(input: CompleteInput): AsyncIterable<ProviderDelta> {
-    if (input.images?.length) throw Object.assign(new Error('Codex app-server image input is not supported in this integration'), { code: 'INVALID_INPUT' });
     const queue: ProviderDelta[] = [];
     let wake: (() => void) | undefined;
     let done = false;
@@ -70,6 +69,7 @@ export class CodexProvider implements AiProvider {
         modelId: input.model,
         effort: input.effort,
         instructions: input.system,
+        images: input.images,
         history: [],
         question: input.messages.map((m) => `${m.role}: ${m.content}`).join('\n\n'),
         signal: input.signal,

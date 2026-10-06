@@ -14,7 +14,10 @@ android {
 }
 
 dependencies {
+    testImplementation(libs.testng)
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
     implementation(libs.compose.foundation)
 }
+
+tasks.withType<Test>().configureEach { useTestNG() }

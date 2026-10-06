@@ -25,3 +25,10 @@ describe('readSse', () => {
     expect(events[2]).toMatchObject({ latex: 'E=mc^2' });
   });
 });
+
+it('ignores sync heartbeat comments and delivers tiny change notifications', async () => {
+  const events = [];
+  for await (const event of readSse(stream([': connected\n\n: heartbeat\n\nevent: change\ndata: {"paperKey":"p","cursor":"4","kinds":["ink"]}\n\n'])))
+    events.push(event);
+  expect(events).toEqual([{ paperKey: 'p', cursor: '4', kinds: ['ink'] }]);
+});

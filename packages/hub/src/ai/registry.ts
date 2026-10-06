@@ -2,6 +2,7 @@ import type { AiFeature, AiSettings, ModelSelection, ProviderId, ProviderInfo, U
 import { aiSettingsSchema } from '@fractal/shared';
 import { invalidInput } from '../store/index';
 import type { AiProvider, CompleteInput, ProviderDelta, SettingsStore } from './provider';
+import { isUnsupportedImageError } from './images';
 import { DEFAULT_SETTINGS } from './settings';
 import type { UsageStore } from './usage';
 
@@ -61,12 +62,28 @@ export class ProviderRegistry {
     let inTokens: number | null = null;
     let outTokens: number | null = null;
     try {
-      for await (const delta of provider.complete({ ...input, model: selection.model, effort: selection.effort })) {
-        if (delta.type === 'usage') {
-          inTokens = delta.inputTokens;
-          outTokens = delta.outputTokens;
+      let emittedText = false;
+      const run = async function* (images = input.images) {
+        for await (const delta of provider.complete({ ...input, images, model: selection.model, effort: selection.effort })) {
+          if (delta.type === 'text') emittedText = true;
+          if (delta.type === 'usage') {
+            inTokens = delta.inputTokens;
+            outTokens = delta.outputTokens;
+          }
+          yield delta;
         }
-        yield delta;
+      };
+      try {
+        yield* run();
+      } catch (error) {
+        if (!input.images?.length || emittedText || !isUnsupportedImageError(error)) throw error;
+        yield {
+          type: 'usage',
+          inputTokens: null,
+          outputTokens: null,
+          imageFallbackReason: 'Selected provider/model does not support image input; answered using text context.',
+        };
+        yield* run([]);
       }
     } finally {
       this.running.set(provider.id, Math.max(0, (this.running.get(provider.id) ?? 1) - 1));

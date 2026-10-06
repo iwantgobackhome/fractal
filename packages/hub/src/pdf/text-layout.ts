@@ -2,7 +2,7 @@ import { getDocument, OPS } from 'pdfjs-dist/legacy/build/pdf.mjs';
 import type { PdfTextLayout, PdfTextPage, PdfTextQuad, PdfTextRun, PdfTextUnit } from '@fractal/shared';
 
 export const TEXT_LAYOUT_VERSION = 'pdfjs6-original-advances-v1';
-export const TEXT_LAYOUT_LIMITS = { bytes: 50 * 1024 * 1024, pages: 3000, operators: 200_000, characters: 50_000, runs: 10_000, timeoutMs: 30_000 };
+export const TEXT_LAYOUT_LIMITS = { bytes: 300 * 1024 * 1024, pages: 3000, operators: 200_000, characters: 50_000, runs: 10_000, timeoutMs: 30_000 };
 type Item = { str: string; dir: string; width: number; height: number; transform: number[]; fontName: string };
 type Font = { ascent?: number; descent?: number; vertical?: boolean };
 type Draft = { item: Item; run: PdfTextRun; display: { x: number; y: number; right: number; bottom: number }; index: number };
@@ -258,7 +258,7 @@ export async function extractTextPage(
 ): Promise<{ pageCount: number; page: PdfTextPage } | Extract<PdfTextLayout, { status: 'unavailable' }>> {
   if (!bytes.length) return unavailable('', 'invalid_pdf', 'Local PDF is empty; reimport a readable PDF') as Extract<PdfTextLayout, { status: 'unavailable' }>;
   if (bytes.length > TEXT_LAYOUT_LIMITS.bytes)
-    return unavailable('', 'too_large', 'Local PDF exceeds the 50 MiB geometry limit') as Extract<PdfTextLayout, { status: 'unavailable' }>;
+    return unavailable('', 'too_large', 'Local PDF exceeds the 300 MiB geometry limit') as Extract<PdfTextLayout, { status: 'unavailable' }>;
   const task = getDocument({
     data: Uint8Array.from(bytes),
     useSystemFonts: true,

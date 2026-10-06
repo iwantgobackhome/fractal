@@ -109,7 +109,7 @@ import java.util.Locale
                 context.contentResolver.openInputStream(uri)?.use { input ->
                     val output = java.io.ByteArrayOutputStream(); val buffer = ByteArray(8192)
                     while (true) { val count = input.read(buffer); if (count < 0) break
-                        require(output.size() + count <= 50 * 1024 * 1024) { "Choose a PDF no larger than 50 MiB." }; output.write(buffer, 0, count) }
+                        require(output.size() + count <= 300 * 1024 * 1024) { "Choose a PDF no larger than 300 MiB." }; output.write(buffer, 0, count) }
                     output.toByteArray()
                 } ?: error("Selected document is unavailable")
             }

@@ -2,7 +2,7 @@ import { ProviderFailure, ScholarlyClient } from '../scholarly/client';
 import { createHash } from 'node:crypto';
 import type { Paper } from '@fractal/shared';
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
-import { extractPdf, inferTitle } from '../pdf/index';
+import { extractPdf, inferTitle, type PdfExtraction } from '../pdf/index';
 import type { SqlitePaperStore } from '../store/sqlite';
 import type { PaperAcquirer } from '../api/index';
 import { appError, invalidInput, notFound } from '../store/errors';
@@ -129,13 +129,20 @@ export async function metadataFromPdf(bytes: Buffer): Promise<Pick<ResolvedMetad
   }
 }
 export async function ingestPdf(store: SqlitePaperStore, bytes: Buffer, sourceUrl = 'upload://local', fetcher: typeof fetch = fetch): Promise<Paper> {
-  if (bytes.length > 100 * 1024 * 1024) throw tooLarge('100MB보다 큰 PDF는 올릴 수 없습니다.');
+  if (bytes.length > 300 * 1024 * 1024) throw tooLarge('300 MiB보다 큰 PDF는 올릴 수 없습니다.');
   if (!bytes.subarray(0, 1024).includes(Buffer.from('%PDF-'))) throw invalidInput('올바른 PDF 파일을 올려 주세요.');
   const hash = sha(bytes);
+  const candidateKey = `pdf-${sha(Buffer.from(sourceUrl))}-${hash}`;
+  let prepared: PdfExtraction | undefined;
   let found: Awaited<ReturnType<typeof metadataFromPdf>>;
   try {
-    found = await metadataFromPdf(bytes);
-  } catch {
+    // Reuse the worker's first-page metadata instead of parsing/copying a book twice.
+    if (bytes.length > 10 * 1024 * 1024) {
+      prepared = await extractPdf(bytes, candidateKey);
+      found = { title: prepared.documentTitle ?? inferTitle(prepared.blocks), doi: prepared.documentDoi ?? null, arxivId: prepared.documentArxivId ?? null };
+    } else found = await metadataFromPdf(bytes);
+  } catch (error) {
+    if (bytes.length > 10 * 1024 * 1024) throw error;
     throw invalidInput('PDF 파일을 읽을 수 없습니다. 다른 PDF를 올려 주세요.');
   }
   const metadata = found.doi ? await resolveDoi(found.doi, fetcher) : null;
@@ -155,15 +162,15 @@ export async function ingestPdf(store: SqlitePaperStore, bytes: Buffer, sourceUr
   }
   if (duplicate && !/^pdf-[a-f0-9]{64}-[a-f0-9]{64}$/.test(duplicate))
     throw invalidInput('Metadata publication must be linked to a PDF reader identity before upload acquisition');
-  const paperKey = duplicate ?? `pdf-${sha(Buffer.from(sourceUrl))}-${hash}`;
-  const extracted = await extractPdf(bytes, paperKey);
+  const paperKey = duplicate ?? candidateKey;
+  const extracted = prepared && paperKey === candidateKey ? prepared : await extractPdf(bytes, paperKey);
   const now = new Date().toISOString();
   const paper: Paper = {
     paperKey,
     sourceKind: 'publication',
     arxivId: null,
     version: null,
-    title: metadata?.title ?? found.title ?? inferTitle(extracted.blocks),
+    title: metadata?.title ?? found.title ?? extracted.documentTitle ?? inferTitle(extracted.blocks),
     authors: metadata?.authors ?? [],
     sourceUrl: 'https://local.fractal.invalid/upload/' + hash,
     pdfSha256: hash,

@@ -99,6 +99,7 @@ class ReaderInputHost(context: Context) : FrameLayout(context) {
         if (target == null && !suppressRemainder) return super.onTouchEvent(event)
         delivered = true
         if (target != null) {
+            if (event.actionMasked == MotionEvent.ACTION_DOWN || event.actionMasked == MotionEvent.ACTION_POINTER_DOWN) requestUnbufferedDispatch(event)
             val local = MotionEvent.obtain(event)
             try {
                 val hostToGlobal = Matrix().also(::transformMatrixToGlobal)

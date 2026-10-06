@@ -56,6 +56,8 @@ export interface Snapshot {
   blocks: Block[];
   translations: Translation[];
   job: Job | null;
+  /** Long documents return one bounded page window; normal papers keep the original shape. */
+  blockPageRange?: { start: number; end: number; totalPages: number };
 }
 
 export const regionSchema = z

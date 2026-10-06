@@ -114,7 +114,7 @@ describe('original PDF text-position extraction', () => {
     expect(await extractTextPage(pdf, 6)).toMatchObject({ status: 'unavailable', reason: 'page_out_of_range', pageCount: 5 });
     expect(await extractTextPage(Buffer.from('not a PDF'), 1)).toMatchObject({ status: 'unavailable', reason: 'invalid_pdf' });
     expect(await extractTextPage(new Uint8Array(), 1)).toMatchObject({ reason: 'invalid_pdf' });
-    expect(await extractTextPage(new Uint8Array(50 * 1024 * 1024 + 1), 1)).toMatchObject({ reason: 'too_large' });
+    expect(await extractTextPage(new Uint8Array(300 * 1024 * 1024 + 1), 1)).toMatchObject({ reason: 'too_large' });
     expect(await extractTextPage(pdf, 1, 0)).toMatchObject({ reason: 'timeout', retryable: true });
   });
   it('retains original text and readable neighbours when one run lacks its style or transform', () => {

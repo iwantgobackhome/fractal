@@ -25,6 +25,8 @@ import app.fractal.pdf.*
 import app.fractal.sync.SyncScheduler
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.*
 import java.time.Instant
 
@@ -49,8 +51,10 @@ private fun Modifier.readingDriver(onDown: () -> Unit) = composed {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, onBack: () -> Unit) {
+    app.ReaderRealtimeSync(paper.paperKey)
     val colors = LocalFractalColors.current
     val scope = rememberCoroutineScope()
+    val inkSaveMutex = remember(paper.paperKey) { Mutex() }
     val density = LocalDensity.current
     val clipboard = LocalClipboardManager.current
     val sourceList = rememberLazyListState()
@@ -83,6 +87,8 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
     var viewport by remember { mutableStateOf<Rect?>(null) }
     var noteSelection by remember { mutableStateOf<Pair<Int, PdfTextSelection>?>(null) }
     var toolsMenu by remember { mutableStateOf(false) }
+    var selectedStructureId by remember(paper.paperKey) { mutableStateOf<String?>(null) }
+    LaunchedEffect(sourceList.isScrollInProgress, zoom) { selectedStructureId = null }
     var structure by remember(paper.paperKey) { mutableStateOf<PaperStructure?>(null) }
     val answerTargets = remember(paper.paperKey) { mutableStateMapOf<String, ReaderAnswerTarget>() }
     val answerRequests by app.database.reader().observeRequests(paper.paperKey).collectAsState(emptyList())
@@ -106,13 +112,26 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
             }
         }
     }
+    // Long-book metadata contains a bounded window; refresh only when crossing a window.
+    LaunchedEffect(paper.paperKey, (if (driver == "translation") translatedAnchor.page else sourceAnchor.page) / 15, pages?.pageCount) {
+        if ((pages?.pageCount ?: paper.pageCount ?: 0) > 300) {
+            val current = if (driver == "translation") translatedAnchor.page else sourceAnchor.page
+            val start = (current - 1).coerceAtLeast(1)
+            runCatching { app.sync.refreshPaperMetadata(paper.paperKey, pageStart = start) }.onSuccess {
+                app.database.metadata().snapshot(paper.paperKey)?.let { cached ->
+                    val snapshot = WireJson.format.parseToJsonElement(cached.json).jsonObject
+                    blocks = translatedBlocks(snapshot); sourcePageContext = structurePageContext(snapshot)
+                }
+            }
+        }
+    }
     LaunchedEffect(paper.paperKey) {
         try {
             val file = paper.pdfSha256?.let { app.cache.verified(it) } ?: run {
                 val metadata = app.sync.refreshPaperMetadata(paper.paperKey) ?: error("PDF unavailable")
                 app.downloader.download(paper.paperKey, metadata.first)
             }
-            pages = withContext(Dispatchers.IO) { PdfPages(file) }
+            pages = withContext(Dispatchers.IO) { PdfPages(file, (app.getSystemService(android.content.Context.ACTIVITY_SERVICE) as android.app.ActivityManager).memoryClass) }
             status = ""
         } catch (error: CancellationException) { throw error }
         catch (error: Exception) { status = app.getString(R.string.offline_unavailable) }
@@ -155,9 +174,17 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
         for (page in states.keys.toList() + grouped.keys.filterNot { it in states }) {
             val state = states.getOrPut(page) { InkPageState() }
             val strokes = grouped[page].orEmpty().mapNotNull { runCatching { InkJson.format.decodeFromString(InkStroke.serializer(), it.json) }.getOrNull() }
-            if (state.strokes != strokes) state.load(strokes)
+            state.reconcile(strokes)
         }
     }
+    suspend fun saveInkChange(before: List<InkStroke>, after: List<InkStroke>) = inkSaveMutex.withLock { withContext(Dispatchers.IO) {
+        val old = before.associateBy { it.id }; val new = after.associateBy { it.id }
+        val changed = after.filter { old[it.id] != it } + before.filter { it.id !in new }.map {
+            it.copy(deleted = true, rev = it.rev + 1, updatedAt = Instant.now().toString())
+        }
+        app.sync.saveLocalBatch(changed.map { WireJson.format.parseToJsonElement(InkJson.format.encodeToString(InkStroke.serializer(), it)).jsonObject })
+        SyncScheduler.now(app, app.settings.getBoolean("wifiOnly", false))
+    } }
     fun savePosition() { scope.launch {
         if (!restored) return@launch
         app.database.reader().upsert(ReaderPositionEntity(paper.paperKey, buildJsonObject {
@@ -277,23 +304,32 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                                         annotations.filter { it.page == index + 1 && it.kind == "highlight" },
                                         nativeViewport = viewport, selection = selection?.takeIf { it.first == index + 1 }?.second, regionMode = regionMode,
                                         onSelectionUnavailable = { selectionMessage = it },
-                                        onBackgroundTap = { selection = null; selectionMessage = "" },
+                                        onBackgroundTap = { selection = null; selectionMessage = ""; selectedStructureId = null },
+                                        onHighlightTap = { selectedStructureId = null },
+                                        onStructureTap = { x, y ->
+                                            val item = structure?.items.orEmpty().filter { it.page == index + 1 }.lastOrNull {
+                                                x >= it.bbox.x && x <= it.bbox.x + it.bbox.width &&
+                                                    y >= it.bbox.y && y <= it.bbox.y + it.bbox.height
+                                            }
+                                            selectedStructureId = item?.id
+                                            if (item != null) { selection = null; selectionMessage = "" }
+                                            item != null
+                                        },
                                         onFingerGesture = { dy, factor, focusY ->
+                                            selectedStructureId = null
                                             zoom = (zoom * factor).coerceIn(.5f, 4f)
                                             scope.launch { if (factor != 1f) { withFrameNanos { }; yield() }; sourceList.scrollBy(focusY * (factor - 1f) - dy) }
-                                        }, onWritingStateChanged = { writing = it; if (it && !regionMode) barVisible = false },
-                                        onSelection = { selection = index + 1 to it; selectionMessage = "" },
-                                        onDoubleTap = { zoom = if (zoom == 1f) 1.5f else 1f },
+                                        }, onWritingStateChanged = { writing = it; if (it) selectedStructureId = null; if (it && !regionMode) barVisible = false },
+                                        onSelection = { selectedStructureId = null; selection = index + 1 to it; selectionMessage = "" },
+                                        onDoubleTap = { selectedStructureId = null; zoom = if (zoom == 1f) 1.5f else 1f },
                                         onInkChanged = { before, after -> scope.launch {
-                                            val old = before.associateBy { it.id }; val new = after.associateBy { it.id }
-                                            for (stroke in after) if (old[stroke.id] != stroke) app.sync.saveLocal(WireJson.format.parseToJsonElement(InkJson.format.encodeToString(InkStroke.serializer(), stroke)).jsonObject)
-                                            for (stroke in before.filter { it.id !in new }) app.sync.saveLocal(WireJson.format.parseToJsonElement(InkJson.format.encodeToString(InkStroke.serializer(), stroke.copy(deleted = true, updatedAt = Instant.now().toString()))).jsonObject)
-                                            SyncScheduler.now(app, app.settings.getBoolean("wifiOnly", false))
+                                            saveInkChange(before, after)
                                         } }, contentOverlay = { width, height, textPage ->
-                                            ReaderStructureOverlay(structure?.items.orEmpty().filter { it.page == index + 1 }, width, height) { item, _ ->
+                                            ReaderStructureOverlay(structure?.items.orEmpty().filter { it.page == index + 1 }, selectedStructureId, width, height) { item, _, explain ->
+                                                selectedStructureId = null
                                                 val thread = java.util.UUID.randomUUID().toString()
                                                 answerTargets[thread] = ReaderAnswerTarget(structureSelection(item, source.pdfSha256), item,
-                                                    textPage?.text ?: sourcePageContext[index + 1].orEmpty(), explain = true, threadId = thread)
+                                                    textPage?.text ?: sourcePageContext[index + 1].orEmpty(), explain = explain, threadId = thread)
                                                 panel = false
                                             }
                                             ReaderPageAnswers(app, paper.paperKey, source, index + 1, width, height, textPage?.rotation ?: 0,

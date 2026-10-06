@@ -59,12 +59,12 @@ for (const label of labels) {
     const smoke = JSON.parse(await readFile(join(directory, `smoke-${label}.json`), 'utf8'));
     assert.equal(smoke.version, version);
     assert.equal(`${smoke.platform}-${smoke.arch}`, label);
-    assert.ok(smoke.hubStarted && smoke.uiServed && smoke.libraryApi && smoke.ptySpawn);
+    assert.ok(smoke.hubStarted && smoke.uiServed && smoke.libraryApi && smoke.ptySpawn && smoke.pdfWorkerStarted);
   } else {
     assert.ok(listed.has('android-verification.json'));
     const apk = JSON.parse(await readFile(join(directory, 'android-verification.json'), 'utf8'));
     assert.equal(apk.version, version);
-    assert.equal(apk.versionCode, 11);
+    assert.equal(apk.versionCode, 12);
     assert.equal(apk.applicationId, 'app.newspapers.reader');
     assert.ok(apk.debugSigned && apk.signatureVerified);
     assert.match(apk.certificateSha256, /^[a-f0-9]{64}$/);

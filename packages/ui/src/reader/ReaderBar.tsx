@@ -31,7 +31,7 @@ export interface ReaderBarProps {
   disabledReason: string | null;
   sendHint: string;
   onModelChange(modelId: string): void;
-  onStart(modelId: string): void;
+  onStart(modelId: string, pageRange?: { start: number; end: number }): void;
   onPause(jobId: string): void;
   onResume(jobId: string): void;
   onRequestReplacement(): void;
@@ -83,14 +83,26 @@ export function ReaderBar(props: ReaderBarProps): JSX.Element {
   const ko = useLanguage() === 'ko';
   const { paper, job, currentPage, pageCount, zoom, viewMode, narrow, chat } = props;
   const [menuOpen, setMenuOpen, menuRef] = usePopover();
+  const longDocument = pageCount > 300;
   const action = primaryAction(job);
+  const [rangeOpen, setRangeOpen] = useState(false);
+  const [rangeStart, setRangeStart] = useState(1);
+  const [rangeEnd, setRangeEnd] = useState(30);
+  const offerRange = (start: number) => {
+    setRangeStart(start);
+    setRangeEnd(Math.min(pageCount, start + 29));
+    setRangeOpen(true);
+  };
   const title = paper?.title?.trim() || paper?.paperKey || '';
   const progress = progressText(job);
-  const translateDisabled = action === 'saved' || (action !== 'pause' && !props.canTranslate) || (action === 'start' && props.selectedModelId.trim() === '');
+  const translateDisabled =
+    (!longDocument && action === 'saved') || (action !== 'pause' && !props.canTranslate) || (action === 'start' && props.selectedModelId.trim() === '');
   const modes: ViewMode[] = narrow ? ['source', 'translation'] : ['source', 'split', 'translation'];
 
   const runPrimary = () => {
-    if (action === 'start') {
+    if (longDocument && action !== 'pause' && (action !== 'resume' || !job?.pageRange)) {
+      offerRange(currentPage);
+    } else if (action === 'start') {
       props.onStart(props.selectedModelId);
     } else if (action === 'pause' && job !== null) {
       props.onPause(job.jobId);
@@ -189,7 +201,7 @@ export function ReaderBar(props: ReaderBarProps): JSX.Element {
             options={TRANSLATION_LANGUAGES.map((l) => ({ value: l.code, label: l.name }))}
             onChange={props.onLanguage}
           />
-          {action !== 'saved' ? (
+          {action !== 'saved' || longDocument ? (
             <button
               type="button"
               className={`reader-bar__action${action === 'start' ? ' is-primary' : ''}`}
@@ -197,8 +209,55 @@ export function ReaderBar(props: ReaderBarProps): JSX.Element {
               disabled={translateDisabled}
               title={action === 'start' ? (props.canTranslate ? props.sendHint : (props.disabledReason ?? undefined)) : undefined}
             >
-              {primaryLabel(job)}
+              {longDocument && (action === 'saved' || action === 'start' || (action === 'resume' && !job?.pageRange))
+                ? ko
+                  ? '페이지 범위 번역'
+                  : 'Translate pages'
+                : primaryLabel(job)}
             </button>
+          ) : null}
+          {longDocument && job?.pageRange && job.state !== 'running' && job.pageRange.end < pageCount ? (
+            <button type="button" className="reader-bar__action" disabled={!props.canTranslate} onClick={() => offerRange(job.pageRange!.end + 1)}>
+              {ko ? '다음 30쪽 번역' : 'Translate next 30 pages'}
+            </button>
+          ) : null}
+          {rangeOpen ? (
+            <div role="dialog" aria-label={ko ? '페이지 범위 번역' : 'Translate page range'}>
+              <label>
+                {ko ? '시작 쪽' : 'From page'}{' '}
+                <input type="number" min={1} max={pageCount} value={rangeStart} onChange={(e) => setRangeStart(Number(e.target.value))} />
+              </label>
+              <label>
+                {ko ? '마지막 쪽' : 'Through page'}{' '}
+                <input
+                  type="number"
+                  min={rangeStart}
+                  max={Math.min(pageCount, rangeStart + 29)}
+                  value={rangeEnd}
+                  onChange={(e) => setRangeEnd(Number(e.target.value))}
+                />
+              </label>
+              <button
+                type="button"
+                disabled={
+                  !Number.isInteger(rangeStart) ||
+                  !Number.isInteger(rangeEnd) ||
+                  rangeStart < 1 ||
+                  rangeEnd < rangeStart ||
+                  rangeEnd > pageCount ||
+                  rangeEnd - rangeStart >= 30
+                }
+                onClick={() => {
+                  props.onStart(props.selectedModelId, { start: rangeStart, end: rangeEnd });
+                  setRangeOpen(false);
+                }}
+              >
+                {ko ? '이 범위 번역' : 'Translate this range'}
+              </button>
+              <button type="button" onClick={() => setRangeOpen(false)}>
+                {ko ? '취소' : 'Cancel'}
+              </button>
+            </div>
           ) : null}
           <button type="button" className="reader-bar__action" aria-expanded={props.notes.open} aria-controls={chat.controls} onClick={props.notes.onToggle}>
             {t('reader.notes')}
@@ -237,7 +296,8 @@ export function ReaderBar(props: ReaderBarProps): JSX.Element {
                     disabled={job === null || props.selectedModelId.trim() === ''}
                     onClick={() => {
                       setMenuOpen(false);
-                      props.onRequestReplacement();
+                      if (longDocument) offerRange(currentPage);
+                      else props.onRequestReplacement();
                     }}
                   >
                     {t('reader.retranslate')}

@@ -272,6 +272,12 @@ export class SqlitePaperStore extends PaperStore {
     }
     return sha;
   }
+  getPdfPath(key: string): string | null {
+    assertSafeKey(key);
+    const row = this.db.prepare('SELECT pdf_hash FROM papers WHERE paper_key=?').get(key) as Row | undefined;
+    const path = row?.pdf_hash ? join(this.root, 'pdfs', `${row.pdf_hash}.pdf`) : null;
+    return path && existsSync(path) ? path : null;
+  }
   override getPdf(key: string): Buffer | null {
     assertSafeKey(key);
     const row = this.db.prepare('SELECT pdf_hash FROM papers WHERE paper_key=?').get(key) as Row | undefined;
@@ -304,9 +310,17 @@ export class SqlitePaperStore extends PaperStore {
     this.onBlocksSaved?.(key);
     return checked;
   }
-  override listBlocks(key: string): Block[] {
+  override listBlocks(key: string, range?: { start: number; end: number }): Block[] {
     assertSafeKey(key);
-    return (this.db.prepare('SELECT data FROM blocks WHERE paper_key=?').all(key) as Row[])
+    return (
+      (range
+        ? this.db
+            .prepare(
+              "SELECT data FROM blocks WHERE paper_key=? AND EXISTS (SELECT 1 FROM json_each(blocks.data, '$.regions') WHERE json_extract(value, '$.page') BETWEEN ? AND ?)",
+            )
+            .all(key, range.start, range.end)
+        : this.db.prepare('SELECT data FROM blocks WHERE paper_key=?').all(key)) as Row[]
+    )
       .map((r) => JSON.parse(String(r.data)) as Block)
       .sort((a, b) => a.order - b.order);
   }

@@ -324,6 +324,11 @@ export function DevicesSection({ hub }: { hub: HubApi }): JSX.Element {
       ) : null}
 
       <div className="pairing">
+        <ol className="settings__quiet">
+          <li>{t('devices.setupStep1')}</li>
+          <li>{t('devices.setupStep2')}</li>
+          <li>{t('devices.setupStep3')}</li>
+        </ol>
         {!reachable ? (
           <p className="settings__quiet">{t('devices.enableNetwork')}</p>
         ) : pairing !== null && secondsLeft > 0 ? (

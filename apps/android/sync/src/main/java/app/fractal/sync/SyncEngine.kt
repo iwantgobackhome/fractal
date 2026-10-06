@@ -8,13 +8,19 @@ import kotlinx.serialization.json.*
 import java.time.Instant
 import java.util.UUID
 
-class SyncEngine(private val database: FractalDatabase, private val client: HubDataClient) {
+class SyncEngine(private val database: FractalDatabase, private val client: HubDataClient, private val onLocalChange: (String) -> Unit = {}) {
     companion object { private val syncMutex = Mutex() }
     var lastWarning: String? = null
         private set
 
     suspend fun saveLocal(value: JsonObject) {
         database.annotations().upsert(WireJson.annotationEntity(value, dirty = true))
+        value.text("paperKey")?.let(onLocalChange)
+    }
+
+    /** One logical ink edit emits one complete Room snapshot. */
+    suspend fun saveLocalBatch(values: List<JsonObject>) = database.withTransaction {
+        for (value in values) saveLocal(value)
     }
 
     /** Import direct bookmark/link responses through the same pending-edit projection as pulls. */
@@ -272,9 +278,10 @@ class SyncEngine(private val database: FractalDatabase, private val client: HubD
         }
     }
 
-    suspend fun refreshPaperMetadata(key: String, session: HubDataClient = client, guard: () -> Unit = {}): Pair<String, Int>? {
+    suspend fun refreshPaperMetadata(key: String, session: HubDataClient = client, guard: () -> Unit = {}, pageStart: Int? = null): Pair<String, Int>? {
         guard()
-        val snapshot = session.data("/api/papers/${HubClient.keyPath(key)}").jsonObject
+        val range = pageStart?.let { "?pageStart=$it&pageEnd=${it + 29}" }.orEmpty()
+        val snapshot = session.data("/api/papers/${HubClient.keyPath(key)}$range").jsonObject
         val paper = snapshot["paper"]?.jsonObject ?: return null
         val sha = paper.text("pdfSha256") ?: return null
         val pages = paper.text("pageCount")?.toIntOrNull()

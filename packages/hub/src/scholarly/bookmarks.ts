@@ -77,7 +77,7 @@ const active = new WeakMap<SqlitePaperStore, Map<string, { hash: string; work: P
 export async function linkPdf(store: SqlitePaperStore, key: string, bytes: Buffer): Promise<PublicationPdfLinkResult> {
   assertSafeKey(key);
   if (!store.getLibrary(key)) throw notFound('Save the publication metadata before linking a PDF');
-  if (bytes.length > 50 * 1024 * 1024 || !bytes.subarray(0, 1024).includes(Buffer.from('%PDF-'))) throw invalidInput('Upload a valid PDF of at most 50 MiB');
+  if (bytes.length > 300 * 1024 * 1024 || !bytes.subarray(0, 1024).includes(Buffer.from('%PDF-'))) throw invalidInput('Upload a valid PDF of at most 300 MiB');
   const hash = sha(bytes),
     jobs = active.get(store) ?? new Map();
   active.set(store, jobs);

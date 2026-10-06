@@ -40,7 +40,7 @@ class InkEngineTest {
         state.deleteSelection()
         assertTrue(state.strokes.single().deleted)
         assertTrue(state.undo()); assertEquals(.3f,state.strokes[0].points[0].x, .00001f)
-        assertTrue(state.undo()); assertEquals(original,state.strokes[0])
+        assertTrue(state.undo()); assertEquals(original.points,state.strokes[0].points)
         assertTrue(state.redo()); assertEquals(.3f,state.strokes[0].points[0].x, .00001f)
         assertTrue(state.redo()); assertTrue(state.strokes.single().deleted)
     }
@@ -107,7 +107,71 @@ class InkEngineTest {
         assertTrue(state.strokes.single().deleted); assertEquals(changes,0)
         state.finishGesture(false); assertEquals(state.strokes,listOf(original)); assertFalse(state.undo())
         state.beginGesture(); state.previewGesture(listOf(original.copy(deleted=true))); state.finishGesture(true)
-        assertEquals(changes,1); assertTrue(state.undo()); assertEquals(state.strokes,listOf(original)); assertFalse(state.undo())
+        assertEquals(changes,1); assertTrue(state.undo()); assertEquals(state.strokes.single().points,original.points); assertFalse(state.undo())
+    }
+
+    @Test fun groupPreviewUsesOriginalPositionsAndOneUndoEntry() {
+        val a = stroke(listOf(p(.2f,.2f),p(.3f,.3f)))
+        val b = a.copy(id="second",points=listOf(p(.4f,.4f),p(.5f,.5f)))
+        val state = InkPageState(); state.load(listOf(a,b)); state.select(setOf(a.id,b.id))
+        var changes = 0; state.onChange = { changes++ }
+        state.beginGesture(); state.previewSelectionTransform(.05f,.06f); state.previewSelectionTransform(.1f,.12f)
+        assertEquals(changes,0)
+        state.strokes.zip(listOf(a,b)).forEach { (moved, original) ->
+            assertEquals(moved.points.first().x-original.points.first().x,.1f,.00001f)
+            assertEquals(moved.points.first().y-original.points.first().y,.12f,.00001f)
+        }
+        state.finishGesture(true); assertEquals(changes,1)
+        assertTrue(state.undo()); assertFalse(state.undo())
+        assertEquals(state.strokes.map { it.points },listOf(a,b).map { it.points })
+    }
+    @Test fun reconciliationIgnoresEchoPreservesSelectionAndDefersDuringGesture() {
+        val a = stroke(listOf(p(.2f,.2f),p(.3f,.3f)))
+        val b = a.copy(id="remote",updatedAt="2027-01-01T00:00:00Z")
+        val state = InkPageState(); state.load(listOf(a)); state.select(setOf(a.id))
+        state.transformSelection(.1f,0f)
+        assertFalse(state.reconcile(state.strokes.reversed()))
+        state.beginGesture(); state.previewSelectionTransform(.1f,0f)
+        assertFalse(state.reconcile(listOf(a,b))); assertEquals(state.strokes.size,1)
+        state.finishGesture(true); assertEquals(state.strokes.size,2)
+        assertEquals(state.selectedIds,setOf(a.id))
+        assertTrue(state.undo()); assertTrue(state.strokes.any { it.id == b.id })
+        assertTrue(state.undo()); assertTrue(state.strokes.any { it.id == b.id })
+    }
+    @Test fun explicitShapesPreviewActualGeometryInEitherDragDirection() {
+        val start = p(.7f,.8f); val end = p(.2f,.3f)
+        val rectangle = explicitShape(start,end,ShapeMode.Rectangle)
+        assertEquals(rectangle.type,"rectangle"); assertEquals(rectangle.points.size,5)
+        assertEquals(rectangle.points.first(),rectangle.points.last())
+        assertEquals(rectangle.points[0].x,.2f); assertEquals(rectangle.points[0].y,.3f)
+        assertEquals(explicitShape(start,end,ShapeMode.Line).points,listOf(start,end))
+        assertEquals(explicitShape(start,end,ShapeMode.Arrow).points.size,5)
+        assertEquals(explicitShape(start,end,ShapeMode.Ellipse).points.size,49)
+    }
+
+    @Test fun reorderedEchoAndRemoteEditKeepLocalHistory() {
+        val a = stroke(listOf(p(.2f,.2f),p(.3f,.3f)))
+        val b = a.copy(id="remote")
+        val state = InkPageState(); val initial = listOf(a,b); state.load(initial)
+        assertFalse(state.reconcile(listOf(b,a))); assertTrue(state.strokes === initial)
+        state.select(setOf(a.id)); state.transformSelection(.1f,.1f)
+        val remote = b.copy(color="#FF0000",rev=1,updatedAt="2027-01-01T00:00:00Z")
+        assertTrue(state.reconcile(listOf(remote,a)))
+        assertEquals(state.selectedIds,setOf(a.id)); assertTrue(state.undo())
+        assertEquals(state.strokes.first().points,a.points); assertEquals(state.strokes.last(),remote)
+        assertTrue(a.sameDrawing(a.copy(rev=2,updatedAt="2027-01-01T00:00:00Z")))
+        assertFalse(a.sameDrawing(a.copy(color="#FF0000")))
+    }
+
+    @Test fun groupTranslationStopsTogetherAtPageEdge() {
+        val a = stroke(listOf(p(.2f,.2f),p(.3f,.3f)))
+        val b = a.copy(id="right",points=listOf(p(.8f,.4f),p(.9f,.5f)))
+        val state = InkPageState(); state.load(listOf(a,b)); state.select(setOf(a.id,b.id))
+        state.beginGesture(); state.previewSelectionTransform(.4f,0f)
+        state.strokes.zip(listOf(a,b)).forEach { (moved, original) ->
+            assertEquals(moved.points.first().x-original.points.first().x,.1f,.00001f)
+        }
+        assertEquals(state.strokes[0].updatedAt,state.strokes[1].updatedAt)
     }
 
 }

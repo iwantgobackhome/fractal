@@ -27,6 +27,7 @@ import { threadContext } from '../../ai/thread-context';
 import type { AiMessage } from '../../ai/provider';
 import { sha256 } from '../../pdf/index';
 import { TEXT_LAYOUT_VERSION } from '../../pdf/text-layout';
+import { prepareQuestionImage } from '../../ai/images';
 import { HttpError } from '../errors';
 
 function validatePhysicalPage(paper: Paper, page: number | undefined): void {
@@ -162,6 +163,8 @@ function glossaryTerms(text: string): { term: string; page: number; definition: 
 }
 const glossaryCache = new Map<string, { text: string; terms: ReturnType<typeof glossaryTerms>; answer: AiAnswer }>();
 interface GenerateOptions {
+  images?: string[];
+  imageExpected?: boolean;
   earlierMessages?: AiMessage[];
   sourceContext?: Pick<AiAnswer, 'citations' | 'contextSourceStatus'>;
   page?: number;
@@ -196,16 +199,18 @@ async function* generateEvents(
   let text = '',
     inputTokens: number | null = null,
     outputTokens: number | null = null;
+  let imageFallbackReason: string | undefined;
   const start = Date.now();
   for await (const delta of ctx.registry.complete(
     feature,
-    { system, messages: [...(options?.earlierMessages ?? []), { role: 'user', content: question }], signal: options?.signal },
+    { system, messages: [...(options?.earlierMessages ?? []), { role: 'user', content: question }], signal: options?.signal, images: options?.images },
     chosen.selection,
   )) {
     if (delta.type === 'text') {
       text += delta.text;
       yield { type: 'delta', text: delta.text };
     } else {
+      imageFallbackReason ??= delta.imageFallbackReason;
       inputTokens = delta.inputTokens;
       outputTokens = delta.outputTokens;
     }
@@ -228,6 +233,14 @@ async function* generateEvents(
     outputTokens,
     durationMs: Date.now() - start,
     ...options?.sourceContext,
+    ...(options?.imageExpected
+      ? {
+          imageInput: options.images?.length && !imageFallbackReason ? ('sent' as const) : ('text_only' as const),
+          ...(!options.images?.length || imageFallbackReason
+            ? { imageFallbackReason: imageFallbackReason ?? 'Crop unavailable; answered using text context.' }
+            : {}),
+        }
+      : {}),
   };
   const terms = options?.glossaryKey ? glossaryTerms(text) : undefined;
   if (options?.glossaryKey) glossaryCache.set(options.glossaryKey, { text, terms: terms ?? [], answer });
@@ -331,6 +344,8 @@ export async function handleAi(method: string, segments: string[], request: Inco
         {
           page,
           sourceContext: source,
+          imageExpected: Boolean(input.attachment || input.croppedPngBase64),
+          images: usable && input.croppedPngBase64 ? [await prepareQuestionImage(input.croppedPngBase64)] : undefined,
           earlierMessages: threadContext(
             input.threadId && ctx.store instanceof SqlitePaperStore ? ctx.store.listHistory(key) : [],
             key,
@@ -346,6 +361,7 @@ export async function handleAi(method: string, segments: string[], request: Inco
               page: input.page,
               rect: input.rect,
               selectedText: input.selectedText,
+              ...(input.attachment && usable ? { attachment: input.attachment } : {}),
               ...(input.threadId === undefined ? {} : { threadId: input.threadId }),
               selection: input.selection,
               ...(input.answerLanguage === undefined ? {} : { answerLanguage: input.answerLanguage }),
@@ -365,10 +381,10 @@ export async function handleAi(method: string, segments: string[], request: Inco
       .filter((b) => b.regions.some((r) => r.page === input.page))
       .map((b) => b.sourceText)
       .join('\n')
-      .slice(0, 30000);
-    const question = `이 ${input.kind}을 설명하세요. 페이지 ${input.page}, 영역 ${JSON.stringify(input.bbox)}. ${input.kind === 'equation' ? '수식을 $$...$$ 형태의 LaTeX로 포함하세요.' : ''}\n주변 텍스트: ${input.surroundingText ?? ''}`;
-    const generationQuestion = `${usable ? question : question.replace(JSON.stringify(input.bbox), 'unavailable: stored source mismatch; geometry is not evidence')}${input.provenance?.coordinateSpace ? `\nCoordinate space: ${input.provenance.coordinateSpace}` : ''}${input.provenance?.textSource ? `\nContext text source: ${input.provenance.textSource}` : ''}`;
-    // The CLI adapters currently accept text only. The crop is validated but surrounding page text is used.
+      .slice(0, 1500);
+    const shortQuestion = input.question ?? `${input.attachment?.label ?? input.kind} 설명`;
+    const question = `이 ${input.kind}을 설명하세요. 페이지 ${input.page}, 영역 ${JSON.stringify(input.bbox)}. ${input.kind === 'equation' ? '수식을 $$...$$ 형태의 LaTeX로 포함하세요.' : ''}\n주변 텍스트: ${input.surroundingText?.slice(0, 2500) ?? ''}`;
+    const generationQuestion = `${shortQuestion}\n${usable ? question : question.replace(JSON.stringify(input.bbox), 'unavailable: stored source mismatch; geometry is not evidence')}${input.provenance?.coordinateSpace ? `\nCoordinate space: ${input.provenance.coordinateSpace}` : ''}${input.provenance?.textSource ? `\nContext text source: ${input.provenance.textSource}` : ''}`;
     return {
       kind: 'sse',
       status: 200,
@@ -381,6 +397,8 @@ export async function handleAi(method: string, segments: string[], request: Inco
         {
           page: input.page,
           sourceContext: source,
+          imageExpected: Boolean(input.attachment || input.croppedPngBase64),
+          images: usable && input.croppedPngBase64 ? [await prepareQuestionImage(input.croppedPngBase64)] : undefined,
           earlierMessages: threadContext(
             input.threadId && ctx.store instanceof SqlitePaperStore ? ctx.store.listHistory(key) : [],
             key,
@@ -391,12 +409,22 @@ export async function handleAi(method: string, segments: string[], request: Inco
           history: {
             paperKey: key,
             kind: 'explanation',
-            question,
+            question: shortQuestion,
             requestId: input.requestId,
             context: {
               page: input.page,
               rect: input.bbox,
-              selectedText: input.surroundingText,
+              selectedText: input.attachment ? undefined : input.surroundingText?.slice(0, 2500),
+              ...(usable && (input.attachment || input.croppedPngBase64)
+                ? {
+                    attachment: input.attachment ?? {
+                      page: input.page,
+                      bbox: input.bbox,
+                      kind: input.kind === 'text' ? 'region' : input.kind,
+                      label: input.kind,
+                    },
+                  }
+                : {}),
               ...(input.threadId === undefined ? {} : { threadId: input.threadId }),
               explanationKind: input.kind,
               selection: input.selection,

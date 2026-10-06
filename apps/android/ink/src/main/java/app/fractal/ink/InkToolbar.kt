@@ -153,7 +153,7 @@ fun InkToolbar(state: InkPageState, tool: InkToolState, modifier: Modifier = Mod
                             tool.buttonEraserMode = if (tool.buttonEraserMode == EraserMode.Stroke) EraserMode.Partial else EraserMode.Stroke
                         })
                     } else if (item == InkTool.Shape) {
-                        ShapeMode.entries.forEach { shape -> DropdownMenuItem(text = { Text(stringResource(shapeLabel(shape))) }, onClick = { tool.shapeMode = shape; popover = null }) }
+                        ShapeMode.entries.forEach { shape -> DropdownMenuItem(text = { Text(stringResource(shapeLabel(shape))) }, onClick = { tool.active = InkTool.Shape; tool.shapeMode = shape; onToolSelected(InkTool.Shape); popover = null }) }
                     }
                     val widths = when (item) {
                         InkTool.Highlighter -> listOf(.009f,.015f,.023f)

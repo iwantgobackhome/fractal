@@ -1,5 +1,6 @@
 package app.fractal.reader
 
+import androidx.lifecycle.repeatOnLifecycle
 import android.app.Application
 import app.fractal.data.FractalDatabase
 import app.fractal.data.PdfCache
@@ -21,7 +22,8 @@ class ReaderApplication : Application() {
     val credentials by lazy { HubCredentialStore(this) }
     val client by lazy { HubClient(credentials) }
     internal val discoveryImages by lazy { DiscoveryImages(this) }
-    val sync by lazy { SyncEngine(database, client) }
+    val sync: SyncEngine by lazy { SyncEngine(database, client) { realtime.notifyLocalChange(it) } }
+    val realtime: app.fractal.sync.RealtimeSync by lazy { app.fractal.sync.RealtimeSync({ sync.syncOnce(); Unit }, client::syncEvents) }
     val discovery by lazy { app.fractal.sync.DiscoveryRepository(database, client, sync) {
         app.fractal.sync.discoveryScope(credentials.load())
     } }
@@ -30,7 +32,7 @@ class ReaderApplication : Application() {
     } }
     val originalText by lazy { OriginalTextRepository(database, client) }
     internal val submissionScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
-    val history by lazy { HistoryRepository(database, client, submissionScope) }
+    val history by lazy { HistoryRepository(database, client, submissionScope) { _, body -> readerRetainedCrop(cache, body) } }
     val metadata by lazy { MetadataStore(database) {
         credentials.load()?.deviceId ?: (settings.getString("localDeviceId", null)
             ?: UUID.randomUUID().toString().also { settings.edit().putString("localDeviceId", it).commit() })
@@ -48,5 +50,16 @@ class ReaderApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         SyncScheduler.schedule(this, settings.getBoolean("wifiOnly", false))
+    }
+}
+
+/** Composition owns the subscription; leaving or backgrounding the reader cancels its HTTP call. */
+@androidx.compose.runtime.Composable
+internal fun ReaderApplication.ReaderRealtimeSync(paperKey: String) {
+    val lifecycle = androidx.lifecycle.compose.LocalLifecycleOwner.current.lifecycle
+    androidx.compose.runtime.LaunchedEffect(paperKey, lifecycle) {
+        lifecycle.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.RESUMED) {
+            if (credentials.load() != null) realtime.run(paperKey)
+        }
     }
 }

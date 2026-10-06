@@ -16,8 +16,8 @@ android {
         applicationId = "app.newspapers.reader"
         minSdk = 29
         targetSdk = 35
-        versionCode = 11
-        versionName = "0.4.2"
+        versionCode = 12
+        versionName = "0.5.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     val ciDebugKeystorePath = providers.environmentVariable("FRACTAL_ANDROID_KEYSTORE_PATH").orNull

@@ -42,3 +42,8 @@ export function isHighlighter(stroke: InkStroke): boolean {
 export function strokeHits(stroke: InkStroke, x: number, y: number, radius: number, aspect: number): boolean {
   return stroke.points.some(([px, py]) => Math.hypot(px - x, (py - y) * aspect) <= radius);
 }
+
+/** Snapped shape vertices are already explicit geometry; keep corners and arrow wings exact. */
+export function shapePath(stroke: Pick<InkStroke, 'points'>, width: number, height: number): string {
+  return stroke.points.map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${(x * width).toFixed(2)},${(y * height).toFixed(2)}`).join('');
+}

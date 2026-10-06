@@ -112,7 +112,7 @@ function aborted<T>(promise: Promise<T>, signal: AbortSignal): Promise<T> {
 /** Bounded HTTPS GET. Every redirect gets fresh DNS validation, then a connection pinned to that result. */
 export async function publicGet(input: string, options: PublicNetworkOptions = {}): Promise<{ url: string; bytes: Buffer; contentType: string }> {
   const timeoutMs = options.timeoutMs ?? 30_000,
-    maxBytes = options.maxBytes ?? 50 * 1024 * 1024;
+    maxBytes = options.maxBytes ?? 300 * 1024 * 1024;
   if (!Number.isSafeInteger(timeoutMs) || timeoutMs < 1 || !Number.isSafeInteger(maxBytes) || maxBytes < 1)
     throw new SourceError('INVALID_INPUT', '다운로드 제한이 올바르지 않습니다.');
   const controller = new AbortController();

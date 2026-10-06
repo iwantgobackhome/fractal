@@ -120,8 +120,10 @@ export class ApiClient {
 
   // ------------------------------------------------------------------ reads
 
-  snapshot(paperKey: string): Promise<Snapshot> {
-    return this.request<Snapshot>(apiPath('/api/papers/:key', { key: paperKey }));
+  snapshot(paperKey: string, pageStart?: number): Promise<Snapshot> {
+    return this.request<Snapshot>(
+      apiPath('/api/papers/:key', { key: paperKey }) + (pageStart === undefined ? '' : `?pageStart=${pageStart}&pageEnd=${pageStart + 29}`),
+    );
   }
 
   connection(): Promise<Connection> {
@@ -157,8 +159,11 @@ export class ApiClient {
     return this.request(apiPath('/api/papers/:key', { key: paperKey }), { method: 'DELETE' });
   }
 
-  startTranslation(paperKey: string, modelId: string): Promise<{ job: Job }> {
-    return this.request(apiPath('/api/papers/:key/translation', { key: paperKey }), { method: 'POST', body: { modelId } });
+  startTranslation(paperKey: string, modelId: string, pageRange?: { start: number; end: number }): Promise<{ job: Job }> {
+    return this.request(apiPath('/api/papers/:key/translation', { key: paperKey }), {
+      method: 'POST',
+      body: { modelId, ...(pageRange ? { pageStart: pageRange.start, pageEnd: pageRange.end } : {}) },
+    });
   }
 
   pauseJob(jobId: string): Promise<{ job: Job }> {
