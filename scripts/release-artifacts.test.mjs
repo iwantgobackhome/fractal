@@ -59,7 +59,7 @@ test('release manifests preserve update metadata and reject unknown or missing a
       'dist/release/android/android-verification.json',
       JSON.stringify({
         version,
-        versionCode: 12,
+        versionCode: 13,
         applicationId: 'app.newspapers.reader',
         debugSigned: true,
         signatureVerified: true,

@@ -13,7 +13,7 @@ import { sha256 } from '../pdf/index';
 const roots: string[] = [];
 afterEach(() => roots.splice(0).forEach((root) => rmSync(root, { recursive: true, force: true })));
 
-it('keeps long-book snapshots bounded and translates only selected sections without deleting earlier translations', async () => {
+it('keeps long-book snapshots bounded, translates selected sections, and widens to the whole book without resending them', async () => {
   const root = mkdtempSync(join(tmpdir(), 'fractal-book-api-'));
   roots.push(root);
   const store = new SqlitePaperStore(root);
@@ -88,7 +88,7 @@ it('keeps long-book snapshots bounded and translates only selected sections with
       body: JSON.stringify({ modelId: 'gpt-6-sol', ...range }),
     });
   const settle = async () => {
-    for (let i = 0; i < 100 && jobs.getJobForPaper(key)?.state === 'running'; i++) await new Promise((r) => setTimeout(r, 10));
+    for (let i = 0; i < 1000 && jobs.getJobForPaper(key)?.state === 'running'; i++) await new Promise((r) => setTimeout(r, 10));
   };
   try {
     const first = (await (await fetch(`${url}/api/papers/${key}`)).json()).data;
@@ -107,12 +107,15 @@ it('keeps long-book snapshots bounded and translates only selected sections with
     expect(sent).toEqual([31, 32, 33, 34]);
     expect(store.listTranslations(key).filter((t) => t.status === 'completed')).toHaveLength(4);
     expect((await post({ pageStart: 1, pageEnd: 31 })).status).toBe(400);
-    // Old clients may send a whole-document start: even that is bounded to the first section.
+    // A whole-document start translates every remaining page and reuses the sections already done.
     expect((await post()).status).toBe(200);
     await settle();
-    expect(sent.slice(4)).toEqual(Array.from({ length: 30 }, (_, i) => i + 1));
+    expect(sent.slice(4)).toEqual(Array.from({ length: 1232 }, (_, i) => i + 1).filter((page) => page < 31 || page > 34));
+    expect(jobs.getJobForPaper(key)).toMatchObject({ state: 'completed', completedBlocks: 1232, totalTranslatableBlocks: 1232 });
+    expect(jobs.getJobForPaper(key)?.pageRange).toBeUndefined();
+    expect(store.listTranslations(key).filter((t) => t.status === 'completed')).toHaveLength(1232);
   } finally {
     await server.close();
     store.db.close();
   }
-}, 15_000);
+}, 60_000);

@@ -85,6 +85,8 @@ export function ReaderBar(props: ReaderBarProps): JSX.Element {
   const [menuOpen, setMenuOpen, menuRef] = usePopover();
   const longDocument = pageCount > 300;
   const action = primaryAction(job);
+  // After section translations, the primary button widens the job to the whole book.
+  const widen = longDocument && job?.pageRange != null && action === 'saved';
   const [rangeOpen, setRangeOpen] = useState(false);
   const [rangeStart, setRangeStart] = useState(1);
   const [rangeEnd, setRangeEnd] = useState(30);
@@ -96,13 +98,11 @@ export function ReaderBar(props: ReaderBarProps): JSX.Element {
   const title = paper?.title?.trim() || paper?.paperKey || '';
   const progress = progressText(job);
   const translateDisabled =
-    (!longDocument && action === 'saved') || (action !== 'pause' && !props.canTranslate) || (action === 'start' && props.selectedModelId.trim() === '');
+    (action === 'saved' && !widen) || (action !== 'pause' && !props.canTranslate) || (action === 'start' && props.selectedModelId.trim() === '');
   const modes: ViewMode[] = narrow ? ['source', 'translation'] : ['source', 'split', 'translation'];
 
   const runPrimary = () => {
-    if (longDocument && action !== 'pause' && (action !== 'resume' || !job?.pageRange)) {
-      offerRange(currentPage);
-    } else if (action === 'start') {
+    if (action === 'start' || widen) {
       props.onStart(props.selectedModelId);
     } else if (action === 'pause' && job !== null) {
       props.onPause(job.jobId);
@@ -201,19 +201,30 @@ export function ReaderBar(props: ReaderBarProps): JSX.Element {
             options={TRANSLATION_LANGUAGES.map((l) => ({ value: l.code, label: l.name }))}
             onChange={props.onLanguage}
           />
-          {action !== 'saved' || longDocument ? (
+          {action !== 'saved' || widen ? (
             <button
               type="button"
               className={`reader-bar__action${action === 'start' ? ' is-primary' : ''}`}
               onClick={runPrimary}
               disabled={translateDisabled}
-              title={action === 'start' ? (props.canTranslate ? props.sendHint : (props.disabledReason ?? undefined)) : undefined}
+              title={
+                action === 'start' || widen
+                  ? props.canTranslate
+                    ? longDocument
+                      ? ko
+                        ? `${pageCount}쪽을 한 쪽씩 차례로 번역합니다. 구독 사용량이 많이 들고, 한도에 닿으면 일시정지되어 나중에 이어서 할 수 있습니다.`
+                        : `Translates all ${pageCount} pages one at a time. This uses a lot of your subscription; at the limit it pauses and can be resumed later.`
+                      : props.sendHint
+                    : (props.disabledReason ?? undefined)
+                  : undefined
+              }
             >
-              {longDocument && (action === 'saved' || action === 'start' || (action === 'resume' && !job?.pageRange))
-                ? ko
-                  ? '페이지 범위 번역'
-                  : 'Translate pages'
-                : primaryLabel(job)}
+              {longDocument && (action === 'start' || widen) ? (ko ? '전체 번역' : 'Translate whole book') : primaryLabel(job)}
+            </button>
+          ) : null}
+          {longDocument && action !== 'pause' ? (
+            <button type="button" className="reader-bar__action" disabled={!props.canTranslate} onClick={() => offerRange(currentPage)}>
+              {ko ? '페이지 범위 번역' : 'Translate pages'}
             </button>
           ) : null}
           {longDocument && job?.pageRange && job.state !== 'running' && job.pageRange.end < pageCount ? (

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.1 — 2026-10-07
+
+Books over 300 pages can be translated whole again, alongside page-range translation; widening to the whole book reuses sections already translated. Android versionCode 13. See [release notes](docs/releases/0.5.1.md).
+
 ## 0.5.0 — 2026-10-07
 
 Android zoom and pan keep the page visible and no longer crash; changes sync in realtime through Hub events; pen input no longer lags and shapes work; a long-press drags a lasso selection as one group; figure and equation buttons appear only on tap; paragraph selection covers whole lines; translated figures use one scale; figure and region questions send the image itself on desktop and Android; PDFs up to 3000 pages and 300 MiB open, with section translation over 300 pages; the connect screen explains Tailscale. Android versionCode 12. See [release notes](docs/releases/0.5.0.md).

@@ -673,7 +673,6 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
         }
         const job = await locked(async () => {
           const current = jobs.getJob(jobId) ?? existing;
-          if ((store.getPaper(current.paperKey)?.pageCount ?? 0) > 300 && !current.pageRange) throw invalidInput('Choose a page range to translate this book');
           if (current.state === 'running') return current;
           // Refused before the record changes: a resume while signed out would only create
           // a running job that pauses itself on its first request.
@@ -953,7 +952,7 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
     }
     return locked(async () => {
       const paper = requireReadablePaper(paperKey);
-      if ((paper.pageCount ?? 0) > 300 || body.pageStart !== undefined || body.pageEnd !== undefined) {
+      if (body.pageStart !== undefined || body.pageEnd !== undefined) {
         const start = Number(body.pageStart ?? 1),
           end = Number(body.pageEnd ?? Math.min(paper.pageCount ?? 0, start + 29));
         if (!Number.isInteger(start) || !Number.isInteger(end) || start < 1 || end < start || end > (paper.pageCount ?? 0) || end - start >= 30)
@@ -968,6 +967,16 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
         return job;
       }
       const existing = store.getJobForPaper(paperKey);
+      // A whole-document start after section translations widens the job to every page;
+      // the sections already translated are reused, not sent again.
+      if (existing?.pageRange) {
+        if (existing.state === 'running') throw appError('BUSY', '먼저 현재 구간의 번역을 일시정지해 주세요. / Pause the current section first.', true);
+        await assertAccountReady(modelId);
+        await settleLoop(existing.jobId);
+        const job = jobs.startWhole(paperKey, modelId, promptVersion());
+        drive(job);
+        return job;
+      }
       // A finished or running job is simply reported: nothing is sent, so no account is needed.
       if (
         existing !== null &&
@@ -1007,8 +1016,7 @@ export function createApiServer(options: ApiServerOptions): ApiServer {
       throw appError('MODEL_UNAVAILABLE', '이 모델은 사용하지 않도록 설정되어 있습니다.', false);
     }
     return locked(async () => {
-      if ((requireReadablePaper(paperKey).pageCount ?? 0) > 300)
-        throw invalidInput('긴 문서는 페이지 범위를 선택해 번역해 주세요. / Choose a page range for this book.');
+      requireReadablePaper(paperKey);
       const existing = store.getJobForPaper(paperKey);
       if (existing === null) throw notFound('이 논문에는 아직 번역 작업이 없습니다. 번역 시작을 사용해 주세요.');
       // A replay of a request that already went through returns the job it created and
