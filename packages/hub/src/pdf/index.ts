@@ -5,7 +5,7 @@ import { getDocument, OPS } from 'pdfjs-dist/legacy/build/pdf.mjs';
 import type { Block, Coverage, Region } from '@fractal/shared';
 import { SourceError } from '../arxiv/index';
 
-export const EXTRACTION_VERSION = 'pdfjs6-lines-v5';
+export const EXTRACTION_VERSION = 'pdfjs6-lines-v6';
 export const sha256 = (data: string | Uint8Array) => createHash('sha256').update(data).digest('hex');
 export interface ExtractionOptions {
   maxPages?: number;
@@ -205,9 +205,11 @@ function absorb(host: Line, piece: Line): void {
   }
 }
 /** A word space in the line's own type size, capped below the narrowest common column gutter.
- * A bold run-in heading ("Evaluation.") is followed by a deliberately wider space. */
+ * A bold run-in heading ("Evaluation.") or caption label ("Figure 3.18") is followed by a
+ * deliberately wider space. */
 const RUN_IN_GAP_EM = 2.5;
-const isRunInHeading = (l: Line) => l.chars > 0 && l.boldChars / l.chars >= 0.8 && /[.:]$/.test(l.text);
+const isRunInHeading = (l: Line) =>
+  l.chars > 0 && l.boldChars / l.chars >= 0.8 && (/[.:]$/.test(l.text) || /^(?:figure|fig\.?|table)\s*\d+(?:\.\d+)*[a-z]?$/i.test(l.text));
 const joinGap = (a: Line, b: Line) => (isRunInHeading(a) ? Math.max(a.em, b.em) * RUN_IN_GAP_EM : Math.min(Math.max(a.em, b.em) * SAME_LINE_GAP_EM, 0.024));
 /** Where the two columns of a two-column page meet: the typical right edge of full left-column
  * lines and the typical left edge of right-column lines. Null on a one-column page. */
