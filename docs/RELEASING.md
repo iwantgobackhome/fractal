@@ -4,7 +4,7 @@ The release workflow builds one reviewed source commit on Windows x64, Linux x64
 
 ## Versions and source gate
 
-Use Node.js 22.12 or newer (CI pins 22.23.1), `npm ci`, `npm run release:verify`, `npm run build -w @fractal/shared`, `npm run typecheck`, and `npm run desktop:build`. The shared package must be built before Hub/UI typechecking on a clean checkout. The root, shared, Hub and UI manifests and lockfile must agree. Android must have `versionName 0.5.1` and `versionCode 13`; the tag must be exactly `v0.5.1`. A higher historical Android code would require a reviewed monotonic increment before changing this gate.
+Use Node.js 22.12 or newer (CI pins 22.23.1), `npm ci`, `npm run release:verify`, `npm run build -w @fractal/shared`, `npm run typecheck`, and `npm run desktop:build`. The shared package must be built before Hub/UI typechecking on a clean checkout. The root, shared, Hub and UI manifests and lockfile must agree. Android must have `versionName 0.5.2` and `versionCode 14`; the tag must be exactly `v0.5.2`. A higher historical Android code would require a reviewed monotonic increment before changing this gate.
 
 The workflow accepts `release/**` pushes, `v*` tags and manual dispatches on a release branch or version tag. First validate the reviewed source and any corrections on a release branch. After that matrix succeeds and its artifacts are reviewed, create the immutable version tag at that same source commit; the tag runs the final publication matrix. Avoid an additional manual dispatch for a ref already being validated by its push or tag event. Do not overwrite main or the existing 0.1.0 release. Validate YAML with actionlint and inspect native host architecture assertions before any external operation.
 
@@ -12,10 +12,10 @@ The workflow accepts `release/**` pushes, `v*` tags and manual dispatches on a r
 
 | Host | Command | Expected files under `dist/installer/` |
 | --- | --- | --- |
-| Windows x64 | `npm run desktop:dist:win` | `News-Papers-0.5.1-win-x64.exe` |
-| Linux x64 | `npm run desktop:dist:linux` | `News-Papers-0.5.1-linux-x64.AppImage`, `News-Papers-0.5.1-linux-x64.deb` |
-| macOS Apple Silicon | `npm run desktop:dist:mac` | `News-Papers-0.5.1-mac-arm64.dmg` |
-| macOS Intel | `npm run desktop:dist:mac` | `News-Papers-0.5.1-mac-x64.dmg` |
+| Windows x64 | `npm run desktop:dist:win` | `News-Papers-0.5.2-win-x64.exe` |
+| Linux x64 | `npm run desktop:dist:linux` | `News-Papers-0.5.2-linux-x64.AppImage`, `News-Papers-0.5.2-linux-x64.deb` |
+| macOS Apple Silicon | `npm run desktop:dist:mac` | `News-Papers-0.5.2-mac-arm64.dmg` |
+| macOS Intel | `npm run desktop:dist:mac` | `News-Papers-0.5.2-mac-x64.dmg` |
 
 CI uses `windows-2025`, `ubuntu-24.04`, `macos-15` (Apple Silicon) and `macos-15-intel`, checks the actual Node host architecture, and builds each Mac architecture on its native runner. The local macOS command builds only the host architecture, matching npm's installed optional PTY package; produce the second DMG on a host of that architecture. Local cross-architecture packaging cannot establish native runtime success. Every builder passes `--publish never`.
 
@@ -41,7 +41,7 @@ Optional Mac Actions secrets are `MAC_CSC_LINK`, `MAC_CSC_KEY_PASSWORD`, `APPLE_
 
 CI uses JDK 17, SDK platform 35 and build-tools 35.0.0, then runs `bash gradlew --no-daemon :app:assembleDebug` in `apps/android`. It restores the stable debug keystore from the private `ANDROID_DEBUG_KEYSTORE_BASE64` Actions secret to an isolated runner temporary path. Restore and Gradle use the same explicit `FRACTAL_ANDROID_KEYSTORE_PATH`; CI refuses a missing path or key and never falls back to a random signing identity. Before assembly, JDK keytool exports the public certificate and checks its SHA-256 against the previous release. Restoration refuses to overwrite an existing file. Local builds retain their existing default signing configuration when the CI path variable is absent. Never commit the key or upload it in artifacts.
 
-Set the public repository variable `ANDROID_RELEASE_CERT_SHA256` to the prior APK certificate SHA-256 (hex, colons optional); every release workflow build requires it for the prebuild key check. `verify-android-release.mjs` then independently checks the assembled APK application ID, version/code, min/target SDK, debug signature and certificate. The report contains only public certificate information. `release-manifest.mjs android` copies the APK as `News-Papers-0.5.1-android-debug.apk` and hashes the payload. No new release keystore or SDK credentials are needed for this debug distribution. These checks make no emulator, physical-device or API 35 runtime claim.
+Set the public repository variable `ANDROID_RELEASE_CERT_SHA256` to the prior APK certificate SHA-256 (hex, colons optional); every release workflow build requires it for the prebuild key check. `verify-android-release.mjs` then independently checks the assembled APK application ID, version/code, min/target SDK, debug signature and certificate. The report contains only public certificate information. `release-manifest.mjs android` copies the APK as `News-Papers-0.5.2-android-debug.apk` and hashes the payload. No new release keystore or SDK credentials are needed for this debug distribution. These checks make no emulator, physical-device or API 35 runtime claim.
 
 ## Aggregate review and draft publication
 

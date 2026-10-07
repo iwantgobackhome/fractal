@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.2 — 2026-10-07
+
+Figure grids whose bold caption label is set apart from the caption text stay in one crop, with the caption as one block; stored PDFs are re-extracted on open and keep their translations. Android versionCode 14. See [release notes](docs/releases/0.5.2.md).
+
 ## 0.5.1 — 2026-10-07
 
 Books over 300 pages can be translated whole again, alongside page-range translation; widening to the whole book reuses sections already translated. Android versionCode 13. See [release notes](docs/releases/0.5.1.md).
