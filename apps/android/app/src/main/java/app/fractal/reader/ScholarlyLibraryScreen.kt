@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -36,6 +37,7 @@ private fun LibraryEntity.record() = WireJson.format.decodeFromString<LibraryRec
 @Composable
 internal fun ScholarlyLibraryScreen(app: ReaderApplication, onSettings: () -> Unit, onRead: (String) -> Unit,
     embedded: Boolean = false, onRelated: ((LibraryEntity) -> Unit)? = null) {
+    val connectionHint = hubConnectionHint()
     val colors = LocalFractalColors.current
     val railWidth = 78.dp * LocalConfiguration.current.fontScale.coerceAtLeast(1f)
     val scope = rememberCoroutineScope()
@@ -63,7 +65,7 @@ internal fun ScholarlyLibraryScreen(app: ReaderApplication, onSettings: () -> Un
     val labels = listOf("saved" to libraryText("Saved", "저장"), "recent" to libraryText("Recent", "최근 읽음"), "folders" to libraryText("Folders", "폴더"))
     fun mutate(action: suspend () -> Unit) { scope.launch {
         runCatching { action() }.onSuccess { SyncScheduler.now(app, app.settings.getBoolean("wifiOnly", false)) }
-            .onFailure { error = it.message.orEmpty() }
+            .onFailure { error = hubErrorMessage(it, connectionHint) }
     } }
     fun refresh() { scope.launch {
         syncing = true
@@ -72,7 +74,7 @@ internal fun ScholarlyLibraryScreen(app: ReaderApplication, onSettings: () -> Un
             // Drain dependent edits after creation/CAS rebases, without an unbounded retry loop.
             repeat(8) { if (app.database.metadata().pending().isNotEmpty()) app.sync.syncOnce() }
             app.sync.resolveMissingPdfs()
-        }.onSuccess { error = "" }.onFailure { error = it.message.orEmpty() }
+        }.onSuccess { error = "" }.onFailure { error = hubErrorMessage(it, connectionHint) }
         syncing = false
     } }
     LaunchedEffect(Unit) { if (app.credentials.load() != null) refresh() }
@@ -97,8 +99,10 @@ internal fun ScholarlyLibraryScreen(app: ReaderApplication, onSettings: () -> Un
         Column(Modifier.fillMaxSize()) {
             Column {
             Row(Modifier.fillMaxWidth().padding(horizontal = if (phone) 16.dp else 24.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-                Image(painterResource(R.drawable.branch_mark), contentDescription = "News Papers", Modifier.size(32.dp),
-                    colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(colors.ink))
+                Box(Modifier.size(32.dp).clipToBounds(), contentAlignment = Alignment.Center) {
+                    Image(painterResource(R.drawable.ic_launcher_monochrome), contentDescription = "News Papers", Modifier.requiredSize(72.dp),
+                        colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(colors.ink))
+                }
                 Spacer(Modifier.width(10.dp))
                 Text(libraryText("Research library", "연구 서재"), Modifier.weight(1f), fontFamily = ScholarlySerif,
                     fontSize = if (phone) 28.sp else 30.sp, lineHeight = 34.sp, color = colors.ink)
@@ -308,6 +312,7 @@ private fun FolderEditor(folder: FolderEntity?, folders: List<FolderEntity>, onD
 @Composable
 internal fun PaperOrganizer(app: ReaderApplication, paper: LibraryEntity, folders: List<FolderEntity>, onDismiss: () -> Unit,
     onSave: (List<String>, List<String>) -> Unit) {
+    val connectionHint = hubConnectionHint()
     val scope = rememberCoroutineScope()
     val record = paper.record()
     var tags by remember { mutableStateOf(record.tags.joinToString(", ")) }
@@ -334,7 +339,7 @@ internal fun PaperOrganizer(app: ReaderApplication, paper: LibraryEntity, folder
                     else scope.launch {
                         busy = true
                         runCatching { val metadata = app.sync.refreshPaperMetadata(paper.paperKey) ?: error("No PDF available")
-                            app.downloader.download(paper.paperKey, metadata.first) }.onSuccess { cached = true }.onFailure { error = it.message.orEmpty() }
+                            app.downloader.download(paper.paperKey, metadata.first) }.onSuccess { cached = true }.onFailure { error = hubErrorMessage(it, connectionHint) }
                         busy = false
                     }
                 }) { Text(if (busy) libraryText("Downloading…", "다운로드 중…") else if (cached) libraryText("Remove cached PDF", "캐시 PDF 제거") else libraryText("Download for offline reading", "오프라인 읽기용 다운로드")) }
@@ -347,6 +352,7 @@ internal fun PaperOrganizer(app: ReaderApplication, paper: LibraryEntity, folder
 
 @Composable
 private fun ImportPaperDialog(app: ReaderApplication, onDismiss: () -> Unit, onImported: () -> Unit) {
+    val connectionHint = hubConnectionHint()
     var input by remember { mutableStateOf("") }
     var busy by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf("") }
@@ -358,7 +364,7 @@ private fun ImportPaperDialog(app: ReaderApplication, onDismiss: () -> Unit, onI
     } }, confirmButton = { TextButton(enabled = !busy && input.isNotBlank(), onClick = { scope.launch {
         busy = true
         runCatching { app.client.data("/api/papers/open", "POST", buildJsonObject { put("input", input.trim()) }) }
-            .onSuccess { onImported() }.onFailure { error = it.message.orEmpty() }
+            .onSuccess { onImported() }.onFailure { error = hubErrorMessage(it, connectionHint) }
         busy = false
     } }) { Text(if (busy) libraryText("Importing…", "가져오는 중…") else libraryText("Import", "가져오기")) } },
         dismissButton = { TextButton(onClick = onDismiss) { Text(libraryText("Cancel", "취소")) } })
