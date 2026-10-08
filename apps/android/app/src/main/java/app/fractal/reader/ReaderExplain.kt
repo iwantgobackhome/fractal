@@ -101,7 +101,7 @@ internal suspend fun readerRetainedCrop(cache: app.fractal.data.PdfCache, body: 
     val file = cache.file(hash)
     if (!file.isFile) return@withContext null
     try {
-        PdfPages(file).use { source ->
+        PdfPages(file, precomputeSizes = false).use { source ->
             if (source.pdfSha256 != hash || page !in 1..source.pageCount) return@use null
             withReaderCrop(body, source, page to PdfTextSelection("", emptyList(), pdfSha256 = hash))["croppedPngBase64"]?.jsonPrimitive?.contentOrNull
         }

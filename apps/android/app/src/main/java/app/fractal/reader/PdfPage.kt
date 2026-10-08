@@ -104,6 +104,10 @@ fun PdfPage(
     onBackgroundTap: () -> Unit = {},
     onStructureTap: (Float, Float) -> Boolean = { _, _ -> false },
     onHighlightTap: () -> Unit = {},
+    gestureActive: Boolean = false,
+    viewportPan: Float? = null,
+    onViewportTransform: ((Float, Float, Float, Float, Float) -> Unit)? = null,
+    onViewportTransformEnd: () -> Unit = {},
     contentOverlay: @Composable BoxScope.(Int, Int, OriginalTextPage?) -> Unit = { _, _, _ -> },
 ) {
     val parsedHighlights = remember(highlights) {
@@ -159,7 +163,7 @@ fun PdfPage(
         val widthPx = with(density) { width.roundToPx() }
         val viewportWidthPx = with(density) { maxWidth.toPx() }
         var horizontalPan by remember(source, index) { mutableStateOf(0f) }
-        val boundedPan = horizontalPan.coerceIn(minOf(0f, viewportWidthPx - widthPx), 0f)
+        val boundedPan = (viewportPan ?: horizontalPan).coerceIn(minOf(0f, viewportWidthPx - widthPx), 0f)
         // Page dimensions are available before bitmap rendering; do not lay out a guessed ratio.
         val aspect = remember(source, index) { source.aspectRatio(index) }
         var bitmap by remember(source, index) { mutableStateOf<android.graphics.Bitmap?>(null) }
@@ -180,7 +184,8 @@ fun PdfPage(
         var writingViewport by remember(source, index) { mutableStateOf<Pair<IntRect, Size>?>(null) }
         var visibleTile by remember(source, index) { mutableStateOf<PdfTileSpec?>(null) }
         var tile by remember(source, index) { mutableStateOf<Pair<PdfTileSpec, android.graphics.Bitmap>?>(null) }
-        LaunchedEffect(source, index, zoom, visibleTile) {
+        LaunchedEffect(source, index, zoom, visibleTile, gestureActive) {
+            if (gestureActive) return@LaunchedEffect
             val spec = visibleTile ?: return@LaunchedEffect
             if (zoom <= 1f) return@LaunchedEffect
             kotlinx.coroutines.delay(200)
@@ -193,17 +198,18 @@ fun PdfPage(
             } catch (_: OutOfMemoryError) { /* The scaled base and previous tile remain visible. */ }
         }
         val height = width / aspect
-        Box(Modifier.fillMaxWidth().height(height).clipToBounds()) {
+        Box(Modifier.fillMaxWidth().height(height).then(if (onViewportTransform == null) Modifier.clipToBounds() else Modifier)) {
             // Allow the zoomed page its real width; clipping belongs to the viewport, not the page.
             Box(Modifier.offset { IntOffset(boundedPan.roundToInt(), 0) }
                 .wrapContentSize(Alignment.TopStart, unbounded = true)
                 .width(width).height(height).onGloballyPositioned { coordinates ->
+                    if (gestureActive) return@onGloballyPositioned
                     val origin = coordinates.positionInWindow()
                     val bounds = androidx.compose.ui.geometry.Rect(origin.x, origin.y, origin.x + coordinates.size.width, origin.y + coordinates.size.height)
                     val viewport = nativeViewport?.let { androidx.compose.ui.geometry.Rect(it.left.toFloat(), it.top.toFloat(), it.right.toFloat(), it.bottom.toFloat()) }
                         ?: coordinates.findRootCoordinates().boundsInWindow()
                     val intersection = bounds.intersect(viewport)
-                    inkViewport = if (intersection.width <= 0 || intersection.height <= 0) null else {
+                    val nextInkViewport = if (intersection.width <= 0 || intersection.height <= 0) null else {
                         val left = (intersection.left - bounds.left).roundToInt().coerceIn(0, coordinates.size.width)
                         val top = (intersection.top - bounds.top).roundToInt().coerceIn(0, coordinates.size.height)
                         val right = (intersection.right - bounds.left).roundToInt().coerceIn(left, coordinates.size.width)
@@ -211,10 +217,12 @@ fun PdfPage(
                         (IntRect(left, top, right, bottom) to Size(coordinates.size.width.toFloat(), coordinates.size.height.toFloat()))
                             .takeIf { right > left && bottom > top }
                     }
-                    visibleTile = if (intersection.width <= 0 || intersection.height <= 0) null else PdfRenderBudget.tile(
+                    if (inkViewport != nextInkViewport) inkViewport = nextInkViewport
+                    val nextTile = if (intersection.width <= 0 || intersection.height <= 0) null else PdfRenderBudget.tile(
                         widthPx, with(density) { height.roundToPx() },
                         (intersection.left - bounds.left).roundToInt(), (intersection.top - bounds.top).roundToInt(),
                         intersection.width.roundToInt(), intersection.height.roundToInt())
+                    if (visibleTile != nextTile) visibleTile = nextTile
                 }.border(.5.dp, colors.rule).background(colors.surface)) {
                 val paperFilter = if (colors.paper.red < .3f) {
                             ColorFilter.colorMatrix(ColorMatrix(floatArrayOf(
@@ -298,6 +306,10 @@ fun PdfPage(
                             .coerceIn(minOf(0f, viewportWidthPx - widthPx * factor), 0f)
                         onFingerGesture(gesture.panY, factor, gesture.focusY)
                     },
+                    onFingerWindowTransform = onViewportTransform?.let { transform -> { gesture ->
+                        transform(gesture.panX, gesture.panY, gesture.zoom, gesture.focusX, gesture.focusY)
+                    } },
+                    onFingerTransformEnd = onViewportTransformEnd,
                     fingerScrollsParent = true,
                     nativeInkRouting = nativeViewport != null,
                     nativeViewportInWindow = nativeViewport,
@@ -318,8 +330,8 @@ fun PdfPage(
                         }
                     },
                     onFingerTap = { x, y ->
-                        tappedHighlight = highlights.asReversed().firstNotNullOfOrNull { row ->
-                            val json = runCatching { WireJson.format.parseToJsonElement(row.json).jsonObject }.getOrNull() ?: return@firstNotNullOfOrNull null
+                        tappedHighlight = parsedHighlights.asReversed().firstNotNullOfOrNull { parsed ->
+                            val json = parsed ?: return@firstNotNullOfOrNull null
                             val provenance = json["provenance"] as? JsonObject
                             if (sourceContextStatus(provenance, source.pdfSha256, index + 1, textPage) !in listOf("current", "unknown")) return@firstNotNullOfOrNull null
                             if (provenance?.get("coordinateSpace")?.jsonPrimitive?.content == "unrotated-crop-normalized-v1" && textPage == null) return@firstNotNullOfOrNull null

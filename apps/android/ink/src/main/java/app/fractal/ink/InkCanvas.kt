@@ -77,6 +77,8 @@ fun InkCanvas(
     deviceId: String = "android",
     fingerScrollsParent: Boolean = false,
     onFingerTransform: ((InkFingerTransform) -> Unit)? = null,
+    onFingerTransformEnd: () -> Unit = {},
+    onFingerWindowTransform: ((InkFingerTransform) -> Unit)? = null,
     nativeInkRouting: Boolean = false,
     nativeViewportInWindow: android.graphics.Rect? = null,
     pageOrigin: Offset = Offset.Zero,
@@ -103,6 +105,8 @@ fun InkCanvas(
                 surface.onWritingStateChanged = onWritingStateChanged
                 surface.fingerScrollsParent = fingerScrollsParent
                 surface.onFingerTransform = onFingerTransform
+                surface.onFingerTransformEnd = onFingerTransformEnd
+                surface.onFingerWindowTransform = onFingerWindowTransform
                 surface.setPageGeometry(pageSize, pageOrigin)
                 surface.nativeInkRouting = nativeInkRouting
                 surface.nativeViewportInWindow = nativeViewportInWindow
@@ -147,6 +151,8 @@ private class InkSurface(
     var fingerScrollsParent = false
     var nativeInkRouting = false
     var nativeViewportInWindow: android.graphics.Rect? = null
+    var onFingerWindowTransform: ((InkFingerTransform) -> Unit)? = null
+    var onFingerTransformEnd: () -> Unit = {}
     var onFingerTransform: ((InkFingerTransform) -> Unit)? = null
     private val dry = DryInkView(context)
     private val wet = InProgressStrokesView(context)
@@ -286,6 +292,7 @@ private class InkSurface(
     }
 
     private fun cancel(event: MotionEvent, releaseStream: Boolean = true) {
+        if (pinchOwnsStream) onFingerTransformEnd()
         state.finishGesture(false)
         movingSelectionByFinger = false; selectionStart = null; selectionBounds = null
         dry.preview = null; dry.shapePreview = emptyList()
@@ -369,13 +376,15 @@ private class InkSurface(
                 }
                 val x = fingers.map { event.getX(it) }.average().toFloat()
                 val y = fingers.map { event.getY(it) }.average().toFloat()
-                val span = if (fingers.size >= 2) kotlin.math.hypot(event.getX(fingers[0])-event.getX(fingers[1]),event.getY(fingers[0])-event.getY(fingers[1])) else 0f
+                val span = if (fingers.size >= 2) kotlin.math.hypot(event.getRawX(fingers[0])-event.getRawX(fingers[1]),event.getRawY(fingers[0])-event.getRawY(fingers[1])) else 0f
                 val rawX = fingers.map { event.getRawX(it) }.average().toFloat()
                 val rawY = fingers.map { event.getRawY(it) }.average().toFloat()
                 if (fingerActive && (!fingerScrollsParent || pinchOwnsStream)) {
                     val factor = if (span > 0 && fingerSpan > 0) span/fingerSpan else 1f
                     val transform = onFingerTransform
-                    if (transform == null) onFingerGesture(x-fingerX,y-fingerY,factor)
+                    val windowTransform = onFingerWindowTransform
+                    if (windowTransform != null) windowTransform(InkFingerTransform(rawX-fingerRawX, rawY-fingerRawY, factor, fingerRawX, fingerRawY))
+                    else if (transform == null) onFingerGesture(x-fingerX,y-fingerY,factor)
                     else {
                         val dx = rawX-fingerRawX; val dy = rawY-fingerRawY
                         transform(InkFingerTransform(dx, dy, factor, x-dx+pageOrigin.x, y-dy+pageOrigin.y))
@@ -403,7 +412,7 @@ private class InkSurface(
                 fingerY = fingers.map { event.getY(it) }.average().toFloat()
                 fingerRawX = fingers.map { event.getRawX(it) }.average().toFloat()
                 fingerRawY = fingers.map { event.getRawY(it) }.average().toFloat()
-                fingerSpan = if (fingers.size >= 2) kotlin.math.hypot(event.getX(fingers[0])-event.getX(fingers[1]),event.getY(fingers[0])-event.getY(fingers[1])) else 0f
+                fingerSpan = if (fingers.size >= 2) kotlin.math.hypot(event.getRawX(fingers[0])-event.getRawX(fingers[1]),event.getRawY(fingers[0])-event.getRawY(fingers[1])) else 0f
                 return true
             }
             if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP) {
@@ -432,6 +441,7 @@ private class InkSurface(
                     }
                 }
                 if (action == MotionEvent.ACTION_UP) {
+                    if (pinchOwnsStream) onFingerTransformEnd()
                     fingerActive = false; pinchOwnsStream = false
                     parent?.requestDisallowInterceptTouchEvent(false)
                 } else {
@@ -440,7 +450,7 @@ private class InkSurface(
                     fingerY = fingers.map { event.getY(it) }.average().toFloat()
                     fingerRawX = fingers.map { event.getRawX(it) }.average().toFloat()
                     fingerRawY = fingers.map { event.getRawY(it) }.average().toFloat()
-                    fingerSpan = if (fingers.size >= 2) kotlin.math.hypot(event.getX(fingers[0])-event.getX(fingers[1]),event.getY(fingers[0])-event.getY(fingers[1])) else 0f
+                    fingerSpan = if (fingers.size >= 2) kotlin.math.hypot(event.getRawX(fingers[0])-event.getRawX(fingers[1]),event.getRawY(fingers[0])-event.getRawY(fingers[1])) else 0f
                 }
                 return true
             }
