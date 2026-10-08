@@ -100,7 +100,7 @@ internal fun ScholarlyLibraryScreen(app: ReaderApplication, onSettings: () -> Un
             Column {
             Row(Modifier.fillMaxWidth().padding(horizontal = if (phone) 16.dp else 24.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.size(32.dp).clipToBounds(), contentAlignment = Alignment.Center) {
-                    Image(painterResource(R.drawable.ic_launcher_monochrome), contentDescription = "News Papers", Modifier.requiredSize(72.dp),
+                    Image(painterResource(R.drawable.ic_launcher_monochrome), contentDescription = "News Papers", Modifier.requiredSize(64.dp),
                         colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(colors.ink))
                 }
                 Spacer(Modifier.width(10.dp))
