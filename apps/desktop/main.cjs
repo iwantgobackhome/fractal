@@ -248,7 +248,7 @@ if (!app.requestSingleInstanceLock()) {
     .then(async () => {
       const { startHub, augmentCliPath } = await import(pathToFileURL(join(app.getAppPath(), 'apps/desktop/dist/hub.mjs')).href);
       await augmentCliPath();
-      hub = await startHub({ port: 0, indexHtml: join(app.getAppPath(), 'packages/ui/dist/index.html') });
+      hub = await startHub({ indexHtml: join(app.getAppPath(), 'packages/ui/dist/index.html') });
       ipcMain.handle('fractal:save-pdf', async (event, options) => {
         const caller = BrowserWindow.fromWebContents(event.sender);
         if (!caller || caller.isDestroyed() || new URL(event.sender.getURL()).origin !== new URL(hub.url).origin) throw new Error('PDF export is unavailable');

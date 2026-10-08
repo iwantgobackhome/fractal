@@ -38,6 +38,11 @@ interface HubHistoryClient : HubDataClient {
     suspend fun attachHistory(path: String, body: JsonObject): String
 }
 
+fun isHubConnectionError(failure: Throwable): Boolean =
+    generateSequence(failure) { it.cause }.any {
+        it is java.net.ConnectException || it is java.net.SocketTimeoutException || it is java.net.UnknownHostException
+    }
+
 class HubHttpException(val code: Int, val reason: String? = null) : IOException(reason ?: "Hub HTTP $code")
 
 private fun hubFailure(response: Response): HubHttpException {

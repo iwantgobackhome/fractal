@@ -1,6 +1,6 @@
 export { augmentCliPath } from './ai/cli-paths';
 import { readFileSync } from 'node:fs';
-import { readFile } from 'node:fs/promises';
+import { readFile, writeFile, rename } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -125,12 +125,17 @@ export function backfillTitles(store: PaperStore): number {
   return updated;
 }
 
+export type ServiceLogEvent =
+  ApiLogEvent | PipelineLogEvent | { event: 'service.port-busy'; port: number; source: 'persisted' | 'default'; code: 'EADDRINUSE' };
+
 export interface ServiceOptions {
   dataDirectory?: string;
   port?: number;
+  /** Reuse the data directory's port when no explicit port is supplied. */
+  persistPort?: boolean;
   /** Absolute path to the client entry document, when one should be served. */
   indexHtml?: string;
-  log?: (event: ApiLogEvent | PipelineLogEvent) => void;
+  log?: (event: ServiceLogEvent) => void;
   bindAddresses?: string[];
   /** Tests default to no real CLI subprocesses; opt in only for an explicit integration probe. */
   allowRealCli?: boolean;
@@ -320,7 +325,32 @@ export async function startService(options: ServiceOptions = {}): Promise<Servic
   });
   apiServer = server;
 
-  const address = await server.listen(options.port ?? 0, LOOPBACK);
+  const portPath = join(dataDirectory, 'hub-port.json');
+  const persistPort = options.persistPort === true && options.port === undefined;
+  let port = options.port ?? 0;
+  let source: 'persisted' | 'default' = 'default';
+  if (persistPort) {
+    port = 7327;
+    try {
+      const saved = JSON.parse(await readFile(portPath, 'utf8')) as { port?: number };
+      if (Number.isSafeInteger(saved.port) && saved.port! > 0 && saved.port! <= 65535) {
+        port = saved.port!;
+        source = 'persisted';
+      }
+    } catch {
+      // Missing or invalid settings use the CLI's default port.
+    }
+  }
+  const address = await server.listen(port, LOOPBACK).catch(async (cause: unknown) => {
+    if (!persistPort || (cause as NodeJS.ErrnoException).code !== 'EADDRINUSE') throw cause;
+    log({ event: 'service.port-busy', port, source, code: 'EADDRINUSE' });
+    return server.listen(0, LOOPBACK);
+  });
+  if (persistPort) {
+    const temporary = `${portPath}.tmp`;
+    await writeFile(temporary, JSON.stringify({ port: address.port }) + '\n');
+    await rename(temporary, portPath);
+  }
   if (options.bindAddresses !== undefined) network.configureExplicit(options.bindAddresses);
   await network.apply();
   if (startBackground) feed.start();
@@ -348,7 +378,7 @@ export async function startService(options: ServiceOptions = {}): Promise<Servic
 
 /** Stable embedding API used by Electron and other local hosts. */
 export async function startHub(options: ServiceOptions = {}): Promise<{ url: string; close(): Promise<void>; service: Service }> {
-  const service = await startService(options);
+  const service = await startService({ ...options, persistPort: options.persistPort ?? true });
   return { url: service.url, close: () => service.stop(), service };
 }
 

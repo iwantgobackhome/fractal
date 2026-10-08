@@ -48,7 +48,7 @@
     <string name="language_intro_title">Choose your reading language</string>
     <string name="language_intro_subtitle">You can change this later in Settings.</string>
     <string name="continue_label">Continue</string>
-    <string name="app_version">News Papers · 0.1</string>
+    <string name="app_version">News Papers · %1$s</string>
     <string name="more_authors">%1$s and %2$d others</string>
     <string name="offline_indicator">↓</string>
     <string name="back_symbol">‹</string>

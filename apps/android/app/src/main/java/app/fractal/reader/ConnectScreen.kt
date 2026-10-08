@@ -48,6 +48,15 @@ import com.google.mlkit.vision.common.InputImage
 import kotlinx.coroutines.launch
 
 @Composable
+internal fun hubConnectionHint(): String = libraryText(
+    "Cannot connect to the hub. Check that News Papers is running on your PC and that you are on the same network/Tailscale. If it still fails, reconnect with the QR code.",
+    "허브에 연결할 수 없습니다. PC에서 News Papers가 실행 중인지, 같은 네트워크/Tailscale에 있는지 확인하세요. 계속 안 되면 QR로 다시 연결하세요.",
+)
+
+internal fun hubErrorMessage(failure: Throwable, connectionHint: String): String =
+    if (app.fractal.sync.isHubConnectionError(failure)) connectionHint else failure.message.orEmpty()
+
+@Composable
 fun ConnectScreen(
     app: ReaderApplication,
     cameraGranted: Boolean,
@@ -55,6 +64,7 @@ fun ConnectScreen(
     onConnected: () -> Unit,
     onBrowseCached: (() -> Unit)? = null,
 ) {
+    val connectionHint = hubConnectionHint()
     val colors = LocalFractalColors.current
     val scope = rememberCoroutineScope()
     var scanning by remember { mutableStateOf(false) }
@@ -70,7 +80,7 @@ fun ConnectScreen(
                 Toast.makeText(app, app.getString(R.string.sync_large_item_pending), Toast.LENGTH_LONG).show()
             }
         }.onFailure {
-            Toast.makeText(app, app.getString(R.string.connected_sync_failed, it.message.orEmpty()), Toast.LENGTH_LONG).show()
+            Toast.makeText(app, app.getString(R.string.connected_sync_failed, hubErrorMessage(it, connectionHint)), Toast.LENGTH_LONG).show()
             SyncScheduler.now(app, app.settings.getBoolean("wifiOnly", false))
         }
         onConnected()
