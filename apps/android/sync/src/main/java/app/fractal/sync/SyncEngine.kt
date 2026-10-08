@@ -8,14 +8,13 @@ import kotlinx.serialization.json.*
 import java.time.Instant
 import java.util.UUID
 
-class SyncEngine(private val database: FractalDatabase, private val client: HubDataClient, private val onLocalChange: (String) -> Unit = {}) {
+class SyncEngine(private val database: FractalDatabase, private val client: HubDataClient) {
     companion object { private val syncMutex = Mutex() }
     var lastWarning: String? = null
         private set
 
     suspend fun saveLocal(value: JsonObject) {
         database.annotations().upsert(WireJson.annotationEntity(value, dirty = true))
-        value.text("paperKey")?.let(onLocalChange)
     }
 
     /** One logical ink edit emits one complete Room snapshot. */

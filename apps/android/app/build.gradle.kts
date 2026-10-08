@@ -61,6 +61,7 @@ dependencies {
     implementation(libs.coroutines.android)
     implementation(libs.room.ktx)
     implementation(libs.lifecycle.runtime.compose)
+    implementation("androidx.lifecycle:lifecycle-process:2.9.0")
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     androidTestImplementation("androidx.test:runner:1.6.2")

@@ -21,6 +21,7 @@ dependencies {
     implementation(libs.work.runtime)
     implementation(libs.serialization.json)
     testImplementation(libs.testng)
+    testImplementation("org.mockito:mockito-core:5.18.0")
 }
 
 tasks.withType<Test>().configureEach { useTestNG() }

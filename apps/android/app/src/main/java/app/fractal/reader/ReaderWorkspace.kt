@@ -22,7 +22,6 @@ import app.fractal.data.*
 import app.fractal.design.*
 import app.fractal.ink.*
 import app.fractal.pdf.*
-import app.fractal.sync.SyncScheduler
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.sync.Mutex
@@ -51,9 +50,11 @@ private fun Modifier.readingDriver(onDown: () -> Unit) = composed {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, onBack: () -> Unit) {
-    app.ReaderRealtimeSync(paper.paperKey)
+    app.ReaderLocalSync(paper.paperKey)
     val colors = LocalFractalColors.current
     val scope = rememberCoroutineScope()
+    val syncSuccess = libraryText("Synced", "동기화 완료")
+    val syncFailure = libraryText("Sync failed; will retry", "동기화 실패 · 다시 시도합니다")
     val inkSaveMutex = remember(paper.paperKey) { Mutex() }
     val density = LocalDensity.current
     val clipboard = LocalClipboardManager.current
@@ -156,7 +157,6 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
         sourceList.restore(sourceAnchor.page - 1, sourceAnchor.fraction)
         restored = true
         app.metadata.read(paper.paperKey, sourceAnchor.page, sourceAnchor.fraction)
-        SyncScheduler.now(app, app.settings.getBoolean("wifiOnly", false))
     }
     LaunchedEffect(restored, blocks) {
         if (!restored || blocks.isEmpty()) return@LaunchedEffect
@@ -183,7 +183,6 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
             it.copy(deleted = true, rev = it.rev + 1, updatedAt = Instant.now().toString())
         }
         app.sync.saveLocalBatch(changed.map { WireJson.format.parseToJsonElement(InkJson.format.encodeToString(InkStroke.serializer(), it)).jsonObject })
-        SyncScheduler.now(app, app.settings.getBoolean("wifiOnly", false))
     } }
     fun savePosition() { scope.launch {
         if (!restored) return@launch
@@ -275,6 +274,13 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                         Text("$activePage / ${pages?.pageCount ?: 0}", Modifier.padding(horizontal = 12.dp), style = MaterialTheme.typography.bodySmall)
                         Box { TextButton(onClick = { toolsMenu = true }, modifier = Modifier.testTag("reader-tools")) { Text(libraryText("Tools ▾", "도구 ▾")) }
                             DropdownMenu(toolsMenu, { toolsMenu = false }) {
+                                DropdownMenuItem(text = { Text(libraryText("Sync now", "동기화")) }, onClick = {
+                                    toolsMenu = false
+                                    scope.launch {
+                                        val result = app.readerSync.request().await()
+                                        android.widget.Toast.makeText(app, if (result.isSuccess) syncSuccess else syncFailure, android.widget.Toast.LENGTH_SHORT).show()
+                                    }
+                                })
                                 DropdownMenuItem(text = { Text(libraryText("Deliberately select a region", "직접 영역 선택")) }, enabled = sourceVisible, onClick = { regionMode = !regionMode; toolsMenu = false })
                                 DropdownMenuItem(text = { Text(libraryText("Fit original page width", "원문 너비 맞춤")) }, enabled = sourceVisible, onClick = { zoom = 1f; toolsMenu = false })
                                 DropdownMenuItem(text = { Text(libraryText("Add source note", "원문 노트 추가")) }, enabled = sourceVisible, onClick = { noteSelection = activePage to PdfTextSelection("", listOf(PdfRect(.08f, .15f, .02f, .02f)), provenance = "deliberate-region", pdfSha256 = pages?.pdfSha256); toolsMenu = false })
