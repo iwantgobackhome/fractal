@@ -12,6 +12,9 @@ import androidx.compose.ui.*
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.onGloballyPositioned
 import app.fractal.sync.PaperStructure
@@ -29,6 +32,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.*
 import java.time.Instant
+import kotlin.math.roundToInt
 
 private data class ReadingAnchor(val page: Int = 1, val fraction: Double = 0.0, val block: String? = null)
 private fun LazyListState.fraction() = (firstVisibleItemScrollOffset.toDouble() /
@@ -75,6 +79,24 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
     var resizing by remember { mutableStateOf(false) }
     var lastPaneWidth by remember(paper.paperKey) { mutableStateOf(0.dp) }
     var zoom by remember(paper.paperKey) { mutableStateOf(1f) }
+    val pinch = remember(paper.paperKey) { ReaderPinch() }
+    var pinching by remember { mutableStateOf(false) }
+    var horizontalPan by remember { mutableStateOf(0f) }
+    fun finishPinch() {
+        if (!pinching || pinch.committing) return
+        pinch.committing = true
+        val scale = pinch.scale
+        val index = sourceList.firstVisibleItemIndex
+        val offset = committedZoomOffset(sourceList.firstVisibleItemScrollOffset.toFloat(), scale, pinch.y)
+        horizontalPan = horizontalPan.coerceIn(minOf(0f, sourceList.layoutInfo.viewportSize.width * (1f - zoom)), 0f) * scale + pinch.x
+        zoom = (zoom * scale).coerceIn(.5f, 4f)
+        scope.launch {
+            withFrameNanos { }; yield()
+            sourceList.scrollToItem(index, offset.roundToInt())
+            pinch.reset()
+            pinching = false
+        }
+    }
     var writing by remember { mutableStateOf(false) }
     var barVisible by remember { mutableStateOf(true) }
     var panel by remember(paper.paperKey) { mutableStateOf(false) }
@@ -297,7 +319,12 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                         if (sourceVisible) {
                             val source = pages
                             if (source == null) Text(status, Modifier.weight(1f).padding(24.dp)) else LazyColumn(state = sourceList,
-                                modifier = Modifier.weight(1f).fillMaxHeight().testTag("reader-source-pages").background(colors.sunken).readingDriver { driver = "original" }.readerViewport { viewport = it }) {
+                                modifier = Modifier.weight(1f).fillMaxHeight().testTag("reader-source-pages").background(colors.sunken).readerViewport { if (viewport != it) viewport = it }.clipToBounds().graphicsLayer {
+                                    transformOrigin = TransformOrigin(0f, 0f)
+                                    scaleX = pinch.scale; scaleY = pinch.scale
+                                    translationX = pinch.x
+                                    translationY = pinch.y
+                                }.readingDriver { driver = "original" }) {
                                 items(source.pageCount, key = { it }) { index ->
                                     val state = states.getOrPut(index + 1) { InkPageState() }
                                     PdfPage(app, source, paper.paperKey, index, zoom, state, tool,
@@ -315,11 +342,24 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                                             if (item != null) { selection = null; selectionMessage = "" }
                                             item != null
                                         },
-                                        onFingerGesture = { dy, factor, focusY ->
+                                        gestureActive = pinching,
+                                        viewportPan = horizontalPan,
+                                        onViewportTransform = { dx, dy, factor, focusX, focusY ->
+                                            if (pinch.committing) return@PdfPage
                                             selectedStructureId = null
-                                            zoom = (zoom * factor).coerceIn(.5f, 4f)
-                                            scope.launch { if (factor != 1f) { withFrameNanos { }; yield() }; sourceList.scrollBy(focusY * (factor - 1f) - dy) }
-                                        }, onWritingStateChanged = { writing = it; if (it) selectedStructureId = null; if (it && !regionMode) barVisible = false },
+                                            if (!pinching) { pinching = true }
+                                            val nextScale = (zoom * pinch.scale * factor).coerceIn(.5f, 4f) / zoom
+                                            val ratio = nextScale / pinch.scale
+                                            val focalY = focusY - (viewport?.top ?: 0)
+                                            val focalX = focusX - (viewport?.left ?: 0)
+                                            val basePan = horizontalPan.coerceIn(minOf(0f, sourceList.layoutInfo.viewportSize.width * (1f - zoom)), 0f)
+                                            pinch.x = (pinch.x * ratio + dx + focalX * (1f - ratio))
+                                                .coerceIn(minOf(0f, sourceList.layoutInfo.viewportSize.width * (1f - zoom * nextScale)) - basePan * nextScale, -basePan * nextScale)
+                                            pinch.y = pinch.y * ratio + dy + focalY * (1f - ratio)
+                                            pinch.scale = nextScale
+                                        },
+                                        onViewportTransformEnd = ::finishPinch,
+                                        onFingerGesture = { _, _, _ -> }, onWritingStateChanged = { writing = it; if (it) selectedStructureId = null; if (it && !regionMode) barVisible = false },
                                         onSelection = { selectedStructureId = null; selection = index + 1 to it; selectionMessage = "" },
                                         onDoubleTap = { selectedStructureId = null; zoom = if (zoom == 1f) 1.5f else 1f },
                                         onInkChanged = { before, after -> scope.launch {
