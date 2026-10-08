@@ -64,7 +64,7 @@ for (const label of labels) {
     assert.ok(listed.has('android-verification.json'));
     const apk = JSON.parse(await readFile(join(directory, 'android-verification.json'), 'utf8'));
     assert.equal(apk.version, version);
-    assert.equal(apk.versionCode, 14);
+    assert.equal(apk.versionCode, 15);
     assert.equal(apk.applicationId, 'app.newspapers.reader');
     assert.ok(apk.debugSigned && apk.signatureVerified);
     assert.match(apk.certificateSha256, /^[a-f0-9]{64}$/);

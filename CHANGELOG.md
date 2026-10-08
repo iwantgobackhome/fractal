@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.3 — 2026-10-08
+
+Android pinch zoom and scrolling no longer relayout every frame or wait on page renders; ink, highlights and notes are local-first and sync on open, leave, background, Sync now and every 15 minutes; the desktop Hub keeps a stable port so paired phones survive restarts; Settings shows the real version and the library uses the News Papers mark. Android versionCode 15. See [release notes](docs/releases/0.5.3.md).
+
 ## 0.5.2 — 2026-10-07
 
 Figure grids whose bold caption label is set apart from the caption text stay in one crop, with the caption as one block; stored PDFs are re-extracted on open and keep their translations. Android versionCode 14. See [release notes](docs/releases/0.5.2.md).
