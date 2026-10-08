@@ -88,13 +88,16 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
         val scale = pinch.scale
         val index = sourceList.firstVisibleItemIndex
         val offset = committedZoomOffset(sourceList.firstVisibleItemScrollOffset.toFloat(), scale, pinch.y)
-        horizontalPan = horizontalPan.coerceIn(minOf(0f, sourceList.layoutInfo.viewportSize.width * (1f - zoom)), 0f) * scale + pinch.x
-        zoom = (zoom * scale).coerceIn(.5f, 4f)
+        val nextZoom = (zoom * scale).coerceIn(.5f, 4f)
+        val viewportWidth = sourceList.layoutInfo.viewportSize.width.toFloat()
+        horizontalPan = boundedReaderPan(boundedReaderPan(horizontalPan, viewportWidth, zoom) * scale + pinch.x, viewportWidth, nextZoom)
+        zoom = nextZoom
         scope.launch {
-            withFrameNanos { }; yield()
-            sourceList.scrollToItem(index, offset.roundToInt())
-            pinch.reset()
-            pinching = false
+            try {
+                withFrameNanos { }; yield()
+                // Foundation 1.8 measures preceding items for a negative offset, clamping at start.
+                sourceList.scrollToItem(index, offset.roundToInt())
+            } finally { pinch.reset(); pinching = false }
         }
     }
     var writing by remember { mutableStateOf(false) }
@@ -352,7 +355,7 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                                             val ratio = nextScale / pinch.scale
                                             val focalY = focusY - (viewport?.top ?: 0)
                                             val focalX = focusX - (viewport?.left ?: 0)
-                                            val basePan = horizontalPan.coerceIn(minOf(0f, sourceList.layoutInfo.viewportSize.width * (1f - zoom)), 0f)
+                                            val basePan = boundedReaderPan(horizontalPan, sourceList.layoutInfo.viewportSize.width.toFloat(), zoom)
                                             pinch.x = (pinch.x * ratio + dx + focalX * (1f - ratio))
                                                 .coerceIn(minOf(0f, sourceList.layoutInfo.viewportSize.width * (1f - zoom * nextScale)) - basePan * nextScale, -basePan * nextScale)
                                             pinch.y = pinch.y * ratio + dy + focalY * (1f - ratio)
@@ -361,7 +364,7 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                                         onViewportTransformEnd = ::finishPinch,
                                         onFingerGesture = { _, _, _ -> }, onWritingStateChanged = { writing = it; if (it) selectedStructureId = null; if (it && !regionMode) barVisible = false },
                                         onSelection = { selectedStructureId = null; selection = index + 1 to it; selectionMessage = "" },
-                                        onDoubleTap = { selectedStructureId = null; zoom = if (zoom == 1f) 1.5f else 1f },
+                                        onDoubleTap = { selectedStructureId = null; horizontalPan = 0f; zoom = doubleTapReaderZoom(zoom) },
                                         onInkChanged = { before, after -> scope.launch {
                                             saveInkChange(before, after)
                                         } }, contentOverlay = { width, height, textPage ->

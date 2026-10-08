@@ -33,7 +33,7 @@ data class PdfTextSelection(
 )
 
 /** Bitmap cache is bounded by bytes; a width change renders a fresh page. */
-class PdfPages(file: File, memoryClassMb: Int = (Runtime.getRuntime().maxMemory() / (1024 * 1024)).toInt()) : Closeable {
+class PdfPages(file: File, memoryClassMb: Int = (Runtime.getRuntime().maxMemory() / (1024 * 1024)).toInt(), precomputeSizes: Boolean = true) : Closeable {
     private val renderMemoryClassMb = memoryClassMb
     private val pagePixels = PdfRenderBudget.pagePixels(memoryClassMb)
     private val sourceFile = file
@@ -50,8 +50,9 @@ class PdfPages(file: File, memoryClassMb: Int = (Runtime.getRuntime().maxMemory(
     private val bitmaps = object : LruCache<String, Bitmap>(PdfRenderBudget.cacheBytes(memoryClassMb)) {
         override fun sizeOf(key: String, value: Bitmap): Int = value.byteCount
     }
-    private val sizes = PdfPageSizes(renderer.pageCount) { index ->
-        renderer.openPage(index).use { it.width to it.height }
+    // Reader instances warm sizes on IO; crop-only instances load just the requested size.
+    private val sizes = PdfPageSizes(renderer.pageCount, precomputeSizes) { index ->
+        synchronized(this) { renderer.openPage(index).use { it.width to it.height } }
     }
     val pageCount: Int get() = sizes.count
     fun identityUnchanged(): Boolean = sourceFile.isFile && sourceFile.length() == openedLength && sourceFile.lastModified() == openedModified
