@@ -38,6 +38,11 @@ interface HubHistoryClient : HubDataClient {
     suspend fun attachHistory(path: String, body: JsonObject): String
 }
 
+fun isHubConnectionError(failure: Throwable): Boolean =
+    generateSequence(failure) { it.cause }.any {
+        it is java.net.ConnectException || it is java.net.SocketTimeoutException || it is java.net.UnknownHostException
+    }
+
 class HubHttpException(val code: Int, val reason: String? = null) : IOException(reason ?: "Hub HTTP $code")
 
 private fun hubFailure(response: Response): HubHttpException {
@@ -108,35 +113,6 @@ class HubClient(private val credentials: HubCredentialStore) : HubHistoryClient 
                 WireJsonAdapter.data(raw)
             }
         }
-
-    suspend fun syncEvents(paperKey: String, onChange: () -> Unit): Unit = withContext(Dispatchers.IO) {
-        val paired = credentials.load() ?: throw IOException("Hub is not paired")
-        val call = http.newCall(request(paired.url, "/api/sync/events?paperKey=${keyPath(paperKey)}", token = paired.token))
-        suspendCancellableCoroutine<Unit> { continuation ->
-            continuation.invokeOnCancellation { call.cancel() }
-            call.enqueue(object : Callback {
-                override fun onFailure(call: Call, error: IOException) {
-                    if (continuation.isActive) continuation.resumeWithException(error)
-                }
-                override fun onResponse(call: Call, response: Response) {
-                    try {
-                        response.use {
-                            if (!it.isSuccessful) throw hubFailure(it)
-                            val source = it.body?.source() ?: throw IOException("Empty sync stream")
-                            while (continuation.isActive) {
-                                val line = source.readUtf8Line() ?: break
-                                if (credentials.load() != paired) throw IOException("Hub connection changed")
-                                if (line.startsWith("data:")) onChange()
-                            }
-                        }
-                        if (continuation.isActive) continuation.resume(Unit)
-                    } catch (error: Exception) {
-                        if (continuation.isActive) continuation.resumeWithException(error)
-                    }
-                }
-            })
-        }
-    }
 
     override fun captured(): HubPdfSession {
         val paired = credentials.load() ?: throw IOException("Hub is not paired")

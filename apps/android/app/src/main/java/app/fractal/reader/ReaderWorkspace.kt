@@ -12,6 +12,9 @@ import androidx.compose.ui.*
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.onGloballyPositioned
 import app.fractal.sync.PaperStructure
@@ -22,13 +25,13 @@ import app.fractal.data.*
 import app.fractal.design.*
 import app.fractal.ink.*
 import app.fractal.pdf.*
-import app.fractal.sync.SyncScheduler
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.*
 import java.time.Instant
+import kotlin.math.roundToInt
 
 private data class ReadingAnchor(val page: Int = 1, val fraction: Double = 0.0, val block: String? = null)
 private fun LazyListState.fraction() = (firstVisibleItemScrollOffset.toDouble() /
@@ -51,9 +54,11 @@ private fun Modifier.readingDriver(onDown: () -> Unit) = composed {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, onBack: () -> Unit) {
-    app.ReaderRealtimeSync(paper.paperKey)
+    app.ReaderLocalSync(paper.paperKey)
     val colors = LocalFractalColors.current
     val scope = rememberCoroutineScope()
+    val syncSuccess = libraryText("Synced", "동기화 완료")
+    val syncFailure = libraryText("Sync failed; will retry", "동기화 실패 · 다시 시도합니다")
     val inkSaveMutex = remember(paper.paperKey) { Mutex() }
     val density = LocalDensity.current
     val clipboard = LocalClipboardManager.current
@@ -75,6 +80,27 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
     var resizing by remember { mutableStateOf(false) }
     var lastPaneWidth by remember(paper.paperKey) { mutableStateOf(0.dp) }
     var zoom by remember(paper.paperKey) { mutableStateOf(1f) }
+    val pinch = remember(paper.paperKey) { ReaderPinch() }
+    var pinching by remember { mutableStateOf(false) }
+    var horizontalPan by remember { mutableStateOf(0f) }
+    fun finishPinch() {
+        if (!pinching || pinch.committing) return
+        pinch.committing = true
+        val scale = pinch.scale
+        val index = sourceList.firstVisibleItemIndex
+        val offset = committedZoomOffset(sourceList.firstVisibleItemScrollOffset.toFloat(), scale, pinch.y)
+        val nextZoom = (zoom * scale).coerceIn(.5f, 4f)
+        val viewportWidth = sourceList.layoutInfo.viewportSize.width.toFloat()
+        horizontalPan = boundedReaderPan(boundedReaderPan(horizontalPan, viewportWidth, zoom) * scale + pinch.x, viewportWidth, nextZoom)
+        zoom = nextZoom
+        scope.launch {
+            try {
+                withFrameNanos { }; yield()
+                // Foundation 1.8 measures preceding items for a negative offset, clamping at start.
+                sourceList.scrollToItem(index, offset.roundToInt())
+            } finally { pinch.reset(); pinching = false }
+        }
+    }
     var writing by remember { mutableStateOf(false) }
     var barVisible by remember { mutableStateOf(true) }
     var panel by remember(paper.paperKey) { mutableStateOf(false) }
@@ -156,7 +182,6 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
         sourceList.restore(sourceAnchor.page - 1, sourceAnchor.fraction)
         restored = true
         app.metadata.read(paper.paperKey, sourceAnchor.page, sourceAnchor.fraction)
-        SyncScheduler.now(app, app.settings.getBoolean("wifiOnly", false))
     }
     LaunchedEffect(restored, blocks) {
         if (!restored || blocks.isEmpty()) return@LaunchedEffect
@@ -183,7 +208,6 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
             it.copy(deleted = true, rev = it.rev + 1, updatedAt = Instant.now().toString())
         }
         app.sync.saveLocalBatch(changed.map { WireJson.format.parseToJsonElement(InkJson.format.encodeToString(InkStroke.serializer(), it)).jsonObject })
-        SyncScheduler.now(app, app.settings.getBoolean("wifiOnly", false))
     } }
     fun savePosition() { scope.launch {
         if (!restored) return@launch
@@ -275,6 +299,13 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                         Text("$activePage / ${pages?.pageCount ?: 0}", Modifier.padding(horizontal = 12.dp), style = MaterialTheme.typography.bodySmall)
                         Box { TextButton(onClick = { toolsMenu = true }, modifier = Modifier.testTag("reader-tools")) { Text(libraryText("Tools ▾", "도구 ▾")) }
                             DropdownMenu(toolsMenu, { toolsMenu = false }) {
+                                DropdownMenuItem(text = { Text(libraryText("Sync now", "동기화")) }, onClick = {
+                                    toolsMenu = false
+                                    scope.launch {
+                                        val result = app.readerSync.request().await()
+                                        android.widget.Toast.makeText(app, if (result.isSuccess) syncSuccess else syncFailure, android.widget.Toast.LENGTH_SHORT).show()
+                                    }
+                                })
                                 DropdownMenuItem(text = { Text(libraryText("Deliberately select a region", "직접 영역 선택")) }, enabled = sourceVisible, onClick = { regionMode = !regionMode; toolsMenu = false })
                                 DropdownMenuItem(text = { Text(libraryText("Fit original page width", "원문 너비 맞춤")) }, enabled = sourceVisible, onClick = { zoom = 1f; toolsMenu = false })
                                 DropdownMenuItem(text = { Text(libraryText("Add source note", "원문 노트 추가")) }, enabled = sourceVisible, onClick = { noteSelection = activePage to PdfTextSelection("", listOf(PdfRect(.08f, .15f, .02f, .02f)), provenance = "deliberate-region", pdfSha256 = pages?.pdfSha256); toolsMenu = false })
@@ -297,7 +328,12 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                         if (sourceVisible) {
                             val source = pages
                             if (source == null) Text(status, Modifier.weight(1f).padding(24.dp)) else LazyColumn(state = sourceList,
-                                modifier = Modifier.weight(1f).fillMaxHeight().testTag("reader-source-pages").background(colors.sunken).readingDriver { driver = "original" }.readerViewport { viewport = it }) {
+                                modifier = Modifier.weight(1f).fillMaxHeight().testTag("reader-source-pages").background(colors.sunken).readerViewport { if (viewport != it) viewport = it }.clipToBounds().graphicsLayer {
+                                    transformOrigin = TransformOrigin(0f, 0f)
+                                    scaleX = pinch.scale; scaleY = pinch.scale
+                                    translationX = pinch.x
+                                    translationY = pinch.y
+                                }.readingDriver { driver = "original" }) {
                                 items(source.pageCount, key = { it }) { index ->
                                     val state = states.getOrPut(index + 1) { InkPageState() }
                                     PdfPage(app, source, paper.paperKey, index, zoom, state, tool,
@@ -315,13 +351,26 @@ internal fun StableReaderScreen(app: ReaderApplication, paper: LibraryEntity, on
                                             if (item != null) { selection = null; selectionMessage = "" }
                                             item != null
                                         },
-                                        onFingerGesture = { dy, factor, focusY ->
+                                        gestureActive = pinching,
+                                        viewportPan = horizontalPan,
+                                        onViewportTransform = { dx, dy, factor, focusX, focusY ->
+                                            if (pinch.committing) return@PdfPage
                                             selectedStructureId = null
-                                            zoom = (zoom * factor).coerceIn(.5f, 4f)
-                                            scope.launch { if (factor != 1f) { withFrameNanos { }; yield() }; sourceList.scrollBy(focusY * (factor - 1f) - dy) }
-                                        }, onWritingStateChanged = { writing = it; if (it) selectedStructureId = null; if (it && !regionMode) barVisible = false },
+                                            if (!pinching) { pinching = true }
+                                            val nextScale = (zoom * pinch.scale * factor).coerceIn(.5f, 4f) / zoom
+                                            val ratio = nextScale / pinch.scale
+                                            val focalY = focusY - (viewport?.top ?: 0)
+                                            val focalX = focusX - (viewport?.left ?: 0)
+                                            val basePan = boundedReaderPan(horizontalPan, sourceList.layoutInfo.viewportSize.width.toFloat(), zoom)
+                                            pinch.x = (pinch.x * ratio + dx + focalX * (1f - ratio))
+                                                .coerceIn(minOf(0f, sourceList.layoutInfo.viewportSize.width * (1f - zoom * nextScale)) - basePan * nextScale, -basePan * nextScale)
+                                            pinch.y = pinch.y * ratio + dy + focalY * (1f - ratio)
+                                            pinch.scale = nextScale
+                                        },
+                                        onViewportTransformEnd = ::finishPinch,
+                                        onFingerGesture = { _, _, _ -> }, onWritingStateChanged = { writing = it; if (it) selectedStructureId = null; if (it && !regionMode) barVisible = false },
                                         onSelection = { selectedStructureId = null; selection = index + 1 to it; selectionMessage = "" },
-                                        onDoubleTap = { selectedStructureId = null; zoom = if (zoom == 1f) 1.5f else 1f },
+                                        onDoubleTap = { selectedStructureId = null; horizontalPan = 0f; zoom = doubleTapReaderZoom(zoom) },
                                         onInkChanged = { before, after -> scope.launch {
                                             saveInkChange(before, after)
                                         } }, contentOverlay = { width, height, textPage ->

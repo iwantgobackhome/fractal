@@ -14,7 +14,6 @@ import androidx.compose.ui.unit.*
 import app.fractal.data.*
 import app.fractal.pdf.PdfRect
 import app.fractal.design.LocalFractalColors
-import app.fractal.sync.SyncScheduler
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.*
 import java.time.Instant
@@ -25,7 +24,6 @@ internal suspend fun editAnnotation(app: ReaderApplication, original: JsonObject
     val id = original["id"]?.jsonPrimitive?.content ?: return
     val latest = app.database.annotations().get(id)?.json?.let { WireJson.format.parseToJsonElement(it).jsonObject } ?: original
     app.sync.saveLocal(JsonObject(latest + patch + ("updatedAt" to JsonPrimitive(Instant.now().toString()))))
-    SyncScheduler.now(app, app.settings.getBoolean("wifiOnly", false))
 }
 
 @Composable

@@ -16,8 +16,8 @@ android {
         applicationId = "app.newspapers.reader"
         minSdk = 29
         targetSdk = 35
-        versionCode = 14
-        versionName = "0.5.2"
+        versionCode = 15
+        versionName = "0.5.3"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     val ciDebugKeystorePath = providers.environmentVariable("FRACTAL_ANDROID_KEYSTORE_PATH").orNull
@@ -61,6 +61,7 @@ dependencies {
     implementation(libs.coroutines.android)
     implementation(libs.room.ktx)
     implementation(libs.lifecycle.runtime.compose)
+    implementation("androidx.lifecycle:lifecycle-process:2.9.0")
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     androidTestImplementation("androidx.test:runner:1.6.2")

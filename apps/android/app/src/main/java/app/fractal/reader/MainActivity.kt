@@ -273,7 +273,7 @@ private fun SettingsScreen(app: ReaderApplication, theme: String, setTheme: (Str
                 setAppLanguage(app, it, explicit = true)
             }, Modifier.padding(16.dp))
             HorizontalDivider(color = colors.rule)
-            Text(stringResource(R.string.app_version), Modifier.padding(16.dp), color = colors.inkSoft)
+            Text(stringResource(R.string.app_version, BuildConfig.VERSION_NAME), Modifier.padding(16.dp), color = colors.inkSoft)
             TextButton(onClick = { showLicenses = true }) { Text(stringResource(R.string.open_source_licenses)) }
             val updates = LocalUpdates.current
             if (updates != null) {

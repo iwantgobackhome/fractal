@@ -33,7 +33,7 @@ data class PdfTextSelection(
 )
 
 /** Bitmap cache is bounded by bytes; a width change renders a fresh page. */
-class PdfPages(file: File, memoryClassMb: Int = (Runtime.getRuntime().maxMemory() / (1024 * 1024)).toInt()) : Closeable {
+class PdfPages(file: File, memoryClassMb: Int = (Runtime.getRuntime().maxMemory() / (1024 * 1024)).toInt(), precomputeSizes: Boolean = true) : Closeable {
     private val renderMemoryClassMb = memoryClassMb
     private val pagePixels = PdfRenderBudget.pagePixels(memoryClassMb)
     private val sourceFile = file
@@ -50,20 +50,15 @@ class PdfPages(file: File, memoryClassMb: Int = (Runtime.getRuntime().maxMemory(
     private val bitmaps = object : LruCache<String, Bitmap>(PdfRenderBudget.cacheBytes(memoryClassMb)) {
         override fun sizeOf(key: String, value: Bitmap): Int = value.byteCount
     }
-    val pageCount: Int get() = renderer.pageCount
+    // Reader instances warm sizes on IO; crop-only instances load just the requested size.
+    private val sizes = PdfPageSizes(renderer.pageCount, precomputeSizes) { index ->
+        synchronized(this) { renderer.openPage(index).use { it.width to it.height } }
+    }
+    val pageCount: Int get() = sizes.count
     fun identityUnchanged(): Boolean = sourceFile.isFile && sourceFile.length() == openedLength && sourceFile.lastModified() == openedModified
 
-    @Synchronized
-    fun aspectRatio(index: Int): Float {
-        renderer.openPage(index).use { page ->
-            return page.width.toFloat() / page.height
-        }
-    }
-
-    @Synchronized
-    fun pageWidthPoints(index: Int): Int {
-        renderer.openPage(index).use { return it.width }
-    }
+    fun aspectRatio(index: Int): Float = sizes.aspectRatio(index)
+    fun pageWidthPoints(index: Int): Int = sizes.width(index)
 
     @Synchronized
     fun bitmap(index: Int, widthPx: Int, checkActive: () -> Unit = {}): Bitmap {

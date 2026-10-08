@@ -70,7 +70,6 @@ import app.fractal.ink.InkToolState
 import app.fractal.ink.rememberInkToolState
 import app.fractal.pdf.PdfPages
 import app.fractal.pdf.PdfTextSelection
-import app.fractal.sync.SyncScheduler
 import app.fractal.sync.HubClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -123,7 +122,6 @@ internal suspend fun saveMemo(
         put("rect", rectJson)
     }
     app.sync.saveLocal(value)
-    SyncScheduler.now(app, app.settings.getBoolean("wifiOnly", false))
 }
 
 internal suspend fun saveHighlight(
@@ -159,7 +157,6 @@ internal suspend fun saveHighlight(
         put("note", note)
     }
     app.sync.saveLocal(value)
-    SyncScheduler.now(app, app.settings.getBoolean("wifiOnly", false))
 }
 
 fun highlightColor(name: String) = when (name) {
