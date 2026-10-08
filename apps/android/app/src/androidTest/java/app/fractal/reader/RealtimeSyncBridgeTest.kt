@@ -16,7 +16,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.util.UUID
 
-/** Opt-in, disposable hub on 17460; never uses the application's stored pairing. */
+/** Opt-in explicit-trigger sync bridge on a disposable hub; never uses stored pairing. */
 class RealtimeSyncBridgeTest {
     @Test fun phoneStrokeAndDesktopWriteReachOppositeStores(): Unit = runBlocking {
         val fixture = File("/data/local/tmp/realtime-fixture.json")
@@ -31,12 +31,11 @@ class RealtimeSyncBridgeTest {
         val client = HubClient(credentials)
         val database = Room.inMemoryDatabaseBuilder(context, FractalDatabase::class.java).build()
         val key = "2401.12345v1"
-        lateinit var realtime: RealtimeSync
-        val engine = SyncEngine(database, client) { realtime.notifyLocalChange(it) }
-        realtime = RealtimeSync({ engine.syncOnce(); Unit }, client::syncEvents)
+        val engine = SyncEngine(database, client)
+        val readerSync = ReaderSync(this, { engine.syncOnce(); Unit }, {})
         client.claim("http://127.0.0.1:17460", config.getValue("code").jsonPrimitive.content)
         engine.syncOnce() // The reader opens only after its local database is initialized.
-        val job = launch { realtime.run(key) }
+        readerSync.request().await()
         try {
             delay(400)
             fun ink(id: String) = buildJsonObject {
@@ -48,6 +47,7 @@ class RealtimeSyncBridgeTest {
             val phone = ink(UUID.randomUUID().toString())
             engine.saveLocal(phone)
             var start = android.os.SystemClock.elapsedRealtime()
+            readerSync.request().await()
             withTimeout(3000) {
                 while (client.data("/api/papers/$key/annotations").jsonArray.none { it.jsonObject["id"] == phone["id"] }) delay(20)
             }
@@ -63,11 +63,12 @@ class RealtimeSyncBridgeTest {
                 connection.outputStream.use { it.write(desktop.toString().toByteArray()) }
                 assertEquals(201, connection.responseCode); connection.disconnect()
             }
+            readerSync.request().await()
             withTimeout(3000) { while (database.annotations().get(desktop.getValue("id").jsonPrimitive.content) == null) delay(20) }
             val pullMs = android.os.SystemClock.elapsedRealtime() - start
             Log.i("RealtimeSyncQA", "phone-to-hub=${pushMs}ms desktop-to-phone-db=${pullMs}ms")
             assertTrue("phone push ${pushMs}ms", pushMs < 1100)
             assertTrue("desktop pull ${pullMs}ms", pullMs < 1100)
-        } finally { job.cancelAndJoin(); database.close(); credentials.clear() }
+        } finally { database.close(); credentials.clear() }
     }
 }
